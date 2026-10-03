@@ -17,7 +17,7 @@ def data_uri(name):
     return "data:image/png;base64," + base64.b64encode((ASSETS / name).read_bytes()).decode()
 
 
-MODULES = ["rooms.mjs", "sim.mjs", "art.mjs", "app.js"]  # dependency order
+MODULES = ["rooms.mjs", "sim.mjs", "art.mjs", "dungeon.mjs", "dungeon-view.mjs", "app.js"]  # dependency order
 
 
 def main():
@@ -28,10 +28,12 @@ def main():
         js = (SRC / name).read_text(encoding="utf-8")
         # Each module runs in its own function scope so private names cannot collide;
         # its exports are returned and become top-level constants for the modules after it.
-        js = re.sub(r"^import\s*\{[^}]*\}\s*from\s*'\./[\w.]+';\s*$", "", js, flags=re.M)
+        js = re.sub(r"^import\s*\{[^}]*\}\s*from\s*'\./[\w.-]+';\s*$", "", js, flags=re.M)
         assert not re.search(r"^\s*import\b", js, flags=re.M), f"unhandled import in {name}"
         exports = re.findall(r"^export\s+(?:const|let|function|class)\s+([\w$]+)", js, flags=re.M)
         assert len(exports) == len(re.findall(r"^export\b", js, flags=re.M)), f"use one declaration per export in {name}"
+        multi = re.search(r"^export\s+(?:const|let)\s+[\w$]+\s*=\s*[\w$.]+\s*,\s*[\w$]+\s*=", js, flags=re.M)
+        assert not multi, f"split '{multi.group(0)}' into one export per line in {name}"
         js = re.sub(r"^export\s+", "", js, flags=re.M)
         names = ",".join(exports)
         head = f"const {{{names}}}=" if exports else ""

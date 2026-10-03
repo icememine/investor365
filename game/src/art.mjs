@@ -250,3 +250,90 @@ export function paintZombie(){
  g.putImageData(img,0,0);
  return c;
 }
+
+// ---- Hầm Ma: minor performers, Mr. D, and dungeon tiles.
+
+// Shared outline pass for hand-placed pixel sprites.
+function outline(g,w,h){
+ const img=g.getImageData(0,0,w,h),d=img.data,solid=i=>d[i*4+3]>0,out=[];
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x;if(solid(i))continue;if((x>0&&solid(i-1))||(x<w-1&&solid(i+1))||(y>0&&solid(i-w))||(y<h-1&&solid(i+w)))out.push(i);}
+ for(const i of out){d[i*4]=18;d[i*4+1]=13;d[i*4+2]=20;d[i*4+3]=255;}
+ g.putImageData(img,0,0);
+}
+function sprite(w,h,draw){const [c,g]=canvas(w+2,h+2);const r=(x,y,ww,hh,col)=>{g.fillStyle=col;g.fillRect(x+1,y+1,ww,hh);};draw(r);outline(g,w+2,h+2);return c;}
+
+// A kid in a bedsheet: eye holes, sneakers showing underneath.
+export const paintSheetGhost=()=>sprite(34,46,r=>{
+ const sheet='#e9eef0',shade='#c4ccd4',dark='#9aa6b0';
+ r(9,2,16,4,sheet);r(6,5,22,8,sheet);r(4,12,26,26,sheet);r(2,30,30,8,sheet);
+ r(24,8,4,30,shade);r(28,30,4,8,shade);for(let x=2;x<32;x+=6){r(x,38,4,2,sheet);r(x+3,38,3,1,dark);}
+ r(11,14,4,5,'#1a1418');r(19,14,4,5,'#1a1418');r(14,23,6,3,'#1a1418');
+ r(6,20,2,10,shade);r(26,22,2,8,dark);
+ r(9,40,7,4,'#c23b3b');r(18,40,7,4,'#c23b3b');r(9,43,7,2,'#f4f1e6');r(18,43,7,2,'#f4f1e6');
+});
+// A skeleton onesie with a skull mask.
+export const paintSkeleton=()=>sprite(30,64,r=>{
+ const suit='#1c1a24',bone='#e6e2d2',boneShade='#bdb7a4';
+ r(8,1,14,14,bone);r(7,4,16,9,bone);r(19,4,3,10,boneShade);r(10,7,4,4,'#1a1418');r(17,7,4,4,'#1a1418');r(14,11,2,2,'#1a1418');r(10,14,10,2,boneShade);for(let x=11;x<20;x+=2)r(x,14,1,2,'#1a1418');
+ r(13,16,4,3,suit);r(7,19,16,20,suit);r(3,20,5,18,suit);r(22,20,5,18,suit);r(9,39,5,20,suit);r(16,39,5,20,suit);
+ r(14,19,2,18,bone);for(let y=21;y<36;y+=4){r(9,y,12,2,bone);}r(10,37,10,3,boneShade);
+ r(4,22,3,6,bone);r(23,22,3,6,bone);r(4,30,3,7,bone);r(23,30,3,7,bone);r(3,38,5,4,bone);r(22,38,5,4,bone);
+ r(10,41,3,8,bone);r(17,41,3,8,bone);r(10,51,3,7,bone);r(17,51,3,7,bone);
+ r(8,59,7,4,'#2b2f3a');r(15,59,7,4,'#2b2f3a');
+});
+// A floating paper lantern (đèn lồng) with a face and a ragged tail.
+export const paintLanternGhost=()=>sprite(30,44,r=>{
+ const red='#c23b3b',redDark='#8e2b33',gold='#e7c083',glow='#ffe9a8';
+ r(11,0,8,3,gold);r(14,3,2,2,gold);r(7,5,16,3,gold);
+ r(4,8,22,22,red);r(2,12,26,14,red);r(4,8,22,2,redDark);r(4,28,22,2,redDark);for(const x of [9,15,21])r(x,9,1,20,redDark);
+ r(9,15,4,4,glow);r(17,15,4,4,glow);r(10,16,2,2,'#1a1418');r(18,16,2,2,'#1a1418');r(12,22,6,3,glow);r(13,22,4,1,'#1a1418');
+ r(7,30,16,3,gold);for(let i=0;i<5;i++)r(9+i*3,33,2,4+((i*7)%5)*2,i%2?gold:redDark);
+});
+// Mr. D at his snack stand: cap, glasses, staff vest.
+export const paintMrD=()=>sprite(34,70,r=>{
+ const skin='#e0b48f',skinShade='#c0916d',vest='#2f6b5a',shirt='#e9e4d6',cap='#2e3f63';
+ r(8,2,18,6,cap);r(6,7,24,3,cap);r(9,9,16,15,skin);r(23,10,2,13,skinShade);r(10,13,6,3,'#1a1418');r(18,13,6,3,'#1a1418');r(16,14,2,1,'#1a1418');r(11,14,4,1,'#9fd4e6');r(19,14,4,1,'#9fd4e6');r(12,19,10,2,'#3a2a22');
+ r(14,24,6,3,skinShade);r(7,27,20,22,shirt);r(9,27,6,22,vest);r(19,27,6,22,vest);r(16,31,2,2,'#e7c083');r(3,28,5,17,shirt);r(26,28,5,17,shirt);r(3,45,5,4,skin);r(26,45,5,4,skinShade);
+ r(9,49,7,15,'#2b2f3a');r(18,49,7,15,'#2b2f3a');r(8,64,8,4,'#3b2a22');r(18,64,8,4,'#3b2a22');
+});
+
+const TILE_THEMES={
+ cemetery:{floor:[C.grass,C.dirt,C.grassDark,C.grassLight],wall:C.stoneDark,face:C.stone,faceLight:C.stoneLight,cap:'#0d1a22'},
+ dining:{floor:['#22384c','#1d3144','#284159','#1a2c3d'],wall:'#142a2c',face:'#1f3d3a',faceLight:'#2a4f49',cap:'#0b1620'},
+ corridor:{floor:[K.plank,K.plankLight,K.plank,'#232b36'],wall:C.woodDark,face:K.paper,faceLight:K.paperLight,cap:'#120e0c'},
+};
+// Paints a whole dungeon floor (tiles of 32 world units = 16 px) once per floor.
+export function paintDungeonFloor(floor,mapW,mapH,tile){
+ const theme=TILE_THEMES[floor.theme.id],rand=rng(floor.seed),px=tile/2;
+ const [c,g]=canvas(mapW*px,mapH*px);g.fillStyle='#03070d';g.fillRect(0,0,c.width,c.height);
+ const at=(x,y)=>x>=0&&y>=0&&x<mapW&&y<mapH&&floor.tiles[y*mapW+x]===1;
+ for(let y=0;y<mapH;y++)for(let x=0;x<mapW;x++){
+  const ox=x*px,oy=y*px;
+  if(at(x,y)){
+   for(let yy=0;yy<px;yy+=2)for(let xx=0;xx<px;xx+=2){const r=rand();g.fillStyle=theme.floor[r<.55?0:r<.75?1:r<.92?2:3];g.fillRect(ox+xx,oy+yy,2,2);}
+   if(floor.theme.id==='dining'){g.fillStyle='#14243380';g.fillRect(ox,oy,px,1);g.fillRect(ox,oy,1,px);}
+   if(floor.theme.id==='corridor'){g.fillStyle=K.plankGap;g.fillRect(ox,oy+px-1,px,1);if((x+y)%3===0)g.fillRect(ox+((x*5)%px),oy,1,px);}
+   if(!at(x,y-1)){g.fillStyle='#0008';g.fillRect(ox,oy,px,3);}
+   continue;
+  }
+  const near=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[-1,1],[1,-1],[-1,-1]].some(([dx,dy])=>at(x+dx,y+dy));
+  if(!near)continue;
+  if(at(x,y+1)){
+   // Wall face seen from above: a short front face with texture, a cap on top.
+   g.fillStyle=theme.cap;g.fillRect(ox,oy,px,5);g.fillStyle=theme.face;g.fillRect(ox,oy+5,px,px-5);
+   g.fillStyle=theme.faceLight;
+   if(floor.theme.id==='cemetery'){g.fillRect(ox+((x%2)*8),oy+6,7,4);g.fillRect(ox+(((x+1)%2)*8),oy+11,7,4);}
+   else if(floor.theme.id==='dining'){g.fillRect(ox+3,oy+7,2,2);g.fillRect(ox+10,oy+9,2,2);g.fillStyle=C.wood;g.fillRect(ox,oy+12,px,4);}
+   else{g.fillRect(ox+6,oy+7,3,3);g.fillStyle=C.wood;g.fillRect(ox,oy+11,px,5);}
+  }else{g.fillStyle=theme.cap;g.fillRect(ox,oy,px,px);g.fillStyle=theme.wall;if(at(x-1,y))g.fillRect(ox,oy,2,px);if(at(x+1,y))g.fillRect(ox+px-2,oy,2,px);if(at(x,y-1))g.fillRect(ox,oy,px,2);}
+ }
+ // Decorations that do not block movement.
+ const {rect,disc}=pen(g);
+ for(let y=1;y<mapH-1;y++)for(let x=1;x<mapW-1;x++){
+  if(!at(x,y)||!at(x,y-1)||rand()>.035)continue;const wx=x*tile+8,wy=y*tile+10;
+  if(floor.theme.id==='cemetery'){if(rand()<.5){rect(wx,wy-10,14,18,C.stoneDark);rect(wx+2,wy-8,10,14,C.stone);rect(wx+6,wy-6,2,8,C.stoneEdge);}else{rect(wx,wy,10,2,C.bone);rect(wx-2,wy-2,2,6,C.bone);}}
+  else if(floor.theme.id==='dining'){rect(wx,wy,6,10,'#e9e4d6');rect(wx+2,wy-4,2,4,C.mint);for(let r=16;r>4;r-=6){g.globalAlpha=.06;disc(wx+3,wy,r,C.mint);}g.globalAlpha=1;}
+  else{rect(wx-6,wy,20,8,K.carpet);rect(wx-6,wy,20,2,K.brass);}
+ }
+ return c;
+}

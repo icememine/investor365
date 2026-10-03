@@ -1,8 +1,30 @@
 # Ánh Trăng — Ca đêm ở Công viên Ánh Trăng
 
-A haunted-house RPG / simulation prototype with three rooms and two roles:
-**visitor** (explore, hide, use the flashlight, find clues) and **employee** (place speakers,
-admit guests, scare them).
+A haunted-house game with three ways to play:
+
+- **Vào Hầm Ma** (main visitor mode): a Diablo-style action RPG on procedurally generated
+  dungeon floors. The ghosts are still park performers: you "fight" them by breaking their act.
+  Knock a performer's Composure to 0 and they crack up laughing, drop loot and leave. Running out
+  of Courage never kills you; Mr. D walks you back to the start of the floor.
+- **Làm nhân viên** (employee): run the scare show in one of the three hand-made rooms.
+- **Tham quan cổ điển** (classic visitor tour): the original stealth tour through the three rooms.
+
+## Hầm Ma
+
+- Floors: 64 × 44 tiles, rooms joined by corridors, stairs in the room furthest from the start.
+  Themes change every three floors (Nghĩa Địa, Bàn Tiệc, Hành Lang) and the third floor of each
+  has a boss who locks the stairs: Xác Sống (telegraphed slam, summons sheet ghosts), Ma Cà Rồng
+  (aimed dash, bat ring) and Ma Cổ Dài (drops her head where you stand). Difficulty scales with depth.
+- Performers: Ma Vải (melee), Bộ Xương (fast), Ma Đèn Lồng (ranged), plus "Ngôi Sao" elites.
+- Skills: Rọi đèn (free cone), Ném kẹo (projectile), Chuông đồng (stun, level 3), Đèn sân khấu
+  (big beam, level 5), Lướt (dash, untouchable). Potions: bánh bao (courage), pin AA (battery).
+- Loot: torch, coat, charm and shoes in four rarities with random affixes. Mr. D's stand on floors
+  1, 4, 7… buys gear and sells snacks.
+- Controls: left click to move / attack / pick up (hold to keep walking), right click or Q to throw
+  candy at the cursor, Space, R, F, Shift, E, 1 / 2, I for the bag. On phones the attack buttons
+  auto-aim at the nearest performer.
+
+## Hand-made rooms (employee and classic tour)
 
 1. **Phòng Nghĩa Địa** (cemetery): Xác Sống hunts by ear. Loose boards creak, running is loud,
    and a thrown coin pulls him away. Light only makes him flinch, then he follows it, and a lit
@@ -39,7 +61,9 @@ Phones get a joystick and action buttons.
 |---|---|
 | `src/rooms.mjs` | Room data: bounds, colliders, spots, ghost type, guest routes. Add rooms here. |
 | `src/sim.mjs` | Authoritative game state, pathfinding, interactions, ghost/guest AI, endings. No DOM. |
-| `src/art.mjs` | Procedural placeholder art: the cemetery (painted from its colliders) and the Xác Sống sprite. |
+| `src/art.mjs` | Procedural placeholder art: room backdrops, dungeon tiles, and the zombie, long-neck, sheet ghost, skeleton, lantern and Mr. D sprites. |
+| `src/dungeon.mjs` | Hầm Ma rules: floor generation, combat, bosses, loot, levels. No DOM. |
+| `src/dungeon-view.mjs` | Hầm Ma rendering (darkness, telegraphs, minimap, boss bar), pointer input, bag and shop HTML. |
 | `src/app.js` | Input, camera, Canvas rendering, HUD, dialogs. |
 | `src/index.html`, `src/style.css` | Layout, HUD, touch controls. |
 | `assets/world.png`, `assets/actors.png` | Room backdrop and the 4-sprite character atlas (`actors.atlas.json`; the crops are mirrored in `app.js`). |
@@ -51,6 +75,8 @@ Phones get a joystick and action buttons.
 ## Develop
 
 ```sh
-node --test tests/*.test.mjs        # simulation rule tests (Node 18+)
+node --test tests/*.test.mjs        # rule tests for both modes (Node 18+)
 python3 tools/build-standalone.py   # rebuild simulator.html after changing src/ or assets/
 ```
+
+Open the page with `?debug` to expose the running game as `window.anhTrangDebug` for testing.

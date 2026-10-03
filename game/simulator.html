@@ -5,11 +5,21 @@
 @media(pointer:coarse),(max-width:900px){#toolbar{display:none}#touch-controls{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:17px max(14px,env(safe-area-inset-right)) 14px max(14px,env(safe-area-inset-left));min-height:196px;background:linear-gradient(#0a1d2b,#061421);border-top:1px solid #28495b}#game{position:relative}nav button{min-width:42px;min-height:42px}#help{min-height:38px}footer{padding-bottom:max(10px,env(safe-area-inset-bottom))}.world-wrap{height:clamp(300px,46svh,520px);aspect-ratio:auto}#speech{bottom:10px;font-size:12px}#nearby{bottom:72px;font-size:11px}#objective{font-size:12px}.objective{min-height:57px;padding:8px 12px}body:has(#start:not([hidden])) #touch-controls{display:none}body:has(#start:not([hidden])) .world-wrap{height:75svh;min-height:445px}body:has(#start:not([hidden])) .objective{display:none}body:has(#end:not([hidden])) #touch-controls{opacity:.3;pointer-events:none}.brand small{font-size:9px}.res{font-size:10px}.res strong{font-size:11px}}
 @media(max-width:370px){#joystick{width:113px;height:113px}#stick{width:51px;height:51px}.touch-actions{width:150px}.touch-middle button{width:46px;height:46px}.main-round{width:75px;height:75px}.small-round{width:55px;height:55px}.use-round{width:65px;height:65px;right:20px}#touch-controls{gap:3px;padding-left:10px;padding-right:10px}.res{min-width:41px}header{gap:6px}.brand span{font-size:10px}}
 @media(pointer:coarse) and (orientation:landscape) and (max-height:600px){body{padding:0}#game{width:100%;height:100dvh;border:0}header{height:47px;padding:4px max(16px,env(safe-area-inset-left))}.world-wrap{height:calc(100dvh - 90px);min-height:0}.objective{height:43px;min-height:43px;padding:4px 17px}footer{display:none}#touch-controls{position:absolute;left:0;right:0;bottom:53px;z-index:4;min-height:0;height:130px;background:none;border:0;padding:0 max(25px,env(safe-area-inset-right)) 0 max(25px,env(safe-area-inset-left));pointer-events:none}#touch-controls button,#joystick{pointer-events:auto}#joystick{width:110px;height:110px;background-color:#0b2236a0}#stick{width:48px;height:48px}.touch-caption{display:none}.touch-actions{height:130px;width:158px}.main-round{width:74px;height:74px}.small-round{width:54px;height:54px;top:7px}.use-round{width:60px;height:60px;right:37px}.touch-middle{margin-right:auto;margin-left:17px;gap:7px}.touch-middle button{width:48px;height:48px}#speech{max-width:50%;font-size:11px;bottom:10px}#nearby{bottom:62px}body:has(#start:not([hidden])) .world-wrap{height:calc(100dvh - 47px);min-height:0}.intro{padding:10px 6%}h1{font-size:25px;line-height:1.25;margin:7px 0}.intro p{font-size:11px;margin:6px 0}.roles{margin:9px 0}.roles button{padding:8px 15px}.roles strong{font-size:18px}.start-help{display:none}.endcard{max-width:690px;padding:10px}.endcard h2{font-size:22px;margin:4px}.endcard p{font-size:12px;margin:8px}.endstats{margin:8px}.endcard small{font-size:9px}}
-</style></head><body><main id="game"><header><div class="brand">☾ <span>ÁNH TRĂNG<small>CA ĐÊM · 2001</small></span></div><div id="resources"></div><nav><button id="journal">Nhật ký <kbd>J</kbd></button><button id="pause" aria-label="Tạm dừng">Ⅱ</button></nav></header><div class="world-wrap"><canvas id="world" width="1600" height="899" aria-label="Bản đồ nhà ma có thể di chuyển. Dùng WASD hoặc phím mũi tên; E tương tác; Space dùng hành động." tabindex="0"></canvas><div class="topline"><span id="roomName">CÔNG VIÊN ÁNH TRĂNG</span><span id="mode">RPG / MÔ PHỎNG</span></div><div id="speech" aria-live="polite"></div><div id="nearby"></div><div id="loading">Đang mở cửa công viên…</div><div id="start" hidden><div class="intro"><span class="eyebrow">ĐÊM 01 · BẢN CHƠI THỬ BA PHÒNG</span><h1>Ca đêm ở<br><em>Công viên Ánh Trăng</em></h1><p>Tự bước vào. Tự tìm đường.<br>Hoặc trở thành người đứng sau những tiếng hét.</p><div class="roles"><button data-role="visitor"><small>KHÁM PHÁ · TRỐN · ĐIỀU TRA</small><strong>Làm khách</strong><span>“Để xem có gì mà sợ.”</span></button><button data-role="employee"><small>DÀN CẢNH · HÙ DỌA · VẬN HÀNH</small><strong>Làm nhân viên</strong><span>“Tối nay, mình là người dọa.”</span></button></div><div class="rooms" role="group" aria-label="Phòng bắt đầu"><span>Bắt đầu ở</span><button data-room="cemetery" class="active" aria-pressed="true">Nghĩa Địa</button><button data-room="dining" aria-pressed="false">Bàn Tiệc</button><button data-room="corridor" aria-pressed="false">Hành Lang</button></div><p class="start-help">Kéo cần trái để đi · Nút bên phải để dùng kỹ năng<br>Chạm đồ vật để tự đi tới · Máy tính hỗ trợ WASD</p></div></div><div id="end" hidden></div></div><div class="objective"><span class="label">MỤC TIÊU</span><span id="objective">Chọn vai để bắt đầu.</span><button id="help">Cách chơi</button></div><section id="touch-controls" aria-label="Điều khiển cảm ứng">
+
+/* Hầm Ma: start-screen link, item cards, and the 2-column touch grid for extra skills. */
+.rooms .classic{margin-left:auto;background:none;border-color:transparent;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:10px 0}
+.item{border:1px solid var(--line);border-left:3px solid var(--rarity,var(--line));background:#0e2233;padding:8px 10px;display:flex;flex-direction:column;gap:2px;font-size:12px;color:#bcd1dc;min-width:0}
+.item b{color:var(--rarity,#e6e9e4);font-weight:600;font-size:13px}.item small{color:var(--muted);font-size:10px}.item.empty{opacity:.45;justify-content:center;text-align:center}
+.item-actions{display:flex;gap:6px;margin-top:6px}.item-actions button{flex:1;padding:4px 6px;font-size:11px}
+dialog h3{font-size:14px;font-weight:500;color:var(--gold);margin:16px 0 4px}.stats-line{font-size:12px!important}
+.dungeon .touch-middle{display:grid;grid-template-columns:repeat(2,48px);gap:8px}.dungeon .touch-middle button{width:48px;height:48px;font-size:18px}.dungeon .touch-middle small{font-size:8px}
+@media(pointer:coarse),(max-width:900px){.dungeon #joystick{width:108px;height:108px}.dungeon #stick{width:46px;height:46px}.dungeon .touch-actions{width:150px}.dungeon .main-round{width:72px;height:72px}.dungeon .small-round{width:54px;height:54px}.dungeon .use-round{width:60px;height:60px;right:28px}.dungeon .touch-middle{grid-template-columns:repeat(2,42px);gap:6px}.dungeon .touch-middle button{width:42px;height:42px;font-size:16px}.dungeon #touch-controls{gap:4px;padding-left:10px;padding-right:10px}}
+</style></head><body><main id="game"><header><div class="brand">☾ <span>ÁNH TRĂNG<small>CA ĐÊM · 2001</small></span></div><div id="resources"></div><nav><button id="journal">Nhật ký <kbd>J</kbd></button><button id="pause" aria-label="Tạm dừng">Ⅱ</button></nav></header><div class="world-wrap"><canvas id="world" width="1600" height="899" aria-label="Bản đồ nhà ma có thể di chuyển. Dùng WASD hoặc phím mũi tên; E tương tác; Space dùng hành động." tabindex="0"></canvas><div class="topline"><span id="roomName">CÔNG VIÊN ÁNH TRĂNG</span><span id="mode">RPG / MÔ PHỎNG</span></div><div id="speech" aria-live="polite"></div><div id="nearby"></div><div id="loading">Đang mở cửa công viên…</div><div id="start" hidden><div class="intro"><span class="eyebrow">ĐÊM 01 · HẦM MA & CA DIỄN</span><h1>Ca đêm ở<br><em>Công viên Ánh Trăng</em></h1><p>Tự bước vào. Tự tìm đường.<br>Hoặc trở thành người đứng sau những tiếng hét.</p><div class="roles"><button data-role="dungeon"><small>KHÁM PHÁ · HẠ MÀN · NHẶT ĐỒ</small><strong>Vào Hầm Ma</strong><span>“Để xem có gì mà sợ.”</span></button><button data-role="employee"><small>DÀN CẢNH · HÙ DỌA · VẬN HÀNH</small><strong>Làm nhân viên</strong><span>“Tối nay, mình là người dọa.”</span></button></div><div class="rooms" role="group" aria-label="Phòng bắt đầu"><span>Phòng</span><button data-room="cemetery" class="active" aria-pressed="true">Nghĩa Địa</button><button data-room="dining" aria-pressed="false">Bàn Tiệc</button><button data-room="corridor" aria-pressed="false">Hành Lang</button><button data-role="visitor" class="classic">Tham quan cổ điển ›</button></div><p class="start-help">Kéo cần trái để đi · Nút bên phải để dùng kỹ năng<br>Chạm đồ vật để tự đi tới · Máy tính hỗ trợ WASD</p></div></div><div id="end" hidden></div></div><div class="objective"><span class="label">MỤC TIÊU</span><span id="objective">Chọn vai để bắt đầu.</span><button id="help">Cách chơi</button></div><section id="touch-controls" aria-label="Điều khiển cảm ứng">
  <div class="joystick-area"><div id="joystick" role="group" aria-label="Cần điều khiển di chuyển"><span class="joystick-arrows">✦</span><div id="stick"></div></div><span class="touch-caption">DI CHUYỂN</span></div>
- <div class="touch-middle"><button id="touchRun" aria-label="Giữ để chạy">»<small>Giữ chạy</small></button><button id="touchPlace" hidden>＋<small>Đặt loa</small></button></div>
+ <div class="touch-middle"><button id="touchRun" aria-label="Giữ để chạy">»<small>Giữ chạy</small></button><button id="touchPlace" hidden>＋<small>Đặt loa</small></button><button id="touchUlt" hidden>✺<small id="touchUltLabel">Sân khấu</small></button><button id="touchBread" hidden>◒<small id="touchBreadLabel">Bánh</small></button><button id="touchBattery" hidden>▮<small id="touchBatteryLabel">Pin</small></button></div>
  <div class="touch-actions"><button id="touchSecondary" class="round small-round"><span>◌</span><small id="touchSecondaryLabel">Nấp</small></button><button id="touchPrimary" class="round main-round"><span id="touchPrimaryIcon">☀</span><small id="touchPrimaryLabel">Đèn pin</small></button><button id="touchInteract" class="round use-round"><span>✋</span><small id="touchInteractLabel">Sử dụng</small></button></div>
- </section><div id="toolbar"><div class="move-help"><strong>Tự do di chuyển</strong><span>WASD / ↑ ↓ ← → / chạm sàn</span></div><div class="actions"><button id="interact"><kbd>E</kbd><span>Tương tác</span></button><button id="primary"><kbd>Space</kbd><span id="primaryLabel">Dùng kỹ năng</span></button><button id="secondary"><kbd>Q</kbd><span id="secondaryLabel">Hành động phụ</span></button><button id="place"><kbd>P</kbd><span>Đặt loa</span></button><button id="run"><kbd>Shift</kbd><span>Chạy</span></button></div></div><footer><span id="status">Nhân vật di chuyển thật · Tương tác khi ở gần · NPC hoạt động theo thời gian</span><button id="stop" hidden>Dừng show</button></footer></main><dialog id="modal"><button id="closeModal" aria-label="Đóng">×</button><div id="modalContent"></div></dialog><script type="module">
+ </section><div id="toolbar"><div class="move-help"><strong>Tự do di chuyển</strong><span>WASD / ↑ ↓ ← → / chạm sàn</span></div><div class="actions"><button id="interact"><kbd>E</kbd><span>Tương tác</span></button><button id="primary"><kbd>Space</kbd><span id="primaryLabel">Dùng kỹ năng</span></button><button id="secondary"><kbd>Q</kbd><span id="secondaryLabel">Hành động phụ</span></button><button id="place"><kbd>P</kbd><span>Đặt loa</span></button><button id="run"><kbd>Shift</kbd><span>Chạy</span></button><button id="ult" hidden><kbd>F</kbd><span id="ultLabel">Đèn sân khấu</span></button><button id="bread" hidden><kbd>1</kbd><span id="breadLabel">Bánh bao</span></button><button id="batt" hidden><kbd>2</kbd><span id="battLabel">Pin AA</span></button></div></div><footer><span id="status">Nhân vật di chuyển thật · Tương tác khi ở gần · NPC hoạt động theo thời gian</span><button id="stop" hidden>Dừng show</button></footer></main><dialog id="modal"><button id="closeModal" aria-label="Đóng">×</button><div id="modalContent"></div></dialog><script type="module">
 // ---- rooms.mjs
 const {ROOMS,ROOM_ORDER}=(()=>{
 // Room data: bounds, colliders, interaction spots, ghost and guest behaviour per room.
@@ -491,7 +501,7 @@ class Simulation{
 
 return{W,H,EVIDENCE,FOUND,distance,passable,visible,findPath,Simulation};})();
 // ---- art.mjs
-const {paintLongNeck,paintRoom,paintZombie}=(()=>{
+const {paintLongNeck,paintRoom,paintZombie,paintSheetGhost,paintSkeleton,paintLanternGhost,paintMrD,paintDungeonFloor}=(()=>{
 // Procedural pixel art for rooms without hand-made assets yet (placeholder until art production).
 // Everything is painted once into offscreen canvases from the same room data the simulation
 // collides against, so what you see always matches where you can walk.
@@ -745,9 +755,626 @@ function paintZombie(){
  return c;
 }
 
-return{paintLongNeck,paintRoom,paintZombie};})();
+// ---- Hầm Ma: minor performers, Mr. D, and dungeon tiles.
+
+// Shared outline pass for hand-placed pixel sprites.
+function outline(g,w,h){
+ const img=g.getImageData(0,0,w,h),d=img.data,solid=i=>d[i*4+3]>0,out=[];
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x;if(solid(i))continue;if((x>0&&solid(i-1))||(x<w-1&&solid(i+1))||(y>0&&solid(i-w))||(y<h-1&&solid(i+w)))out.push(i);}
+ for(const i of out){d[i*4]=18;d[i*4+1]=13;d[i*4+2]=20;d[i*4+3]=255;}
+ g.putImageData(img,0,0);
+}
+function sprite(w,h,draw){const [c,g]=canvas(w+2,h+2);const r=(x,y,ww,hh,col)=>{g.fillStyle=col;g.fillRect(x+1,y+1,ww,hh);};draw(r);outline(g,w+2,h+2);return c;}
+
+// A kid in a bedsheet: eye holes, sneakers showing underneath.
+const paintSheetGhost=()=>sprite(34,46,r=>{
+ const sheet='#e9eef0',shade='#c4ccd4',dark='#9aa6b0';
+ r(9,2,16,4,sheet);r(6,5,22,8,sheet);r(4,12,26,26,sheet);r(2,30,30,8,sheet);
+ r(24,8,4,30,shade);r(28,30,4,8,shade);for(let x=2;x<32;x+=6){r(x,38,4,2,sheet);r(x+3,38,3,1,dark);}
+ r(11,14,4,5,'#1a1418');r(19,14,4,5,'#1a1418');r(14,23,6,3,'#1a1418');
+ r(6,20,2,10,shade);r(26,22,2,8,dark);
+ r(9,40,7,4,'#c23b3b');r(18,40,7,4,'#c23b3b');r(9,43,7,2,'#f4f1e6');r(18,43,7,2,'#f4f1e6');
+});
+// A skeleton onesie with a skull mask.
+const paintSkeleton=()=>sprite(30,64,r=>{
+ const suit='#1c1a24',bone='#e6e2d2',boneShade='#bdb7a4';
+ r(8,1,14,14,bone);r(7,4,16,9,bone);r(19,4,3,10,boneShade);r(10,7,4,4,'#1a1418');r(17,7,4,4,'#1a1418');r(14,11,2,2,'#1a1418');r(10,14,10,2,boneShade);for(let x=11;x<20;x+=2)r(x,14,1,2,'#1a1418');
+ r(13,16,4,3,suit);r(7,19,16,20,suit);r(3,20,5,18,suit);r(22,20,5,18,suit);r(9,39,5,20,suit);r(16,39,5,20,suit);
+ r(14,19,2,18,bone);for(let y=21;y<36;y+=4){r(9,y,12,2,bone);}r(10,37,10,3,boneShade);
+ r(4,22,3,6,bone);r(23,22,3,6,bone);r(4,30,3,7,bone);r(23,30,3,7,bone);r(3,38,5,4,bone);r(22,38,5,4,bone);
+ r(10,41,3,8,bone);r(17,41,3,8,bone);r(10,51,3,7,bone);r(17,51,3,7,bone);
+ r(8,59,7,4,'#2b2f3a');r(15,59,7,4,'#2b2f3a');
+});
+// A floating paper lantern (đèn lồng) with a face and a ragged tail.
+const paintLanternGhost=()=>sprite(30,44,r=>{
+ const red='#c23b3b',redDark='#8e2b33',gold='#e7c083',glow='#ffe9a8';
+ r(11,0,8,3,gold);r(14,3,2,2,gold);r(7,5,16,3,gold);
+ r(4,8,22,22,red);r(2,12,26,14,red);r(4,8,22,2,redDark);r(4,28,22,2,redDark);for(const x of [9,15,21])r(x,9,1,20,redDark);
+ r(9,15,4,4,glow);r(17,15,4,4,glow);r(10,16,2,2,'#1a1418');r(18,16,2,2,'#1a1418');r(12,22,6,3,glow);r(13,22,4,1,'#1a1418');
+ r(7,30,16,3,gold);for(let i=0;i<5;i++)r(9+i*3,33,2,4+((i*7)%5)*2,i%2?gold:redDark);
+});
+// Mr. D at his snack stand: cap, glasses, staff vest.
+const paintMrD=()=>sprite(34,70,r=>{
+ const skin='#e0b48f',skinShade='#c0916d',vest='#2f6b5a',shirt='#e9e4d6',cap='#2e3f63';
+ r(8,2,18,6,cap);r(6,7,24,3,cap);r(9,9,16,15,skin);r(23,10,2,13,skinShade);r(10,13,6,3,'#1a1418');r(18,13,6,3,'#1a1418');r(16,14,2,1,'#1a1418');r(11,14,4,1,'#9fd4e6');r(19,14,4,1,'#9fd4e6');r(12,19,10,2,'#3a2a22');
+ r(14,24,6,3,skinShade);r(7,27,20,22,shirt);r(9,27,6,22,vest);r(19,27,6,22,vest);r(16,31,2,2,'#e7c083');r(3,28,5,17,shirt);r(26,28,5,17,shirt);r(3,45,5,4,skin);r(26,45,5,4,skinShade);
+ r(9,49,7,15,'#2b2f3a');r(18,49,7,15,'#2b2f3a');r(8,64,8,4,'#3b2a22');r(18,64,8,4,'#3b2a22');
+});
+
+const TILE_THEMES={
+ cemetery:{floor:[C.grass,C.dirt,C.grassDark,C.grassLight],wall:C.stoneDark,face:C.stone,faceLight:C.stoneLight,cap:'#0d1a22'},
+ dining:{floor:['#22384c','#1d3144','#284159','#1a2c3d'],wall:'#142a2c',face:'#1f3d3a',faceLight:'#2a4f49',cap:'#0b1620'},
+ corridor:{floor:[K.plank,K.plankLight,K.plank,'#232b36'],wall:C.woodDark,face:K.paper,faceLight:K.paperLight,cap:'#120e0c'},
+};
+// Paints a whole dungeon floor (tiles of 32 world units = 16 px) once per floor.
+function paintDungeonFloor(floor,mapW,mapH,tile){
+ const theme=TILE_THEMES[floor.theme.id],rand=rng(floor.seed),px=tile/2;
+ const [c,g]=canvas(mapW*px,mapH*px);g.fillStyle='#03070d';g.fillRect(0,0,c.width,c.height);
+ const at=(x,y)=>x>=0&&y>=0&&x<mapW&&y<mapH&&floor.tiles[y*mapW+x]===1;
+ for(let y=0;y<mapH;y++)for(let x=0;x<mapW;x++){
+  const ox=x*px,oy=y*px;
+  if(at(x,y)){
+   for(let yy=0;yy<px;yy+=2)for(let xx=0;xx<px;xx+=2){const r=rand();g.fillStyle=theme.floor[r<.55?0:r<.75?1:r<.92?2:3];g.fillRect(ox+xx,oy+yy,2,2);}
+   if(floor.theme.id==='dining'){g.fillStyle='#14243380';g.fillRect(ox,oy,px,1);g.fillRect(ox,oy,1,px);}
+   if(floor.theme.id==='corridor'){g.fillStyle=K.plankGap;g.fillRect(ox,oy+px-1,px,1);if((x+y)%3===0)g.fillRect(ox+((x*5)%px),oy,1,px);}
+   if(!at(x,y-1)){g.fillStyle='#0008';g.fillRect(ox,oy,px,3);}
+   continue;
+  }
+  const near=[[0,1],[0,-1],[1,0],[-1,0],[1,1],[-1,1],[1,-1],[-1,-1]].some(([dx,dy])=>at(x+dx,y+dy));
+  if(!near)continue;
+  if(at(x,y+1)){
+   // Wall face seen from above: a short front face with texture, a cap on top.
+   g.fillStyle=theme.cap;g.fillRect(ox,oy,px,5);g.fillStyle=theme.face;g.fillRect(ox,oy+5,px,px-5);
+   g.fillStyle=theme.faceLight;
+   if(floor.theme.id==='cemetery'){g.fillRect(ox+((x%2)*8),oy+6,7,4);g.fillRect(ox+(((x+1)%2)*8),oy+11,7,4);}
+   else if(floor.theme.id==='dining'){g.fillRect(ox+3,oy+7,2,2);g.fillRect(ox+10,oy+9,2,2);g.fillStyle=C.wood;g.fillRect(ox,oy+12,px,4);}
+   else{g.fillRect(ox+6,oy+7,3,3);g.fillStyle=C.wood;g.fillRect(ox,oy+11,px,5);}
+  }else{g.fillStyle=theme.cap;g.fillRect(ox,oy,px,px);g.fillStyle=theme.wall;if(at(x-1,y))g.fillRect(ox,oy,2,px);if(at(x+1,y))g.fillRect(ox+px-2,oy,2,px);if(at(x,y-1))g.fillRect(ox,oy,px,2);}
+ }
+ // Decorations that do not block movement.
+ const {rect,disc}=pen(g);
+ for(let y=1;y<mapH-1;y++)for(let x=1;x<mapW-1;x++){
+  if(!at(x,y)||!at(x,y-1)||rand()>.035)continue;const wx=x*tile+8,wy=y*tile+10;
+  if(floor.theme.id==='cemetery'){if(rand()<.5){rect(wx,wy-10,14,18,C.stoneDark);rect(wx+2,wy-8,10,14,C.stone);rect(wx+6,wy-6,2,8,C.stoneEdge);}else{rect(wx,wy,10,2,C.bone);rect(wx-2,wy-2,2,6,C.bone);}}
+  else if(floor.theme.id==='dining'){rect(wx,wy,6,10,'#e9e4d6');rect(wx+2,wy-4,2,4,C.mint);for(let r=16;r>4;r-=6){g.globalAlpha=.06;disc(wx+3,wy,r,C.mint);}g.globalAlpha=1;}
+  else{rect(wx-6,wy,20,8,K.carpet);rect(wx-6,wy,20,2,K.brass);}
+ }
+ return c;
+}
+
+return{paintLongNeck,paintRoom,paintZombie,paintSheetGhost,paintSkeleton,paintLanternGhost,paintMrD,paintDungeonFloor};})();
+// ---- dungeon.mjs
+const {TILE,MAP_W,MAP_H,rng,THEMES,themeFor,isBossFloor,generateFloor,isFloor,floorPassable,lineOfSight,flowField,ENEMIES,RARITY,SLOTS,makeItem,describeBase,SKILLS,xpForLevel,Dungeon}=(()=>{
+// Hầm Ma: the action-RPG visitor mode. Procedural floors, packs of ghost performers, loot, levels.
+// "Fighting" means breaking a performer's act: knock their Composure to 0 and they crack up laughing,
+// drop what they carry and leave. Running out of Courage never kills you: Mr. D walks you back to the
+// start of the floor. No browser dependencies, so the rules can be tested headless.
+
+const TILE=32;
+const MAP_W=64;
+const MAP_H=44;
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const angleDiff=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+// Every three floors the theme changes and the third floor of each theme has its boss.
+const THEMES=[
+ {id:'cemetery',name:'Nghĩa Địa',boss:'zombie'},
+ {id:'dining',name:'Bàn Tiệc',boss:'vampire'},
+ {id:'corridor',name:'Hành Lang',boss:'neck'},
+];
+const themeFor=depth=>THEMES[Math.floor((depth-1)/3)%THEMES.length];
+const isBossFloor=depth=>depth%3===0;
+
+// ---- Floor generation: rooms on a tile grid joined by two-tile-wide corridors.
+function generateFloor(depth,seed){
+ const rand=rng(seed),tiles=new Uint8Array(MAP_W*MAP_H),rooms=[];
+ const ri=(a,b)=>a+Math.floor(rand()*(b-a+1));
+ for(let tries=0;tries<300&&rooms.length<13;tries++){
+  const w=ri(7,13),h=ri(6,10),x=ri(2,MAP_W-w-3),y=ri(2,MAP_H-h-3);
+  if(rooms.some(r=>x<r.x+r.w+3&&x+w+3>r.x&&y<r.y+r.h+3&&y+h+3>r.y))continue;
+  rooms.push({x,y,w,h,cx:x+Math.floor(w/2),cy:y+Math.floor(h/2)});
+ }
+ const carve=(x,y)=>{if(x>0&&y>0&&x<MAP_W-1&&y<MAP_H-1)tiles[y*MAP_W+x]=1;};
+ for(const r of rooms)for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++)carve(x,y);
+ const corridor=(a,b)=>{
+  const horizontalFirst=rand()<.5;let x=a.cx,y=a.cy;
+  const stepX=()=>{while(x!==b.cx){carve(x,y);carve(x,y+1);x+=Math.sign(b.cx-x);}};
+  const stepY=()=>{while(y!==b.cy){carve(x,y);carve(x+1,y);y+=Math.sign(b.cy-y);}};
+  if(horizontalFirst){stepX();stepY();}else{stepY();stepX();}carve(x,y);carve(x+1,y+1);
+ };
+ // Minimum spanning tree over room centres, plus a couple of loops so floors are not pure trees.
+ const linked=[0],edges=[];
+ while(linked.length<rooms.length){let best=null;for(const i of linked)for(let j=0;j<rooms.length;j++){if(linked.includes(j))continue;const d=Math.hypot(rooms[i].cx-rooms[j].cx,rooms[i].cy-rooms[j].cy);if(!best||d<best.d)best={i,j,d};}linked.push(best.j);edges.push([best.i,best.j]);}
+ for(let k=0;k<2&&rooms.length>3;k++){const i=ri(0,rooms.length-1),j=ri(0,rooms.length-1);if(i!==j)edges.push([i,j]);}
+ for(const [i,j] of edges)corridor(rooms[i],rooms[j]);
+ const floor={depth,seed,tiles,rooms,theme:themeFor(depth)};
+ // The stairs go in the room furthest (by walking distance) from the start room.
+ const field=flowField(floor,rooms[0].cx,rooms[0].cy);
+ let far=1;for(let i=1;i<rooms.length;i++)if(field[rooms[i].cy*MAP_W+rooms[i].cx]>field[rooms[far].cy*MAP_W+rooms[far].cx])far=i;
+ floor.stairsRoom=far;
+ const center=r=>({x:(r.cx+.5)*TILE,y:(r.cy+.5)*TILE});
+ floor.start=center(rooms[0]);floor.exitUp={x:floor.start.x-48,y:floor.start.y-40};floor.stairs=center(rooms[far]);
+ return floor;
+}
+
+const isFloor=(f,tx,ty)=>tx>=0&&ty>=0&&tx<MAP_W&&ty<MAP_H&&f.tiles[ty*MAP_W+tx]===1;
+function floorPassable(f,x,y,r=11){for(let ty=Math.floor((y-r)/TILE);ty<=Math.floor((y+r)/TILE);ty++)for(let tx=Math.floor((x-r)/TILE);tx<=Math.floor((x+r)/TILE);tx++)if(!isFloor(f,tx,ty))return false;return true;}
+function lineOfSight(f,a,b){const n=Math.ceil(dist(a,b)/10);for(let i=1;i<n;i++){const x=a.x+(b.x-a.x)*i/n,y=a.y+(b.y-a.y)*i/n;if(!isFloor(f,Math.floor(x/TILE),Math.floor(y/TILE)))return false;}return true;}
+// Breadth-first walking distance (in tiles) from one tile to every floor tile; -1 where unreachable.
+function flowField(f,sx,sy){
+ const d=new Int16Array(MAP_W*MAP_H).fill(-1),q=[sy*MAP_W+sx];d[q[0]]=0;
+ for(let i=0;i<q.length;i++){const c=q[i],x=c%MAP_W,y=(c-x)/MAP_W;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy,n=ny*MAP_W+nx;if(isFloor(f,nx,ny)&&d[n]<0){d[n]=d[c]+1;q.push(n);}}}
+ return d;
+}
+function moveCircle(f,a,dx,dy){let moved=false;if(dx&&floorPassable(f,a.x+dx,a.y,a.r)){a.x+=dx;moved=true;}if(dy&&floorPassable(f,a.x,a.y+dy,a.r)){a.y+=dy;moved=true;}return moved;}
+
+// ---- Performers
+const ENEMIES={
+ sheet:{name:'Ma Vải',hp:30,dmg:6,speed:72,range:34,cd:1.3,windup:.45,xp:8,r:12,from:1},
+ skeleton:{name:'Bộ Xương',hp:18,dmg:5,speed:118,range:30,cd:.9,windup:.3,xp:7,r:11,from:2},
+ lantern:{name:'Ma Đèn Lồng',hp:22,dmg:7,speed:62,range:200,cd:2.2,windup:.6,xp:10,r:12,from:2,ranged:true},
+ zombie:{name:'Xác Sống',hp:340,dmg:14,speed:55,range:85,cd:2.4,windup:.9,xp:120,r:16,boss:true},
+ vampire:{name:'Ma Cà Rồng',hp:380,dmg:12,speed:88,range:40,cd:1.4,windup:.45,xp:140,r:15,boss:true},
+ neck:{name:'Ma Cổ Dài',hp:340,dmg:10,speed:70,range:0,cd:2.6,windup:1,xp:150,r:15,boss:true},
+};
+const scaleFor=depth=>1+(depth-1)*.22;
+
+// ---- Loot
+const RARITY=[
+ {id:'common',name:'Thường',affixes:0,weight:60},
+ {id:'magic',name:'Xịn',affixes:2,weight:28},
+ {id:'rare',name:'Hiếm',affixes:3,weight:10},
+ {id:'legendary',name:'Huyền thoại',affixes:4,weight:2},
+];
+const SLOTS={
+ torch:{label:'Đèn',bases:['Đèn pin','Đèn đội đầu','Đèn bão']},
+ coat:{label:'Áo',bases:['Áo khoác','Áo mưa','Áo hoodie']},
+ charm:{label:'Bùa',bases:['Bùa hộ mệnh','Móc khóa','Huy hiệu']},
+ shoes:{label:'Giày',bases:['Giày bata','Dép tổ ong','Giày thể thao']},
+};
+const AFFIXES={
+ dmgPct:{label:v=>`+${v}% sát thương`,roll:(r,l)=>Math.round(5+r()*8+l),word:'Chói Lóa'},
+ crit:{label:v=>`+${v}% chí mạng`,roll:(r)=>Math.round(2+r()*5),word:'Sắc Lẹm'},
+ courage:{label:v=>`+${v} can đảm tối đa`,roll:(r,l)=>Math.round(8+r()*12+l*2),word:'Gan Dạ'},
+ armor:{label:v=>`+${v} giáp`,roll:(r,l)=>Math.round(4+r()*8+l*1.5),word:'Dày Cộm'},
+ battery:{label:v=>`+${v} pin tối đa`,roll:(r,l)=>Math.round(8+r()*12+l),word:'Bền Bỉ'},
+ regen:{label:v=>`+${v} pin/giây`,roll:(r)=>Math.round(1+r()*2),word:'Sạc Nhanh'},
+ speed:{label:v=>`+${v}% tốc chạy`,roll:(r)=>Math.round(3+r()*5),word:'Nhanh Nhẹn'},
+ gold:{label:v=>`+${v}% xu nhặt được`,roll:(r)=>Math.round(10+r()*20),word:'Hên Xui'},
+ onBreak:{label:v=>`+${v} can đảm mỗi lần hạ màn`,roll:(r)=>Math.round(2+r()*3),word:'Lạc Quan'},
+};
+const LEGENDARY_NAMES={torch:'Đèn pin của Mr. D',coat:'Áo mưa Bơ để quên',charm:'Kẹp tóc của Na',shoes:'Dép tổ ong thần tốc'};
+const BASE_STAT={torch:l=>({dmg:4+Math.round(l*1.6)}),coat:l=>({armor:5+l*3}),charm:l=>({battery:10+l*2}),shoes:l=>({speed:4+Math.min(10,Math.floor(l/2))})};
+
+function makeItem(rand,ilvl,bias=0,slot=null){
+ const slots=Object.keys(SLOTS);slot=slot||slots[Math.floor(rand()*slots.length)];
+ let rarity=RARITY[0];
+ // Weighted pick, shifted toward better rarities by `bias` (elites and bosses).
+ const weights=RARITY.map((r,i)=>r.weight*(i?1+bias*i:Math.max(.2,1-bias)));let pick=rand()*weights.reduce((a,b)=>a+b,0);
+ for(let i=0;i<RARITY.length;i++){pick-=weights[i];if(pick<=0){rarity=RARITY[i];break;}}
+ const base=BASE_STAT[slot](ilvl),stats={...base},pool=Object.keys(AFFIXES),affixes=[];
+ for(let i=0;i<rarity.affixes;i++){const k=pool.splice(Math.floor(rand()*pool.length),1)[0];const v=AFFIXES[k].roll(rand,ilvl);stats[k]=(stats[k]||0)+v;affixes.push([k,v]);}
+ const baseName=SLOTS[slot].bases[Math.floor(rand()*SLOTS[slot].bases.length)];
+ const name=rarity.id==='legendary'?LEGENDARY_NAMES[slot]:affixes.length?`${baseName} ${AFFIXES[affixes[0][0]].word}`:baseName;
+ const value=Math.round((6+ilvl*3)*(1+RARITY.indexOf(rarity)*1.5));
+ return{slot,rarity:rarity.id,rarityName:rarity.name,name,ilvl,stats,base,affixes:affixes.map(([k,v])=>AFFIXES[k].label(v)),value};
+}
+const describeBase=item=>item.slot==='torch'?`${item.base.dmg} sát thương`:item.slot==='coat'?`${item.base.armor} giáp`:item.slot==='charm'?`+${item.base.battery} pin tối đa`:`+${item.base.speed}% tốc chạy`;
+
+// ---- Skills
+const SKILLS={
+ flash:{name:'Rọi đèn',cost:0,cd:.5,level:1},
+ candy:{name:'Ném kẹo',cost:8,cd:.35,level:1},
+ bell:{name:'Chuông đồng',cost:22,cd:6,level:3},
+ spotlight:{name:'Đèn sân khấu',cost:40,cd:12,level:5},
+ dash:{name:'Lướt',cost:0,cd:3.5,level:1},
+};
+const xpForLevel=l=>Math.round(40*Math.pow(l,1.6));
+
+class Dungeon{
+ constructor(seed=Date.now()%100000){
+  this.seed=seed;this.rand=rng(seed*7+3);this.time=0;this.ending=null;this.bubble=null;this.floaters=[];this.effects=[];
+  this.p={x:0,y:0,r:11,face:0,moving:false,level:1,xp:0,gold:0,courage:100,battery:100,dash:0,dashDir:0,hurt:0,path:[],target:null,pickTarget:null};
+  this.potions={bread:2,battery:1};this.inventory=[];this.equipped={torch:null,coat:null,charm:null,shoes:null};
+  this.cooldowns={flash:0,candy:0,bell:0,spotlight:0,dash:0,potion:0};
+  this.stats={defeated:0,deepest:1,knockouts:0,bosses:0};
+  this.equipped.torch={slot:'torch',rarity:'common',rarityName:'Thường',name:'Đèn pin cũ',ilvl:1,stats:{dmg:4},base:{dmg:4},affixes:[],value:3};
+  this.enterFloor(1);
+  this.notice('Mr. D: Hầm dưới nhà ma mở cửa rồi. Hạ màn hết mấy diễn viên, tìm cầu thang xuống.');
+ }
+ notice(text){this.bubble={text,until:this.time+4.5};}
+ float(x,y,text,color='#ffe5ad',size=13){this.floaters.push({x,y,text,color,size,until:this.time+1.1});}
+ // ---- Derived stats from level and equipment.
+ get derived(){
+  const s={dmg:0,dmgPct:0,crit:5,courage:0,armor:0,battery:0,regen:0,speed:0,gold:0,onBreak:0};
+  for(const it of Object.values(this.equipped))if(it)for(const [k,v] of Object.entries(it.stats))s[k]=(s[k]||0)+v;
+  const l=this.p.level;
+  return{
+   damage:(6+s.dmg)*(1+s.dmgPct/100)*(1+0.05*(l-1)),crit:s.crit/100,
+   maxCourage:100+10*(l-1)+s.courage,armor:s.armor,maxBattery:100+s.battery,regen:5+s.regen,
+   speed:150*(1+s.speed/100),goldPct:s.gold/100,onBreak:s.onBreak,
+  };
+ }
+ enterFloor(depth){
+  this.depth=depth;this.stats.deepest=Math.max(this.stats.deepest,depth);
+  this.floor=generateFloor(depth,this.seed*31+depth);
+  const f=this.floor,st=f.start;Object.assign(this.p,{x:st.x,y:st.y,path:[],target:null,pickTarget:null});
+  this.explored=new Uint8Array(MAP_W*MAP_H);this.reveal();
+  this.enemies=[];this.projectiles=[];this.drops=[];this.marks=[];this.effects=[];this.field=null;this.fieldAt=-1;this.nextId=1;
+  this.stairsLocked=isBossFloor(depth);
+  this.vendor=depth%3===1?{x:st.x+70,y:st.y-30}:null;
+  const scale=scaleFor(depth),theme=f.theme;
+  f.rooms.forEach((room,i)=>{
+   if(i===0)return;
+   if(i===f.stairsRoom&&isBossFloor(depth)){this.spawn(theme.boss,(room.cx+.5)*TILE,(room.cy+.5)*TILE,scale);return;}
+   const pack=2+Math.floor(this.rand()*3)+Math.min(3,Math.floor(depth/3));
+   const kinds=Object.entries(ENEMIES).filter(([,e])=>!e.boss&&e.from<=depth).map(([k])=>k);
+   const elite=this.rand()<.12+depth*.01;
+   for(let n=0;n<pack;n++){
+    const x=(room.x+1+this.rand()*(room.w-2))*TILE,y=(room.y+1+this.rand()*(room.h-2))*TILE;
+    if(floorPassable(f,x,y,12))this.spawn(kinds[Math.floor(this.rand()*kinds.length)],x,y,scale,elite&&n===0);
+   }
+  });
+  this.float(st.x,st.y-60,`TẦNG ${depth} · ${theme.name.toUpperCase()}`,'#a0ead4',16);
+  if(isBossFloor(depth))this.notice(`Tầng ${depth}: ${ENEMIES[theme.boss].name} giữ cầu thang. Hạ màn trùm để mở lối xuống.`);
+ }
+ spawn(type,x,y,scale,elite=false){
+  const e=ENEMIES[type],hp=Math.round(e.hp*scale*(elite?2.5:1));
+  const m={id:this.nextId++,type,name:elite?`${e.name} Ngôi Sao`:e.name,x,y,r:e.r,hp,maxHp:hp,dmg:e.dmg*scale*(elite?1.4:1),speed:e.speed*(elite?1.1:1),range:e.range,cdBase:e.cd,windupBase:e.windup,xp:Math.round(e.xp*scale*(elite?3:1)),elite,boss:!!e.boss,state:'idle',t:0,cd:1+this.rand(),face:0,stun:0,aggro:false,special:4,special2:7,home:{x,y}};
+  this.enemies.push(m);return m;
+ }
+ reveal(){const tx=Math.floor(this.p.x/TILE),ty=Math.floor(this.p.y/TILE);for(let y=ty-7;y<=ty+7;y++)for(let x=tx-8;x<=tx+8;x++)if(x>=0&&y>=0&&x<MAP_W&&y<MAP_H&&Math.hypot(x-tx,y-ty)<=7.5)this.explored[y*MAP_W+x]=1;}
+ // ---- Player commands
+ moveTo(x,y){if(this.ending)return;const f=this.floor,tx=Math.floor(x/TILE),ty=Math.floor(y/TILE);if(!isFloor(f,tx,ty))return;const field=flowField(f,tx,ty),path=[];let cx=Math.floor(this.p.x/TILE),cy=Math.floor(this.p.y/TILE);if(field[cy*MAP_W+cx]<0)return;
+  for(let guard=0;guard<400&&field[cy*MAP_W+cx]>0;guard++){let best=null;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const v=field[(cy+dy)*MAP_W+cx+dx];if(v>=0&&(!best||v<best.v))best={x:cx+dx,y:cy+dy,v};}if(!best)break;cx=best.x;cy=best.y;path.push({x:(cx+.5)*TILE,y:(cy+.5)*TILE});}
+  if(path.length)path[path.length-1]={x,y};this.p.path=path;this.p.target=null;this.p.pickTarget=null;}
+ attackTarget(id){const e=this.enemies.find(e=>e.id===id&&e.state!=='defeated');if(e){this.p.target=e.id;this.p.path=[];this.p.pickTarget=null;}}
+ pickUp(id){const d=this.drops.find(d=>d.id===id);if(!d)return;if(dist(d,this.p)<44)this.collect(d);else{this.moveTo(d.x,d.y);this.p.pickTarget=id;}}
+ aimAt(point){if(point)this.p.face=Math.atan2(point.y-this.p.y,point.x-this.p.x);}
+ skillReady(k){return this.p.level>=SKILLS[k].level&&this.cooldowns[k]<=0&&this.p.battery>=SKILLS[k].cost;}
+ cast(k,point=null){
+  if(this.ending)return false;const s=SKILLS[k],p=this.p;
+  if(p.level<s.level){this.notice(`${s.name} mở ở cấp ${s.level}.`);return false;}
+  if(this.cooldowns[k]>0)return false;
+  if(p.battery<s.cost){this.notice('Hết pin. Uống pin AA (phím 2) hoặc đợi pin hồi.');return false;}
+  this.aimAt(point);p.battery-=s.cost;this.cooldowns[k]=s.cd;const d=this.derived;
+  if(k==='flash'){this.effects.push({kind:'cone',x:p.x,y:p.y,face:p.face,spread:.55,range:135,until:this.time+.18});this.hitCone(p.face,.55,135,d.damage,{knock:14});}
+  else if(k==='candy'){this.projectiles.push({x:p.x,y:p.y-14,vx:Math.cos(p.face)*420,vy:Math.sin(p.face)*420,r:6,dmg:d.damage*1.6,owner:'player',life:.85,kind:'candy',hue:Math.floor(this.rand()*4)});}
+  else if(k==='bell'){this.effects.push({kind:'ring',x:p.x,y:p.y,r:120,color:'#e9c577',until:this.time+.45});for(const e of this.live())if(dist(e,p)<120+e.r)this.damage(e,d.damage*1.2,{stun:1.5});}
+  else if(k==='spotlight'){this.effects.push({kind:'cone',x:p.x,y:p.y,face:p.face,spread:.9,range:240,until:this.time+.5,strong:true});this.hitCone(p.face,.9,240,d.damage*3,{stun:2,knock:30});}
+  else if(k==='dash'){p.dash=.18;p.dashDir=p.face;p.path=[];p.target=null;}
+  return true;
+ }
+ usePotion(kind){
+  if(this.ending||this.cooldowns.potion>0)return false;
+  if(!this.potions[kind]){this.notice(kind==='bread'?'Hết bánh bao. Mua thêm ở quầy Mr. D.':'Hết pin AA.');return false;}
+  const d=this.derived;this.potions[kind]--;this.cooldowns.potion=1;
+  if(kind==='bread'){this.p.courage=Math.min(d.maxCourage,this.p.courage+d.maxCourage*.45);this.float(this.p.x,this.p.y-70,'+can đảm','#f3889c');}
+  else{this.p.battery=Math.min(d.maxBattery,this.p.battery+60);this.float(this.p.x,this.p.y-70,'+pin','#e7c083');}
+  return true;
+ }
+ interact(){
+  if(this.ending)return false;const p=this.p,f=this.floor;
+  const drop=this.drops.filter(d=>d.kind==='item').sort((a,b)=>dist(a,p)-dist(b,p))[0];
+  if(drop&&dist(drop,p)<44){this.collect(drop);return true;}
+  if(dist(f.stairs,p)<46){
+   if(this.stairsLocked){this.notice(`Cầu thang khóa. Hạ màn ${ENEMIES[f.theme.boss].name} trước.`);return true;}
+   this.enterFloor(this.depth+1);return true;
+  }
+  if(dist(f.exitUp,p)<46){this.finish();return true;}
+  if(this.vendor&&dist(this.vendor,p)<56)return'shop';
+  this.notice('Không có gì để dùng ở đây.');return false;
+ }
+ finish(){this.ending='dungeon';this.notice('Bạn leo lên khỏi hầm.');}
+ // ---- Inventory
+ equip(item,silent=false){const old=this.equipped[item.slot];this.equipped[item.slot]=item;const i=this.inventory.indexOf(item);if(i>=0)this.inventory.splice(i,1);if(old)this.inventory.push(old);const d=this.derived;this.p.courage=Math.min(this.p.courage,d.maxCourage);this.p.battery=Math.min(this.p.battery,d.maxBattery);if(!silent)this.notice(`Đã trang bị ${item.name}.`);}
+ dropItem(item){const i=this.inventory.indexOf(item);if(i<0)return;this.inventory.splice(i,1);this.drops.push({id:this.nextId++,kind:'item',item,x:this.p.x+10,y:this.p.y+14});}
+ sell(item){const i=this.inventory.indexOf(item);if(i<0||!this.vendor||dist(this.vendor,this.p)>80)return false;this.inventory.splice(i,1);this.p.gold+=item.value;return true;}
+ buy(kind){const price=20;if(!this.vendor||dist(this.vendor,this.p)>80||this.p.gold<price)return false;this.p.gold-=price;this.potions[kind]++;return true;}
+ collect(d){
+  const i=this.drops.indexOf(d);if(i<0)return;
+  if(d.kind==='item'){if(this.inventory.length>=16){this.notice('Túi đầy. Mở túi (I) để vứt hoặc bán bớt.');return;}this.inventory.push(d.item);this.notice(`Nhặt được ${d.item.name} (${d.item.rarityName}).`);}
+  else if(d.kind==='gold'){this.p.gold+=d.amount;this.float(d.x,d.y-20,`+${d.amount} xu`,'#e7c083',11);}
+  else{this.potions[d.potion]++;this.float(d.x,d.y-20,d.potion==='bread'?'+1 bánh bao':'+1 pin AA','#a0ead4',11);}
+  this.drops.splice(i,1);
+ }
+ // ---- Combat
+ live(){return this.enemies.filter(e=>e.state!=='defeated');}
+ hitCone(face,spread,range,dmg,opts){for(const e of this.live()){const d=dist(e,this.p);if(d>range+e.r)continue;if(Math.abs(angleDiff(Math.atan2(e.y-this.p.y,e.x-this.p.x),face))>spread&&d>e.r+14)continue;if(!lineOfSight(this.floor,this.p,e))continue;this.damage(e,dmg,opts);}}
+ damage(e,amount,{stun=0,knock=0}={}){
+  if(e.state==='defeated')return;
+  const crit=this.rand()<this.derived.crit,value=Math.round(amount*(crit?1.8:1)*(.9+this.rand()*.2));
+  e.hp-=value;e.aggro=true;e.flash=.12;
+  if(stun&&!e.boss){e.stun=Math.max(e.stun,stun);if(e.state==='windup'){e.state='chase';e.cd=e.cdBase;}}
+  else if(stun&&e.boss)e.stun=Math.max(e.stun,stun*.3);
+  if(knock&&!e.boss){const a=Math.atan2(e.y-this.p.y,e.x-this.p.x);moveCircle(this.floor,e,Math.cos(a)*knock,Math.sin(a)*knock);}
+  this.float(e.x+(this.rand()-.5)*14,e.y-50,crit?`${value}!`:String(value),crit?'#ffd36b':'#ffffff',crit?15:12);
+  if(e.hp<=0)this.defeat(e);
+ }
+ defeat(e){
+  e.hp=0;e.state='defeated';e.t=.8;this.stats.defeated++;
+  const lines=e.boss?['Thôi được rồi… diễn không nổi nữa!','Hahaha! Cậu thắng!','Nghỉ diễn, nghỉ diễn!']:['Hahaha!','Thua rồi, thua rồi!','Phì cười mất!','Thôi, hết diễn!'];
+  this.float(e.x,e.y-80,lines[Math.floor(this.rand()*lines.length)],'#a0ead4',e.boss?15:12);
+  const d=this.derived;if(d.onBreak)this.p.courage=Math.min(d.maxCourage,this.p.courage+d.onBreak);
+  this.gainXp(e.xp);
+  // Loot: coins often, potions sometimes, gear rarely; elites and bosses drop more and better.
+  const drop=(kind,extra)=>this.drops.push({id:this.nextId++,kind,x:e.x+(this.rand()-.5)*40,y:e.y+(this.rand()-.5)*30,...extra});
+  if(this.rand()<.65||e.elite||e.boss)drop('gold',{amount:Math.round((3+this.rand()*6)*this.depth*(1+d.goldPct)*(e.boss?6:e.elite?3:1))});
+  if(this.rand()<.12||e.boss)drop('potion',{potion:this.rand()<.6?'bread':'battery'});
+  const items=e.boss?3:e.elite?(this.rand()<.7?1:0)+1:this.rand()<.13?1:0;
+  for(let i=0;i<items;i++)drop('item',{item:makeItem(this.rand,this.depth,e.boss?(i===0?1.6:.8):e.elite?.6:0)});
+  if(e.boss){this.stairsLocked=false;this.stats.bosses++;this.notice(`${e.name} cười bò ra sàn rồi mở khóa cầu thang. Lối xuống đã mở!`);}
+ }
+ gainXp(n){const p=this.p;p.xp+=n;while(p.xp>=xpForLevel(p.level)){p.xp-=xpForLevel(p.level);p.level++;const d=this.derived;p.courage=d.maxCourage;p.battery=d.maxBattery;this.float(p.x,p.y-90,`LÊN CẤP ${p.level}!`,'#ffd36b',16);const unlock=Object.values(SKILLS).find(s=>s.level===p.level);this.notice(unlock?`Lên cấp ${p.level}! Mở kỹ năng mới: ${unlock.name}.`:`Lên cấp ${p.level}! Can đảm và sát thương tăng.`);}}
+ hurt(amount,source){
+  const p=this.p;if(p.dash>0||this.ending)return false;
+  const d=this.derived,value=Math.max(1,Math.round(amount*100/(100+d.armor)));
+  p.courage-=value;p.hurt=.25;this.float(p.x,p.y-60,`-${value}`,'#f3889c',13);
+  if(p.courage<=0)this.knockout();return true;
+ }
+ knockout(){
+  const p=this.p,lost=Math.floor(p.gold*.1);p.gold-=lost;this.stats.knockouts++;
+  Object.assign(p,{x:this.floor.start.x,y:this.floor.start.y,path:[],target:null,pickTarget:null,courage:this.derived.maxCourage});
+  for(const e of this.live()){e.aggro=false;e.state='idle';e.x=e.home.x;e.y=e.home.y;if(e.boss)e.hp=e.maxHp;}this.marks=[];this.projectiles=[];
+  this.notice(`Sợ quá! Mr. D dắt bạn về đầu tầng. Đồ vẫn còn${lost?`, rơi mất ${lost} xu`:''}.`);
+ }
+ // ---- Simulation step
+ step(dt,input={}){
+  if(this.ending)return;dt=Math.min(.06,Math.max(0,dt));this.time+=dt;const p=this.p,f=this.floor,d=this.derived;
+  for(const k in this.cooldowns)this.cooldowns[k]=Math.max(0,this.cooldowns[k]-dt);
+  p.hurt=Math.max(0,p.hurt-dt);p.battery=Math.min(d.maxBattery,p.battery+d.regen*dt);
+  this.floaters=this.floaters.filter(x=>x.until>this.time);this.effects=this.effects.filter(x=>x.until>this.time);
+  // Movement: dash, keyboard/joystick, click-to-move path, or walking to an attack target.
+  const dx=input.dx||0,dy=input.dy||0;p.moving=false;
+  if(p.dash>0){p.dash-=dt;moveCircle(f,p,Math.cos(p.dashDir)*650*dt,Math.sin(p.dashDir)*650*dt);p.moving=true;}
+  else if(dx||dy){const len=Math.hypot(dx,dy);p.path=[];p.target=null;p.pickTarget=null;p.face=Math.atan2(dy,dx);p.moving=moveCircle(f,p,dx/len*d.speed*dt,dy/len*d.speed*dt);}
+  else if(p.target){const e=this.enemies.find(e=>e.id===p.target&&e.state!=='defeated');if(!e)p.target=null;else{const gap=dist(e,p);p.face=Math.atan2(e.y-p.y,e.x-p.x);if(gap>120||!lineOfSight(f,p,e)){moveCircle(f,p,Math.cos(p.face)*d.speed*dt,Math.sin(p.face)*d.speed*dt);p.moving=true;}else this.cast('flash');}}
+  else if(p.path.length){const t=p.path[0],gap=dist(p,t);if(gap<5)p.path.shift();else{p.face=Math.atan2(t.y-p.y,t.x-p.x);const s=Math.min(gap,d.speed*dt);p.moving=moveCircle(f,p,Math.cos(p.face)*s,Math.sin(p.face)*s);if(!p.moving)p.path.shift();}}
+  if(p.pickTarget){const it=this.drops.find(x=>x.id===p.pickTarget);if(!it)p.pickTarget=null;else if(dist(it,p)<44){this.collect(it);p.pickTarget=null;p.path=[];}}
+  this.reveal();
+  // Coins and potions are picked up just by walking over them.
+  for(const it of [...this.drops])if(it.kind!=='item'&&dist(it,p)<30)this.collect(it);
+  // Flow field toward the player, recomputed when the player changes tile.
+  const pt=Math.floor(p.y/TILE)*MAP_W+Math.floor(p.x/TILE);if(pt!==this.fieldAt){this.field=flowField(f,pt%MAP_W,Math.floor(pt/MAP_W));this.fieldAt=pt;}
+  for(const e of this.enemies)this.stepEnemy(e,dt);
+  this.enemies=this.enemies.filter(e=>e.state!=='defeated'||e.t>0);
+  // Keep performers from stacking on one spot.
+  const live=this.live();for(let i=0;i<live.length;i++)for(let j=i+1;j<live.length;j++){const a=live[i],b=live[j],gap=dist(a,b),min=a.r+b.r;if(gap>0&&gap<min){const push=(min-gap)/2,ux=(a.x-b.x)/gap,uy=(a.y-b.y)/gap;moveCircle(f,a,ux*push,uy*push);moveCircle(f,b,-ux*push,-uy*push);}}
+  this.stepProjectiles(dt);this.stepMarks(dt);
+ }
+ stepEnemy(e,dt){
+  if(e.state==='defeated'){e.t-=dt;return;}
+  const p=this.p,f=this.floor,gap=dist(e,p);e.flash=Math.max(0,(e.flash||0)-dt);
+  if(!e.aggro&&gap<(e.boss?300:250)&&lineOfSight(f,e,p)){e.aggro=true;if(e.boss)this.notice(e.type==='zombie'?'Xác Sống: Đứa nào nẫng bộ răng của tui?!':e.type==='vampire'?'Ma Cà Rồng: Nhà có khách. Mời… ở lại luôn.':'Ma Cổ Dài: Cúi xuống mà đi nhé…');}
+  if(!e.aggro)return;
+  if(e.stun>0){e.stun-=dt;return;}
+  e.cd-=dt;e.face=Math.atan2(p.y-e.y,p.x-e.x);
+  if(e.boss&&this.stepBoss(e,dt,gap))return;
+  if(e.state==='windup'){e.t-=dt;if(e.t<=0){e.state='chase';e.cd=e.cdBase;if(ENEMIES[e.type].ranged)this.projectiles.push({x:e.x,y:e.y-20,vx:Math.cos(e.face)*230,vy:Math.sin(e.face)*230,r:7,dmg:e.dmg,owner:'enemy',life:1.6,kind:'orb'});else if(gap<e.range+16)this.hurt(e.dmg,e);}return;}
+  const ranged=ENEMIES[e.type].ranged,see=lineOfSight(f,e,p);
+  if(e.cd<=0&&see&&gap<e.range+(ranged?0:4)){e.state='windup';e.t=e.windupBase;return;}
+  // Ranged performers keep their distance; everyone else closes in.
+  if(ranged&&see&&gap<150){this.stepAway(e,dt);return;}
+  if(ranged&&see&&gap<e.range)return;
+  this.chase(e,dt,gap,see);
+ }
+ chase(e,dt,gap,see){
+  const p=this.p,f=this.floor;if(gap<e.r+p.r+4)return;
+  let tx=p.x,ty=p.y;
+  if(!see||gap>140){const cx=Math.floor(e.x/TILE),cy=Math.floor(e.y/TILE);let best=null;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const v=this.field[(cy+dy)*MAP_W+cx+dx];if(v<0)continue;if(dx&&dy&&(!isFloor(f,cx+dx,cy)||!isFloor(f,cx,cy+dy)))continue;if(!best||v<best.v)best={v,x:(cx+dx+.5)*TILE,y:(cy+dy+.5)*TILE};}if(best){tx=best.x;ty=best.y;}}
+  const a=Math.atan2(ty-e.y,tx-e.x);moveCircle(f,e,Math.cos(a)*e.speed*dt,Math.sin(a)*e.speed*dt);
+ }
+ stepAway(e,dt){const a=Math.atan2(e.y-this.p.y,e.x-this.p.x);moveCircle(this.floor,e,Math.cos(a)*e.speed*.8*dt,Math.sin(a)*e.speed*.8*dt);}
+ // Boss patterns. Every big attack is telegraphed with a ring or line before it lands.
+ stepBoss(e,dt,gap){
+  const p=this.p,f=this.floor,enraged=e.hp<e.maxHp/2;e.special-=dt;e.special2-=dt;
+  if(e.type==='zombie'){
+   if(e.special2<=0){e.special2=9;const minions=this.live().filter(m=>m.minion).length;if(minions<6)for(let i=0;i<2;i++){const a=this.rand()*Math.PI*2,x=e.x+Math.cos(a)*60,y=e.y+Math.sin(a)*60;if(floorPassable(f,x,y,12)){const m=this.spawn('sheet',x,y,scaleFor(this.depth));m.minion=true;m.aggro=true;}}this.float(e.x,e.y-90,'GÀOOO!','#f3889c',14);}
+   if(e.state==='windup'){e.t-=dt;if(e.t<=0){e.state='chase';e.cd=e.cdBase*(enraged?.7:1);this.effects.push({kind:'ring',x:e.x,y:e.y,r:e.range,color:'#f3889c',until:this.time+.3});if(gap<e.range)this.hurt(e.dmg,e);}return true;}
+   if(e.cd<=0&&gap<e.range-10){e.state='windup';e.t=e.windupBase;e.slam={x:e.x,y:e.y};return true;}
+   return false;
+  }
+  if(e.type==='vampire'){
+   if(e.state==='dashing'){e.t-=dt;const s=600*dt;moveCircle(f,e,Math.cos(e.dashA)*s,Math.sin(e.dashA)*s);if(!e.dashHit&&dist(e,p)<e.r+p.r+6){e.dashHit=true;this.hurt(e.dmg*1.4,e);}if(e.t<=0)e.state='chase';return true;}
+   if(e.state==='aim'){e.t-=dt;if(e.t<=0){e.state='dashing';e.t=.45;e.dashHit=false;}return true;}
+   if(e.special<=0&&gap<320){e.special=enraged?4:6;e.state='aim';e.t=.7;e.dashA=Math.atan2(p.y-e.y,p.x-e.x);return true;}
+   if(e.special2<=0){e.special2=enraged?6:9;const n=enraged?12:8;for(let i=0;i<n;i++){const a=i/n*Math.PI*2;this.projectiles.push({x:e.x,y:e.y-30,vx:Math.cos(a)*190,vy:Math.sin(a)*190,r:7,dmg:e.dmg*.6,owner:'enemy',life:2,kind:'bat'});}this.float(e.x,e.y-90,'Đàn dơi!','#c3a7ed',14);}
+   return false;
+  }
+  if(e.type==='neck'){
+   // She never touches you; she floats at a distance and drops her head where you stand.
+   if(e.special<=0){e.special=enraged?2:2.6;const n=enraged?5:3;this.marks.push({x:p.x,y:p.y,t:1,dmg:e.dmg*2});for(let i=1;i<n;i++){const a=this.rand()*Math.PI*2,r=40+this.rand()*70,x=p.x+Math.cos(a)*r,y=p.y+Math.sin(a)*r;if(floorPassable(f,x,y,4))this.marks.push({x,y,t:1+i*.12,dmg:e.dmg*2});}}
+   if(gap<150)this.stepAway(e,dt);else if(gap>220)this.chase(e,dt,gap,lineOfSight(f,e,p));
+   return true;
+  }
+  return false;
+ }
+ stepMarks(dt){for(const m of this.marks){m.t-=dt;if(m.t<=0){this.effects.push({kind:'ring',x:m.x,y:m.y,r:46,color:'#f3889c',until:this.time+.25});if(dist(m,this.p)<46)this.hurt(m.dmg);}}this.marks=this.marks.filter(m=>m.t>0);}
+ stepProjectiles(dt){
+  const f=this.floor,p=this.p;
+  for(const q of this.projectiles){q.life-=dt;q.x+=q.vx*dt;q.y+=q.vy*dt;if(!isFloor(f,Math.floor(q.x/TILE),Math.floor((q.y+14)/TILE)))q.life=0;
+   if(q.life<=0)continue;
+   if(q.owner==='player'){const e=this.live().find(e=>Math.hypot(e.x-q.x,e.y-20-q.y)<e.r+q.r+8);if(e){this.damage(e,q.dmg);q.life=0;}}
+   else if(Math.hypot(p.x-q.x,p.y-20-q.y)<p.r+q.r+4){if(this.hurt(q.dmg))q.life=0;}}
+  this.projectiles=this.projectiles.filter(q=>q.life>0);
+ }
+ nearby(){
+  const p=this.p,f=this.floor,item=this.drops.filter(d=>d.kind==='item').sort((a,b)=>dist(a,p)-dist(b,p))[0];
+  if(item&&dist(item,p)<44)return{verb:'Nhặt',label:item.item.name};
+  if(dist(f.stairs,p)<46)return{verb:this.stairsLocked?'Khóa':'Xuống',label:this.stairsLocked?'Cầu thang (đang khóa)':`Cầu thang xuống tầng ${this.depth+1}`};
+  if(dist(f.exitUp,p)<46)return{verb:'Rời hầm',label:'Thang lên · kết thúc chuyến'};
+  if(this.vendor&&dist(this.vendor,p)<56)return{verb:'Mua bán',label:'Quầy Mr. D'};
+  return null;
+ }
+ objective(){
+  const boss=this.live().find(e=>e.boss);
+  if(boss)return`Tầng ${this.depth}: hạ màn ${boss.name} để mở cầu thang`;
+  return`Tầng ${this.depth} · ${this.floor.theme.name}: tìm cầu thang xuống · đã hạ màn ${this.stats.defeated} diễn viên`;
+ }
+}
+
+return{TILE,MAP_W,MAP_H,rng,THEMES,themeFor,isBossFloor,generateFloor,isFloor,floorPassable,lineOfSight,flowField,ENEMIES,RARITY,SLOTS,makeItem,describeBase,SKILLS,xpForLevel,Dungeon};})();
+// ---- dungeon-view.mjs
+const {RARITY_COLOR,createDungeonView,itemCard,bagHtml,shopHtml}=(()=>{
+// Hầm Ma renderer and pointer input. Draws the dungeon simulation; never changes rules itself.
+
+
+const RARITY_COLOR={common:'#e6e9e4',magic:'#7fb6ff',rare:'#ffd36b',legendary:'#ff9d4d'};
+const CANDY=['#f3889c','#a0ead4','#ffd36b','#c3a7ed'];
+
+function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
+ const art={sheet:paintSheetGhost(),skeleton:paintSkeleton(),lantern:paintLanternGhost(),mrd:paintMrD()};
+ const fog=document.createElement('canvas');fog.width=MAP_W;fog.height=MAP_H;const fg=fog.getContext('2d');
+ const shade=document.createElement('canvas'),sg=shade.getContext('2d');
+ let dg=null,floorArt=null,floorSeed=null,camera={scale:1,x:0,y:0},mouse=null,hold=false,holdTimer=0,elapsed=0,box={width:1,height:1},mobile=false;
+
+ const toWorld=e=>{const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/camera.scale+camera.x,y:(e.clientY-r.top)/camera.scale+camera.y};};
+ const enemyAt=pt=>dg.live().filter(e=>Math.hypot(e.x-pt.x,e.y-20-pt.y)<e.r+18).sort((a,b)=>Math.hypot(a.x-pt.x,a.y-pt.y)-Math.hypot(b.x-pt.x,b.y-pt.y))[0];
+ const dropAt=pt=>dg.drops.filter(d=>d.kind==='item'&&(Math.hypot(d.x-pt.x,d.y-pt.y)<22||(d.labelBox&&pt.x>d.labelBox.x&&pt.x<d.labelBox.x+d.labelBox.w&&pt.y>d.labelBox.y&&pt.y<d.labelBox.y+d.labelBox.h))).sort((a,b)=>Math.hypot(a.x-pt.x,a.y-pt.y)-Math.hypot(b.x-pt.x,b.y-pt.y))[0];
+
+ // Closest visible performer within range, for touch auto-aim.
+ function autoAim(range){if(!dg)return null;const p=dg.p;let best=null;for(const e of dg.live()){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<range&&(!best||d<best.d))best={d,e};}return best?{x:best.e.x,y:best.e.y-10}:null;}
+
+ function sprite(img,crop,x,y,height,face,alpha=1,squash=1){
+  const width=crop[2]/crop[3]*height;ctx.save();ctx.globalAlpha*=alpha;ctx.fillStyle='#0006';ctx.beginPath();ctx.ellipse(x,y,width*.35,4,0,0,Math.PI*2);ctx.fill();ctx.translate(x,y);if(Math.cos(face)<-.15)ctx.scale(-1,1);ctx.scale(1,squash);ctx.drawImage(img,...crop,-width/2,-height,width,height);ctx.restore();
+ }
+ const full=c=>[0,0,c.width,c.height];
+ function drawEnemy(e){
+  const bob=Math.sin(elapsed*6+e.id)*2,a=e.state==='defeated'?Math.max(0,e.t/.8):1,lift=e.state==='defeated'?(1-a)*20:0;
+  const squash=e.state==='windup'?1-Math.min(.12,(e.windupBase-e.t)*.2):1;
+  if(e.type==='sheet')sprite(art.sheet,full(art.sheet),e.x,e.y-lift,46,e.face,a,squash);
+  else if(e.type==='skeleton')sprite(art.skeleton,full(art.skeleton),e.x,e.y-lift,62,e.face,a,squash);
+  else if(e.type==='lantern')sprite(art.lantern,full(art.lantern),e.x,e.y-14+bob-lift,42,e.face,a);
+  else if(e.type==='zombie')sprite(zombie,[0,0,42,82],e.x,e.y-lift,96,e.face,a,squash);
+  else if(e.type==='vampire')sprite(atlas,crops[3],e.x,e.y-lift,100,e.face,a,squash);
+  else if(e.type==='neck')sprite(neck,[0,0,44,114],e.x,e.y-10+bob-lift,118,e.face,a);
+  if(e.flash>0){ctx.save();ctx.globalAlpha=.5;ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(e.x,e.y-e.r*2,e.r*1.2,e.r*2,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+  if(e.stun>0&&e.state!=='defeated'){ctx.fillStyle='#ffe5ad';for(let i=0;i<3;i++){const t=elapsed*4+i*2.1;ctx.fillRect(e.x+Math.cos(t)*12-1.5,e.y-60+Math.sin(t)*4,3,3);}}
+ }
+ function telegraphs(){
+  for(const e of dg.live()){
+   if(e.type==='zombie'&&e.state==='windup'){const k=1-e.t/e.windupBase;ring(e.x,e.y,e.range,'#f3889c',2);ctx.fillStyle=`rgba(243,136,156,${.12+.2*k})`;ctx.beginPath();ctx.arc(e.x,e.y,e.range*k,0,Math.PI*2);ctx.fill();}
+   else if(e.type==='vampire'&&e.state==='aim'){ctx.save();ctx.strokeStyle='#f3889cb0';ctx.lineWidth=e.r*2;ctx.globalAlpha=.35;ctx.beginPath();ctx.moveTo(e.x,e.y);ctx.lineTo(e.x+Math.cos(e.dashA)*280,e.y+Math.sin(e.dashA)*280);ctx.stroke();ctx.restore();}
+   else if(e.state==='windup'&&!ENEMIES[e.type].ranged){ctx.save();ctx.fillStyle='#f3889c55';ctx.beginPath();ctx.moveTo(e.x,e.y);ctx.arc(e.x,e.y,e.range+14,e.face-.7,e.face+.7);ctx.closePath();ctx.fill();ctx.restore();}
+   else if(e.state==='windup'){ring(e.x,e.y-34,10+(e.windupBase-e.t)*20,'#a0ead4',2);}
+  }
+  for(const m of dg.marks){const k=Math.max(0,m.t);ctx.fillStyle=`rgba(0,0,0,${.5-.3*Math.min(1,k)})`;ctx.beginPath();ctx.ellipse(m.x,m.y,40,13,0,0,Math.PI*2);ctx.fill();ring(m.x,m.y,46,'#f3889c',2);ring(m.x,m.y,46*Math.min(1,k),'#f3889c80',1);}
+ }
+ function ring(x,y,r,color,w=1.5){ctx.beginPath();ctx.arc(x,y,Math.max(0,r),0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=w;ctx.stroke();}
+ function label(x,y,text,color,bg='#07131de6'){ctx.font='11px system-ui';ctx.textAlign='center';const w=ctx.measureText(text).width+12;ctx.fillStyle=bg;ctx.fillRect(x-w/2,y-13,w,17);ctx.fillStyle=color;ctx.fillText(text,x,y);return{x:x-w/2,y:y-13,w,h:17};}
+ function drops(){
+  for(const d of dg.drops){
+   if(d.kind==='gold'){ctx.fillStyle='#e7c083';ctx.beginPath();ctx.arc(d.x,d.y-3,4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(d.x+5,d.y,3.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff2c2';ctx.fillRect(d.x-1,d.y-5,2,2);}
+   else if(d.kind==='potion'){if(d.potion==='bread'){ctx.fillStyle='#f4ead2';ctx.beginPath();ctx.ellipse(d.x,d.y-4,7,5,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d8c39a';ctx.fillRect(d.x-3,d.y-8,6,2);}else{ctx.fillStyle='#2e3f63';ctx.fillRect(d.x-3,d.y-12,6,12);ctx.fillStyle='#e7c083';ctx.fillRect(d.x-3,d.y-12,6,4);}}
+   else{const col=RARITY_COLOR[d.item.rarity];ctx.save();ctx.globalAlpha=.25+.1*Math.sin(elapsed*3);ctx.fillStyle=col;ctx.fillRect(d.x-2,d.y-60,4,60);ctx.restore();ctx.fillStyle=col;ctx.fillRect(d.x-6,d.y-6,12,8);ctx.fillStyle='#07131d';ctx.fillRect(d.x-4,d.y-4,8,4);}
+  }
+ }
+ function fixtures(){
+  const f=dg.floor,s=f.stairs,u=f.exitUp;
+  ctx.fillStyle='#05090f';ctx.fillRect(s.x-22,s.y-18,44,36);for(let i=0;i<4;i++){ctx.fillStyle=i%2?'#1b2733':'#24323f';ctx.fillRect(s.x-20+i*3,s.y-16+i*8,40-i*6,6);}
+  ctx.strokeStyle=dg.stairsLocked?'#f3889c':'#a0ead4';ctx.lineWidth=2;ctx.strokeRect(s.x-22,s.y-18,44,36);
+  if(dg.stairsLocked){ctx.fillStyle='#f3889c';ctx.fillRect(s.x-5,s.y-4,10,8);ctx.strokeStyle='#f3889c';ctx.beginPath();ctx.arc(s.x,s.y-5,4,Math.PI,0);ctx.stroke();}
+  ctx.fillStyle='#5b3a26';for(let i=0;i<5;i++)ctx.fillRect(u.x-10,u.y-34+i*8,20,2);ctx.fillRect(u.x-12,u.y-36,3,40);ctx.fillRect(u.x+9,u.y-36,3,40);
+  if(dg.vendor){const v=dg.vendor;ctx.fillStyle='#3a2418';ctx.fillRect(v.x-30,v.y-92,3,86);ctx.fillRect(v.x+27,v.y-92,3,86);ctx.fillStyle='#c23b3b';ctx.fillRect(v.x-34,v.y-98,68,10);ctx.fillStyle='#f4f1e6';for(let i=0;i<8;i+=2)ctx.fillRect(v.x-34+i*8.5,v.y-98,8.5,10);}
+ }
+ function projectiles(){for(const q of dg.projectiles){if(q.kind==='candy'){ctx.fillStyle=CANDY[q.hue];ctx.beginPath();ctx.arc(q.x,q.y,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(q.x-1,q.y-3,2,2);}else if(q.kind==='orb'){ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#a0ead4';ctx.beginPath();ctx.arc(q.x,q.y,11,0,Math.PI*2);ctx.fill();ctx.restore();ctx.fillStyle='#e9fff6';ctx.beginPath();ctx.arc(q.x,q.y,5,0,Math.PI*2);ctx.fill();}else{const a=Math.atan2(q.vy,q.vx),w=Math.sin(elapsed*20)*4;ctx.save();ctx.translate(q.x,q.y);ctx.rotate(a);ctx.fillStyle='#2a1f33';ctx.beginPath();ctx.moveTo(6,0);ctx.lineTo(-4,-6-w);ctx.lineTo(-2,0);ctx.lineTo(-4,6+w);ctx.closePath();ctx.fill();ctx.restore();}}}
+ function effects(){for(const fx of dg.effects){const k=(fx.until-dg.time)/(fx.strong?.5:.3);if(fx.kind==='cone'){ctx.save();ctx.globalCompositeOperation='screen';const g=ctx.createRadialGradient(fx.x,fx.y-20,4,fx.x,fx.y-20,fx.range);g.addColorStop(0,`rgba(235,255,225,${(fx.strong?.7:.5)*Math.min(1,k)})`);g.addColorStop(1,'rgba(200,255,225,0)');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(fx.x,fx.y-20);ctx.arc(fx.x,fx.y-20,fx.range,fx.face-fx.spread,fx.face+fx.spread);ctx.closePath();ctx.fill();ctx.restore();}else{ctx.save();ctx.globalAlpha=Math.min(1,k);ring(fx.x,fx.y,fx.r*(1.1-k*.1),fx.color,3);ctx.restore();}}}
+ function lighting(){
+  // Unexplored tiles are black; explored ones stay dimly visible; the player's light reveals the rest.
+  const img=fg.createImageData(MAP_W,MAP_H);for(let i=0;i<MAP_W*MAP_H;i++){img.data[i*4+3]=dg.explored[i]?0:255;}fg.putImageData(img,0,0);
+  ctx.save();ctx.imageSmoothingEnabled=true;ctx.drawImage(fog,0,0,MAP_W*TILE,MAP_H*TILE);ctx.restore();
+  const dpr=Math.min(window.devicePixelRatio||1,2);if(shade.width!==canvas.width||shade.height!==canvas.height){shade.width=canvas.width;shade.height=canvas.height;}
+  sg.setTransform(1,0,0,1,0,0);sg.globalCompositeOperation='source-over';sg.clearRect(0,0,shade.width,shade.height);sg.fillStyle='rgba(3,8,16,.78)';sg.fillRect(0,0,shade.width,shade.height);
+  sg.globalCompositeOperation='destination-out';const p=dg.p,s=camera.scale*dpr,px=(p.x-camera.x)*s,py=(p.y-20-camera.y)*s,radius=250*s;
+  const g=sg.createRadialGradient(px,py,radius*.35,px,py,radius);g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');sg.fillStyle=g;sg.fillRect(0,0,shade.width,shade.height);
+  for(const fx of dg.effects)if(fx.kind==='cone'){const fx0=(fx.x-camera.x)*s,fy0=(fx.y-20-camera.y)*s;sg.fillStyle='rgba(0,0,0,.8)';sg.beginPath();sg.moveTo(fx0,fy0);sg.arc(fx0,fy0,fx.range*s,fx.face-fx.spread,fx.face+fx.spread);sg.closePath();sg.fill();}
+  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(shade,0,0);ctx.restore();
+ }
+ function overlays(){
+  for(const e of dg.live()){if(!e.aggro&&!e.elite&&!e.boss)continue;const w=e.boss?0:30,y=e.y-(e.type==='sheet'?54:e.type==='lantern'?66:e.type==='skeleton'?70:0);if(!e.boss){ctx.fillStyle='#0a1520';ctx.fillRect(e.x-w/2,y,w,4);ctx.fillStyle=e.elite?'#7fb6ff':'#a0ead4';ctx.fillRect(e.x-w/2,y,w*e.hp/e.maxHp,4);}if(e.elite)label(e.x,y-6,e.name,'#7fb6ff');}
+  for(const d of dg.drops)if(d.kind==='item'){d.labelBox=label(d.x,d.y-16,d.item.name,RARITY_COLOR[d.item.rarity]);}
+  for(const f of dg.floaters){const k=1-(f.until-dg.time)/1.1;ctx.font=`bold ${f.size}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#061421';ctx.fillText(f.text,f.x+1,f.y-k*24+1);ctx.fillStyle=f.color;ctx.fillText(f.text,f.x,f.y-k*24);}
+  const n=dg.nearby();if(n)label(dg.p.x,dg.p.y-86,(mobile?'':'E · ')+n.label,'#ffe5ad');
+ }
+ function hud(){
+  const dpr=Math.min(window.devicePixelRatio||1,2);ctx.save();ctx.setTransform(dpr,0,0,dpr,0,0);
+  // Boss bar.
+  const boss=dg.live().find(e=>e.boss&&e.aggro);
+  if(boss){const w=Math.min(420,box.width-40),x=(box.width-w)/2,y=12;ctx.fillStyle='#07131de6';ctx.fillRect(x-2,y-2,w+4,24);ctx.fillStyle='#3a1820';ctx.fillRect(x,y,w,20);ctx.fillStyle='#c23b5a';ctx.fillRect(x,y,w*boss.hp/boss.maxHp,20);ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.fillText(`${boss.name} · bình tĩnh ${Math.ceil(boss.hp)}/${boss.maxHp}`,box.width/2,y+14);}
+  // Minimap of explored tiles.
+  const s=mobile?1.6:2.4,mw=MAP_W*s,mh=MAP_H*s,mx=box.width-mw-10,my=boss?44:10;
+  ctx.fillStyle='#03070dcc';ctx.fillRect(mx-3,my-3,mw+6,mh+6);
+  for(let y=0;y<MAP_H;y++)for(let x=0;x<MAP_W;x++){const i=y*MAP_W+x;if(dg.explored[i]&&dg.floor.tiles[i]){ctx.fillStyle='#2b4a58';ctx.fillRect(mx+x*s,my+y*s,s,s);}}
+  const st=dg.floor.stairs,sx=Math.floor(st.x/TILE),sy=Math.floor(st.y/TILE);if(dg.explored[sy*MAP_W+sx]){ctx.fillStyle=dg.stairsLocked?'#f3889c':'#a0ead4';ctx.fillRect(mx+sx*s-2,my+sy*s-2,s+4,s+4);}
+  for(const e of dg.live())if(e.aggro){ctx.fillStyle='#f3889c';ctx.fillRect(mx+e.x/TILE*s-1,my+e.y/TILE*s-1,2,2);}
+  ctx.fillStyle='#ffe5ad';ctx.fillRect(mx+dg.p.x/TILE*s-2,my+dg.p.y/TILE*s-2,4,4);
+  ctx.font='10px system-ui';ctx.textAlign='right';ctx.fillStyle='#b8d6d6';ctx.fillText(`TẦNG ${dg.depth} · ${dg.floor.theme.name.toUpperCase()}`,mx+mw,my+mh+14);
+  if(dg.p.hurt>0){const g=ctx.createRadialGradient(box.width/2,box.height/2,box.height*.3,box.width/2,box.height/2,box.width*.7);g.addColorStop(0,'rgba(243,136,156,0)');g.addColorStop(1,`rgba(243,136,156,${dg.p.hurt*1.4})`);ctx.fillStyle=g;ctx.fillRect(0,0,box.width,box.height);}
+  ctx.restore();
+ }
+
+ return{
+  attach(d){dg=d;floorSeed=null;hold=false;},
+  detach(){dg=null;hold=false;},
+  autoAim,
+  get mouse(){return mouse;},
+  step(dt){elapsed+=dt;if(hold&&mouse&&dg){holdTimer-=dt;if(holdTimer<=0){holdTimer=.18;if(!dg.p.target&&!dg.p.pickTarget)dg.moveTo(mouse.x,mouse.y);}}},
+  pointerDown(e){
+   if(!dg)return;mouse=toWorld(e);
+   if(e.button===2){dg.cast('candy',mouse);return;}
+   const enemy=enemyAt(mouse);if(enemy){dg.attackTarget(enemy.id);return;}
+   const drop=dropAt(mouse);if(drop){dg.pickUp(drop.id);return;}
+   dg.moveTo(mouse.x,mouse.y);if(e.pointerType==='mouse'){hold=true;holdTimer=.18;}
+  },
+  pointerMove(e){if(dg)mouse=toWorld(e);},
+  pointerUp(){hold=false;},
+  draw(dt){
+   box=canvas.getBoundingClientRect();const dpr=Math.min(window.devicePixelRatio||1,2),cw=Math.round(box.width*dpr),ch=Math.round(box.height*dpr);
+   if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch;}
+   mobile=matchMedia('(pointer:coarse), (max-width:900px)').matches;
+   if(!dg)return;
+   if(floorSeed!==dg.floor.seed){floorArt=paintDungeonFloor(dg.floor,MAP_W,MAP_H,TILE);floorSeed=dg.floor.seed;}
+   // About 26 tiles across on desktop, 15 on a phone in portrait.
+   const target=mobile&&box.width<box.height*1.3?480:Math.min(840,Math.max(560,box.width*.75)),scale=box.width/target;
+   const vw=box.width/scale,vh=box.height/scale;camera={scale,x:dg.p.x-vw/2,y:dg.p.y-20-vh/2};
+   ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#03070d';ctx.fillRect(0,0,canvas.width,canvas.height);
+   ctx.setTransform(scale*dpr,0,0,scale*dpr,-camera.x*scale*dpr,-camera.y*scale*dpr);ctx.imageSmoothingEnabled=false;
+   ctx.drawImage(floorArt,0,0,MAP_W*TILE,MAP_H*TILE);
+   fixtures();drops();telegraphs();effects();
+   const p=dg.p,actors=[...dg.enemies.map(e=>({y:e.y,e})),{y:p.y,p:true}];if(dg.vendor)actors.push({y:dg.vendor.y,v:true});actors.sort((a,b)=>a.y-b.y);
+   for(const a of actors){if(a.e)drawEnemy(a.e);else if(a.v){const v=dg.vendor;sprite(art.mrd,full(art.mrd),v.x,v.y-10,70,Math.PI);ctx.fillStyle='#5b3a26';ctx.fillRect(v.x-30,v.y-30,60,30);ctx.fillStyle='#7c5435';ctx.fillRect(v.x-30,v.y-32,60,5);ctx.fillStyle='#e7c083';ctx.font='9px system-ui';ctx.textAlign='center';ctx.fillText('BÁNH BAO · PIN',v.x,v.y-12);}else sprite(atlas,crops[0],p.x,p.y,68,p.face,p.dash>0?.55:1);}
+   projectiles();lighting();overlays();hud();
+  },
+ };
+}
+
+// HTML for the bag and shop dialogs. The app wires the buttons by their data attributes.
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function itemCard(item,actions=''){if(!item)return'<div class="item empty">Trống</div>';return`<div class="item" style="--rarity:${RARITY_COLOR[item.rarity]}"><b>${esc(item.name)}</b><small>${esc(SLOTS[item.slot].label)} · ${esc(item.rarityName)} · cấp ${item.ilvl}</small><span>${esc(describeStat(item))}</span>${item.affixes.map(a=>`<span>${esc(a)}</span>`).join('')}${actions}</div>`;}
+function describeStat(item){const b=item.base;return item.slot==='torch'?`${b.dmg} sát thương`:item.slot==='coat'?`${b.armor} giáp`:item.slot==='charm'?`+${b.battery} pin tối đa`:`+${b.speed}% tốc chạy`;}
+function bagHtml(dg){
+ const d=dg.derived;
+ return`<span class="eyebrow">TÚI ĐỒ · CẤP ${dg.p.level}</span><h2>Đồ nghề đi hầm</h2>
+ <p class="stats-line">Sát thương ${Math.round(d.damage)} · Chí mạng ${Math.round(d.crit*100)}% · Giáp ${d.armor} · Can đảm ${d.maxCourage} · Pin ${d.maxBattery} · Tốc ${Math.round(d.speed)}</p>
+ <div class="items">${Object.keys(SLOTS).map(k=>itemCard(dg.equipped[k])).join('')}</div>
+ <h3>Trong túi (${dg.inventory.length}/16)</h3>
+ <div class="items">${dg.inventory.map((it,i)=>itemCard(it,`<div class="item-actions"><button data-equip="${i}">Trang bị</button><button data-drop="${i}">Vứt</button></div>`)).join('')||'<p>Túi trống. Hạ màn diễn viên để nhặt đồ.</p>'}</div>
+ <div class="dialog-actions"><button id="resume">Quay lại hầm</button></div>`;
+}
+function shopHtml(dg){
+ return`<span class="eyebrow">QUẦY MR. D</span><h2>Bánh bao, pin, mua đồ cũ</h2><p>Bạn có ${dg.p.gold} xu.</p>
+ <div class="dialog-actions"><button data-buy="bread" ${dg.p.gold<20?'disabled':''}>Mua bánh bao (+can đảm) · 20 xu · đang có ${dg.potions.bread}</button><button data-buy="battery" ${dg.p.gold<20?'disabled':''}>Mua pin AA (+pin) · 20 xu · đang có ${dg.potions.battery}</button></div>
+ <h3>Bán đồ trong túi</h3><div class="items">${dg.inventory.map((it,i)=>itemCard(it,`<div class="item-actions"><button data-sell="${i}">Bán · ${it.value} xu</button></div>`)).join('')||'<p>Không có gì để bán.</p>'}</div>
+ <div class="dialog-actions"><button id="resume">Quay lại hầm</button></div>`;
+}
+
+return{RARITY_COLOR,createDungeonView,itemCard,bagHtml,shopHtml};})();
 // ---- app.js
 (()=>{
+
+
 
 
 
@@ -758,10 +1385,12 @@ const crops=[[192,80,291,639],[639,115,339,606],[1122,115,239,606],[1477,36,499,
 let joy={x:0,y:0,id:null},touchRunning=false,camera={scale:1,x:0,y:0},mobile=false;
 // Rooms without a PNG backdrop are painted at load time by art.mjs.
 const painted={};let zombieSprite=null,neckSprite=null,startRoom='cemetery';
+// Hầm Ma (action-RPG visitor mode) runs instead of `sim` when `dg` is set.
+let dg=null,dview=null,lastPointer='mouse';
 let sim=null,paused=false,keys=new Set(),running=false,last=0,uiClock=0,assetsReady=false,hover=null,lastSpeech='',endShown=false,elapsed=0;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-Promise.all([room.decode(),atlas.decode()]).then(()=>{for(const r of Object.values(ROOMS))if(r.art!=='world')painted[r.art]=paintRoom(r);zombieSprite=paintZombie();neckSprite=paintLongNeck();assetsReady=true;$('loading').hidden=true;$('start').hidden=false;draw();}).catch(()=>{$('loading').textContent='Chưa tải được hình. Hãy tải lại trang để thử lại.';});
-function launch(role,roomId=startRoom){resetStick();sim=new Simulation(role,roomId);paused=false;endShown=false;running=false;keys.clear();$('start').hidden=true;$('end').hidden=true;$('place').hidden=role!=='employee';$('stop').hidden=role!=='employee';$('touchPlace').hidden=role!=='employee';$('touchSecondaryLabel').textContent=role==='visitor'?'Nấp':'Kích loa';$('touchPrimaryIcon').textContent=role==='visitor'?'☀':'✦';$('primaryLabel').textContent=role==='visitor'?'Bật / tắt đèn':'Tung chiêu';$('secondaryLabel').textContent=role==='visitor'?'Nấp ở rèm':'Kích loa';$('mode').textContent=role==='visitor'?'KHÁCH THAM QUAN':'CA NHÂN VIÊN';canvas.focus();updateUI();}
+Promise.all([room.decode(),atlas.decode()]).then(()=>{for(const r of Object.values(ROOMS))if(r.art!=='world')painted[r.art]=paintRoom(r);zombieSprite=paintZombie();neckSprite=paintLongNeck();dview=createDungeonView(canvas,ctx,{atlas,crops,zombie:zombieSprite,neck:neckSprite});assetsReady=true;$('loading').hidden=true;$('start').hidden=false;draw();}).catch(()=>{$('loading').textContent='Chưa tải được hình. Hãy tải lại trang để thử lại.';});
+function launch(role,roomId=startRoom){resetStick();leaveDungeon();sim=new Simulation(role,roomId);paused=false;endShown=false;running=false;keys.clear();$('start').hidden=true;$('end').hidden=true;$('place').hidden=role!=='employee';$('stop').hidden=role!=='employee';$('touchPlace').hidden=role!=='employee';$('touchSecondaryLabel').textContent=role==='visitor'?'Nấp':'Kích loa';$('touchPrimaryIcon').textContent=role==='visitor'?'☀':'✦';$('primaryLabel').textContent=role==='visitor'?'Bật / tắt đèn':'Tung chiêu';$('secondaryLabel').textContent=role==='visitor'?'Nấp ở rèm':'Kích loa';$('mode').textContent=role==='visitor'?'KHÁCH THAM QUAN':'CA NHÂN VIÊN';canvas.focus();updateUI();}
 function sprite(a,label){if(a===sim?.p&&sim.backstage)return;const zombie=a.sprite===4,neck=a.sprite===5,img=zombie?zombieSprite:neck?neckSprite:atlas,c=zombie?[0,0,42,82]:neck?[0,0,44,114]:crops[a.sprite],height=a.sprite===3?79:zombie?74:neck?92:68,width=c[2]/c[3]*height,bob=a.moving?Math.sin(elapsed*13)*1.8:0;ctx.save();ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(a.x,a.y,17,5,0,0,Math.PI*2);ctx.fill();ctx.translate(a.x,a.y+bob);if(Math.cos(a.face)<-.15)ctx.scale(-1,1);if(a===sim?.p&&sim.crouch)ctx.scale(1,.74);ctx.globalAlpha*=a===sim?.p&&sim.hidden ? .55 : 1;ctx.drawImage(img,...c,-width/2,-height,width,height);ctx.restore();if(label){ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillStyle='#08121ed9';const w=ctx.measureText(label).width+12;ctx.fillRect(a.x-w/2,a.y-height-20,w,17);ctx.fillStyle=a===sim?.p?'#b7ffe4':'#d9e7e6';ctx.fillText(label,a.x,a.y-height-8);}}
 function drawCoin(){if(!sim.coin||sim.coinHeld)return;let x=sim.coin.x,y=sim.coin.y;const f=sim.coinFlight;if(f){const k=Math.min(1,1-(f.until-sim.time)/(f.until-f.start));x=f.from.x+(f.to.x-f.from.x)*k;y=f.from.y+(f.to.y-f.from.y)*k-Math.sin(k*Math.PI)*40;}ctx.fillStyle='#0006';ctx.beginPath();ctx.ellipse(sim.coin.x,sim.coin.y+2,6,2,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e7c083';ctx.beginPath();ctx.arc(x,y-3,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff2c2';ctx.fillRect(x-2,y-6,2,2);if(!f&&Math.sin(elapsed*4)>.6)sparkle(x,y-6);}
 // Ma Cổ Dài hangs from the ceiling rail: shadow on the floor, neck from above, head at ceiling height.
@@ -808,7 +1437,7 @@ function draw(){
  if(sim.mystery){const ghost={x:680,y:450,face:0,sprite:0,moving:false};ctx.save();ctx.globalAlpha=.55+.1*Math.sin(elapsed*2);sprite(ghost,'An · vé 000');ctx.restore();ring(ghost.x,ghost.y,24,'#c7ffdf60');}
  for(const f of sim.floaters){ctx.textAlign='center';ctx.font='bold 13px system-ui';ctx.fillStyle='#061421';const fy=f.y-(2-(f.until-sim.time))*9;ctx.fillText(f.text,f.x+1,fy+1);ctx.fillStyle='#ffe5ad';ctx.fillText(f.text,f.x,fy);}
 }
-function updateUI(){if(!sim){$('resources').innerHTML='';return;}const resource=(label,value,cls)=>`<div class="res ${cls}">${label}<strong>${Math.round(value)}</strong><div class="bar"><i style="width:${value}%"></i></div></div>`;$('resources').innerHTML=sim.role==='visitor'?resource('Sợ hãi',sim.fear,'fear')+resource('Thể lực',sim.stamina,'')+resource('Pin',sim.battery,'battery'):resource('Thể lực',sim.stamina,'')+`<div class="res">Điểm diễn<strong>${sim.score}</strong><div style="color:var(--mint);font-size:10px">${sim.served} khách đã ra</div></div>`;
+function updateUI(){if(dg)return updateDungeonUI();if(!sim){$('resources').innerHTML='';return;}const resource=(label,value,cls)=>`<div class="res ${cls}">${label}<strong>${Math.round(value)}</strong><div class="bar"><i style="width:${value}%"></i></div></div>`;$('resources').innerHTML=sim.role==='visitor'?resource('Sợ hãi',sim.fear,'fear')+resource('Thể lực',sim.stamina,'')+resource('Pin',sim.battery,'battery'):resource('Thể lực',sim.stamina,'')+`<div class="res">Điểm diễn<strong>${sim.score}</strong><div style="color:var(--mint);font-size:10px">${sim.served} khách đã ra</div></div>`;
  $('objective').textContent=sim.objective();const near=sim.nearest();
  const nearby=distance(sim.p,near)<64;
  const verbs={bell:'Rung chuông',tape:'Bật băng',portrait:'Xoay tranh',ticket:sim.mystery?'Đóng mộc':'Xem vé',curtain:sim.hidden?'Bước ra':'Nấp',bench:sim.resting?'Đứng dậy':'Nghỉ',wardrobe:sim.mystery?'Mời An':sim.role==='visitor'?'Đập cửa tủ':'Chỉnh áo',door:sim.role==='visitor'?(sim.room.next?'Sang phòng':'Ra ngoài'):sim.room.admitSpot==='door'?'Đón khách':'Lối ra',coat:sim.hidden?'Bước ra':'Nấp',coffin:sim.role==='visitor'?'Gõ quan tài':sim.hidden?'Bước ra':'Chui vào',coin:'Nhặt xu',clip:'Nhặt lên',pulley:sim.role==='visitor'?'Giật dây':sim.puppet?'Buông dây':'Cầm dây',backdoor:'Vào cửa hậu',radio:'Gọi bộ đàm',mirror:'Soi gương',alcove:sim.hidden?'Bước ra':'Nấp',entrance:sim.role==='visitor'?'Ra ngoài':'Đón khách'};
@@ -821,23 +1450,23 @@ function updateUI(){if(!sim){$('resources').innerHTML='';return;}const resource=
  $('touchSecondary').disabled=sim.role==='visitor'?!nearHide&&!sim.hidden&&!sim.coinHeld&&!ducking:sim.props.length===0||sim.propCooldown>0;
  $('nearby').textContent=distance(sim.p,near)<64&&!sim.ending?(mobile?'Chạm Sử dụng · ':'E · ')+near.label:'';const speech=sim.bubble&&sim.bubble.until>sim.time?sim.bubble.text:'';if(speech!==lastSpeech){$('speech').textContent=speech;$('speech').classList.toggle('show',!!speech);lastSpeech=speech;}$('primary').classList.toggle('active',sim.torch);$('run').classList.toggle('active',running);$('primaryLabel').textContent=sim.role==='visitor'?(sim.torch?'Tắt đèn':'Bật đèn'):sim.cooldown>0?`Hồi ${sim.cooldown.toFixed(1)}s`:'Tung chiêu';$('status').textContent=sim.role==='visitor'?`Tránh ${sim.avoided} màn hù · ${sim.clues.length}/3 manh mối · ${sim.room.next?'Đi tiếp sang '+ROOMS[sim.room.next].title:'Ra cửa cuối để kết thúc chuyến chơi'}`:`${sim.props.length}/3 loa · ${sim.scared} lần hù trúng · ${sim.distracted} lần phân tâm · ${sim.clues.length}/3 manh mối`;
  if(sim.ending&&!endShown)showEnding();}
-function frame(now){const dt=last?Math.min((now-last)/1000,.06):0;last=now;elapsed+=dt;if(sim&&!paused&&!sim.ending){sim.step(dt,{dx:joy.x+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0),dy:joy.y+(keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0),run:keys.has('shift')||running||touchRunning});}draw();uiClock+=dt;if(uiClock>.08){uiClock=0;updateUI();}requestAnimationFrame(frame);}
+function frame(now){const dt=last?Math.min((now-last)/1000,.06):0;last=now;elapsed+=dt;if(dg){if(!paused&&!dg.ending){dg.step(dt,moveInput());dview.step(dt);}dview.draw(dt);uiClock+=dt;if(uiClock>.08){uiClock=0;updateDungeonUI();}requestAnimationFrame(frame);return;}if(sim&&!paused&&!sim.ending){sim.step(dt,{dx:joy.x+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0),dy:joy.y+(keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0),run:keys.has('shift')||running||touchRunning});}draw();uiClock+=dt;if(uiClock>.08){uiClock=0;updateUI();}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/camera.scale+camera.x,y:(e.clientY-r.top)/camera.scale+camera.y};}
-canvas.addEventListener('pointerdown',e=>{if(!sim||paused||sim.ending)return;e.preventDefault();canvas.focus();const p=point(e),spot=(sim?.spots()||[]).find(s=>distance(s,p)<30);if(spot){if(distance(sim.p,spot)<64)sim.interact(spot.id);else sim.navigate(spot.x,spot.y,spot.id);}else sim.navigate(p.x,p.y);updateUI();});canvas.addEventListener('pointermove',e=>{const p=point(e);hover=(sim?.spots()||[]).find(s=>distance(s,p)<28)?.id||null;});canvas.addEventListener('pointerleave',()=>hover=null);
+canvas.addEventListener('pointerdown',e=>{lastPointer=e.pointerType;if(dg){if(!paused&&!dg.ending){e.preventDefault();canvas.focus();dview.pointerDown(e);}return;}if(!sim||paused||sim.ending)return;e.preventDefault();canvas.focus();const p=point(e),spot=(sim?.spots()||[]).find(s=>distance(s,p)<30);if(spot){if(distance(sim.p,spot)<64)sim.interact(spot.id);else sim.navigate(spot.x,spot.y,spot.id);}else sim.navigate(p.x,p.y);updateUI();});canvas.addEventListener('pointermove',e=>{if(dg){dview.pointerMove(e);return;}const p=point(e);hover=(sim?.spots()||[]).find(s=>distance(s,p)<28)?.id||null;});canvas.addEventListener('pointerleave',()=>hover=null);
 function invoke(action){if(!sim||paused||sim.ending)return;action();updateUI();canvas.focus();}
 $('interact').onclick=()=>invoke(()=>sim.interact());$('primary').onclick=()=>invoke(()=>sim.action());$('secondary').onclick=()=>invoke(()=>sim.secondary());$('place').onclick=()=>invoke(()=>sim.place());$('run').onclick=()=>{running=!running;updateUI();};
 function dialog(html){paused=true;keys.clear();resetStick();$('modalContent').innerHTML=html;if(!modal.open)modal.showModal();}
 function close(){modal.close();paused=false;last=0;canvas.focus();}
 $('closeModal').onclick=close;modal.addEventListener('cancel',e=>{e.preventDefault();close();});
-function help(){dialog(`<h2>Điều khiển & phối hợp đạo cụ</h2><p><b>Trên điện thoại:</b> kéo cần trái để đi; tay phải chạm Đèn pin / Hù và nút sử dụng. Giữ Chạy để tăng tốc. Có thể vừa di chuyển vừa dùng kỹ năng.</p><p><b>Đạo cụ tác động lên ma:</b> chuông kéo ma tới nguồn âm; băng cát sét giữ ma đứng nghe; tranh khiến ma hoảng lùi; rèm làm ma mất dấu; ghế nghỉ tạo vùng an toàn. Mỗi món có thời gian hồi và dùng lặp sẽ kém hiệu quả.</p><p><b>Phòng Nghĩa Địa:</b> Xác Sống gần như không nhìn thấy nhưng nghe rất thính. Ván gỗ cót két và tiếng chạy sẽ kéo hắn tới. Nhặt đồng xu rồi nhấn Q để ném đánh lạc hướng. Đèn pin chỉ làm hắn khựng lại rồi lần theo ánh sáng; đừng bật đèn khi nấp sau áo khoác. Nhân viên có thể chui vào quan tài đứng rồi bung nắp để hù.</p><p><b>Hành lang Ma Cổ Dài:</b> cái đầu trượt trên trần và thả xuống ai đứng dưới bóng của nó. Nhấn Q để cúi người, giật dây kéo, hoặc rọi đèn lên ròng rọc để làm kẹt. Rọi vào mặt chỉ làm cô ấy thấy bạn. Cửa hậu là đường tắt tối om. Nhân viên cầm dây kéo để điều khiển cái đầu; gọi bộ đàm khi mỏi tay.</p><p>Nhân vật đi trong phòng thật. Đến gần đồ vật để sử dụng; NPC vẫn di chuyển khi bạn đứng yên.</p><div class="help-grid"><b>WASD / ↑↓←→</b><span>Di chuyển. Hoặc chạm một điểm trên sàn để tự tìm đường.</span><b>E</b><span>Tương tác với vật gần nhất. Chạm điểm sáng cũng tự đi tới vật đó.</span><b>Space</b><span>Khách: bật / tắt đèn pin. Nhân viên: tung chiêu trong tầm gần.</span><b>Q</b><span>Khách: nấp khi ở cạnh rèm. Nhân viên: kích hoạt loa gần nhất.</span><b>P</b><span>Nhân viên đặt loa tại chỗ đang đứng, tối đa 3 loa.</span><b>Shift</b><span>Chạy nhanh, tốn thể lực.</span><b>Ghế nghỉ</b><span>Tới ghế ở góc trái để hồi sức, pin và giảm sợ hãi.</span><b>J / Esc</b><span>Nhật ký / tạm dừng.</span></div><p>${sim?.role==='employee'?'Gợi ý: đặt loa, mở cửa đón khách, kích loa rồi vòng sang hướng khác để hù. Khách quen chiêu sẽ khó bị dọa hơn.':'Gợi ý: khi ma lấy đà, quay mặt rọi đèn, lùi lại hoặc nấp. Bàn chặn cả đường đi lẫn một phần tầm nhìn.'}</p><div class="dialog-actions"><button id="resume">Vào chơi</button></div>`);$('resume').onclick=close;}
-function journal(){dialog(`<span class="eyebrow">NHẬT KÝ CA ĐÊM</span><h2>Những điều đã thấy</h2><div class="clues">${Object.entries(EVIDENCE).map(([k,v])=>`<div class="clue ${sim?.clues.includes(k)?'':'locked'}">${sim?.clues.includes(k)?'✓ '+v:'? Chưa tìm thấy'}</div>`).join('')}</div><p>${sim?.mystery?'Để giúp An chơi xong: tới bàn đóng mộc. Để mời An làm nhân viên: tới tủ phân ca.':'Tìm các dấu vết trong phòng: bảng tên dưới tranh, vé trên bàn và máy cát sét.'}</p><ul>${(sim?.journal||[]).map(t=>`<li>${esc(t)}</li>`).join('')}</ul><div class="dialog-actions"><button id="resume">Quay lại phòng</button></div>`);$('resume').onclick=close;}
+function help(){if(dg)return dungeonHelp();dialog(`<h2>Điều khiển & phối hợp đạo cụ</h2><p><b>Trên điện thoại:</b> kéo cần trái để đi; tay phải chạm Đèn pin / Hù và nút sử dụng. Giữ Chạy để tăng tốc. Có thể vừa di chuyển vừa dùng kỹ năng.</p><p><b>Đạo cụ tác động lên ma:</b> chuông kéo ma tới nguồn âm; băng cát sét giữ ma đứng nghe; tranh khiến ma hoảng lùi; rèm làm ma mất dấu; ghế nghỉ tạo vùng an toàn. Mỗi món có thời gian hồi và dùng lặp sẽ kém hiệu quả.</p><p><b>Phòng Nghĩa Địa:</b> Xác Sống gần như không nhìn thấy nhưng nghe rất thính. Ván gỗ cót két và tiếng chạy sẽ kéo hắn tới. Nhặt đồng xu rồi nhấn Q để ném đánh lạc hướng. Đèn pin chỉ làm hắn khựng lại rồi lần theo ánh sáng; đừng bật đèn khi nấp sau áo khoác. Nhân viên có thể chui vào quan tài đứng rồi bung nắp để hù.</p><p><b>Hành lang Ma Cổ Dài:</b> cái đầu trượt trên trần và thả xuống ai đứng dưới bóng của nó. Nhấn Q để cúi người, giật dây kéo, hoặc rọi đèn lên ròng rọc để làm kẹt. Rọi vào mặt chỉ làm cô ấy thấy bạn. Cửa hậu là đường tắt tối om. Nhân viên cầm dây kéo để điều khiển cái đầu; gọi bộ đàm khi mỏi tay.</p><p>Nhân vật đi trong phòng thật. Đến gần đồ vật để sử dụng; NPC vẫn di chuyển khi bạn đứng yên.</p><div class="help-grid"><b>WASD / ↑↓←→</b><span>Di chuyển. Hoặc chạm một điểm trên sàn để tự tìm đường.</span><b>E</b><span>Tương tác với vật gần nhất. Chạm điểm sáng cũng tự đi tới vật đó.</span><b>Space</b><span>Khách: bật / tắt đèn pin. Nhân viên: tung chiêu trong tầm gần.</span><b>Q</b><span>Khách: nấp khi ở cạnh rèm. Nhân viên: kích hoạt loa gần nhất.</span><b>P</b><span>Nhân viên đặt loa tại chỗ đang đứng, tối đa 3 loa.</span><b>Shift</b><span>Chạy nhanh, tốn thể lực.</span><b>Ghế nghỉ</b><span>Tới ghế ở góc trái để hồi sức, pin và giảm sợ hãi.</span><b>J / Esc</b><span>Nhật ký / tạm dừng.</span></div><p>${sim?.role==='employee'?'Gợi ý: đặt loa, mở cửa đón khách, kích loa rồi vòng sang hướng khác để hù. Khách quen chiêu sẽ khó bị dọa hơn.':'Gợi ý: khi ma lấy đà, quay mặt rọi đèn, lùi lại hoặc nấp. Bàn chặn cả đường đi lẫn một phần tầm nhìn.'}</p><div class="dialog-actions"><button id="resume">Vào chơi</button></div>`);$('resume').onclick=close;}
+function journal(){if(dg)return bag();dialog(`<span class="eyebrow">NHẬT KÝ CA ĐÊM</span><h2>Những điều đã thấy</h2><div class="clues">${Object.entries(EVIDENCE).map(([k,v])=>`<div class="clue ${sim?.clues.includes(k)?'':'locked'}">${sim?.clues.includes(k)?'✓ '+v:'? Chưa tìm thấy'}</div>`).join('')}</div><p>${sim?.mystery?'Để giúp An chơi xong: tới bàn đóng mộc. Để mời An làm nhân viên: tới tủ phân ca.':'Tìm các dấu vết trong phòng: bảng tên dưới tranh, vé trên bàn và máy cát sét.'}</p><ul>${(sim?.journal||[]).map(t=>`<li>${esc(t)}</li>`).join('')}</ul><div class="dialog-actions"><button id="resume">Quay lại phòng</button></div>`);$('resume').onclick=close;}
 function pause(){dialog(`<h2>Tạm nghỉ</h2><p>Khách, ma và đồng hồ đều dừng lại khi bảng này mở.</p><div class="dialog-actions"><button id="resume">Chơi tiếp</button><button id="guide">Xem cách chơi</button><button id="restart">Đổi vai / bắt đầu lại</button></div>`);$('resume').onclick=close;$('guide').onclick=help;$('restart').onclick=()=>{dialog('<h2>Bắt đầu lại?</h2><p>Ca hiện tại sẽ được đặt lại.</p><div class="dialog-actions"><button id="yes">Về chọn vai</button><button id="no">Chơi tiếp ca này</button></div>');$('yes').onclick=()=>{close();home();};$('no').onclick=close;};}
-function home(){resetStick();sim=null;endShown=false;keys.clear();$('end').hidden=true;$('start').hidden=false;$('speech').classList.remove('show');$('nearby').textContent='';$('objective').textContent='Chọn vai để bắt đầu.';$('mode').textContent='RPG / MÔ PHỎNG';$('roomName').textContent='CÔNG VIÊN ÁNH TRĂNG';$('stop').hidden=true;updateUI();}
+function home(){resetStick();sim=null;leaveDungeon();endShown=false;keys.clear();$('end').hidden=true;$('start').hidden=false;$('speech').classList.remove('show');$('nearby').textContent='';$('objective').textContent='Chọn vai để bắt đầu.';$('mode').textContent='RPG / MÔ PHỎNG';$('roomName').textContent='CÔNG VIÊN ÁNH TRĂNG';$('stop').hidden=true;updateUI();}
 const endings={leave:['Mai chơi tiếp','Na đặt một lon nước cạnh bạn. “Lần sau chơi tiếp, nhưng cậu phải đi trước.” Không cần gồng. Tấm vé vẫn còn.'],tricks:['Rành quá rồi','Bạn đã đi qua phòng. Bơ cười: “Toàn máy móc gài bẫy thôi.” Cái loa rút điện ở góc phòng khẽ đáp: “Ừ.”'],ticket:['Xé vé','Băng cũ vang lên: “Chào mừng An đến với Nhà Ma.” Bạn đóng mộc cuối. An nói “Lâu quá…” rồi biến mất. Tấm vé đã khô.'],new:['Ma mới','Bạn ghi tên An vào bảng phân ca. Mr. D nhìn một lúc rồi viết: “Đứa này khỏi cần phát đồng phục.” Chiếc ghế tự kéo ra đón khách.'],together:['Không bỏ ai lại','Đèn sáng. Bạn dẫn mọi người ra khỏi nhà ma. Sau cánh cửa vừa khóa, ai đó nói rất khẽ: “Cảm ơn.”'],shift:['Hết ca','Khách đã về. Bạn treo áo choàng và trả bộ đàm. Ngày mai, căn phòng sẽ lại cần một người đứng sau tiếng hét.']};
 function showEnding(){endShown=true;const [title,text]=endings[sim.ending]||endings.shift;$('end').innerHTML=`<div class="endcard"><span class="eyebrow">CÔNG VIÊN ÁNH TRĂNG · KẾT CA</span><h2>${title}</h2><p>${text}</p><div class="endstats"><span>${sim.role==='employee'?sim.score+' điểm diễn':sim.avoided+' lần tránh ma'}</span><span>${sim.clues.length}/3 manh mối</span><span>${Math.floor(sim.time/60)}:${String(Math.floor(sim.time%60)).padStart(2,'0')}</span></div><div class="endactions"><button id="again">Chơi lại vai này</button><button id="other">Đổi vai</button></div><p><small>Bản thử cơ chế một phòng · Công viên nhiều khu và tiến trình nhiều đêm sẽ được phát triển tiếp.</small></p></div>`;$('end').hidden=false;$('again').onclick=()=>launch(sim.role,sim.visited[0]);$('other').onclick=()=>launch(sim.role==='visitor'?'employee':'visitor',sim.visited[0]);}
 $('stop').onclick=()=>{if(!sim)return;dialog('<h2>Kết thúc ca?</h2><p>Bật đèn đưa khách ra, hoặc chấm công khi nhóm đã ra hết. Phần thưởng đã kiếm được vẫn được giữ.</p><div class="dialog-actions"><button id="safe">Dừng show, đưa khách ra</button><button id="shiftEnd">Chấm công hết ca</button><button id="resume">Tiếp tục ca</button></div>');$('safe').onclick=()=>{close();sim.finish('together');updateUI();};$('shiftEnd').disabled=sim.npcs.some(n=>!n.gone);$('shiftEnd').onclick=()=>{close();sim.finish('shift');updateUI();};$('resume').onclick=close;};
-$('help').onclick=help;$('journal').onclick=journal;$('pause').onclick=pause;document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>launch(b.dataset.role));
+$('help').onclick=help;$('journal').onclick=journal;$('pause').onclick=pause;document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>b.dataset.role==='dungeon'?launchDungeon():launch(b.dataset.role));
 document.querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>{startRoom=b.dataset.room;document.querySelectorAll('[data-room]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',x===b);});});
 const joystick=$('joystick'),stick=$('stick');
 function resetStick(){joy={x:0,y:0,id:null};touchRunning=false;if(stick)stick.style.transform='translate(0px,0px)';if($('touchRun'))$('touchRun').classList.remove('active');}
@@ -849,7 +1478,65 @@ $('touchPrimary').onclick=()=>invoke(()=>{if(sim.role==='visitor'&&!sim.torch){c
 $('touchInteract').onclick=()=>invoke(()=>sim.interact());$('touchSecondary').onclick=()=>invoke(()=>sim.secondary());$('touchPlace').onclick=()=>invoke(()=>sim.place());
 $('touchRun').addEventListener('pointerdown',e=>{if(!sim||paused)return;e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchRunning=true;e.currentTarget.classList.add('active');});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('touchRun').addEventListener(type,()=>{touchRunning=false;$('touchRun').classList.remove('active');});
-window.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d','e','q','p','j','escape','shift'].includes(k))e.preventDefault();if(k==='escape'){if(e.repeat)return;modal.open?close():pause();return;}if(k==='j'){if(e.repeat)return;modal.open?close():journal();return;}if(paused||!sim||sim.ending)return;keys.add(k);if(e.repeat)return;if(k==='e')invoke(()=>sim.interact());if(k===' ')invoke(()=>sim.action());if(k==='q')invoke(()=>sim.secondary());if(k==='p')invoke(()=>sim.place());});window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));window.addEventListener('blur',()=>{keys.clear();resetStick();if(sim&&!sim.ending&&!modal.open)pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden){keys.clear();resetStick();if(sim&&!sim.ending&&!modal.open)pause();}});
+window.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d','e','q','p','j','escape','shift','r','f','i','1','2'].includes(k))e.preventDefault();if(k==='escape'){if(e.repeat)return;modal.open?close():pause();return;}if(k==='j'){if(e.repeat)return;modal.open?close():journal();return;}if(dg){if(paused||dg.ending)return;keys.add(k);if(!e.repeat)dungeonKey(k);return;}if(paused||!sim||sim.ending)return;keys.add(k);if(e.repeat)return;if(k==='e')invoke(()=>sim.interact());if(k===' ')invoke(()=>sim.action());if(k==='q')invoke(()=>sim.secondary());if(k==='p')invoke(()=>sim.place());});window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));window.addEventListener('blur',()=>{keys.clear();resetStick();if((sim&&!sim.ending||dg&&!dg.ending)&&!modal.open)pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden){keys.clear();resetStick();if((sim&&!sim.ending||dg&&!dg.ending)&&!modal.open)pause();}});
 if(document.modelContext?.registerTool){try{Promise.resolve(document.modelContext.registerTool({name:'read_simulation',description:'Read the visible RPG simulation: role, position, resources, clues, and nearby interaction.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute:()=>sim?{role:sim.role,room:sim.roomId,position:{x:sim.p.x,y:sim.p.y},fear:sim.fear,stamina:sim.stamina,clues:sim.clues,phase:sim.phase,objective:sim.objective(),nearby:distance(sim.p,sim.nearest())<64?sim.nearest().id:null}: {screen:'role-selection'}})).catch(()=>{});Promise.resolve(document.modelContext.registerTool({name:'start_simulation',description:'Start a new run in a selected role from the role-selection screen.',inputSchema:{type:'object',properties:{role:{type:'string',enum:['visitor','employee']},room:{type:'string',enum:Object.keys(ROOMS)}},required:['role'],additionalProperties:false},execute:({role,room})=>{if(sim)throw Error('A run is active');if(!assetsReady||!['visitor','employee'].includes(role)||room&&!ROOMS[room])throw Error('Cannot start');launch(role,room||startRoom);return{role:sim.role,room:sim.roomId,phase:sim.phase};}})).catch(()=>{});}catch{}}
+
+// ---- Hầm Ma wiring ------------------------------------------------------------
+const DUNGEON_ONLY=['ult','bread','batt','touchUlt','touchBread','touchBattery'];
+const DUNGEON_HTML={interact:'<kbd>E</kbd><span>Nhặt / dùng</span>',place:'<kbd>R</kbd><span id="placeLabel">Chuông đồng</span>',run:'<kbd>Shift</kbd><span>Lướt</span>',touchPlace:'◎<small id="touchPlaceLabel">Chuông</small>',touchRun:'»<small id="touchRunLabel">Lướt</small>'};
+const CLASSIC_HTML=Object.fromEntries(Object.keys(DUNGEON_HTML).map(id=>[id,$(id).innerHTML]));
+function moveInput(){return{dx:joy.x+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0),dy:joy.y+(keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0)};}
+// Mouse players aim at the cursor; touch players aim at the closest performer in range.
+const aim=range=>lastPointer==='mouse'&&dview.mouse?dview.mouse:dview.autoAim(range);
+function launchDungeon(){
+ resetStick();sim=null;dg=new Dungeon(Math.floor(Math.random()*1e5));dview.attach(dg);paused=false;endShown=false;keys.clear();
+ document.body.classList.add('dungeon');$('start').hidden=true;$('end').hidden=true;$('stop').hidden=true;$('place').hidden=false;$('touchPlace').hidden=false;
+ for(const [id,html] of Object.entries(DUNGEON_HTML))$(id).innerHTML=html;for(const id of DUNGEON_ONLY)$(id).hidden=false;
+ $('primaryLabel').textContent='Rọi đèn';$('touchPrimaryIcon').textContent='☀';$('mode').textContent='HẦM MA';
+ canvas.focus();updateDungeonUI();
+}
+function leaveDungeon(){
+ if(!dg&&!document.body.classList.contains('dungeon'))return;
+ dg=null;dview?.detach();document.body.classList.remove('dungeon');
+ for(const [id,html] of Object.entries(CLASSIC_HTML))$(id).innerHTML=html;for(const id of DUNGEON_ONLY)$(id).hidden=true;
+}
+function dungeonAct(action){if(!dg||paused||dg.ending)return;action();updateDungeonUI();canvas.focus();}
+function useStuff(){dungeonAct(()=>{if(dg.interact()==='shop')shop();});}
+const DUNGEON_KEYS={' ':()=>dg.cast('flash',aim(160)),q:()=>dg.cast('candy',aim(380)),r:()=>dg.cast('bell'),f:()=>dg.cast('spotlight',aim(260)),shift:()=>dg.cast('dash',dview.mouse&&lastPointer==='mouse'?dview.mouse:null),'1':()=>dg.usePotion('bread'),'2':()=>dg.usePotion('battery'),i:()=>bag()};
+function dungeonKey(k){if(k==='e')return useStuff();const f=DUNGEON_KEYS[k];if(f)dungeonAct(f);}
+const DUNGEON_BUTTONS={interact:useStuff,touchInteract:useStuff,primary:()=>dungeonAct(DUNGEON_KEYS[' ']),touchPrimary:()=>dungeonAct(DUNGEON_KEYS[' ']),secondary:()=>dungeonAct(DUNGEON_KEYS.q),touchSecondary:()=>dungeonAct(DUNGEON_KEYS.q),place:()=>dungeonAct(DUNGEON_KEYS.r),touchPlace:()=>dungeonAct(DUNGEON_KEYS.r),run:()=>dungeonAct(DUNGEON_KEYS.shift),ult:()=>dungeonAct(DUNGEON_KEYS.f),touchUlt:()=>dungeonAct(DUNGEON_KEYS.f),bread:()=>dungeonAct(DUNGEON_KEYS['1']),touchBread:()=>dungeonAct(DUNGEON_KEYS['1']),batt:()=>dungeonAct(DUNGEON_KEYS['2']),touchBattery:()=>dungeonAct(DUNGEON_KEYS['2'])};
+for(const [id,fn] of Object.entries(DUNGEON_BUTTONS)){const classic=$(id).onclick;$(id).onclick=e=>dg?fn():classic?.(e);}
+$('touchRun').addEventListener('pointerdown',()=>{if(dg)dungeonAct(DUNGEON_KEYS.shift);});
+canvas.addEventListener('pointerup',()=>dview?.pointerUp());canvas.addEventListener('pointercancel',()=>dview?.pointerUp());
+canvas.addEventListener('contextmenu',e=>{if(dg)e.preventDefault();});
+function skillButton(id,labelId,key,name){const s=dg.cooldowns[key],locked=dg.p.level<({bell:3,spotlight:5}[key]||1);const el=$(id),lab=labelId&&$(labelId);if(lab)lab.textContent=locked?`Cấp ${key==='bell'?3:5}`:s>0?`${Math.ceil(s)}s`:name;if(el)el.disabled=locked;}
+function updateDungeonUI(){
+ if(!dg)return;const p=dg.p,d=dg.derived;
+ const bar=(label,shown,pct,cls)=>`<div class="res ${cls}">${label}<strong>${shown}</strong><div class="bar"><i style="width:${Math.max(0,Math.min(100,pct))}%"></i></div></div>`;
+ $('resources').innerHTML=bar('Can đảm',Math.max(0,Math.round(p.courage)),p.courage/d.maxCourage*100,'fear')+bar('Pin',Math.round(p.battery),p.battery/d.maxBattery*100,'battery')+bar('Cấp '+p.level,Math.floor(p.xp/xpForLevel(p.level)*100)+'%',p.xp/xpForLevel(p.level)*100,'')+`<div class="res">Xu<strong>${p.gold}</strong><div style="color:var(--mint);font-size:10px">${dg.potions.bread} bánh · ${dg.potions.battery} pin</div></div>`;
+ $('objective').textContent=dg.objective();$('roomName').textContent=`HẦM MA · TẦNG ${dg.depth}`;
+ const speech=dg.bubble&&dg.bubble.until>dg.time?dg.bubble.text:'';if(speech!==lastSpeech){$('speech').textContent=speech;$('speech').classList.toggle('show',!!speech);lastSpeech=speech;}
+ const n=dg.nearby();$('nearby').textContent='';$('touchInteractLabel').textContent=n?n.verb:'Lại gần';$('touchInteract').disabled=!n||!!dg.ending;
+ $('touchPrimaryLabel').textContent=dg.cooldowns.flash>0?'…':'Rọi đèn';$('touchPrimary').style.setProperty('--cooldown',dg.cooldowns.flash/.5*360+'deg');
+ $('touchSecondaryLabel').textContent='Ném kẹo';$('secondaryLabel').textContent='Ném kẹo';$('touchSecondary').disabled=p.battery<8;
+ skillButton('touchPlace','touchPlaceLabel','bell','Chuông');skillButton('place','placeLabel','bell','Chuông đồng');skillButton('touchUlt','touchUltLabel','spotlight','Sân khấu');skillButton('ult','ultLabel','spotlight','Đèn sân khấu');
+ const dash=dg.cooldowns.dash;if($('touchRunLabel'))$('touchRunLabel').textContent=dash>0?Math.ceil(dash)+'s':'Lướt';
+ $('touchBreadLabel').textContent=`Bánh ×${dg.potions.bread}`;$('touchBatteryLabel').textContent=`Pin ×${dg.potions.battery}`;$('breadLabel').textContent=`Bánh bao ×${dg.potions.bread}`;$('battLabel').textContent=`Pin AA ×${dg.potions.battery}`;
+ $('status').textContent=`Đã hạ màn ${dg.stats.defeated} · ${dg.stats.bosses} trùm · sâu nhất tầng ${dg.stats.deepest} · `+(lastPointer==='mouse'?'Chuột trái: đi / đánh · chuột phải: ném kẹo · I: túi đồ':'Nút Rọi đèn tự nhắm diễn viên gần nhất · Nhật ký: túi đồ');
+ if(dg.ending&&!endShown)showDungeonEnding();
+}
+function wire(map){for(const [attr,fn] of Object.entries(map))$('modalContent').querySelectorAll(`[data-${attr}]`).forEach(b=>b.onclick=()=>fn(b.dataset[attr]));const r=$('resume');if(r)r.onclick=close;}
+function bag(){if(!dg)return;dialog(bagHtml(dg));wire({equip:i=>{dg.equip(dg.inventory[+i]);bag();},drop:i=>{dg.dropItem(dg.inventory[+i]);bag();}});}
+function shop(){if(!dg)return;dialog(shopHtml(dg));wire({buy:k=>{dg.buy(k);shop();},sell:i=>{dg.sell(dg.inventory[+i]);shop();}});}
+function dungeonHelp(){dialog(`<h2>Hầm Ma: cách chơi</h2><p>Diễn viên trong hầm sẽ hù bạn. Hạ màn họ bằng cách làm họ mất bình tĩnh: khi thanh bình tĩnh về 0, họ phì cười, rơi đồ rồi rời sân khấu. Hết can đảm thì Mr. D dắt bạn về đầu tầng; đồ vẫn còn, chỉ rơi ít xu.</p><div class="help-grid"><b>Chuột trái</b><span>Đi tới chỗ bấm; giữ để đi liên tục. Bấm diễn viên để tự đánh; bấm tên món đồ để nhặt.</span><b>Chuột phải / Q</b><span>Ném kẹo về phía con trỏ (8 pin).</span><b>Space</b><span>Rọi đèn: đánh hình nón phía trước, không tốn pin.</span><b>R</b><span>Chuông đồng (cấp 3): làm choáng xung quanh.</span><b>F</b><span>Đèn sân khấu (cấp 5): chùm sáng lớn.</span><b>Shift</b><span>Lướt né: không bị hù trong lúc lướt.</span><b>E</b><span>Nhặt đồ, xuống cầu thang, mua bán ở quầy Mr. D.</span><b>1 / 2</b><span>Bánh bao (hồi can đảm) / pin AA (hồi pin).</span><b>I</b><span>Túi đồ: trang bị đèn, áo, bùa, giày.</span></div><p>Vòng đỏ là đòn sắp tới: bước ra khỏi vòng hoặc lướt. Mỗi tầng thứ ba có trùm giữ cầu thang. Trên điện thoại, nút đánh tự nhắm vào diễn viên gần nhất.</p><div class="dialog-actions"><button id="resume">Vào hầm</button></div>`);$('resume').onclick=close;}
+function showDungeonEnding(){
+ endShown=true;let best=dg.stats.deepest;try{best=Math.max(best,+localStorage.getItem('anhtrang.hamMa.best')||0);localStorage.setItem('anhtrang.hamMa.best',String(best));}catch{}
+ const s=dg.stats,text=s.bosses?`Mr. D đếm số trùm bạn làm phì cười: ${s.bosses}. “Mai có ca mới, nhớ ghé.”`:'Na đợi sẵn ở cửa hầm với lon nước. “Lần sau xuống sâu hơn nha.”';
+ $('end').innerHTML=`<div class="endcard"><span class="eyebrow">HẦM MA · KẾT CHUYẾN</span><h2>Lên khỏi hầm</h2><p>${text}</p><div class="endstats"><span>Sâu nhất tầng ${s.deepest}</span><span>Cấp ${dg.p.level}</span><span>${s.defeated} lần hạ màn</span><span>${dg.p.gold} xu</span></div><p><small>Kỷ lục của bạn: tầng ${best}</small></p><div class="endactions"><button id="again">Xuống hầm lần nữa</button><button id="other">Về màn hình chính</button></div></div>`;
+ $('end').hidden=false;$('again').onclick=()=>launchDungeon();$('other').onclick=()=>home();
+}
+window.addEventListener('pointerdown',e=>{lastPointer=e.pointerType;},true);
+// Local testing aid: open with ?debug to inspect the running game from the console or a test driver.
+if(new URLSearchParams(location.search).has('debug'))window.anhTrangDebug={get dg(){return dg;},get sim(){return sim;}};
 
 return{};})();</script></body></html>

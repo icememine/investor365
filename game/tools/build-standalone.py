@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Embed CSS, the two ES modules and the PNGs into one offline simulator.html.
+"""Embed CSS, the ES modules and the PNGs into one offline simulator.html.
 
 The modular files under src/ and assets/ are the source of truth; simulator.html
 is generated output. This is tied to the current file layout on purpose and is
@@ -17,26 +17,36 @@ def data_uri(name):
     return "data:image/png;base64," + base64.b64encode((ASSETS / name).read_bytes()).decode()
 
 
+MODULES = ["rooms.mjs", "sim.mjs", "art.mjs", "app.js"]  # dependency order
+
+
 def main():
     html = (SRC / "index.html").read_text(encoding="utf-8")
     css = (SRC / "style.css").read_text(encoding="utf-8")
-    sim = (SRC / "sim.mjs").read_text(encoding="utf-8")
-    app = (SRC / "app.js").read_text(encoding="utf-8")
-
-    # Drop module boundaries: sim's exports become plain declarations, app's import disappears.
-    sim = re.sub(r"^export\s+", "", sim, flags=re.M)
-    app, n = re.subn(r"^import\s*\{[^}]*\}\s*from\s*'\./sim\.mjs';\s*$", "", app, flags=re.M)
-    assert n == 1, "expected exactly one import of ./sim.mjs in app.js"
+    code = []
+    for name in MODULES:
+        js = (SRC / name).read_text(encoding="utf-8")
+        # Each module runs in its own function scope so private names cannot collide;
+        # its exports are returned and become top-level constants for the modules after it.
+        js = re.sub(r"^import\s*\{[^}]*\}\s*from\s*'\./[\w.]+';\s*$", "", js, flags=re.M)
+        assert not re.search(r"^\s*import\b", js, flags=re.M), f"unhandled import in {name}"
+        exports = re.findall(r"^export\s+(?:const|let|function|class)\s+([\w$]+)", js, flags=re.M)
+        assert len(exports) == len(re.findall(r"^export\b", js, flags=re.M)), f"use one declaration per export in {name}"
+        js = re.sub(r"^export\s+", "", js, flags=re.M)
+        names = ",".join(exports)
+        head = f"const {{{names}}}=" if exports else ""
+        code.append(f"// ---- {name}\n{head}(()=>{{\n{js}\nreturn{{{names}}};}})();")
+    js = "\n".join(code)
     for name in ("world.png", "actors.png"):
         ref = f"'../assets/{name}'"
-        assert ref in app, f"missing {ref} in app.js"
-        app = app.replace(ref, f"'{data_uri(name)}'")
+        assert ref in js, f"missing {ref} in app.js"
+        js = js.replace(ref, f"'{data_uri(name)}'")
 
     link = '<link rel="stylesheet" href="style.css">'
     script = '<script type="module" src="app.js"></script>'
     assert link in html and script in html, "index.html layout changed; update the exporter"
     html = html.replace(link, f"<style>\n{css}</style>")
-    html = html.replace(script, f'<script type="module">\n{sim}\n{app}</script>')
+    html = html.replace(script, f'<script type="module">\n{js}</script>')
 
     out = ROOT / "simulator.html"
     out.write_text(html, encoding="utf-8")

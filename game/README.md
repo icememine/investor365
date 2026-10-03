@@ -1,8 +1,17 @@
 # Ánh Trăng — Ca đêm ở Công viên Ánh Trăng
 
-A haunted-house RPG / simulation prototype. One room (the vampire dining room), two roles:
+A haunted-house RPG / simulation prototype with two rooms and two roles:
 **visitor** (explore, hide, use the flashlight, find clues) and **employee** (place speakers,
-admit guests, scare them). Full design, script and architecture notes: [GAME-DESIGN.md](GAME-DESIGN.md).
+admit guests, scare them).
+
+1. **Phòng Nghĩa Địa** (cemetery): Xác Sống hunts by ear. Loose boards creak, running is loud,
+   and a thrown coin pulls him away. Light only makes him flinch, then he follows it, and a lit
+   flashlight gives away the coat hiding spot. Na's lost hair clip is hidden here. Staff can hide
+   in the standing coffin and burst out for a guaranteed surprise. The arch leads on to room 2.
+2. **Bàn Tiệc Ma Cà Rồng** (dining room): the vampire hunts by sight. Three clues unlock Khách
+   Số 0 (An) and the story endings.
+
+The start screen picks the starting room; a visitor run normally starts in the cemetery. Full design, script and architecture notes: [GAME-DESIGN.md](GAME-DESIGN.md).
 
 Plain HTML5 Canvas + ES modules. No framework, package manager or server code.
 
@@ -23,7 +32,9 @@ Phones get a joystick and action buttons.
 
 | Path | Role |
 |---|---|
+| `src/rooms.mjs` | Room data: bounds, colliders, spots, ghost type, guest routes. Add rooms here. |
 | `src/sim.mjs` | Authoritative game state, pathfinding, interactions, ghost/guest AI, endings. No DOM. |
+| `src/art.mjs` | Procedural placeholder art: the cemetery (painted from its colliders) and the Xác Sống sprite. |
 | `src/app.js` | Input, camera, Canvas rendering, HUD, dialogs. |
 | `src/index.html`, `src/style.css` | Layout, HUD, touch controls. |
 | `assets/world.png`, `assets/actors.png` | Room backdrop and the 4-sprite character atlas (`actors.atlas.json`; the crops are mirrored in `app.js`). |

@@ -1,96 +1,557 @@
 <!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#081420"><meta name="description" content="RPG mô phỏng nhà ma: tự di chuyển, khám phá và vận hành một ca diễn ở Công viên Ánh Trăng."><title>Ánh Trăng · RPG & Mô phỏng nhà ma</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23081420'/%3E%3Cpath d='M23 5A12 12 0 1 0 27 23A11 11 0 0 1 23 5' fill='%2393dccb'/%3E%3C/svg%3E"><style>
-:root{color-scheme:dark;--bg:#070f1a;--panel:#0b1c2a;--line:#345364;--mint:#a0ead4;--muted:#9ab0bd;--gold:#e7c083;--red:#f3889c}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#183346,var(--bg) 80%);color:#edf2ef;font:16px/1.6 'Be Vietnam Pro',system-ui,sans-serif;min-height:100dvh;padding:18px;display:grid;place-items:center}button{font:inherit;color:inherit;background:#0d2030;border:1px solid var(--line);cursor:pointer;transition:background .15s,border-color .15s}button:hover{background:#1c3c48;border-color:var(--mint)}button:disabled{opacity:.45;cursor:default}button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}button.active{background:#24483e;border-color:var(--mint)}#game{width:min(1250px,100%);border:1px solid #2d4b5c;box-shadow:0 25px 100px #0008;background:var(--bg)}header{height:74px;padding:12px 22px;display:flex;align-items:center;gap:24px;background:#091623;border-bottom:1px solid var(--line)}.brand{display:flex;gap:12px;align-items:center;color:var(--mint);font-size:30px}.brand span{font-size:16px;letter-spacing:2px;font-weight:600}.brand small{display:block;font-size:10px;letter-spacing:3px;color:var(--muted)}#resources{margin-left:auto;display:flex;gap:22px}.res{font-size:11px;min-width:92px;color:var(--muted)}.res strong{float:right;font-weight:500;color:#e4efe9}.bar{margin-top:5px;background:#273846;height:4px}.bar i{display:block;height:100%;background:var(--mint);transition:width .2s}.res.fear .bar i{background:var(--red)}.res.battery .bar i{background:var(--gold)}nav{display:flex;gap:8px}nav button{padding:8px 13px;background:transparent;font-size:13px}kbd{font:11px monospace;opacity:.65}.world-wrap{position:relative;background:#07101d;aspect-ratio:1000/562;overflow:hidden}canvas{width:100%;height:100%;display:block;touch-action:none;image-rendering:pixelated;outline:none;cursor:crosshair}.topline{position:absolute;top:13px;left:20px;right:20px;display:flex;justify-content:space-between;pointer-events:none;color:#b8d6d6;font-size:10px;letter-spacing:2px;text-shadow:0 2px 4px #000}#speech{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);padding:9px 17px;max-width:88%;width:max-content;pointer-events:none;background:#06121deb;border:1px solid #3e6c79;font-size:13px;color:#c6e7dc;opacity:0;transition:opacity .2s}#speech.show{opacity:1}#nearby{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);padding:4px 13px;background:#091b27e8;color:var(--gold);font-size:12px;pointer-events:none;border-radius:3px}#nearby:empty{display:none}.objective{padding:14px 20px;border-top:1px solid var(--line);border-bottom:1px solid #243e50;display:flex;align-items:center;gap:18px;background:#102332;font-size:14px}.label{font-size:10px;letter-spacing:2px;color:var(--mint);white-space:nowrap}.objective button{margin-left:auto;padding:5px 11px;white-space:nowrap;font-size:12px;background:transparent}#toolbar{padding:17px 20px;display:flex;align-items:center;gap:25px;background:#091723}.move-help{min-width:200px;font-size:12px;color:var(--muted)}.move-help strong{display:block;color:#d2dfdf;font-size:14px;font-weight:500;margin-bottom:4px}.actions{display:flex;gap:8px;flex:1}.actions button{padding:10px 13px;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:58px}.actions button span{font-size:12px;white-space:nowrap}.actions kbd{color:var(--mint);opacity:1}footer{padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:15px;border-top:1px solid #263d4d;font-size:11px;color:#9ab0bd}footer button{font-size:12px;padding:4px 10px;border-color:#654d56;color:#e4a9b2;background:transparent}#loading,#start,#end{position:absolute;inset:0;background:#071321d9;display:flex;align-items:center;justify-content:center}#start{background:linear-gradient(90deg,#061321f7,#071625dc 55%,#07162540);justify-content:flex-start}.intro{padding:35px 6%;max-width:800px}.eyebrow{color:var(--mint);font-size:10px;letter-spacing:3px}h1{font-size:clamp(26px,3.4vw,45px);font-weight:500;line-height:1.4;margin:14px 0}h1 em{color:var(--mint);font-style:normal}.intro p{color:#b8c7d0;font-size:14px}.roles{display:flex;gap:14px;margin:23px 0}.roles button{padding:15px 20px;text-align:left;background:#0e2233eb;min-width:230px}.roles small{font-size:9px;color:#a4bdc6;letter-spacing:1px}.roles strong{display:block;font-size:23px;color:var(--mint);font-weight:500;margin:5px 0}.roles span{font-size:12px}.intro .start-help{font-size:11px;color:#8facbd}.endcard{max-width:620px;padding:30px;text-align:center}.endcard h2{color:var(--gold);font-size:30px;font-weight:500}.endcard p{font-size:15px}.endstats{display:flex;gap:14px;justify-content:center;color:var(--mint);font-size:13px;margin:22px 0}.endactions{display:flex;gap:10px;justify-content:center}.endactions button{padding:10px 20px}.endcard small{font-size:11px;color:var(--muted)}dialog{background:#0b1b29;color:#eaf0ed;border:1px solid #537888;box-shadow:0 20px 100px #000a;padding:30px;width:min(620px,94vw);max-height:85dvh}dialog::backdrop{background:#020913bd;backdrop-filter:blur(5px)}dialog h2{color:var(--mint);font-size:25px;font-weight:500;margin:0 25px 12px 0}dialog p{font-size:14px;color:#b9cbd5}#closeModal{position:absolute;top:10px;right:12px;font-size:24px;border:0;background:none;width:32px;height:32px}.help-grid{display:grid;grid-template-columns:100px 1fr;gap:9px 20px;margin:20px 0;font-size:13px}.help-grid b{color:var(--gold);font-weight:500}.dialog-actions{display:grid;gap:10px;margin-top:20px}.dialog-actions button{padding:11px;text-align:left}.clues{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}.clue{padding:17px 10px;background:#102635;border:1px solid var(--line);font-size:13px;color:var(--mint)}.clue.locked{opacity:.4}ul{padding-left:18px;font-size:13px;color:#bcd1dc}.flash{animation:hit .5s}@keyframes hit{0%{box-shadow:inset 0 0 100px #eb829a}100%{box-shadow:none}}[hidden]{display:none!important}@media(max-width:760px){body{padding:0;display:block}#game{border:0;min-height:100dvh}header{padding:10px 12px;gap:12px;height:65px}.brand{font-size:25px;gap:7px}.brand span{font-size:12px;letter-spacing:1px}.brand small{font-size:8px}#resources{gap:9px}.res{min-width:50px;font-size:9px}nav button{padding:6px;font-size:11px}nav kbd{display:none}.world-wrap{aspect-ratio:1000/562}.topline{top:9px;left:10px;right:10px;font-size:8px;letter-spacing:1px}.objective{padding:12px;gap:8px;font-size:12px}.objective .label{display:none}#toolbar{padding:12px;display:block}.move-help{display:none}.actions{gap:5px}.actions button{padding:9px 5px}.actions button span{font-size:10px}footer{padding:10px 12px;font-size:10px}#speech{font-size:11px;bottom:8px;max-width:95%;padding:6px 10px}#nearby{bottom:55px;font-size:10px}.intro{padding:20px}.roles{gap:9px;margin:14px 0}.roles button{min-width:0;flex:1;padding:11px}.roles small{font-size:8px;letter-spacing:0}.roles strong{font-size:19px}.roles span{font-size:10px}h1{font-size:26px;margin:9px 0}.intro p{font-size:12px;margin:8px 0}.eyebrow{font-size:8px;letter-spacing:1px}body:has(#start:not([hidden])) .world-wrap{min-height:410px}.intro .start-help{font-size:10px}.endcard{padding:15px}.endcard h2{font-size:23px;margin:6px}.endcard p{font-size:12px}.endstats{font-size:11px;margin:10px}.endactions button{font-size:12px;padding:7px 12px}.objective button{font-size:10px;padding:4px}.res strong{float:none;margin-left:5px}}@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+:root{color-scheme:dark;--bg:#070f1a;--panel:#0b1c2a;--line:#345364;--mint:#a0ead4;--muted:#9ab0bd;--gold:#e7c083;--red:#f3889c}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#183346,var(--bg) 80%);color:#edf2ef;font:16px/1.6 'Be Vietnam Pro',system-ui,sans-serif;min-height:100dvh;padding:18px;display:grid;place-items:center}button{font:inherit;color:inherit;background:#0d2030;border:1px solid var(--line);cursor:pointer;transition:background .15s,border-color .15s}button:hover{background:#1c3c48;border-color:var(--mint)}button:disabled{opacity:.45;cursor:default}button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}button.active{background:#24483e;border-color:var(--mint)}#game{width:min(1250px,100%);border:1px solid #2d4b5c;box-shadow:0 25px 100px #0008;background:var(--bg)}header{height:74px;padding:12px 22px;display:flex;align-items:center;gap:24px;background:#091623;border-bottom:1px solid var(--line)}.brand{display:flex;gap:12px;align-items:center;color:var(--mint);font-size:30px}.brand span{font-size:16px;letter-spacing:2px;font-weight:600}.brand small{display:block;font-size:10px;letter-spacing:3px;color:var(--muted)}#resources{margin-left:auto;display:flex;gap:22px}.res{font-size:11px;min-width:92px;color:var(--muted)}.res strong{float:right;font-weight:500;color:#e4efe9}.bar{margin-top:5px;background:#273846;height:4px}.bar i{display:block;height:100%;background:var(--mint);transition:width .2s}.res.fear .bar i{background:var(--red)}.res.battery .bar i{background:var(--gold)}nav{display:flex;gap:8px}nav button{padding:8px 13px;background:transparent;font-size:13px}kbd{font:11px monospace;opacity:.65}.world-wrap{position:relative;background:#07101d;aspect-ratio:1000/562;overflow:hidden}canvas{width:100%;height:100%;display:block;touch-action:none;image-rendering:pixelated;outline:none;cursor:crosshair}.topline{position:absolute;top:13px;left:20px;right:20px;display:flex;justify-content:space-between;pointer-events:none;color:#b8d6d6;font-size:10px;letter-spacing:2px;text-shadow:0 2px 4px #000}#speech{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);padding:9px 17px;max-width:88%;width:max-content;pointer-events:none;background:#06121deb;border:1px solid #3e6c79;font-size:13px;color:#c6e7dc;opacity:0;transition:opacity .2s}#speech.show{opacity:1}#nearby{position:absolute;bottom:65px;left:50%;transform:translateX(-50%);padding:4px 13px;background:#091b27e8;color:var(--gold);font-size:12px;pointer-events:none;border-radius:3px}#nearby:empty{display:none}.objective{padding:14px 20px;border-top:1px solid var(--line);border-bottom:1px solid #243e50;display:flex;align-items:center;gap:18px;background:#102332;font-size:14px}.label{font-size:10px;letter-spacing:2px;color:var(--mint);white-space:nowrap}.objective button{margin-left:auto;padding:5px 11px;white-space:nowrap;font-size:12px;background:transparent}#toolbar{padding:17px 20px;display:flex;align-items:center;gap:25px;background:#091723}.move-help{min-width:200px;font-size:12px;color:var(--muted)}.move-help strong{display:block;color:#d2dfdf;font-size:14px;font-weight:500;margin-bottom:4px}.actions{display:flex;gap:8px;flex:1}.actions button{padding:10px 13px;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:58px}.actions button span{font-size:12px;white-space:nowrap}.actions kbd{color:var(--mint);opacity:1}footer{padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:15px;border-top:1px solid #263d4d;font-size:11px;color:#9ab0bd}footer button{font-size:12px;padding:4px 10px;border-color:#654d56;color:#e4a9b2;background:transparent}#loading,#start,#end{position:absolute;inset:0;background:#071321d9;display:flex;align-items:center;justify-content:center}#start{background:linear-gradient(90deg,#061321f7,#071625dc 55%,#07162540);justify-content:flex-start}.intro{padding:35px 6%;max-width:800px}.eyebrow{color:var(--mint);font-size:10px;letter-spacing:3px}h1{font-size:clamp(26px,3.4vw,45px);font-weight:500;line-height:1.4;margin:14px 0}h1 em{color:var(--mint);font-style:normal}.intro p{color:#b8c7d0;font-size:14px}.roles{display:flex;gap:14px;margin:23px 0}.roles button{padding:15px 20px;text-align:left;background:#0e2233eb;min-width:230px}.roles small{font-size:9px;color:#a4bdc6;letter-spacing:1px}.roles strong{display:block;font-size:23px;color:var(--mint);font-weight:500;margin:5px 0}.roles span{font-size:12px}.rooms{display:flex;align-items:center;gap:8px;margin:-8px 0 16px;font-size:12px;color:var(--muted)}.rooms span{margin-right:4px;letter-spacing:1px}.rooms button{padding:6px 14px;font-size:13px;background:#0e2233eb}.rooms button.active{color:var(--mint)}.intro .start-help{font-size:11px;color:#8facbd}.endcard{max-width:620px;padding:30px;text-align:center}.endcard h2{color:var(--gold);font-size:30px;font-weight:500}.endcard p{font-size:15px}.endstats{display:flex;gap:14px;justify-content:center;color:var(--mint);font-size:13px;margin:22px 0}.endactions{display:flex;gap:10px;justify-content:center}.endactions button{padding:10px 20px}.endcard small{font-size:11px;color:var(--muted)}dialog{background:#0b1b29;color:#eaf0ed;border:1px solid #537888;box-shadow:0 20px 100px #000a;padding:30px;width:min(620px,94vw);max-height:85dvh}dialog::backdrop{background:#020913bd;backdrop-filter:blur(5px)}dialog h2{color:var(--mint);font-size:25px;font-weight:500;margin:0 25px 12px 0}dialog p{font-size:14px;color:#b9cbd5}#closeModal{position:absolute;top:10px;right:12px;font-size:24px;border:0;background:none;width:32px;height:32px}.help-grid{display:grid;grid-template-columns:100px 1fr;gap:9px 20px;margin:20px 0;font-size:13px}.help-grid b{color:var(--gold);font-weight:500}.dialog-actions{display:grid;gap:10px;margin-top:20px}.dialog-actions button{padding:11px;text-align:left}.clues{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}.clue{padding:17px 10px;background:#102635;border:1px solid var(--line);font-size:13px;color:var(--mint)}.clue.locked{opacity:.4}ul{padding-left:18px;font-size:13px;color:#bcd1dc}.flash{animation:hit .5s}@keyframes hit{0%{box-shadow:inset 0 0 100px #eb829a}100%{box-shadow:none}}[hidden]{display:none!important}@media(max-width:760px){body{padding:0;display:block}#game{border:0;min-height:100dvh}header{padding:10px 12px;gap:12px;height:65px}.brand{font-size:25px;gap:7px}.brand span{font-size:12px;letter-spacing:1px}.brand small{font-size:8px}#resources{gap:9px}.res{min-width:50px;font-size:9px}nav button{padding:6px;font-size:11px}nav kbd{display:none}.world-wrap{aspect-ratio:1000/562}.topline{top:9px;left:10px;right:10px;font-size:8px;letter-spacing:1px}.objective{padding:12px;gap:8px;font-size:12px}.objective .label{display:none}#toolbar{padding:12px;display:block}.move-help{display:none}.actions{gap:5px}.actions button{padding:9px 5px}.actions button span{font-size:10px}footer{padding:10px 12px;font-size:10px}#speech{font-size:11px;bottom:8px;max-width:95%;padding:6px 10px}#nearby{bottom:55px;font-size:10px}.intro{padding:20px}.roles{gap:9px;margin:14px 0}.roles button{min-width:0;flex:1;padding:11px}.roles small{font-size:8px;letter-spacing:0}.roles strong{font-size:19px}.roles span{font-size:10px}h1{font-size:26px;margin:9px 0}.intro p{font-size:12px;margin:8px 0}.eyebrow{font-size:8px;letter-spacing:1px}body:has(#start:not([hidden])) .world-wrap{min-height:410px}.intro .start-help{font-size:10px}.endcard{padding:15px}.endcard h2{font-size:23px;margin:6px}.endcard p{font-size:12px}.endstats{font-size:11px;margin:10px}.endactions button{font-size:12px;padding:7px 12px}.objective button{font-size:10px;padding:4px}.res strong{float:none;margin-left:5px}}@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* Touch-first controls: independent pointers allow moving and acting together. */
 #touch-controls{display:none;touch-action:none;user-select:none;-webkit-user-select:none}#joystick{position:relative;width:132px;height:132px;border:2px solid #456a7a;border-radius:50%;background:radial-gradient(circle,#16374a99 0 42%,#0d213199 43% 68%,#31576a55 69%);box-shadow:inset 0 0 18px #020a1380,0 4px 15px #0005;display:grid;place-items:center;touch-action:none}#stick{width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#73989e,#395d70 60%,#203d50);border:2px solid #9ebcbba0;box-shadow:0 7px 14px #0006;pointer-events:none;will-change:transform}.joystick-arrows{position:absolute;font-size:108px;line-height:1;color:#658b9850;pointer-events:none}.joystick-area{display:flex;flex-direction:column;align-items:center;gap:8px}.touch-caption{font-size:9px;letter-spacing:2px;color:#8eacb9}.touch-middle{display:flex;flex-direction:column;gap:12px;align-self:center}.touch-middle button{width:57px;height:57px;border-radius:50%;font-size:24px;line-height:1.1;border-color:#537281;background:#142a3be8;touch-action:none}.touch-middle small{display:block;font-size:9px;margin-top:2px;color:#c1d3d9}.touch-actions{position:relative;width:170px;height:160px;flex:none}.round{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;touch-action:none;box-shadow:0 4px 14px #0006;transition:transform .08s,background .12s}.round:active,.touch-middle button:active{transform:scale(.93)}.round span{font-size:26px;line-height:1.1}.round small{font-size:10px;line-height:1.3}.main-round{width:83px;height:83px;right:1px;top:3px;background:conic-gradient(#34576b var(--cooldown,0deg),#21463f 0deg);border:2px solid #9ee4c8;color:#d3ffe7}.main-round span{font-size:34px}.main-round.active{background:#487953;box-shadow:0 0 22px #b9f38c50}.small-round{width:60px;height:60px;left:3px;top:24px;border-color:#8fa3cc;background:#23324fe8}.use-round{width:70px;height:70px;right:35px;bottom:0;background:#453b2be8;border-color:#d1b984;color:#ffdf9b}.use-round small{max-width:65px;text-align:center}.use-round:disabled{opacity:.36}.touch-middle .active{border-color:var(--gold);color:var(--gold)}
 @media(pointer:coarse),(max-width:900px){#toolbar{display:none}#touch-controls{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:17px max(14px,env(safe-area-inset-right)) 14px max(14px,env(safe-area-inset-left));min-height:196px;background:linear-gradient(#0a1d2b,#061421);border-top:1px solid #28495b}#game{position:relative}nav button{min-width:42px;min-height:42px}#help{min-height:38px}footer{padding-bottom:max(10px,env(safe-area-inset-bottom))}.world-wrap{height:clamp(300px,46svh,520px);aspect-ratio:auto}#speech{bottom:10px;font-size:12px}#nearby{bottom:72px;font-size:11px}#objective{font-size:12px}.objective{min-height:57px;padding:8px 12px}body:has(#start:not([hidden])) #touch-controls{display:none}body:has(#start:not([hidden])) .world-wrap{height:75svh;min-height:445px}body:has(#start:not([hidden])) .objective{display:none}body:has(#end:not([hidden])) #touch-controls{opacity:.3;pointer-events:none}.brand small{font-size:9px}.res{font-size:10px}.res strong{font-size:11px}}
 @media(max-width:370px){#joystick{width:113px;height:113px}#stick{width:51px;height:51px}.touch-actions{width:150px}.touch-middle button{width:46px;height:46px}.main-round{width:75px;height:75px}.small-round{width:55px;height:55px}.use-round{width:65px;height:65px;right:20px}#touch-controls{gap:3px;padding-left:10px;padding-right:10px}.res{min-width:41px}header{gap:6px}.brand span{font-size:10px}}
 @media(pointer:coarse) and (orientation:landscape) and (max-height:600px){body{padding:0}#game{width:100%;height:100dvh;border:0}header{height:47px;padding:4px max(16px,env(safe-area-inset-left))}.world-wrap{height:calc(100dvh - 90px);min-height:0}.objective{height:43px;min-height:43px;padding:4px 17px}footer{display:none}#touch-controls{position:absolute;left:0;right:0;bottom:53px;z-index:4;min-height:0;height:130px;background:none;border:0;padding:0 max(25px,env(safe-area-inset-right)) 0 max(25px,env(safe-area-inset-left));pointer-events:none}#touch-controls button,#joystick{pointer-events:auto}#joystick{width:110px;height:110px;background-color:#0b2236a0}#stick{width:48px;height:48px}.touch-caption{display:none}.touch-actions{height:130px;width:158px}.main-round{width:74px;height:74px}.small-round{width:54px;height:54px;top:7px}.use-round{width:60px;height:60px;right:37px}.touch-middle{margin-right:auto;margin-left:17px;gap:7px}.touch-middle button{width:48px;height:48px}#speech{max-width:50%;font-size:11px;bottom:10px}#nearby{bottom:62px}body:has(#start:not([hidden])) .world-wrap{height:calc(100dvh - 47px);min-height:0}.intro{padding:10px 6%}h1{font-size:25px;line-height:1.25;margin:7px 0}.intro p{font-size:11px;margin:6px 0}.roles{margin:9px 0}.roles button{padding:8px 15px}.roles strong{font-size:18px}.start-help{display:none}.endcard{max-width:690px;padding:10px}.endcard h2{font-size:22px;margin:4px}.endcard p{font-size:12px;margin:8px}.endstats{margin:8px}.endcard small{font-size:9px}}
-</style></head><body><main id="game"><header><div class="brand">☾ <span>ÁNH TRĂNG<small>CA ĐÊM · 2001</small></span></div><div id="resources"></div><nav><button id="journal">Nhật ký <kbd>J</kbd></button><button id="pause" aria-label="Tạm dừng">Ⅱ</button></nav></header><div class="world-wrap"><canvas id="world" width="1600" height="899" aria-label="Bản đồ nhà ma có thể di chuyển. Dùng WASD hoặc phím mũi tên; E tương tác; Space dùng hành động." tabindex="0"></canvas><div class="topline"><span>BÀN TIỆC MA CÀ RỒNG</span><span id="mode">RPG / MÔ PHỎNG</span></div><div id="speech" aria-live="polite"></div><div id="nearby"></div><div id="loading">Đang mở cửa công viên…</div><div id="start" hidden><div class="intro"><span class="eyebrow">ĐÊM 01 · BẢN CHƠI THỬ MỘT PHÒNG</span><h1>Ca đêm ở<br><em>Công viên Ánh Trăng</em></h1><p>Tự bước vào. Tự tìm đường.<br>Hoặc trở thành người đứng sau những tiếng hét.</p><div class="roles"><button data-role="visitor"><small>KHÁM PHÁ · TRỐN · ĐIỀU TRA</small><strong>Làm khách</strong><span>“Để xem có gì mà sợ.”</span></button><button data-role="employee"><small>DÀN CẢNH · HÙ DỌA · VẬN HÀNH</small><strong>Làm nhân viên</strong><span>“Tối nay, mình là người dọa.”</span></button></div><p class="start-help">Kéo cần trái để đi · Nút bên phải để dùng kỹ năng<br>Chạm đồ vật để tự đi tới · Máy tính hỗ trợ WASD</p></div></div><div id="end" hidden></div></div><div class="objective"><span class="label">MỤC TIÊU</span><span id="objective">Chọn vai để bắt đầu.</span><button id="help">Cách chơi</button></div><section id="touch-controls" aria-label="Điều khiển cảm ứng">
+</style></head><body><main id="game"><header><div class="brand">☾ <span>ÁNH TRĂNG<small>CA ĐÊM · 2001</small></span></div><div id="resources"></div><nav><button id="journal">Nhật ký <kbd>J</kbd></button><button id="pause" aria-label="Tạm dừng">Ⅱ</button></nav></header><div class="world-wrap"><canvas id="world" width="1600" height="899" aria-label="Bản đồ nhà ma có thể di chuyển. Dùng WASD hoặc phím mũi tên; E tương tác; Space dùng hành động." tabindex="0"></canvas><div class="topline"><span id="roomName">CÔNG VIÊN ÁNH TRĂNG</span><span id="mode">RPG / MÔ PHỎNG</span></div><div id="speech" aria-live="polite"></div><div id="nearby"></div><div id="loading">Đang mở cửa công viên…</div><div id="start" hidden><div class="intro"><span class="eyebrow">ĐÊM 01 · BẢN CHƠI THỬ HAI PHÒNG</span><h1>Ca đêm ở<br><em>Công viên Ánh Trăng</em></h1><p>Tự bước vào. Tự tìm đường.<br>Hoặc trở thành người đứng sau những tiếng hét.</p><div class="roles"><button data-role="visitor"><small>KHÁM PHÁ · TRỐN · ĐIỀU TRA</small><strong>Làm khách</strong><span>“Để xem có gì mà sợ.”</span></button><button data-role="employee"><small>DÀN CẢNH · HÙ DỌA · VẬN HÀNH</small><strong>Làm nhân viên</strong><span>“Tối nay, mình là người dọa.”</span></button></div><div class="rooms" role="group" aria-label="Phòng bắt đầu"><span>Bắt đầu ở</span><button data-room="cemetery" class="active" aria-pressed="true">Nghĩa Địa</button><button data-room="dining" aria-pressed="false">Bàn Tiệc</button></div><p class="start-help">Kéo cần trái để đi · Nút bên phải để dùng kỹ năng<br>Chạm đồ vật để tự đi tới · Máy tính hỗ trợ WASD</p></div></div><div id="end" hidden></div></div><div class="objective"><span class="label">MỤC TIÊU</span><span id="objective">Chọn vai để bắt đầu.</span><button id="help">Cách chơi</button></div><section id="touch-controls" aria-label="Điều khiển cảm ứng">
  <div class="joystick-area"><div id="joystick" role="group" aria-label="Cần điều khiển di chuyển"><span class="joystick-arrows">✦</span><div id="stick"></div></div><span class="touch-caption">DI CHUYỂN</span></div>
  <div class="touch-middle"><button id="touchRun" aria-label="Giữ để chạy">»<small>Giữ chạy</small></button><button id="touchPlace" hidden>＋<small>Đặt loa</small></button></div>
  <div class="touch-actions"><button id="touchSecondary" class="round small-round"><span>◌</span><small id="touchSecondaryLabel">Nấp</small></button><button id="touchPrimary" class="round main-round"><span id="touchPrimaryIcon">☀</span><small id="touchPrimaryLabel">Đèn pin</small></button><button id="touchInteract" class="round use-round"><span>✋</span><small id="touchInteractLabel">Sử dụng</small></button></div>
  </section><div id="toolbar"><div class="move-help"><strong>Tự do di chuyển</strong><span>WASD / ↑ ↓ ← → / chạm sàn</span></div><div class="actions"><button id="interact"><kbd>E</kbd><span>Tương tác</span></button><button id="primary"><kbd>Space</kbd><span id="primaryLabel">Dùng kỹ năng</span></button><button id="secondary"><kbd>Q</kbd><span id="secondaryLabel">Hành động phụ</span></button><button id="place"><kbd>P</kbd><span>Đặt loa</span></button><button id="run"><kbd>Shift</kbd><span>Chạy</span></button></div></div><footer><span id="status">Nhân vật di chuyển thật · Tương tác khi ở gần · NPC hoạt động theo thời gian</span><button id="stop" hidden>Dừng show</button></footer></main><dialog id="modal"><button id="closeModal" aria-label="Đóng">×</button><div id="modalContent"></div></dialog><script type="module">
+// ---- rooms.mjs
+const {ROOMS,ROOM_ORDER}=(()=>{
+// Room data: bounds, colliders, interaction spots, ghost and guest behaviour per room.
+// World coordinates are 1000 × 562 for every room; actor positions are their feet.
+// Spot `kind` decides what interacting does (see Simulation.interact):
+//   hide · rest · effect · clue · ticket · wardrobe · coffin · lost · exit · entrance
+
+const ROOMS = {
+  cemetery: {
+    id: 'cemetery',
+    name: 'PHÒNG NGHĨA ĐỊA',
+    art: 'cemetery',
+    next: 'dining',
+    bounds: {x0: 54, x1: 949, y0: 240, y1: 521},
+    // Painted by art.mjs from these same rectangles, so collisions always match the picture.
+    blocks: [
+      {x: 60, y: 252, w: 118, h: 38, art: 'bench'},
+      {x: 236, y: 300, w: 44, h: 26, art: 'grave'},
+      {x: 330, y: 372, w: 44, h: 26, art: 'grave'},
+      {x: 228, y: 440, w: 44, h: 26, art: 'grave'},
+      {x: 440, y: 330, w: 150, h: 64, art: 'crypt'},
+      {x: 668, y: 296, w: 44, h: 26, art: 'grave'},
+      {x: 780, y: 400, w: 44, h: 26, art: 'grave'},
+      {x: 892, y: 322, w: 52, h: 118, art: 'coffin'},
+    ],
+    // Loose boards: walking or running across them makes a sound the zombie hears.
+    creaky: [{x: 560, y: 440, w: 200, h: 62}],
+    spots: [
+      {id: 'bench', kind: 'rest', x: 120, y: 312, label: 'Ghế dưới đèn · nghỉ'},
+      {id: 'coat', kind: 'hide', x: 806, y: 262, label: 'Áo khoác treo · nấp', hint: 'chiếc áo khoác treo gần lối ra', torchReveals: true},
+      {id: 'coffin', kind: 'coffin', x: 874, y: 382, label: 'Quan tài đứng'},
+      {id: 'clip', kind: 'lost', x: 250, y: 496, label: 'Có gì lấp lánh…'},
+      {id: 'door', kind: 'exit', x: 902, y: 262, label: 'Lối sang Bàn Tiệc'},
+      {id: 'entrance', kind: 'entrance', x: 84, y: 500, label: 'Cửa vào / đón khách'},
+    ],
+    coin: {x: 156, y: 420},
+    start: {x: 170, y: 470},
+    companionOffsets: [{x: -50, y: -30}, {x: -60, y: 25}],
+    restPoint: {x: 128, y: 330},
+    ghost: {
+      kind: 'zombie', name: 'Xác Sống', sprite: 4,
+      spawn: {x: 515, y: 420},
+      patrol: [{x: 520, y: 420}, {x: 360, y: 330}, {x: 620, y: 300}, {x: 700, y: 370}, {x: 400, y: 470}],
+      retreat: {x: 515, y: 300},
+    },
+    employeeSprite: 4,
+    admitSpot: 'entrance',
+    guestSpawn: [{x: 84, y: 470}, {x: 110, y: 500}],
+    guestExit: {x: 902, y: 266},
+    routes: [
+      [{x: 150, y: 470}, {x: 310, y: 330}, {x: 420, y: 300}, {x: 620, y: 420}, {x: 640, y: 270}, {x: 840, y: 300}, {x: 902, y: 266}],
+      [{x: 190, y: 500}, {x: 330, y: 470}, {x: 520, y: 420}, {x: 660, y: 470}, {x: 760, y: 350}, {x: 860, y: 280}, {x: 902, y: 266}],
+    ],
+    intro: {
+      visitor: 'Na: Nghe kìa… tiếng gì cót két vậy?',
+      employee: 'Mr. D: Xác Sống trực Nghĩa Địa. Đặt loa, chọn chỗ chui ra, rồi mở cửa đón khách.',
+    },
+  },
+
+  dining: {
+    id: 'dining',
+    name: 'BÀN TIỆC MA CÀ RỒNG',
+    art: 'world',
+    bounds: {x0: 54, x1: 949, y0: 240, y1: 521},
+    blocks: [
+      {x: 365, y: 180, w: 275, h: 144},
+      {x: 878, y: 310, w: 76, h: 171},
+      {x: 58, y: 431, w: 134, h: 76},
+    ],
+    creaky: [],
+    spots: [
+      {id: 'curtain', kind: 'hide', x: 105, y: 265, label: 'Rèm · nấp / bước ra', hint: 'rèm bên trái'},
+      {id: 'portrait', kind: 'clue', clue: 'name', x: 258, y: 262, label: 'Bảng tên cũ'},
+      {id: 'ticket', kind: 'ticket', clue: 'ticket', x: 460, y: 346, label: 'Vé 000 / đóng mộc'},
+      {id: 'bell', kind: 'effect', x: 606, y: 346, label: 'Rung chuông'},
+      {id: 'tape', kind: 'clue', clue: 'tape', x: 746, y: 262, label: 'Máy cát sét'},
+      {id: 'bench', kind: 'rest', x: 174, y: 410, label: 'Ghế nghỉ'},
+      {id: 'wardrobe', kind: 'wardrobe', x: 847, y: 401, label: 'Tủ phục trang / phân ca'},
+      {id: 'door', kind: 'exit', x: 887, y: 261, label: 'Cửa ra / đón khách'},
+    ],
+    start: {x: 500, y: 483},
+    companionOffsets: [{x: -80, y: -6}, {x: 80, y: -6}],
+    restPoint: {x: 220, y: 410},
+    story: true,
+    anPoint: {x: 680, y: 450},
+    ghost: {
+      kind: 'vampire', name: 'Ma Cà Rồng', sprite: 3,
+      spawn: {x: 700, y: 340},
+      patrol: [{x: 680, y: 350}, {x: 500, y: 410}, {x: 300, y: 360}, {x: 320, y: 270}, {x: 710, y: 450}],
+      retreat: {x: 700, y: 430},
+      stunRetreat: {x: 700, y: 300},
+    },
+    employeeSprite: 3,
+    admitSpot: 'door',
+    guestSpawn: [{x: 880, y: 280}, {x: 900, y: 298}],
+    guestExit: {x: 885, y: 270},
+    routes: [
+      [{x: 780, y: 330}, {x: 680, y: 390}, {x: 500, y: 410}, {x: 300, y: 365}, {x: 260, y: 270}, {x: 450, y: 450}, {x: 720, y: 400}, {x: 887, y: 270}],
+      [{x: 810, y: 370}, {x: 750, y: 275}, {x: 670, y: 430}, {x: 500, y: 375}, {x: 330, y: 345}, {x: 290, y: 420}, {x: 740, y: 370}, {x: 887, y: 270}],
+    ],
+    intro: {
+      visitor: 'Na: Đứa nào ré lên trước thì bao nước nhé.',
+      employee: 'Mr. D: Dàn đạo cụ, rồi tới cửa đón khách.',
+    },
+    // Shown when the visitor walks in from the previous room instead of starting here.
+    arrive: 'Ma Cà Rồng: Nhà có khách. Mời ngồi.',
+  },
+};
+
+const ROOM_ORDER = ['cemetery', 'dining'];
+
+return{ROOMS,ROOM_ORDER};})();
+// ---- sim.mjs
+const {W,H,EVIDENCE,FOUND,distance,passable,visible,findPath,Simulation}=(()=>{
 // Authoritative run state, navigation, interactions and NPC AI. No browser dependencies.
-const W=1000,H=562;
-const BLOCKS=[{x:365,y:180,w:275,h:144},{x:878,y:310,w:76,h:171},{x:58,y:431,w:134,h:76}];
-const SPOTS=[{id:'curtain',x:105,y:265,label:'Rèm · nấp / bước ra'},{id:'portrait',x:258,y:262,label:'Bảng tên cũ'},{id:'ticket',x:460,y:346,label:'Vé 000 / đóng mộc'},{id:'bell',x:606,y:346,label:'Rung chuông'},{id:'tape',x:746,y:262,label:'Máy cát sét'},{id:'bench',x:174,y:410,label:'Ghế nghỉ'},{id:'wardrobe',x:847,y:401,label:'Tủ phục trang / phân ca'},{id:'door',x:887,y:261,label:'Cửa ra / đón khách'}];
+
+const W=1000;
+const H=562;
 const EVIDENCE={ticket:'Vé 000',name:'Tên: An',tape:'Băng ghi âm'};
+const FOUND={clip:'Kẹp tóc của Na'};
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-function passable(x,y,r=11){return x>=54+r&&x<=949-r&&y>=240+r&&y<=521-r&&!BLOCKS.some(b=>x+r>b.x&&x-r<b.x+b.w&&y+r>b.y&&y-r<b.y+b.h);}
-function visible(a,b){const n=Math.ceil(distance(a,b)/12);for(let i=1;i<n;i++){const x=a.x+(b.x-a.x)*i/n,y=a.y+(b.y-a.y)*i/n;if(BLOCKS.some(c=>x>c.x&&x<c.x+c.w&&y>c.y&&y<c.y+c.h))return false;}return true;}
-// Static room: build the 20-unit walk grid once instead of on every path request.
-const NODES=[];for(let y=250;y<=510;y+=20)for(let x=70;x<=930;x+=20)if(passable(x,y))NODES.push({x,y});
-const nodeKey=p=>p.x+','+p.y,NODE_LOOKUP=new Map(NODES.map(n=>[nodeKey(n),n]));
-function findPath(a,b){const nodes=NODES;const closest=p=>nodes.reduce((best,n)=>distance(n,p)<distance(best,p)?n:best,nodes[0]);const start=closest(a),end=closest(b),key=nodeKey,lookup=NODE_LOOKUP,queue=[start],prev=new Map([[key(start),null]]);for(let q=0;q<queue.length;q++){const p=queue[q];if(key(p)===key(end))break;for(const [dx,dy]of[[20,0],[-20,0],[0,20],[0,-20]]){const k=(p.x+dx)+','+(p.y+dy);if(lookup.has(k)&&!prev.has(k)){prev.set(k,key(p));queue.push(lookup.get(k));}}}if(!prev.has(key(end)))return[];let result=[],k=key(end);while(k!==null){result.push(lookup.get(k));k=prev.get(k);}result.reverse();if(result.length&&distance(result[0],a)<10)result.shift();return result;}
-function moveActor(a,dx,dy){let moved=false;if(passable(a.x+dx,a.y)){a.x+=dx;moved=moved||dx!==0;}if(passable(a.x,a.y+dy)){a.y+=dy;moved=moved||dy!==0;}if(dx||dy)a.face=Math.atan2(dy,dx);a.moving=moved;return moved;}
-function follow(a,dt,speed){if(!a.path?.length){a.moving=false;return;}const t=a.path[0],d=distance(a,t);if(d<3){a.path.shift();return;}const k=Math.min(speed*dt,d)/d;moveActor(a,(t.x-a.x)*k,(t.y-a.y)*k);}
-const routes=[[{x:780,y:330},{x:680,y:390},{x:500,y:410},{x:300,y:365},{x:260,y:270},{x:450,y:450},{x:720,y:400},{x:887,y:270}],[{x:810,y:370},{x:750,y:275},{x:670,y:430},{x:500,y:375},{x:330,y:345},{x:290,y:420},{x:740,y:370},{x:887,y:270}]];
+const inside=(r,x,y)=>x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h;
+
+function passable(room,x,y,r=11){const b=room.bounds;return x>=b.x0+r&&x<=b.x1-r&&y>=b.y0+r&&y<=b.y1-r&&!room.blocks.some(k=>x+r>k.x&&x-r<k.x+k.w&&y+r>k.y&&y-r<k.y+k.h);}
+function visible(room,a,b){const n=Math.ceil(distance(a,b)/12);for(let i=1;i<n;i++){const x=a.x+(b.x-a.x)*i/n,y=a.y+(b.y-a.y)*i/n;if(room.blocks.some(c=>inside(c,x,y)))return false;}return true;}
+
+// Rooms are static: build each room's 20-unit walk grid once instead of on every path request.
+const nodeKey=p=>p.x+','+p.y,grids=new Map();
+function grid(room){
+ if(!grids.has(room.id)){const b=room.bounds,nodes=[];for(let y=b.y0+10;y<=b.y1-11;y+=20)for(let x=b.x0+16;x<=b.x1-19;x+=20)if(passable(room,x,y))nodes.push({x,y});grids.set(room.id,{nodes,lookup:new Map(nodes.map(n=>[nodeKey(n),n]))});}
+ return grids.get(room.id);
+}
+function findPath(room,a,b){const {nodes,lookup}=grid(room);const closest=p=>nodes.reduce((best,n)=>distance(n,p)<distance(best,p)?n:best,nodes[0]);const start=closest(a),end=closest(b),key=nodeKey,queue=[start],prev=new Map([[key(start),null]]);for(let q=0;q<queue.length;q++){const p=queue[q];if(key(p)===key(end))break;for(const [dx,dy]of[[20,0],[-20,0],[0,20],[0,-20]]){const k=(p.x+dx)+','+(p.y+dy);if(lookup.has(k)&&!prev.has(k)){prev.set(k,key(p));queue.push(lookup.get(k));}}}if(!prev.has(key(end)))return[];let result=[],k=key(end);while(k!==null){result.push(lookup.get(k));k=prev.get(k);}result.reverse();if(result.length&&distance(result[0],a)<10)result.shift();return result;}
+function moveActor(room,a,dx,dy){let moved=false;if(passable(room,a.x+dx,a.y)){a.x+=dx;moved=moved||dx!==0;}if(passable(room,a.x,a.y+dy)){a.y+=dy;moved=moved||dy!==0;}if(dx||dy)a.face=Math.atan2(dy,dx);a.moving=moved;return moved;}
+function follow(room,a,dt,speed){if(!a.path?.length){a.moving=false;return;}const t=a.path[0],d=distance(a,t);if(d<3){a.path.shift();return;}const k=Math.min(speed*dt,d)/d;moveActor(room,a,(t.x-a.x)*k,(t.y-a.y)*k);}
+
+// Authored effects of using a fixture. `state` is what it does to the room's ghost.
+const EFFECTS={
+ bell:{state:'investigate',duration:7,cooldown:11,color:'#e9c577',label:'Bị tiếng chuông thu hút'},
+ tape:{state:'charmed',duration:5,cooldown:14,color:'#a6e9f0',label:'Đứng nghe băng'},
+ portrait:{state:'confused',duration:5,cooldown:12,color:'#c3a7ed',label:'Hoảng hốt vì bóng trong tranh'},
+ wardrobe:{state:'investigate',duration:6,cooldown:10,color:'#edb080',label:'Quay về tiếng cửa tủ'},
+ curtain:{state:'search',duration:4,cooldown:6,color:'#8edacc',label:'Mất dấu · đang tìm'},
+ coat:{state:'search',duration:4,cooldown:6,color:'#8edacc',label:'Mất dấu · đang tìm'},
+ bench:{state:'repelled',duration:4,cooldown:8,color:'#d3e8aa',label:'Lùi khỏi vùng an toàn'},
+ coffin:{state:'investigate',duration:6,cooldown:10,color:'#edb080',label:'Lần theo tiếng gõ quan tài'},
+};
+const EFFECT_HINT={bell:'Tranh thủ đi vòng qua ma!',tape:'Bạn có thời gian tìm vé.',coffin:'Đi vòng sang phía bên kia!'};
+
 class Simulation{
- constructor(role){if(!['visitor','employee'].includes(role))throw Error('Invalid role');this.role=role;this.time=0;this.phase=role==='employee'?'prep':'explore';this.p={x:500,y:483,face:-Math.PI/2,sprite:role==='employee'?3:0,path:[],moving:false};this.fear=20;this.stamina=100;this.battery=100;this.hidden=false;this.resting=false;this.torch=false;this.cooldown=0;this.propCooldown=0;this.clues=[];this.journal=[];this.props=[];this.events=[];this.floaters=[];this.score=0;this.wave=0;this.served=0;this.scared=0;this.distracted=0;this.avoided=0;this.npcs=[];this.target=null;this.pending=null;this.ending=null;this.mystery=false;this.invited=false;this.completed=false;this.huntTimer=2;this.objectCooldowns={};this.effectUses={};this.worldEffects=[];this.combo=0;this.lastEffect=null;this.monster={x:700,y:340,face:2.5,sprite:3,path:[],state:'patrol',t:0,index:0};this.companions=[{x:420,y:477,sprite:1,face:0,path:[],moving:false},{x:580,y:477,sprite:2,face:0,path:[],moving:false}];this.bubble=null;this.notice(role==='employee'?'Mr. D: Dàn đạo cụ, rồi tới cửa đón khách.':'Na: Đứa nào ré lên trước thì bao nước nhé.');}
+ constructor(role,roomId=ROOM_ORDER[0]){
+  if(!['visitor','employee'].includes(role))throw Error('Invalid role');
+  if(!ROOMS[roomId])throw Error('Invalid room');
+  this.role=role;this.time=0;this.fear=20;this.stamina=100;this.battery=100;this.torch=false;this.cooldown=0;this.propCooldown=0;
+  this.clues=[];this.found=[];this.journal=[];this.events=[];this.floaters=[];this.score=0;this.wave=0;this.served=0;this.scared=0;this.distracted=0;this.avoided=0;
+  this.ending=null;this.mystery=false;this.invited=false;this.completed=false;this.combo=0;this.lastEffect=null;this.bubble=null;this.visited=[];
+  this.p={x:0,y:0,face:-Math.PI/2,sprite:0,path:[],moving:false};
+  this.companions=[{x:0,y:0,sprite:1,face:0,path:[],moving:false},{x:0,y:0,sprite:2,face:0,path:[],moving:false}];
+  this.enterRoom(roomId,true);
+ }
+ // Place the run in a room. Fear, stamina, battery, clues and score carry over between rooms.
+ enterRoom(id,fresh=false){
+  const room=ROOMS[id];this.room=room;this.roomId=id;this.visited.push(id);
+  Object.assign(this.p,{x:room.start.x,y:room.start.y,face:-Math.PI/2,path:[],moving:false});
+  if(this.role==='employee')this.p.sprite=room.employeeSprite;
+  this.companions.forEach((c,i)=>Object.assign(c,{x:room.start.x+room.companionOffsets[i].x,y:room.start.y+room.companionOffsets[i].y,path:[],moving:false,face:0}));
+  const g=room.ghost;this.monster={x:g.spawn.x,y:g.spawn.y,face:2.5,sprite:g.sprite,path:[],state:'patrol',t:0,index:0};
+  this.phase=this.role==='employee'?'prep':'explore';this.target=null;this.pending=null;this.hidden=false;this.hideSpot=null;this.resting=false;
+  this.objectCooldowns={};this.effectUses={};this.worldEffects=[];this.props=[];this.npcs=[];this.lastEffect=null;this.combo=0;
+  this.coin=room.coin?{...room.coin}:null;this.coinHeld=false;this.coinFlight=null;this.noiseTimer=0;this.revealTimer=0;
+  this.notice(fresh?room.intro[this.role]:room.arrive||room.intro[this.role]);
+ }
  notice(text){this.bubble={text,until:this.time+4.8};this.events.push(text);if(this.events.length>6)this.events.shift();}
  log(text){this.journal.push(text);this.notice(text);}
- navigate(x,y,spot=null){if(this.ending)return;this.resting=false;if(this.hidden){this.hidden=false;this.notice('Bạn bước ra khỏi rèm.');}this.p.path=findPath(this.p,{x,y});this.target={x,y};this.pending=spot;}
- nearest(){return SPOTS.reduce((best,s)=>distance(s,this.p)<distance(best,this.p)?s:best,SPOTS[0]);}
+ // Fixed spots plus things that come and go: the coin on the floor, a lost item not yet found.
+ spots(){const s=this.room.spots.filter(s=>s.kind!=='lost'||!this.found.includes(s.id));if(this.coin&&!this.coinHeld)s.push({id:'coin',kind:'coin',x:this.coin.x,y:this.coin.y,label:'Đồng xu'});return s;}
+ navigate(x,y,spot=null){if(this.ending)return;this.resting=false;if(this.hidden){this.hidden=false;this.notice('Bạn bước ra khỏi chỗ nấp.');}this.p.path=findPath(this.room,this.p,{x,y});this.target={x,y};this.pending=spot;}
+ nearest(){const s=this.spots();return s.reduce((best,x)=>distance(x,this.p)<distance(best,this.p)?x:best,s[0]);}
  effect(id,spot){
- if(this.mystery||this.ending)return false;
- if((this.objectCooldowns[id]||0)>0){this.notice(`Đạo cụ đang hồi: ${Math.ceil(this.objectCooldowns[id])} giây.`);return false;}
- const data={bell:{state:'investigate',duration:7,cooldown:11,color:'#e9c577',label:'Bị tiếng chuông thu hút'},tape:{state:'charmed',duration:5,cooldown:14,color:'#a6e9f0',label:'Đứng nghe băng'},portrait:{state:'confused',duration:5,cooldown:12,color:'#c3a7ed',label:'Hoảng hốt vì bóng trong tranh'},wardrobe:{state:'investigate',duration:6,cooldown:10,color:'#edb080',label:'Quay về tiếng cửa tủ'},curtain:{state:'search',duration:4,cooldown:6,color:'#8edacc',label:'Mất dấu · đang tìm'},bench:{state:'repelled',duration:4,cooldown:8,color:'#d3e8aa',label:'Lùi khỏi vùng an toàn'}}[id];
- if(!data)return false;
- this.objectCooldowns[id]=data.cooldown;this.effectUses[id]=(this.effectUses[id]||0)+1;
- const duration=Math.max(2,data.duration-(this.effectUses[id]-1)*.65);
- this.worldEffects.push({x:spot.x,y:spot.y,id,until:this.time+2.4,color:data.color});
- if(this.role==='employee'){
-  let hits=0;for(const n of this.npcs){if(n.gone||n.leaving||distance(n,spot)>360)continue;n.path=findPath(n,spot);n.distract=duration;n.interest=20;n.caution=.05;hits++;}
-  this.distracted+=hits;this.notice(hits?`${hits} khách bị đạo cụ thu hút. Vòng ra sau rồi tung chiêu!`:'Đạo cụ đã hoạt động. Chờ khách tới gần để dàn cảnh.');return true;
+  if(this.mystery||this.ending)return false;
+  if((this.objectCooldowns[id]||0)>0){this.notice(`Đạo cụ đang hồi: ${Math.ceil(this.objectCooldowns[id])} giây.`);return false;}
+  const data=EFFECTS[id];
+  if(!data)return false;
+  this.objectCooldowns[id]=data.cooldown;this.effectUses[id]=(this.effectUses[id]||0)+1;
+  const duration=Math.max(2,data.duration-(this.effectUses[id]-1)*.65);
+  this.worldEffects.push({x:spot.x,y:spot.y,id,until:this.time+2.4,color:data.color});
+  if(this.role==='employee'){
+   let hits=0;for(const n of this.npcs){if(n.gone||n.leaving||distance(n,spot)>360)continue;n.path=findPath(this.room,n,spot);n.distract=duration;n.interest=20;n.caution=.05;hits++;}
+   this.distracted+=hits;this.notice(hits?`${hits} khách bị đạo cụ thu hút. Vòng ra sau rồi tung chiêu!`:'Đạo cụ đã hoạt động. Chờ khách tới gần để dàn cảnh.');return true;
+  }
+  const m=this.monster,g=this.room.ghost;m.state=data.state;m.t=duration;m.effectLabel=data.label;m.effectDuration=duration;
+  m.path=['confused','repelled'].includes(data.state)?findPath(this.room,m,g.retreat):data.state==='charmed'?[]:findPath(this.room,m,spot);
+  if(this.lastEffect&&this.lastEffect!==id){this.combo++;this.floaters.push({x:m.x,y:m.y-95,text:'PHỐI HỢP ×'+(this.combo+1),until:this.time+2});}else this.combo=0;
+  this.lastEffect=id;this.notice(data.label+' · '+duration.toFixed(1)+' giây. '+(EFFECT_HINT[id]||'Di chuyển để tận dụng khoảng trống.'));return true;
  }
- const m=this.monster;m.state=data.state;m.t=duration;m.effectLabel=data.label;m.effectDuration=duration;
- m.path=['confused','repelled'].includes(data.state)?findPath(m,{x:700,y:430}):data.state==='charmed'?[]:findPath(m,spot);
- if(this.lastEffect&&this.lastEffect!==id){this.combo++;this.floaters.push({x:m.x,y:m.y-95,text:'PHỐI HỢP ×'+(this.combo+1),until:this.time+2});}else this.combo=0;
- this.lastEffect=id;this.notice(data.label+' · '+duration.toFixed(1)+' giây. '+(id==='bell'?'Tranh thủ đi vòng qua ma!':id==='tape'?'Bạn có thời gian tìm vé.':'Di chuyển để tận dụng khoảng trống.'));return true;
+ interact(id){
+  if(this.ending)return false;
+  const spot=this.spots().find(s=>s.id===id)||this.nearest();
+  if(distance(this.p,spot)>64){this.notice('Lại gần hơn để tương tác.');return false;}
+  this.pending=null;this.p.path=[];this.target=null;
+  const employee=this.role==='employee';
+  switch(spot.kind){
+   case 'effect':this.effect(spot.id,spot);return true;
+   case 'hide':{
+    this.hidden=!this.hidden;this.resting=false;this.hideSpot=this.hidden?spot:null;
+    if(!spot.torchReveals)this.torch=false;
+    if(!this.hidden){this.notice('Bạn bước ra khỏi chỗ nấp.');return true;}
+    this.effect(spot.id,spot);
+    if(this.torch)this.notice('Đèn vẫn bật… vệt sáng sẽ lộ chỗ nấp. Tắt đèn đi!');
+    return true;
+   }
+   case 'rest':this.resting=!this.resting;this.torch=false;if(this.resting)this.effect(spot.id,spot);this.notice(this.resting?'Vùng đèn an toàn đẩy ma lùi. Đang hồi sức và pin.':'Bạn đứng dậy.');return true;
+   case 'exit':case 'entrance':{
+    if(employee){if(this.room.admitSpot===spot.id)this.admit();else this.notice('Lối sang phòng kế tiếp. Khách sẽ ra ở đây.');return true;}
+    if(spot.kind==='entrance'){this.finish('leave');return true;}
+    if(this.room.next){this.enterRoom(this.room.next);return true;}
+    this.completed=this.time>=20||this.clues.length>0;this.finish(this.completed?'tricks':'leave');return true;
+   }
+   case 'wardrobe':if(this.mystery){this.finish('new');}else if(employee){this.stamina=Math.min(100,this.stamina+10);this.notice('Chỉnh lại áo choàng. +10 thể lực. Bảng phân ca còn một chỗ trống.');}else this.effect('wardrobe',spot);return true;
+   case 'coffin':
+    if(employee){this.hidden=!this.hidden;this.hideSpot=this.hidden?spot:null;this.resting=false;this.notice(this.hidden?'Chui vào quan tài. Đợi khách tới gần rồi bung nắp (Hù).':'Bạn bước ra khỏi quan tài.');}
+    else this.effect('coffin',spot);
+    return true;
+   case 'coin':this.coinHeld=true;this.notice('Nhặt được đồng xu. Nhấn Q để ném về hướng đang nhìn; tiếng xu rơi sẽ kéo Xác Sống đi.');return true;
+   case 'lost':this.found.push(spot.id);this.journal.push(FOUND[spot.id]);this.notice('Na: Ơ, kẹp tóc của tui! Tưởng mất luôn rồi. Cảm ơn nha.');return true;
+   case 'ticket':if(this.mystery){this.finish('ticket');return true;}// otherwise it is a clue
+   case 'clue':{
+    const clue=spot.clue;
+    if(!this.clues.includes(clue)){this.clues.push(clue);this.journal.push(EVIDENCE[clue]);this.notice({name:'Dưới lớp bụi có một cái tên: AN.',ticket:'Vé 000: bốn dấu mộc, một ô cuối để trống.',tape:'Băng cũ: “Chào mừng An đến với Nhà Ma.”'}[clue]);}else this.notice('Manh mối này đã ở trong nhật ký.');
+    if(spot.kind==='clue')this.effect(spot.id,spot);this.tryMystery();return true;
+   }
+  }
+  return true;
  }
- interact(id){if(this.ending)return false;const spot=SPOTS.find(s=>s.id===id)||this.nearest();if(distance(this.p,spot)>64){this.notice('Lại gần hơn để tương tác.');return false;}this.pending=null;this.p.path=[];this.target=null;
- if(spot.id==='bell'){this.effect('bell',spot);return true;}
- if(spot.id==='curtain'){this.hidden=!this.hidden;this.torch=false;this.resting=false;if(this.hidden)this.effect('curtain',spot);else this.notice('Bạn bước ra khỏi rèm.');return true;}
- if(spot.id==='bench'){this.resting=!this.resting;this.torch=false;if(this.resting)this.effect('bench',spot);this.notice(this.resting?'Vùng đèn an toàn đẩy ma lùi. Đang hồi sức và pin.':'Bạn đứng dậy.');return true;}
- if(spot.id==='door'){if(this.role==='employee'){if(this.npcs.some(n=>!n.gone)){this.notice('Khách vẫn đang trong phòng. Chăm sóc nhóm này trước nhé.');return true;}this.wave++;this.phase='live';this.npcs=[0,1].map((v)=>({x:880+v*20,y:280+v*18,sprite:v+1,face:Math.PI,path:findPath({x:880+v*20,y:280+v*18},routes[v][0]),route:routes[v],index:0,wait:0,time:0,interest:20,fear:0,caution:.1,hits:0,usedProps:[],distract:0,flee:0,gone:false,moving:false}));this.notice(`Nhóm ${this.wave} bước vào. Hãy di chuyển, đánh lạc hướng rồi dọa!`);}else{this.completed=this.time>=20||this.clues.length>0;this.finish(this.completed?'tricks':'leave');}return true;}
- if(spot.id==='wardrobe'){if(this.mystery){this.finish('new');}else if(this.role==='employee'){this.stamina=Math.min(100,this.stamina+10);this.notice('Chỉnh lại áo choàng. +10 thể lực. Bảng phân ca còn một chỗ trống.');}else this.effect('wardrobe',spot);return true;}
- if(spot.id==='ticket'&&this.mystery){this.finish('ticket');return true;}
- const clue={portrait:'name',ticket:'ticket',tape:'tape'}[spot.id];if(clue){if(!this.clues.includes(clue)){this.clues.push(clue);this.journal.push(EVIDENCE[clue]);this.notice({name:'Dưới lớp bụi có một cái tên: AN.',ticket:'Vé 000: bốn dấu mộc, một ô cuối để trống.',tape:'Băng cũ: “Chào mừng An đến với Nhà Ma.”'}[clue]);}else this.notice('Manh mối này đã ở trong nhật ký.');if(['portrait','tape'].includes(spot.id))this.effect(spot.id,spot);this.tryMystery();return true;}
- return true;}
- action(){if(this.ending)return;if(this.role==='visitor'){if(this.hidden){this.notice('Bước ra khỏi rèm trước khi bật đèn.');return;}if(this.battery<2&&!this.torch){this.notice('Hết pin. Tới ghế nghỉ để sạc lại.');return;}this.torch=!this.torch;this.notice(this.torch?'Đèn bật. Quay về phía ma để giữ khoảng cách.':'Bạn tắt đèn để tiết kiệm pin.');return;}
- if(this.cooldown>0){this.notice('Chiêu đang hồi. Đổi vị trí trong lúc chờ.');return;}if(this.stamina<22){this.notice('Chưa đủ thể lực. Tới ghế nghỉ hoặc đi chậm để hồi.');return;}this.stamina-=22;this.cooldown=3;this.hidden=false;this.resting=false;this.events.push('scare');let hits=0;for(const n of this.npcs){if(n.gone||distance(n,this.p)>145||!visible(this.p,n)||n.flee>0)continue;const dx=this.p.x-n.x,dy=this.p.y-n.y;const facing=Math.cos(Math.atan2(dy,dx)-n.face)>.5;const surprise=n.distract>0||!facing||n.caution<.4;const points=n.hits>=2?3:surprise?25:10;n.hits++;n.fear+=points;n.interest=20;n.caution=1;n.flee=1.5;n.distract=0;this.score+=points;this.scared++;hits++;this.floaters.push({x:n.x,y:n.y-70,text:surprise?'Á! +'+points:'Thấy rồi! +'+points,until:this.time+1.8});}this.notice(hits?`Hù trúng ${hits} khách. Đổi vị trí để tránh bị bắt bài.`:'Không có khách trong tầm. Lại gần và đợi họ quay đi.');}
+ admit(){
+  if(this.npcs.some(n=>!n.gone)){this.notice('Khách vẫn đang trong phòng. Chăm sóc nhóm này trước nhé.');return;}
+  const r=this.room;this.wave++;this.phase='live';
+  this.npcs=[0,1].map(v=>{const s=r.guestSpawn[v];return{x:s.x,y:s.y,sprite:v+1,face:Math.PI,path:findPath(r,s,r.routes[v][0]),route:r.routes[v],index:0,wait:0,time:0,interest:20,fear:0,caution:.1,hits:0,usedProps:[],distract:0,flee:0,gone:false,moving:false};});
+  this.notice(`Nhóm ${this.wave} bước vào. Hãy di chuyển, đánh lạc hướng rồi dọa!`);
+ }
+ action(){
+  if(this.ending)return;
+  if(this.role==='visitor'){
+   if(this.hidden&&!this.hideSpot?.torchReveals){this.notice('Bước ra khỏi rèm trước khi bật đèn.');return;}
+   if(this.battery<2&&!this.torch){this.notice('Hết pin. Tới ghế nghỉ để sạc lại.');return;}
+   this.torch=!this.torch;this.notice(this.torch?(this.hidden?'Đèn bật trong chỗ nấp… vệt sáng lộ vị trí!':'Đèn bật. Quay về phía ma để giữ khoảng cách.'):'Bạn tắt đèn để tiết kiệm pin.');return;
+  }
+  if(this.cooldown>0){this.notice('Chiêu đang hồi. Đổi vị trí trong lúc chờ.');return;}
+  if(this.stamina<22){this.notice('Chưa đủ thể lực. Tới ghế nghỉ hoặc đi chậm để hồi.');return;}
+  // Bursting out of a coffin reaches a little further and always catches guests off guard.
+  const ambush=this.hidden&&this.hideSpot?.kind==='coffin',range=ambush?180:145;
+  this.stamina-=22;this.cooldown=3;this.hidden=false;this.hideSpot=null;this.resting=false;this.events.push('scare');let hits=0;
+  for(const n of this.npcs){if(n.gone||distance(n,this.p)>range||!visible(this.room,this.p,n)||n.flee>0)continue;const dx=this.p.x-n.x,dy=this.p.y-n.y;const facing=Math.cos(Math.atan2(dy,dx)-n.face)>.5;const surprise=ambush||n.distract>0||!facing||n.caution<.4;const points=n.hits>=2?3:surprise?25:10;n.hits++;n.fear+=points;n.interest=20;n.caution=1;n.flee=1.5;n.distract=0;this.score+=points;this.scared++;hits++;this.floaters.push({x:n.x,y:n.y-70,text:surprise?'Á! +'+points:'Thấy rồi! +'+points,until:this.time+1.8});}
+  this.notice(hits?(ambush?`Bung nắp quan tài! Hù trúng ${hits} khách.`:`Hù trúng ${hits} khách. Đổi vị trí để tránh bị bắt bài.`):ambush?'Bung nắp quá sớm. Khách còn ở xa.':'Không có khách trong tầm. Lại gần và đợi họ quay đi.');
+ }
  place(){if(this.role!=='employee'||this.ending)return;if(this.props.length>=3){this.notice('Đã đặt đủ 3 loa. Nhấn Q để kích hoạt loa gần nhất.');return;}if(this.stamina<5){this.notice('Cần 5 thể lực để đặt đạo cụ.');return;}if(this.props.some(p=>distance(p,this.p)<60)){this.notice('Đặt loa cách nhau một chút.');return;}this.props.push({x:this.p.x,y:this.p.y,id:this.props.length,pulse:0});this.stamina-=5;this.notice('Đã đặt loa. Di chuyển sang bên khác rồi nhấn Q.');}
- secondary(){if(this.ending)return;if(this.role==='visitor'){if(distance(this.p,SPOTS[0])<70)this.interact('curtain');else{this.torch=false;this.resting=false;this.notice('Đi chậm giúp giữ sức. Muốn nấp, tới rèm bên trái.');}return;}
- if(!this.props.length){this.notice('Nhấn P để đặt loa trước.');return;}if(this.propCooldown>0){this.notice('Loa đang hồi.');return;}const prop=this.props.reduce((a,b)=>distance(a,this.p)<distance(b,this.p)?a:b);prop.pulse=2.5;this.propCooldown=5;let count=0;for(const n of this.npcs){if(n.gone||distance(n,prop)>300||n.usedProps.includes(prop.id))continue;n.usedProps.push(prop.id);n.path=findPath(n,prop);n.distract=5;n.interest=20;n.caution=.1;count++;}this.distracted+=count;this.notice(count?`${count} khách quay về phía loa. Vòng sang phía khác để hù!`:'Tiếng loa vang lên. Khách ở quá xa hoặc đã quen tiếng này.');}
+ secondary(){
+  if(this.ending)return;
+  if(this.role==='visitor'){
+   const hide=this.room.spots.find(s=>s.kind==='hide');
+   if(hide&&distance(this.p,hide)<70)this.interact(hide.id);
+   else if(this.coinHeld)this.throwCoin();
+   else{this.torch=false;this.resting=false;this.notice('Đi chậm giúp giữ sức. Muốn nấp, tới '+(hide?.hint||'chỗ tối')+'.');}
+   return;
+  }
+  if(!this.props.length){this.notice('Nhấn P để đặt loa trước.');return;}if(this.propCooldown>0){this.notice('Loa đang hồi.');return;}const prop=this.props.reduce((a,b)=>distance(a,this.p)<distance(b,this.p)?a:b);prop.pulse=2.5;this.propCooldown=5;let count=0;for(const n of this.npcs){if(n.gone||distance(n,prop)>300||n.usedProps.includes(prop.id))continue;n.usedProps.push(prop.id);n.path=findPath(this.room,n,prop);n.distract=5;n.interest=20;n.caution=.1;count++;}this.distracted+=count;this.notice(count?`${count} khách quay về phía loa. Vòng sang phía khác để hù!`:'Tiếng loa vang lên. Khách ở quá xa hoặc đã quen tiếng này.');
+ }
+ // Throw the held coin up to 170 units the way the player faces; it lands on the floor and can be picked up again.
+ throwCoin(){
+  if(!this.coinHeld||this.ending)return false;
+  const p=this.p;let x=p.x,y=p.y;
+  for(let d=170;d>20;d-=10){const tx=p.x+Math.cos(p.face)*d,ty=p.y+Math.sin(p.face)*d;if(passable(this.room,tx,ty,6)){x=tx;y=ty;break;}}
+  this.coinHeld=false;this.coin={x,y};this.coinFlight={from:{x:p.x,y:p.y-34},to:{x,y},start:this.time,until:this.time+.45};
+  const heard=this.noise(x,y,320,'Keng!');this.notice(heard?'Keng! Xác Sống quay đầu về phía tiếng xu.':'Keng! Đồng xu lăn trên nền đá.');return true;
+ }
+ // A sound at (x,y). The cemetery zombie hunts by ear: it walks to any sound within `radius`.
+ noise(x,y,radius,text){
+  this.worldEffects.push({x,y,id:'noise',until:this.time+1.6,color:'#f0d79a',radius});
+  if(text)this.floaters.push({x,y:y-26,text,until:this.time+1.2});
+  const m=this.monster;
+  if(this.role!=='visitor'||this.room.ghost.kind!=='zombie'||this.mystery)return false;
+  if(!['patrol','investigate','search'].includes(m.state)||distance(m,{x,y})>radius)return false;
+  m.state='investigate';m.t=5;m.effectDuration=5;m.effectLabel='Nghe tiếng động';m.path=findPath(this.room,m,{x,y});return true;
+ }
  finish(key){this.ending=key;this.torch=false;this.p.path=[];this.notice('Ca đêm kết thúc.');}
- tryMystery(){if(this.clues.length===3&&!this.mystery&&(this.role==='visitor'?this.time>=20:this.completed)){this.mystery=true;this.monster.state='rest';this.monster.t=999;this.log('Khách Số 0: Còn một phòng nữa mà… Mang vé tới bàn đóng mộc, hoặc ghi tên An ở tủ phân ca.');}}
- step(dt,input={}){if(this.ending)return;dt=Math.min(.06,Math.max(0,dt));this.time+=dt;this.cooldown=Math.max(0,this.cooldown-dt);this.propCooldown=Math.max(0,this.propCooldown-dt);for(const k in this.objectCooldowns)this.objectCooldowns[k]=Math.max(0,this.objectCooldowns[k]-dt);this.worldEffects=this.worldEffects.filter(e=>e.until>this.time);this.floaters=this.floaters.filter(f=>f.until>this.time);this.props.forEach(p=>p.pulse=Math.max(0,p.pulse-dt));
- const dx=input.dx||0,dy=input.dy||0;const moving=!!(dx||dy);if(moving){this.hidden=false;this.resting=false;this.pending=null;this.target=null;this.p.path=[];const len=Math.hypot(dx,dy),running=input.run&&this.stamina>2,speed=running?172:104;moveActor(this.p,dx/len*speed*dt,dy/len*speed*dt);if(running)this.stamina=Math.max(0,this.stamina-dt*14);}else if(!this.hidden&&!this.resting){follow(this.p,dt,104);if(this.pending){const spot=SPOTS.find(s=>s.id===this.pending);if(spot&&distance(this.p,spot)<48)this.interact(spot.id);}if(!this.p.path.length)this.target=null;}else this.p.moving=false;
- this.stamina=Math.min(100,this.stamina+dt*(this.resting?22:input.run&&moving?0:3));if(this.resting){this.fear=Math.max(0,this.fear-dt*16);this.battery=Math.min(100,this.battery+dt*24);}if(this.torch){this.battery=Math.max(0,this.battery-dt*6);if(this.battery===0){this.torch=false;this.notice('Le lói… đèn hết pin.');}}
- if(this.role==='visitor')this.stepVisitor(dt);else this.stepGuests(dt);this.tryMystery();
+ tryMystery(){if(this.room.story&&this.clues.length===3&&!this.mystery&&(this.role==='visitor'?this.time>=20:this.completed)){this.mystery=true;this.monster.state='rest';this.monster.t=999;this.log('Khách Số 0: Còn một phòng nữa mà… Mang vé tới bàn đóng mộc, hoặc ghi tên An ở tủ phân ca.');}}
+ step(dt,input={}){
+  if(this.ending)return;dt=Math.min(.06,Math.max(0,dt));this.time+=dt;this.cooldown=Math.max(0,this.cooldown-dt);this.propCooldown=Math.max(0,this.propCooldown-dt);for(const k in this.objectCooldowns)this.objectCooldowns[k]=Math.max(0,this.objectCooldowns[k]-dt);this.worldEffects=this.worldEffects.filter(e=>e.until>this.time);this.floaters=this.floaters.filter(f=>f.until>this.time);this.props.forEach(p=>p.pulse=Math.max(0,p.pulse-dt));if(this.coinFlight&&this.coinFlight.until<=this.time)this.coinFlight=null;
+  const dx=input.dx||0,dy=input.dy||0;const moving=!!(dx||dy);const running=moving&&input.run&&this.stamina>2;
+  if(moving){this.hidden=false;this.hideSpot=null;this.resting=false;this.pending=null;this.target=null;this.p.path=[];const len=Math.hypot(dx,dy),speed=running?172:104;moveActor(this.room,this.p,dx/len*speed*dt,dy/len*speed*dt);if(running)this.stamina=Math.max(0,this.stamina-dt*14);}else if(!this.hidden&&!this.resting){follow(this.room,this.p,dt,104);if(this.pending){const spot=this.spots().find(s=>s.id===this.pending);if(spot&&distance(this.p,spot)<48)this.interact(spot.id);}if(!this.p.path.length)this.target=null;}else this.p.moving=false;
+  this.stamina=Math.min(100,this.stamina+dt*(this.resting?22:input.run&&moving?0:3));if(this.resting){this.fear=Math.max(0,this.fear-dt*16);this.battery=Math.min(100,this.battery+dt*24);}if(this.torch){this.battery=Math.max(0,this.battery-dt*6);if(this.battery===0){this.torch=false;this.notice('Le lói… đèn hết pin.');}}
+  // Footsteps: loose boards always creak; running is loud anywhere in a room whose ghost listens.
+  if(this.role==='visitor'&&this.p.moving&&!this.ending){this.noiseTimer-=dt;const boards=this.room.creaky.some(r=>inside(r,this.p.x,this.p.y));if((boards||running&&this.room.ghost.kind==='zombie')&&this.noiseTimer<=0){this.noiseTimer=.45;this.noise(this.p.x,this.p.y,boards?(running?300:230):170,boards?'cót két':null);}}
+  if(this.ending)return;
+  if(this.role==='visitor')this.stepVisitor(dt);else this.stepGuests(dt);this.tryMystery();
  }
- stepVisitor(dt){const m=this.monster;for(let i=0;i<this.companions.length;i++){const c=this.companions[i],target={x:this.p.x+(i?58:-58),y:this.p.y+15};if(distance(c,target)>75&&!c.path.length)c.path=findPath(c,target);follow(c,dt,83);}
- if(this.mystery){m.moving=false;return;}
- const d=distance(m,this.p),angle=Math.atan2(m.y-this.p.y,m.x-this.p.x),lit=this.torch&&d<245&&Math.cos(angle-this.p.face)>.58&&visible(this.p,m);if(lit&&!['stunned','charmed','confused','repelled'].includes(m.state)){m.state='stunned';m.t=3.5;m.path=findPath(m,{x:700,y:300});m.effectLabel='Chói mắt · lùi lại';m.effectDuration=3.5;this.avoided++;this.floaters.push({x:m.x,y:m.y-70,text:'Chói quá!',until:this.time+2});}
- if(['investigate','charmed','confused','search','repelled'].includes(m.state)){m.t-=dt;follow(m,dt,m.state==='repelled'?110:72);if(m.t<=0){m.state='patrol';m.path=[];m.effectLabel=null;}return;}
- if(m.state==='stunned'||m.state==='rest'){m.t-=dt;follow(m,dt,95);if(m.t<=0){m.state='patrol';m.path=[];}return;}
- if(this.hidden||this.resting){if(m.state==='windup')this.avoided++;if(m.state!=='patrol')m.path=[];m.state='patrol';}
- if(m.state==='windup'){m.t-=dt;m.face=Math.atan2(this.p.y-m.y,this.p.x-m.x);if(m.t<=0){if(d<135&&!this.hidden&&!this.resting&&visible(m,this.p)){this.fear=Math.min(100,this.fear+24);this.events.push('hit');this.floaters.push({x:this.p.x,y:this.p.y-70,text:'+24 sợ hãi',until:this.time+2});this.notice('Na: Tui đang khởi động gân cốt thôi!');}else{this.avoided++;this.notice('Bạn tránh được màn hù.');}m.state='rest';m.t=3;}return;}
- if(d<115&&!this.hidden&&!this.resting&&visible(m,this.p)){m.state='windup';m.t=1.25;m.path=[];this.notice('Ma đang lấy đà… Lùi lại, nấp hoặc rọi đèn!');return;}
- if(d<240&&!this.hidden&&!this.resting&&visible(m,this.p)){m.repath=(m.repath||0)-dt;if(m.repath<=0){m.path=findPath(m,this.p);m.repath=.7;}}else if(!m.path.length){const pts=[{x:680,y:350},{x:500,y:410},{x:300,y:360},{x:320,y:270},{x:710,y:450}];m.index=(m.index+1)%pts.length;m.path=findPath(m,pts[m.index]);}follow(m,dt,58);
- if(d<160&&!this.hidden&&!this.resting&&!lit)this.fear=Math.min(100,this.fear+dt*1.5);
- if(this.fear>=100){this.fear=40;this.p.x=220;this.p.y=410;this.p.path=[];this.pending=null;this.resting=true;this.torch=false;m.state='rest';m.t=8;this.notice('Mr. D đưa bạn ra ghế nghỉ. Không mất đồ; khi sẵn sàng, cứ đi tiếp.');}
+ stepVisitor(dt){
+  for(let i=0;i<this.companions.length;i++){const c=this.companions[i],target={x:this.p.x+(i?58:-58),y:this.p.y+15};if(distance(c,target)>75&&!c.path.length)c.path=findPath(this.room,c,target);follow(this.room,c,dt,83);}
+  if(this.mystery){this.monster.moving=false;return;}
+  if(this.room.ghost.kind==='zombie')this.stepZombie(dt);else this.stepVampire(dt);
+  if(this.fear>=100){const r=this.room.restPoint,m=this.monster;this.fear=40;this.p.x=r.x;this.p.y=r.y;this.p.path=[];this.pending=null;this.resting=true;this.hidden=false;this.torch=false;m.state='rest';m.t=8;m.effectLabel=null;this.notice('Mr. D đưa bạn ra ghế nghỉ. Không mất đồ; khi sẵn sàng, cứ đi tiếp.');}
  }
- stepGuests(dt){let live=false;for(const n of this.npcs){if(n.gone)continue;live=true;n.time+=dt;n.interest-=dt;n.distract=Math.max(0,n.distract-dt);n.flee=Math.max(0,n.flee-dt);const d=distance(n,this.p);if(d<200&&!this.hidden&&visible(n,this.p)&&n.distract===0)n.caution=Math.min(1,n.caution+dt*.17);else n.caution=Math.max(.1,n.caution-dt*.08);
- if(n.interest<=0||n.fear>=80||n.time>=75){if(!n.leaving){n.leaving=true;n.path=findPath(n,{x:885,y:270});this.notice(n.fear>=80?'Khách cần nghỉ. Hãy để họ ra ngoài.':'Khách đã xem xong và đi sang phòng tiếp theo.');}}
- if(n.leaving&&distance(n,{x:885,y:270})<35){n.gone=true;this.served++;continue;}
- if(n.flee>0){n.moving=false;continue;}
- if(!n.path.length){if(n.distract>0){n.moving=false;continue;}n.wait+=dt;if(n.wait>2.4){n.wait=0;n.index++;if(n.index>=n.route.length){n.leaving=true;n.path=findPath(n,{x:885,y:270});}else n.path=findPath(n,n.route[n.index]);}}
- follow(n,dt,n.distract>0?76:44);}
- if(live&&this.npcs.every(n=>n.gone)){this.phase='between';this.completed=true;this.notice('Nhóm đã ra hết. Tới cửa đón nhóm mới, hoặc tìm hiểu vé 000.');}
+ // Ma Cà Rồng hunts by sight: pursues within 240 with line of sight; light makes it retreat.
+ stepVampire(dt){
+  const m=this.monster,g=this.room.ghost,room=this.room;
+  const d=distance(m,this.p),angle=Math.atan2(m.y-this.p.y,m.x-this.p.x),lit=this.torch&&d<245&&Math.cos(angle-this.p.face)>.58&&visible(room,this.p,m);if(lit&&!['stunned','charmed','confused','repelled'].includes(m.state)){m.state='stunned';m.t=3.5;m.path=findPath(room,m,g.stunRetreat||g.retreat);m.effectLabel='Chói mắt · lùi lại';m.effectDuration=3.5;this.avoided++;this.floaters.push({x:m.x,y:m.y-70,text:'Chói quá!',until:this.time+2});}
+  if(['investigate','charmed','confused','search','repelled'].includes(m.state)){m.t-=dt;follow(room,m,dt,m.state==='repelled'?110:72);if(m.t<=0){m.state='patrol';m.path=[];m.effectLabel=null;}return;}
+  if(m.state==='stunned'||m.state==='rest'){m.t-=dt;follow(room,m,dt,95);if(m.t<=0){m.state='patrol';m.path=[];}return;}
+  if(this.hidden||this.resting){if(m.state==='windup')this.avoided++;if(m.state!=='patrol')m.path=[];m.state='patrol';}
+  if(m.state==='windup'){m.t-=dt;m.face=Math.atan2(this.p.y-m.y,this.p.x-m.x);if(m.t<=0){if(d<135&&!this.hidden&&!this.resting&&visible(room,m,this.p)){this.scareHit();}else{this.avoided++;this.notice('Bạn tránh được màn hù.');}m.state='rest';m.t=3;}return;}
+  if(d<115&&!this.hidden&&!this.resting&&visible(room,m,this.p)){m.state='windup';m.t=1.25;m.path=[];this.notice('Ma đang lấy đà… Lùi lại, nấp hoặc rọi đèn!');return;}
+  if(d<240&&!this.hidden&&!this.resting&&visible(room,m,this.p)){m.repath=(m.repath||0)-dt;if(m.repath<=0){m.path=findPath(room,m,this.p);m.repath=.7;}}else if(!m.path.length){m.index=(m.index+1)%g.patrol.length;m.path=findPath(room,m,g.patrol[m.index]);}follow(room,m,dt,58);
+  if(d<160&&!this.hidden&&!this.resting&&!lit)this.fear=Math.min(100,this.fear+dt*1.5);
  }
- objective(){if(this.ending)return'Ca đêm đã kết thúc';if(this.mystery)return'Tới bàn đóng mộc hoặc tủ phân ca để giúp An';if(this.role==='visitor')return'Tự khám phá, tránh ma và tìm đường ra · Manh mối '+this.clues.length+'/3';if(this.phase==='prep')return'Đặt loa, rồi tới cửa đón khách';if(this.phase==='between')return'Đón nhóm mới hoặc điều tra vé 000 · '+this.clues.length+'/3 manh mối';return'Kích đạo cụ, vòng ra sau khách rồi tung chiêu';}
+ // Xác Sống hunts by ear: it barely sees, walks to sounds, and smells you only up close.
+ // Light makes it flinch briefly, then it shuffles toward where the light came from.
+ stepZombie(dt){
+  const m=this.monster,g=this.room.ghost,room=this.room,p=this.p,d=distance(m,p);
+  const revealed=this.hidden&&this.torch&&this.hideSpot?.torchReveals;
+  const exposed=!this.resting&&(!this.hidden||revealed);
+  if(revealed){this.revealTimer-=dt;if(this.revealTimer<=0){this.revealTimer=1;this.noise(p.x,p.y,260,'vệt sáng');}}
+  const lit=this.torch&&!this.hidden&&d<200&&Math.cos(Math.atan2(m.y-p.y,m.x-p.x)-p.face)>.58&&visible(room,p,m);
+  if(lit&&['patrol','investigate','search','windup'].includes(m.state)){m.state='stunned';m.t=2;m.path=findPath(room,m,g.retreat);m.effectLabel='Lóa mắt · khựng lại';m.effectDuration=2;m.followLight=true;this.avoided++;this.floaters.push({x:m.x,y:m.y-70,text:'Lóa!',until:this.time+1.6});}
+  if(['investigate','charmed','confused','search','repelled'].includes(m.state)){
+   m.t-=dt;follow(room,m,dt,m.state==='repelled'?100:70);
+   if(m.state==='investigate'&&exposed&&d<85&&visible(room,m,p)){this.zombieWindup();return;}
+   if(m.t<=0){m.state='patrol';m.path=[];m.effectLabel=null;}return;
+  }
+  if(m.state==='stunned'||m.state==='rest'){
+   m.t-=dt;follow(room,m,dt,60);
+   if(m.t<=0){if(m.state==='stunned'&&m.followLight){m.followLight=false;m.state='investigate';m.t=4;m.effectDuration=4;m.effectLabel='Lần theo ánh đèn';m.path=findPath(room,m,p);}else{m.state='patrol';m.path=[];m.effectLabel=null;}}
+   return;
+  }
+  if(m.state==='windup'&&!exposed){this.avoided++;m.state='patrol';m.path=[];}
+  if(m.state==='windup'){m.t-=dt;m.face=Math.atan2(p.y-m.y,p.x-m.x);if(m.t<=0){if(d<120&&exposed&&visible(room,m,p))this.scareHit();else{this.avoided++;this.notice('Bạn lách khỏi tầm với của Xác Sống.');}m.state='rest';m.t=3;}return;}
+  if(exposed&&d<75&&visible(room,m,p)){this.zombieWindup();return;}
+  if(!m.path.length){m.index=(m.index+1)%g.patrol.length;m.path=findPath(room,m,g.patrol[m.index]);}follow(room,m,dt,40);
+  if(exposed&&d<120)this.fear=Math.min(100,this.fear+dt*1.5);
+ }
+ zombieWindup(){const m=this.monster;m.state='windup';m.t=1.4;m.path=[];m.effectLabel=null;this.notice('Xác Sống đánh hơi thấy bạn… Lùi lại, rọi đèn hoặc nấp!');}
+ scareHit(){this.fear=Math.min(100,this.fear+24);this.events.push('hit');this.floaters.push({x:this.p.x,y:this.p.y-70,text:'+24 sợ hãi',until:this.time+2});this.notice('Na: Tui đang khởi động gân cốt thôi!');}
+ stepGuests(dt){
+  const exit=this.room.guestExit;let live=false;
+  for(const n of this.npcs){if(n.gone)continue;live=true;n.time+=dt;n.interest-=dt;n.distract=Math.max(0,n.distract-dt);n.flee=Math.max(0,n.flee-dt);const d=distance(n,this.p);if(d<200&&!this.hidden&&visible(this.room,n,this.p)&&n.distract===0)n.caution=Math.min(1,n.caution+dt*.17);else n.caution=Math.max(.1,n.caution-dt*.08);
+   if(n.interest<=0||n.fear>=80||n.time>=75){if(!n.leaving){n.leaving=true;n.path=findPath(this.room,n,exit);this.notice(n.fear>=80?'Khách cần nghỉ. Hãy để họ ra ngoài.':'Khách đã xem xong và đi sang phòng tiếp theo.');}}
+   if(n.leaving&&distance(n,exit)<35){n.gone=true;this.served++;continue;}
+   if(n.flee>0){n.moving=false;continue;}
+   if(!n.path.length){if(n.distract>0){n.moving=false;continue;}n.wait+=dt;if(n.wait>2.4){n.wait=0;n.index++;if(n.index>=n.route.length){n.leaving=true;n.path=findPath(this.room,n,exit);}else n.path=findPath(this.room,n,n.route[n.index]);}}
+   follow(this.room,n,dt,n.distract>0?76:44);}
+  if(live&&this.npcs.every(n=>n.gone)){this.phase='between';this.completed=true;this.notice(this.room.story?'Nhóm đã ra hết. Tới cửa đón nhóm mới, hoặc tìm hiểu vé 000.':'Nhóm đã ra hết. Tới cửa vào đón nhóm mới, hoặc chấm công.');}
+ }
+ objective(){
+  if(this.ending)return'Ca đêm đã kết thúc';if(this.mystery)return'Tới bàn đóng mộc hoặc tủ phân ca để giúp An';
+  const cemetery=this.roomId==='cemetery';
+  if(this.role==='visitor')return cemetery?'Lắng nghe Xác Sống, tránh ván cót két, tìm lối sang Bàn Tiệc'+(this.coinHeld?' · Đang cầm xu (Q để ném)':''):'Tự khám phá, tránh ma và tìm đường ra · Manh mối '+this.clues.length+'/3';
+  if(this.phase==='prep')return cemetery?'Đặt loa, chọn chỗ chui ra (quan tài), rồi tới cửa vào đón khách':'Đặt loa, rồi tới cửa đón khách';
+  if(this.phase==='between')return cemetery?'Đón nhóm mới ở cửa vào, hoặc chấm công':'Đón nhóm mới hoặc điều tra vé 000 · '+this.clues.length+'/3 manh mối';
+  return cemetery?'Kích loa, chui vào quan tài, đợi khách tới gần rồi bung nắp':'Kích đạo cụ, vòng ra sau khách rồi tung chiêu';
+ }
 }
+
+return{W,H,EVIDENCE,FOUND,distance,passable,visible,findPath,Simulation};})();
+// ---- art.mjs
+const {paintRoom,paintZombie}=(()=>{
+// Procedural pixel art for rooms without hand-made assets yet (placeholder until art production).
+// Everything is painted once into offscreen canvases from the same room data the simulation
+// collides against, so what you see always matches where you can walk.
+// Pixels are 2 world units: a 1000 × 562 room is a 500 × 281 canvas drawn with smoothing off.
+
+const C={
+ night:'#0a1424',sky0:'#0f2036',sky1:'#15304a',sky2:'#1b3c55',hill:'#0d2230',star:'#cfe8e0',moon:'#e6f0d6',moonShade:'#c4d6bd',
+ wall:'#1c3836',wallDark:'#132827',stone:'#56697a',stoneLight:'#7b90a0',stoneDark:'#34424f',stoneEdge:'#26313b',
+ grass:'#1d3933',grassLight:'#28493f',grassDark:'#152b28',dirt:'#232f37',dirtDark:'#1a242b',flag:'#3c4c58',flagLight:'#4a5c69',
+ wood:'#5b3a26',woodLight:'#7c5435',woodDark:'#3a2418',woodGap:'#1f140e',red:'#8e2b33',redDark:'#62202a',
+ mint:'#a0ead4',mintSoft:'#5fb39f',bone:'#d8d6c4',iron:'#0e1a22',coat:'#3a3340',coatDark:'#28232e',
+};
+
+// Small deterministic RNG so the painted room is identical on every load.
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+function canvas(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;return[c,g];}
+// Pen in world units on a 2-unit pixel grid, offset by (ox,oy) world units.
+function pen(g,ox=0,oy=0){
+ const P=v=>Math.round(v/2);
+ const rect=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(P(x-ox),P(y-oy),Math.max(1,P(w)),Math.max(1,P(h)));};
+ const disc=(cx,cy,r,c)=>{for(let y=-r;y<=r;y+=2){const half=Math.sqrt(Math.max(0,r*r-y*y));rect(cx-half,cy+y,half*2,2,c);}};
+ return{rect,disc};
+}
+
+function paintSky(g,rand){
+ const {rect,disc}=pen(g);
+ const bands=[C.sky0,C.sky1,C.sky2];
+ for(let y=30;y<200;y+=2)for(let x=54;x<946;x+=2){const band=(y-30)/170*2.4+rand()*.5;rect(x,y,2,2,bands[Math.min(2,Math.floor(band))]);}
+ for(let i=0;i<70;i++){const x=60+rand()*880,y=34+rand()*120;rect(x,y,2,2,rand()<.2?C.mint:C.star);}
+ disc(300,96,40,'#16344a');disc(300,96,34,C.moon);disc(312,88,8,C.moonShade);disc(290,108,6,C.moonShade);disc(318,110,4,C.moonShade);
+ // Far hills and two dead trees painted on the backdrop.
+ for(let x=54;x<946;x+=2){const h=172+Math.sin(x/70)*10+Math.sin(x/23)*4;rect(x,h,2,206-h,C.hill);}
+ const tree=(tx,base,scale)=>{rect(tx-4,base-70*scale,8,70*scale,C.iron);const branch=(x,y,dx,dy,n)=>{for(let i=0;i<n;i++)rect(x+dx*i,y+dy*i,4,4,C.iron);};branch(tx,base-60*scale,6,-4,6*scale);branch(tx,base-50*scale,-6,-4,5*scale);branch(tx+20*scale,base-80*scale,4,-6,3*scale);branch(tx-20*scale,base-68*scale,-4,-6,3*scale);};
+ tree(150,205,1);tree(640,205,1.2);tree(530,205,.7);
+}
+
+function paintWall(g,rand){
+ const {rect}=pen(g);
+ // Iron fence in front of the mural, then a low stone wall.
+ for(let x=60;x<940;x+=18){rect(x,172,4,40,C.iron);rect(x-2,168,8,4,C.iron);rect(x,164,4,4,C.iron);}
+ rect(54,180,892,4,C.iron);rect(54,200,892,4,C.iron);
+ for(let y=208,row=0;y<240;y+=10,row++)for(let x=54+(row%2)*14;x<946;x+=28){rect(x,y,26,8,rand()<.5?C.stone:C.stoneDark);rect(x,y,26,2,C.stoneLight);}
+ // Room frame: top border and side walls, like the dining room.
+ rect(0,0,1000,30,C.night);for(let x=10;x<990;x+=30){rect(x,12,26,14,C.stoneDark);rect(x,12,26,4,C.stone);}
+ for(const sx of [0,946]){rect(sx,0,54,562,C.wallDark);for(let y=30;y<540;y+=28){rect(sx+14,y,26,24,C.stoneDark);rect(sx+14,y,26,4,C.stone);}}
+}
+
+function paintArch(g){
+ const {rect,disc}=pen(g);
+ rect(856,150,92,92,C.stoneDark);disc(902,160,46,C.stoneDark);
+ rect(866,166,72,76,'#05090f');disc(902,170,36,'#05090f');
+ for(let i=0;i<5;i++){rect(870,200+i*8,64,6,i%2?C.redDark:C.red);}
+ for(let a=0;a<12;a++){const t=Math.PI*(a/11),x=902-Math.cos(t)*42,y=164-Math.sin(t)*42;rect(x-5,y-5,10,10,a%2?C.stone:C.stoneLight);}
+ rect(856,170,10,72,C.stone);rect(938,170,10,72,C.stone);
+}
+
+function paintLantern(g,x,y){
+ const {rect,disc}=pen(g);
+ for(let r=60;r>8;r-=10){g.globalAlpha=.05;disc(x,y+6,r,C.mint);}g.globalAlpha=1;
+ rect(x-8,y-14,16,4,C.woodDark);rect(x-6,y-10,12,22,C.woodDark);rect(x-4,y-8,8,18,C.mint);rect(x-2,y-6,4,8,'#e9fff6');rect(x-8,y+12,16,4,C.woodDark);
+}
+
+function paintCoat(g,x){
+ const {rect}=pen(g);
+ rect(x-14,176,28,4,C.woodDark);rect(x-2,172,4,8,C.woodDark);
+ rect(x-14,182,28,60,C.coat);rect(x-18,186,8,46,C.coat);rect(x+10,186,8,46,C.coat);
+ rect(x-8,182,16,10,C.coatDark);rect(x-2,192,4,46,C.coatDark);rect(x-12,238,24,6,C.coatDark);
+ rect(x-14,214,6,4,C.wood);rect(x+8,214,6,4,C.wood);
+}
+
+function paintFloor(g,rand,room){
+ const {rect}=pen(g);
+ for(let y=240;y<522;y+=2)for(let x=54;x<946;x+=2){const r=rand();rect(x,y,2,2,r<.55?C.grass:r<.75?C.dirt:r<.92?C.grassDark:C.grassLight);}
+ // Back edge of the floor reads as a shadow under the wall.
+ for(let x=54;x<946;x+=2)rect(x,240,2,6,C.dirtDark);
+ // Flagstone path from the entrance to the arch.
+ const path=[[90,495],[200,385],[330,335],[450,312],[620,330],[660,350],[760,330],[850,292],[902,262]];
+ for(let i=0;i<path.length-1;i++){const [ax,ay]=path[i],[bx,by]=path[i+1],n=Math.ceil(Math.hypot(bx-ax,by-ay)/26);for(let k=0;k<n;k++){const x=ax+(bx-ax)*k/n+rand()*6-3,y=ay+(by-ay)*k/n+rand()*6-3;rect(x-10,y-6,20,12,C.flag);rect(x-10,y-6,20,2,C.flagLight);rect(x+8,y-4,2,10,C.stoneEdge);}}
+ // Grass tufts, bones and leaves.
+ for(let i=0;i<90;i++){const x=60+rand()*880,y=250+rand()*265;rect(x,y,2,4,C.grassLight);rect(x+2,y-2,2,6,C.grassLight);}
+ for(let i=0;i<10;i++){const x=80+rand()*840,y=270+rand()*240;rect(x,y,8,2,C.bone);rect(x-2,y-2,2,6,C.bone);rect(x+8,y-2,2,6,C.bone);}
+ // Loose boards: alternating planks with dark gaps and nail heads.
+ for(const b of room.creaky){for(let y=b.y,i=0;y<b.y+b.h;y+=12,i++){const shift=(i%3)*6;rect(b.x+shift,y,b.w-12,10,i%2?C.wood:C.woodLight);rect(b.x+shift,y+10,b.w-12,2,C.woodGap);for(let x=b.x+shift+12;x<b.x+shift+b.w-12;x+=48){rect(x,y+4,2,2,C.bone);}rect(b.x+shift+b.w*.4,y+2,16,2,C.woodDark);}}
+ // Bottom wall with the entrance gap on the left.
+ rect(54,522,892,40,C.night);for(let x=140;x<946;x+=30){rect(x,524,26,16,C.stoneDark);rect(x,524,26,4,C.stone);}
+ rect(54,522,86,40,'#05090f');rect(64,520,66,10,C.red);rect(64,528,66,4,C.redDark);
+}
+
+function paintCrypt(g,b){
+ const {rect}=pen(g,b.x-10,b.y-50);
+ rect(b.x,b.y-12,b.w,44,C.stoneLight);rect(b.x,b.y-12,b.w,4,'#9db0bd');rect(b.x,b.y+30,b.w,b.h-28,C.stone);rect(b.x,b.y+b.h,b.w,4,C.stoneEdge);
+ rect(b.x+b.w-8,b.y-8,8,b.h+8,C.stoneDark);
+ rect(b.x+b.w/2-3,b.y-6,6,30,C.stoneDark);rect(b.x+b.w/2-14,b.y+2,28,6,C.stoneDark);
+ // Glowing crack where the lid has slipped.
+ const cx=b.x+30;for(let i=0;i<8;i++)rect(cx+i*6,b.y+30+(i%2)*2,6,2,C.mint);for(let r=0;r<3;r++){g.globalAlpha=.15;rect(cx-6,b.y+26-r*2,60,6+r*4,C.mint);}g.globalAlpha=1;
+ for(const [x,y] of [[b.x-6,b.y+b.h-10],[b.x+b.w+2,b.y+b.h-14]]){rect(x,y,6,12,C.bone);rect(x+2,y-6,2,4,C.mint);}
+}
+
+function paintGrave(g,b,rand){
+ const {rect,disc}=pen(g,b.x-10,b.y-50);
+ const left=b.x+4,w=b.w-8,top=b.y-38;
+ rect(b.x-2,b.y+6,b.w+4,b.h-4,C.dirtDark);rect(b.x,b.y+4,b.w,4,C.grassDark);
+ rect(left,top+12,w,b.h+14,C.stone);disc(left+w/2,top+12,w/2,C.stone);
+ rect(left,top+12,4,b.h+14,C.stoneLight);rect(left+w-4,top+12,4,b.h+14,C.stoneDark);
+ rect(left+w/2-2,top+8,4,20,C.stoneEdge);rect(left+w/2-8,top+14,16,4,C.stoneEdge);
+ rect(left+6,top+34,w-12,2,C.stoneEdge);
+ if(rand()<.6)rect(left+w-10,top+4,6,8,C.grassLight);
+}
+
+function paintBench(g,b){
+ const {rect,disc}=pen(g,b.x-10,b.y-50);
+ for(let r=70;r>10;r-=10){g.globalAlpha=.06;disc(b.x+b.w/2,b.y+b.h,r,C.mint);}g.globalAlpha=1;
+ rect(b.x,b.y-20,b.w,8,C.woodLight);rect(b.x,b.y-12,b.w,4,C.woodDark);
+ rect(b.x,b.y-6,b.w,16,C.red);rect(b.x,b.y-6,b.w,4,'#b03a44');rect(b.x,b.y+10,b.w,6,C.woodDark);
+ for(const x of [b.x+4,b.x+b.w-10])rect(x,b.y+14,6,b.h-14,C.woodDark);
+ // Lamp post that makes this the safe, lit corner.
+ rect(b.x+b.w-4,b.y-46,4,40,C.stoneDark);rect(b.x+b.w-10,b.y-52,16,8,C.stoneDark);rect(b.x+b.w-8,b.y-50,12,4,C.mint);
+}
+
+function paintCoffin(g,b){
+ const {rect}=pen(g,b.x-10,b.y-50);
+ const top=b.y-34,h=b.h+34;
+ for(let y=0;y<h;y+=2){const t=y/h,inset=t<.25?(.25-t)*40:(t-.25)*14;rect(b.x+inset,top+y,b.w-inset*2,2,y%8<2?C.woodDark:C.wood);}
+ rect(b.x+b.w/2-2,top+20,4,28,C.woodLight);rect(b.x+b.w/2-10,top+28,20,4,C.woodLight);
+ rect(b.x+b.w-12,top+10,2,h-16,C.mintSoft);
+ rect(b.x+4,b.y+b.h-2,b.w-8,4,C.woodGap);
+}
+
+const PROPS={crypt:paintCrypt,grave:paintGrave,bench:paintBench,coffin:paintCoffin};
+
+// Returns the backdrop plus one depth-sorted prop per collider block.
+function paintRoom(room){
+ const rand=rng(20011031);
+ const [bg,g]=canvas(500,281);
+ g.fillStyle=C.night;g.fillRect(0,0,500,281);
+ paintSky(g,rand);paintWall(g,rand);paintArch(g);paintFloor(g,rand,room);
+ paintLantern(g,120,150);paintLantern(g,760,150);
+ const coat=room.spots.find(s=>s.kind==='hide');if(coat)paintCoat(g,coat.x);
+ // Soft vignette toward the corners.
+ const v=g.createRadialGradient(250,150,80,250,150,320);v.addColorStop(0,'#0000');v.addColorStop(1,'#020812a0');g.fillStyle=v;g.fillRect(0,0,500,281);
+ const props=room.blocks.filter(b=>PROPS[b.art]).map(b=>{const w=b.w+20,h=b.h+56,[c,pg]=canvas(Math.ceil(w/2),Math.ceil(h/2));PROPS[b.art](pg,b,rand);return{canvas:c,x:b.x-10,y:b.y-50,w,h,sortY:b.y+b.h-6};});
+ return{background:bg,props};
+}
+
+// Xác Sống, front-facing, 40 × 80 art pixels, with a dark outline pass.
+function paintZombie(){
+ const [c,g]=canvas(42,82);
+ const r=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x+1,y+1,w,h);};
+ const skin='#8fb39a',skinShade='#6e927e',hair='#2b2f3a',hairLight='#434a5c',shirt='#d9dccf',shirtShade='#a9ad9f',tie='#8e2b33',pants='#2e3f63',pantsShade='#22304d',shoe='#3b2a22';
+ r(9,3,22,8,hair);r(8,6,2,7,hair);r(30,6,2,7,hair);r(12,1,4,3,hair);r(20,0,5,3,hair);r(26,2,3,2,hair);r(14,4,6,1,hairLight);
+ r(10,9,20,21,skin);r(9,11,22,16,skin);r(27,11,3,16,skinShade);r(7,16,2,5,skinShade);r(31,16,2,5,skinShade);
+ r(9,9,22,3,hair);r(11,12,3,2,hair);r(17,12,2,3,hair);r(24,12,3,2,hair);
+ r(13,17,5,4,'#f4f1d0');r(15,18,2,2,'#c23b3b');r(22,17,5,4,'#f4f1d0');r(23,18,2,2,'#c23b3b');r(13,21,5,1,skinShade);r(22,21,5,1,skinShade);
+ r(23,24,6,1,'#3a2a30');r(24,23,1,3,'#3a2a30');r(26,23,1,3,'#3a2a30');r(28,23,1,3,'#3a2a30');
+ r(16,26,8,2,'#3a1e22');r(17,26,1,1,'#f4f1d0');r(21,26,1,1,'#f4f1d0');
+ r(17,30,6,3,skinShade);
+ r(10,32,20,17,shirt);r(14,32,4,3,shirtShade);r(22,32,4,3,shirtShade);r(19,33,2,9,tie);r(26,33,4,16,shirtShade);r(12,40,3,3,'#7d8a6a');
+ for(let x=10;x<30;x+=3)r(x,48,2,1,shirtShade);
+ r(6,33,5,9,shirt);r(29,33,5,9,shirtShade);r(5,42,5,8,skin);r(30,42,5,8,skinShade);r(30,44,5,2,'#e8e2c8');
+ r(4,49,6,4,skin);r(30,49,6,4,skinShade);r(4,53,1,2,skin);r(6,53,1,2,skin);r(8,53,1,2,skin);r(31,53,1,2,skinShade);r(33,53,1,2,skinShade);r(35,53,1,2,skinShade);
+ r(10,49,20,2,shoe);
+ r(11,51,8,20,pants);r(21,51,8,20,pants);r(17,51,2,20,pantsShade);r(27,51,2,20,pantsShade);r(13,60,4,3,skin);r(23,66,3,2,skinShade);
+ r(11,70,3,1,pantsShade);r(16,70,3,1,pantsShade);r(22,70,4,1,pantsShade);
+ r(13,71,4,2,skinShade);r(23,71,4,2,skinShade);
+ r(10,73,9,5,shoe);r(21,73,9,5,shoe);r(11,76,2,2,skin);r(10,73,9,1,'#5a4033');r(21,73,9,1,'#5a4033');
+ // Outline: darken transparent pixels that touch the figure.
+ const img=g.getImageData(0,0,42,82),d=img.data,solid=i=>d[i*4+3]>0,out=[];
+ for(let y=0;y<82;y++)for(let x=0;x<42;x++){const i=y*42+x;if(solid(i))continue;if((x>0&&solid(i-1))||(x<41&&solid(i+1))||(y>0&&solid(i-42))||(y<81&&solid(i+42)))out.push(i);}
+ for(const i of out){d[i*4]=18;d[i*4+1]=13;d[i*4+2]=20;d[i*4+3]=255;}
+ g.putImageData(img,0,0);
+ return c;
+}
+
+return{paintRoom,paintZombie};})();
+// ---- app.js
+(()=>{
+
 
 
 const $=id=>document.getElementById(id),canvas=$('world'),ctx=canvas.getContext('2d'),modal=$('modal');
@@ -98,11 +559,15 @@ const room=new Image(),atlas=new Image();room.src='data:image/png;base64,iVBORw0
 // Keep in sync with assets/actors.atlas.json.
 const crops=[[192,80,291,639],[639,115,339,606],[1122,115,239,606],[1477,36,499,685]];
 let joy={x:0,y:0,id:null},touchRunning=false,camera={scale:1,x:0,y:0},mobile=false;
+// Rooms without a PNG backdrop are painted at load time by art.mjs.
+const painted={};let zombieSprite=null,startRoom='cemetery';
 let sim=null,paused=false,keys=new Set(),running=false,last=0,uiClock=0,assetsReady=false,hover=null,lastSpeech='',endShown=false,elapsed=0;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-Promise.all([room.decode(),atlas.decode()]).then(()=>{assetsReady=true;$('loading').hidden=true;$('start').hidden=false;draw();}).catch(()=>{$('loading').textContent='Chưa tải được hình. Hãy tải lại trang để thử lại.';});
-function launch(role){resetStick();sim=new Simulation(role);paused=false;endShown=false;running=false;keys.clear();$('start').hidden=true;$('end').hidden=true;$('place').hidden=role!=='employee';$('stop').hidden=role!=='employee';$('touchPlace').hidden=role!=='employee';$('touchSecondaryLabel').textContent=role==='visitor'?'Nấp':'Kích loa';$('touchPrimaryIcon').textContent=role==='visitor'?'☀':'✦';$('primaryLabel').textContent=role==='visitor'?'Bật / tắt đèn':'Tung chiêu';$('secondaryLabel').textContent=role==='visitor'?'Nấp ở rèm':'Kích loa';$('mode').textContent=role==='visitor'?'KHÁCH THAM QUAN':'CA NHÂN VIÊN';canvas.focus();updateUI();}
-function sprite(a,label){const c=crops[a.sprite],height=a.sprite===3?79:68,width=c[2]/c[3]*height,bob=a.moving?Math.sin(elapsed*13)*1.8:0;ctx.save();ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(a.x,a.y,17,5,0,0,Math.PI*2);ctx.fill();ctx.translate(a.x,a.y+bob);if(Math.cos(a.face)<-.15)ctx.scale(-1,1);ctx.globalAlpha*=a===sim?.p&&sim.hidden ? .55 : 1;ctx.drawImage(atlas,...c,-width/2,-height,width,height);ctx.restore();if(label){ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillStyle='#08121ed9';const w=ctx.measureText(label).width+12;ctx.fillRect(a.x-w/2,a.y-height-20,w,17);ctx.fillStyle=a===sim?.p?'#b7ffe4':'#d9e7e6';ctx.fillText(label,a.x,a.y-height-8);}}
+Promise.all([room.decode(),atlas.decode()]).then(()=>{painted.cemetery=paintRoom(ROOMS.cemetery);zombieSprite=paintZombie();assetsReady=true;$('loading').hidden=true;$('start').hidden=false;draw();}).catch(()=>{$('loading').textContent='Chưa tải được hình. Hãy tải lại trang để thử lại.';});
+function launch(role,roomId=startRoom){resetStick();sim=new Simulation(role,roomId);paused=false;endShown=false;running=false;keys.clear();$('start').hidden=true;$('end').hidden=true;$('place').hidden=role!=='employee';$('stop').hidden=role!=='employee';$('touchPlace').hidden=role!=='employee';$('touchSecondaryLabel').textContent=role==='visitor'?'Nấp':'Kích loa';$('touchPrimaryIcon').textContent=role==='visitor'?'☀':'✦';$('primaryLabel').textContent=role==='visitor'?'Bật / tắt đèn':'Tung chiêu';$('secondaryLabel').textContent=role==='visitor'?'Nấp ở rèm':'Kích loa';$('mode').textContent=role==='visitor'?'KHÁCH THAM QUAN':'CA NHÂN VIÊN';canvas.focus();updateUI();}
+function sprite(a,label){const zombie=a.sprite===4,img=zombie?zombieSprite:atlas,c=zombie?[0,0,42,82]:crops[a.sprite],height=a.sprite===3?79:zombie?74:68,width=c[2]/c[3]*height,bob=a.moving?Math.sin(elapsed*13)*1.8:0;ctx.save();ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(a.x,a.y,17,5,0,0,Math.PI*2);ctx.fill();ctx.translate(a.x,a.y+bob);if(Math.cos(a.face)<-.15)ctx.scale(-1,1);ctx.globalAlpha*=a===sim?.p&&sim.hidden ? .55 : 1;ctx.drawImage(img,...c,-width/2,-height,width,height);ctx.restore();if(label){ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillStyle='#08121ed9';const w=ctx.measureText(label).width+12;ctx.fillRect(a.x-w/2,a.y-height-20,w,17);ctx.fillStyle=a===sim?.p?'#b7ffe4':'#d9e7e6';ctx.fillText(label,a.x,a.y-height-8);}}
+function drawCoin(){if(!sim.coin||sim.coinHeld)return;let x=sim.coin.x,y=sim.coin.y;const f=sim.coinFlight;if(f){const k=Math.min(1,1-(f.until-sim.time)/(f.until-f.start));x=f.from.x+(f.to.x-f.from.x)*k;y=f.from.y+(f.to.y-f.from.y)*k-Math.sin(k*Math.PI)*40;}ctx.fillStyle='#0006';ctx.beginPath();ctx.ellipse(sim.coin.x,sim.coin.y+2,6,2,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e7c083';ctx.beginPath();ctx.arc(x,y-3,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff2c2';ctx.fillRect(x-2,y-6,2,2);if(!f&&Math.sin(elapsed*4)>.6)sparkle(x,y-6);}
+function sparkle(x,y){const t=elapsed*3+x;ctx.fillStyle='#fff3c8';const s=1.5+Math.abs(Math.sin(t))*2;ctx.fillRect(x-s,y-.5,s*2,1);ctx.fillRect(x-.5,y-s,1,s*2);}
 function ring(x,y,r,color){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();}
 function tag(x,y,t,color='#a5edda'){ctx.font='11px system-ui';ctx.textAlign='center';const width=ctx.measureText(t).width+14;ctx.fillStyle='#07131de6';ctx.fillRect(x-width/2,y-16,width,22);ctx.strokeStyle='#456575';ctx.strokeRect(x-width/2,y-16,width,22);ctx.fillStyle=color;ctx.fillText(t,x,y);}
 function draw(){
@@ -112,50 +577,54 @@ function draw(){
  const zoom=mobile&&box.width<box.height*1.65?1.3:1,scale=Math.max(box.width/W,box.height/H)*zoom;
  const vw=box.width/scale,vh=box.height/scale,focus=sim?.p||{x:500,y:345};
  camera={scale,x:Math.max(0,Math.min(W-vw,focus.x-vw/2)),y:Math.max(0,Math.min(H-vh,focus.y-vh/2))};
- ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.setTransform(scale*dpr,0,0,scale*dpr,-camera.x*scale*dpr,-camera.y*scale*dpr);ctx.imageSmoothingEnabled=false;if(!assetsReady)return;ctx.drawImage(room,0,0,W,H);if(!sim)return;
- for(const eff of sim.worldEffects){const age=2.4-(eff.until-sim.time);ctx.save();ctx.globalAlpha=Math.max(0,1-age/2.4);ring(eff.x,eff.y,18+age*60,eff.color);ring(eff.x,eff.y,8+age*37,eff.color);ctx.restore();}
+ ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.setTransform(scale*dpr,0,0,scale*dpr,-camera.x*scale*dpr,-camera.y*scale*dpr);ctx.imageSmoothingEnabled=false;if(!assetsReady)return;ctx.drawImage(sim&&painted[sim.room.art]?painted[sim.room.art].background:room,0,0,W,H);if(!sim)return;
+ for(const eff of sim.worldEffects){if(eff.id==='noise'){const k=1-(eff.until-sim.time)/1.6;ctx.save();ctx.globalAlpha=.5*(1-k);ring(eff.x,eff.y,8+k*(eff.radius-8),eff.color);ctx.restore();continue;}const age=2.4-(eff.until-sim.time);ctx.save();ctx.globalAlpha=Math.max(0,1-age/2.4);ring(eff.x,eff.y,18+age*60,eff.color);ring(eff.x,eff.y,8+age*37,eff.color);ctx.restore();}
  const p=sim.p;
  if(sim.torch){ctx.save();ctx.globalCompositeOperation='screen';const start=p.face-.48,end=p.face+.48,g=ctx.createRadialGradient(p.x,p.y-30,3,p.x,p.y-30,240);g.addColorStop(0,'#e5fad050');g.addColorStop(1,'#bdffe000');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(p.x,p.y-30);ctx.arc(p.x,p.y-30,240,start,end);ctx.closePath();ctx.fill();ctx.restore();}
  if(sim.target&&!sim.pending){ring(sim.target.x,sim.target.y,8,'#9fe4d080');ctx.fillStyle='#9fe4d0';ctx.fillRect(sim.target.x-2,sim.target.y-2,4,4);}
- for(const prop of sim.props){ctx.fillStyle='#0a1c2be8';ctx.fillRect(prop.x-16,prop.y-23,32,25);ctx.strokeStyle='#9dddc9';ctx.strokeRect(prop.x-16,prop.y-23,32,25);ctx.fillStyle='#a3e5d2';ctx.font='10px monospace';ctx.textAlign='center';ctx.fillText('LOA',prop.x,prop.y-7);if(prop.pulse>0)ring(prop.x,prop.y,20+(2.5-prop.pulse)*45,'#a0e7cbb0');}
- const objects=sim.role==='visitor'?[...sim.companions,sim.monster,p]:[...sim.npcs.filter(n=>!n.gone),p];objects.sort((a,b)=>a.y-b.y);for(const a of objects){if(a!==p&&sim.role==='employee'){if(a.distract>0)tag(a.x,a.y-88,'Nghe tiếng loa');else if(a.leaving)tag(a.x,a.y-88,'Đi tiếp');else if(a.caution>.6)tag(a.x,a.y-88,'Đề phòng','#efca93');}sprite(a,a===p?(sim.hidden?'Đang nấp':sim.resting?'Đang nghỉ':'Bạn'):a.sprite===1?'Na':a.sprite===2?'Bơ':'Ma Cà Rồng');}
+ drawCoin();for(const prop of sim.props){ctx.fillStyle='#0a1c2be8';ctx.fillRect(prop.x-16,prop.y-23,32,25);ctx.strokeStyle='#9dddc9';ctx.strokeRect(prop.x-16,prop.y-23,32,25);ctx.fillStyle='#a3e5d2';ctx.font='10px monospace';ctx.textAlign='center';ctx.fillText('LOA',prop.x,prop.y-7);if(prop.pulse>0)ring(prop.x,prop.y,20+(2.5-prop.pulse)*45,'#a0e7cbb0');}
+ const objects=sim.role==='visitor'?[...sim.companions,sim.monster,p]:[...sim.npcs.filter(n=>!n.gone),p];const layers=[...objects.map(a=>({y:a.y,a})),...(painted[sim.room.art]?.props||[]).map(q=>({y:q.sortY,q}))].sort((a,b)=>a.y-b.y);const playerLabel=sim.hidden?(sim.hideSpot?.kind==='coffin'?'Trong quan tài':'Đang nấp'):sim.resting?'Đang nghỉ':'Bạn';for(const {a,q} of layers){if(q){ctx.drawImage(q.canvas,q.x,q.y,q.w,q.h);continue;}if(a!==p&&sim.role==='employee'){if(a.distract>0)tag(a.x,a.y-88,'Nghe tiếng loa');else if(a.leaving)tag(a.x,a.y-88,'Đi tiếp');else if(a.caution>.6)tag(a.x,a.y-88,'Đề phòng','#efca93');}sprite(a,a===p?playerLabel:a===sim.monster?sim.room.ghost.name:a.sprite===1?'Na':'Bơ');}
  if(sim.role==='visitor'&&sim.monster.state==='windup'){const m=sim.monster;ring(m.x,m.y,130,'#e98091a0');tag(m.x,m.y-103,'Sắp hù!','#ffa3af');}if(sim.role==='visitor'&&sim.monster.effectLabel&&['stunned','charmed','investigate','confused','search','repelled'].includes(sim.monster.state)){
  const m=sim.monster;tag(m.x,m.y-100,m.effectLabel+' · '+Math.ceil(m.t)+'s');
  ctx.fillStyle='#152d3a';ctx.fillRect(m.x-30,m.y-91,60,3);ctx.fillStyle='#a1ebd3';ctx.fillRect(m.x-30,m.y-91,60*Math.min(1,m.t/(m.effectDuration||7)),3);
  if(m.state==='confused'){ctx.save();ctx.translate(m.x,m.y-82);ctx.rotate(elapsed*2);ctx.fillStyle='#d6b9f2';ctx.fillRect(-18,-2,5,5);ctx.fillRect(15,-2,5,5);ctx.restore();}
  }
  if(sim.role==='employee'&&sim.cooldown>2.45)ring(p.x,p.y,145,'#a9ffe7a0');
- const close=sim.nearest();for(const spot of SPOTS){const near=distance(p,spot)<64;const clue={portrait:'name',tape:'tape',ticket:'ticket'}[spot.id];if(clue&&sim.clues.includes(clue)&&!sim.mystery&&!near)continue;ctx.globalAlpha=near?1:.55;ring(spot.x,spot.y,near?12:7,near?'#eacf98':'#9bd7d0');ctx.font=near?'12px monospace':'10px monospace';ctx.textAlign='center';ctx.fillStyle=near?'#fff0c5':'#b0e9d9';ctx.fillText(near?'E':'+',spot.x,spot.y+4);ctx.globalAlpha=1;if((sim.objectCooldowns[spot.id]||0)>0)tag(spot.x,spot.y-16,Math.ceil(sim.objectCooldowns[spot.id])+'s','#a9bac5');else if(hover===spot.id)tag(spot.x,spot.y-20,spot.label);}
+ for(const spot of sim.spots()){const near=distance(p,spot)<64;if(spot.kind==='lost'&&distance(p,spot)>110)continue;if(spot.kind==='lost'&&!near){sparkle(spot.x,spot.y);continue;}const clue={portrait:'name',tape:'tape',ticket:'ticket'}[spot.id];if(clue&&sim.clues.includes(clue)&&!sim.mystery&&!near)continue;ctx.globalAlpha=near?1:.55;ring(spot.x,spot.y,near?12:7,near?'#eacf98':'#9bd7d0');ctx.font=near?'12px monospace':'10px monospace';ctx.textAlign='center';ctx.fillStyle=near?'#fff0c5':'#b0e9d9';ctx.fillText(near?'E':'+',spot.x,spot.y+4);ctx.globalAlpha=1;if((sim.objectCooldowns[spot.id]||0)>0)tag(spot.x,spot.y-16,Math.ceil(sim.objectCooldowns[spot.id])+'s','#a9bac5');else if(hover===spot.id)tag(spot.x,spot.y-20,spot.label);}
  if(sim.mystery){const ghost={x:680,y:450,face:0,sprite:0,moving:false};ctx.save();ctx.globalAlpha=.55+.1*Math.sin(elapsed*2);sprite(ghost,'An · vé 000');ctx.restore();ring(ghost.x,ghost.y,24,'#c7ffdf60');}
- for(const f of sim.floaters){ctx.textAlign='center';ctx.font='bold 13px system-ui';ctx.fillStyle='#061421';ctx.fillText(f.text,f.x+1,f.y+1);ctx.fillStyle='#ffe5ad';ctx.fillText(f.text,f.x,f.y-(2-(f.until-sim.time))*9);}
+ for(const f of sim.floaters){ctx.textAlign='center';ctx.font='bold 13px system-ui';ctx.fillStyle='#061421';const fy=f.y-(2-(f.until-sim.time))*9;ctx.fillText(f.text,f.x+1,fy+1);ctx.fillStyle='#ffe5ad';ctx.fillText(f.text,f.x,fy);}
 }
 function updateUI(){if(!sim){$('resources').innerHTML='';return;}const resource=(label,value,cls)=>`<div class="res ${cls}">${label}<strong>${Math.round(value)}</strong><div class="bar"><i style="width:${value}%"></i></div></div>`;$('resources').innerHTML=sim.role==='visitor'?resource('Sợ hãi',sim.fear,'fear')+resource('Thể lực',sim.stamina,'')+resource('Pin',sim.battery,'battery'):resource('Thể lực',sim.stamina,'')+`<div class="res">Điểm diễn<strong>${sim.score}</strong><div style="color:var(--mint);font-size:10px">${sim.served} khách đã ra</div></div>`;
  $('objective').textContent=sim.objective();const near=sim.nearest();
  const nearby=distance(sim.p,near)<64;
- const verbs={bell:'Rung chuông',tape:'Bật băng',portrait:'Xoay tranh',ticket:sim.mystery?'Đóng mộc':'Xem vé',curtain:sim.hidden?'Bước ra':'Nấp',bench:sim.resting?'Đứng dậy':'Nghỉ',wardrobe:sim.mystery?'Mời An':sim.role==='visitor'?'Đập cửa tủ':'Chỉnh áo',door:sim.role==='visitor'?'Ra ngoài':'Đón khách'};
+ const verbs={bell:'Rung chuông',tape:'Bật băng',portrait:'Xoay tranh',ticket:sim.mystery?'Đóng mộc':'Xem vé',curtain:sim.hidden?'Bước ra':'Nấp',bench:sim.resting?'Đứng dậy':'Nghỉ',wardrobe:sim.mystery?'Mời An':sim.role==='visitor'?'Đập cửa tủ':'Chỉnh áo',door:sim.role==='visitor'?(sim.room.next?'Sang phòng':'Ra ngoài'):sim.room.admitSpot==='door'?'Đón khách':'Lối ra',coat:sim.hidden?'Bước ra':'Nấp',coffin:sim.role==='visitor'?'Gõ quan tài':sim.hidden?'Bước ra':'Chui vào',coin:'Nhặt xu',clip:'Nhặt lên',entrance:sim.role==='visitor'?'Ra ngoài':'Đón khách'};
+ const hideSpot=sim.room.spots.find(s=>s.kind==='hide'),nearHide=hideSpot&&distance(sim.p,hideSpot)<70,throwing=sim.role==='visitor'&&sim.coinHeld&&!nearHide;
  $('touchInteractLabel').textContent=nearby?verbs[near.id]:'Lại gần';$('touchInteract').disabled=!nearby||!!sim.ending;
  $('touchPrimaryLabel').textContent=sim.role==='visitor'?(sim.torch?'Tắt đèn':'Đèn pin'):sim.cooldown>0?Math.ceil(sim.cooldown)+'s':'Hù!';
  $('touchPrimary').classList.toggle('active',sim.torch);$('touchPrimary').style.setProperty('--cooldown',sim.role==='employee'?sim.cooldown/3*360+'deg':'0deg');
- $('touchSecondary').disabled=sim.role==='visitor'?distance(sim.p,SPOTS[0])>=70&&!sim.hidden:sim.props.length===0||sim.propCooldown>0;
- $('nearby').textContent=distance(sim.p,near)<64&&!sim.ending?(mobile?'Chạm Sử dụng · ':'E · ')+near.label:'';const speech=sim.bubble&&sim.bubble.until>sim.time?sim.bubble.text:'';if(speech!==lastSpeech){$('speech').textContent=speech;$('speech').classList.toggle('show',!!speech);lastSpeech=speech;}$('primary').classList.toggle('active',sim.torch);$('run').classList.toggle('active',running);$('primaryLabel').textContent=sim.role==='visitor'?(sim.torch?'Tắt đèn':'Bật đèn'):sim.cooldown>0?`Hồi ${sim.cooldown.toFixed(1)}s`:'Tung chiêu';$('status').textContent=sim.role==='visitor'?`Tránh ${sim.avoided} màn hù · ${sim.clues.length}/3 manh mối · Đi tới cửa để kết thúc chuyến chơi`:`${sim.props.length}/3 loa · ${sim.scared} lần hù trúng · ${sim.distracted} lần phân tâm · ${sim.clues.length}/3 manh mối`;
+ $('touchSecondaryLabel').textContent=sim.role==='visitor'?(throwing?'Ném xu':'Nấp'):'Kích loa';$('secondaryLabel').textContent=sim.role==='visitor'?(throwing?'Ném đồng xu':'Nấp'):'Kích loa';
+ $('roomName').textContent=sim.room.name;
+ $('touchSecondary').disabled=sim.role==='visitor'?!nearHide&&!sim.hidden&&!sim.coinHeld:sim.props.length===0||sim.propCooldown>0;
+ $('nearby').textContent=distance(sim.p,near)<64&&!sim.ending?(mobile?'Chạm Sử dụng · ':'E · ')+near.label:'';const speech=sim.bubble&&sim.bubble.until>sim.time?sim.bubble.text:'';if(speech!==lastSpeech){$('speech').textContent=speech;$('speech').classList.toggle('show',!!speech);lastSpeech=speech;}$('primary').classList.toggle('active',sim.torch);$('run').classList.toggle('active',running);$('primaryLabel').textContent=sim.role==='visitor'?(sim.torch?'Tắt đèn':'Bật đèn'):sim.cooldown>0?`Hồi ${sim.cooldown.toFixed(1)}s`:'Tung chiêu';$('status').textContent=sim.role==='visitor'?`Tránh ${sim.avoided} màn hù · ${sim.clues.length}/3 manh mối · ${sim.room.next?'Lối sang Bàn Tiệc ở góc phải':'Đi tới cửa để kết thúc chuyến chơi'}`:`${sim.props.length}/3 loa · ${sim.scared} lần hù trúng · ${sim.distracted} lần phân tâm · ${sim.clues.length}/3 manh mối`;
  if(sim.ending&&!endShown)showEnding();}
 function frame(now){const dt=last?Math.min((now-last)/1000,.06):0;last=now;elapsed+=dt;if(sim&&!paused&&!sim.ending){sim.step(dt,{dx:joy.x+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0),dy:joy.y+(keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0),run:keys.has('shift')||running||touchRunning});}draw();uiClock+=dt;if(uiClock>.08){uiClock=0;updateUI();}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/camera.scale+camera.x,y:(e.clientY-r.top)/camera.scale+camera.y};}
-canvas.addEventListener('pointerdown',e=>{if(!sim||paused||sim.ending)return;e.preventDefault();canvas.focus();const p=point(e),spot=SPOTS.find(s=>distance(s,p)<30);if(spot){if(distance(sim.p,spot)<64)sim.interact(spot.id);else sim.navigate(spot.x,spot.y,spot.id);}else sim.navigate(p.x,p.y);updateUI();});canvas.addEventListener('pointermove',e=>{const p=point(e);hover=SPOTS.find(s=>distance(s,p)<28)?.id||null;});canvas.addEventListener('pointerleave',()=>hover=null);
+canvas.addEventListener('pointerdown',e=>{if(!sim||paused||sim.ending)return;e.preventDefault();canvas.focus();const p=point(e),spot=(sim?.spots()||[]).find(s=>distance(s,p)<30);if(spot){if(distance(sim.p,spot)<64)sim.interact(spot.id);else sim.navigate(spot.x,spot.y,spot.id);}else sim.navigate(p.x,p.y);updateUI();});canvas.addEventListener('pointermove',e=>{const p=point(e);hover=(sim?.spots()||[]).find(s=>distance(s,p)<28)?.id||null;});canvas.addEventListener('pointerleave',()=>hover=null);
 function invoke(action){if(!sim||paused||sim.ending)return;action();updateUI();canvas.focus();}
 $('interact').onclick=()=>invoke(()=>sim.interact());$('primary').onclick=()=>invoke(()=>sim.action());$('secondary').onclick=()=>invoke(()=>sim.secondary());$('place').onclick=()=>invoke(()=>sim.place());$('run').onclick=()=>{running=!running;updateUI();};
 function dialog(html){paused=true;keys.clear();resetStick();$('modalContent').innerHTML=html;if(!modal.open)modal.showModal();}
 function close(){modal.close();paused=false;last=0;canvas.focus();}
 $('closeModal').onclick=close;modal.addEventListener('cancel',e=>{e.preventDefault();close();});
-function help(){dialog(`<h2>Điều khiển & phối hợp đạo cụ</h2><p><b>Trên điện thoại:</b> kéo cần trái để đi; tay phải chạm Đèn pin / Hù và nút sử dụng. Giữ Chạy để tăng tốc. Có thể vừa di chuyển vừa dùng kỹ năng.</p><p><b>Đạo cụ tác động lên ma:</b> chuông kéo ma tới nguồn âm; băng cát sét giữ ma đứng nghe; tranh khiến ma hoảng lùi; rèm làm ma mất dấu; ghế nghỉ tạo vùng an toàn. Mỗi món có thời gian hồi và dùng lặp sẽ kém hiệu quả.</p><p>Nhân vật đi trong phòng thật. Đến gần đồ vật để sử dụng; NPC vẫn di chuyển khi bạn đứng yên.</p><div class="help-grid"><b>WASD / ↑↓←→</b><span>Di chuyển. Hoặc chạm một điểm trên sàn để tự tìm đường.</span><b>E</b><span>Tương tác với vật gần nhất. Chạm điểm sáng cũng tự đi tới vật đó.</span><b>Space</b><span>Khách: bật / tắt đèn pin. Nhân viên: tung chiêu trong tầm gần.</span><b>Q</b><span>Khách: nấp khi ở cạnh rèm. Nhân viên: kích hoạt loa gần nhất.</span><b>P</b><span>Nhân viên đặt loa tại chỗ đang đứng, tối đa 3 loa.</span><b>Shift</b><span>Chạy nhanh, tốn thể lực.</span><b>Ghế nghỉ</b><span>Tới ghế ở góc trái để hồi sức, pin và giảm sợ hãi.</span><b>J / Esc</b><span>Nhật ký / tạm dừng.</span></div><p>${sim?.role==='employee'?'Gợi ý: đặt loa, mở cửa đón khách, kích loa rồi vòng sang hướng khác để hù. Khách quen chiêu sẽ khó bị dọa hơn.':'Gợi ý: khi ma lấy đà, quay mặt rọi đèn, lùi lại hoặc nấp. Bàn chặn cả đường đi lẫn một phần tầm nhìn.'}</p><div class="dialog-actions"><button id="resume">Vào chơi</button></div>`);$('resume').onclick=close;}
+function help(){dialog(`<h2>Điều khiển & phối hợp đạo cụ</h2><p><b>Trên điện thoại:</b> kéo cần trái để đi; tay phải chạm Đèn pin / Hù và nút sử dụng. Giữ Chạy để tăng tốc. Có thể vừa di chuyển vừa dùng kỹ năng.</p><p><b>Đạo cụ tác động lên ma:</b> chuông kéo ma tới nguồn âm; băng cát sét giữ ma đứng nghe; tranh khiến ma hoảng lùi; rèm làm ma mất dấu; ghế nghỉ tạo vùng an toàn. Mỗi món có thời gian hồi và dùng lặp sẽ kém hiệu quả.</p><p><b>Phòng Nghĩa Địa:</b> Xác Sống gần như không nhìn thấy nhưng nghe rất thính. Ván gỗ cót két và tiếng chạy sẽ kéo hắn tới. Nhặt đồng xu rồi nhấn Q để ném đánh lạc hướng. Đèn pin chỉ làm hắn khựng lại rồi lần theo ánh sáng; đừng bật đèn khi nấp sau áo khoác. Nhân viên có thể chui vào quan tài đứng rồi bung nắp để hù.</p><p>Nhân vật đi trong phòng thật. Đến gần đồ vật để sử dụng; NPC vẫn di chuyển khi bạn đứng yên.</p><div class="help-grid"><b>WASD / ↑↓←→</b><span>Di chuyển. Hoặc chạm một điểm trên sàn để tự tìm đường.</span><b>E</b><span>Tương tác với vật gần nhất. Chạm điểm sáng cũng tự đi tới vật đó.</span><b>Space</b><span>Khách: bật / tắt đèn pin. Nhân viên: tung chiêu trong tầm gần.</span><b>Q</b><span>Khách: nấp khi ở cạnh rèm. Nhân viên: kích hoạt loa gần nhất.</span><b>P</b><span>Nhân viên đặt loa tại chỗ đang đứng, tối đa 3 loa.</span><b>Shift</b><span>Chạy nhanh, tốn thể lực.</span><b>Ghế nghỉ</b><span>Tới ghế ở góc trái để hồi sức, pin và giảm sợ hãi.</span><b>J / Esc</b><span>Nhật ký / tạm dừng.</span></div><p>${sim?.role==='employee'?'Gợi ý: đặt loa, mở cửa đón khách, kích loa rồi vòng sang hướng khác để hù. Khách quen chiêu sẽ khó bị dọa hơn.':'Gợi ý: khi ma lấy đà, quay mặt rọi đèn, lùi lại hoặc nấp. Bàn chặn cả đường đi lẫn một phần tầm nhìn.'}</p><div class="dialog-actions"><button id="resume">Vào chơi</button></div>`);$('resume').onclick=close;}
 function journal(){dialog(`<span class="eyebrow">NHẬT KÝ CA ĐÊM</span><h2>Những điều đã thấy</h2><div class="clues">${Object.entries(EVIDENCE).map(([k,v])=>`<div class="clue ${sim?.clues.includes(k)?'':'locked'}">${sim?.clues.includes(k)?'✓ '+v:'? Chưa tìm thấy'}</div>`).join('')}</div><p>${sim?.mystery?'Để giúp An chơi xong: tới bàn đóng mộc. Để mời An làm nhân viên: tới tủ phân ca.':'Tìm các dấu vết trong phòng: bảng tên dưới tranh, vé trên bàn và máy cát sét.'}</p><ul>${(sim?.journal||[]).map(t=>`<li>${esc(t)}</li>`).join('')}</ul><div class="dialog-actions"><button id="resume">Quay lại phòng</button></div>`);$('resume').onclick=close;}
 function pause(){dialog(`<h2>Tạm nghỉ</h2><p>Khách, ma và đồng hồ đều dừng lại khi bảng này mở.</p><div class="dialog-actions"><button id="resume">Chơi tiếp</button><button id="guide">Xem cách chơi</button><button id="restart">Đổi vai / bắt đầu lại</button></div>`);$('resume').onclick=close;$('guide').onclick=help;$('restart').onclick=()=>{dialog('<h2>Bắt đầu lại?</h2><p>Ca hiện tại sẽ được đặt lại.</p><div class="dialog-actions"><button id="yes">Về chọn vai</button><button id="no">Chơi tiếp ca này</button></div>');$('yes').onclick=()=>{close();home();};$('no').onclick=close;};}
-function home(){resetStick();sim=null;endShown=false;keys.clear();$('end').hidden=true;$('start').hidden=false;$('speech').classList.remove('show');$('nearby').textContent='';$('objective').textContent='Chọn vai để bắt đầu.';$('mode').textContent='RPG / MÔ PHỎNG';$('stop').hidden=true;updateUI();}
+function home(){resetStick();sim=null;endShown=false;keys.clear();$('end').hidden=true;$('start').hidden=false;$('speech').classList.remove('show');$('nearby').textContent='';$('objective').textContent='Chọn vai để bắt đầu.';$('mode').textContent='RPG / MÔ PHỎNG';$('roomName').textContent='CÔNG VIÊN ÁNH TRĂNG';$('stop').hidden=true;updateUI();}
 const endings={leave:['Mai chơi tiếp','Na đặt một lon nước cạnh bạn. “Lần sau chơi tiếp, nhưng cậu phải đi trước.” Không cần gồng. Tấm vé vẫn còn.'],tricks:['Rành quá rồi','Bạn đã đi qua phòng. Bơ cười: “Toàn máy móc gài bẫy thôi.” Cái loa rút điện ở góc phòng khẽ đáp: “Ừ.”'],ticket:['Xé vé','Băng cũ vang lên: “Chào mừng An đến với Nhà Ma.” Bạn đóng mộc cuối. An nói “Lâu quá…” rồi biến mất. Tấm vé đã khô.'],new:['Ma mới','Bạn ghi tên An vào bảng phân ca. Mr. D nhìn một lúc rồi viết: “Đứa này khỏi cần phát đồng phục.” Chiếc ghế tự kéo ra đón khách.'],together:['Không bỏ ai lại','Đèn sáng. Bạn dẫn mọi người ra khỏi nhà ma. Sau cánh cửa vừa khóa, ai đó nói rất khẽ: “Cảm ơn.”'],shift:['Hết ca','Khách đã về. Bạn treo áo choàng và trả bộ đàm. Ngày mai, căn phòng sẽ lại cần một người đứng sau tiếng hét.']};
-function showEnding(){endShown=true;const [title,text]=endings[sim.ending]||endings.shift;$('end').innerHTML=`<div class="endcard"><span class="eyebrow">CÔNG VIÊN ÁNH TRĂNG · KẾT CA</span><h2>${title}</h2><p>${text}</p><div class="endstats"><span>${sim.role==='employee'?sim.score+' điểm diễn':sim.avoided+' lần tránh ma'}</span><span>${sim.clues.length}/3 manh mối</span><span>${Math.floor(sim.time/60)}:${String(Math.floor(sim.time%60)).padStart(2,'0')}</span></div><div class="endactions"><button id="again">Chơi lại vai này</button><button id="other">Đổi vai</button></div><p><small>Bản thử cơ chế một phòng · Công viên nhiều khu và tiến trình nhiều đêm sẽ được phát triển tiếp.</small></p></div>`;$('end').hidden=false;$('again').onclick=()=>launch(sim.role);$('other').onclick=()=>launch(sim.role==='visitor'?'employee':'visitor');}
+function showEnding(){endShown=true;const [title,text]=endings[sim.ending]||endings.shift;$('end').innerHTML=`<div class="endcard"><span class="eyebrow">CÔNG VIÊN ÁNH TRĂNG · KẾT CA</span><h2>${title}</h2><p>${text}</p><div class="endstats"><span>${sim.role==='employee'?sim.score+' điểm diễn':sim.avoided+' lần tránh ma'}</span><span>${sim.clues.length}/3 manh mối</span><span>${Math.floor(sim.time/60)}:${String(Math.floor(sim.time%60)).padStart(2,'0')}</span></div><div class="endactions"><button id="again">Chơi lại vai này</button><button id="other">Đổi vai</button></div><p><small>Bản thử cơ chế một phòng · Công viên nhiều khu và tiến trình nhiều đêm sẽ được phát triển tiếp.</small></p></div>`;$('end').hidden=false;$('again').onclick=()=>launch(sim.role,sim.visited[0]);$('other').onclick=()=>launch(sim.role==='visitor'?'employee':'visitor',sim.visited[0]);}
 $('stop').onclick=()=>{if(!sim)return;dialog('<h2>Kết thúc ca?</h2><p>Bật đèn đưa khách ra, hoặc chấm công khi nhóm đã ra hết. Phần thưởng đã kiếm được vẫn được giữ.</p><div class="dialog-actions"><button id="safe">Dừng show, đưa khách ra</button><button id="shiftEnd">Chấm công hết ca</button><button id="resume">Tiếp tục ca</button></div>');$('safe').onclick=()=>{close();sim.finish('together');updateUI();};$('shiftEnd').disabled=sim.npcs.some(n=>!n.gone);$('shiftEnd').onclick=()=>{close();sim.finish('shift');updateUI();};$('resume').onclick=close;};
 $('help').onclick=help;$('journal').onclick=journal;$('pause').onclick=pause;document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>launch(b.dataset.role));
+document.querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>{startRoom=b.dataset.room;document.querySelectorAll('[data-room]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',x===b);});});
 const joystick=$('joystick'),stick=$('stick');
 function resetStick(){joy={x:0,y:0,id:null};touchRunning=false;if(stick)stick.style.transform='translate(0px,0px)';if($('touchRun'))$('touchRun').classList.remove('active');}
 function dragStick(e){if(e.pointerId!==joy.id)return;const b=joystick.getBoundingClientRect(),radius=b.width*.32,dx=e.clientX-b.left-b.width/2,dy=e.clientY-b.top-b.height/2,length=Math.hypot(dx,dy),factor=length>radius?radius/length:1;joy.x=length<radius*.15?0:dx/Math.max(radius,length);joy.y=length<radius*.15?0:dy/Math.max(radius,length);stick.style.transform=`translate(${dx*factor}px,${dy*factor}px)`;}
@@ -167,5 +636,6 @@ $('touchInteract').onclick=()=>invoke(()=>sim.interact());$('touchSecondary').on
 $('touchRun').addEventListener('pointerdown',e=>{if(!sim||paused)return;e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchRunning=true;e.currentTarget.classList.add('active');});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('touchRun').addEventListener(type,()=>{touchRunning=false;$('touchRun').classList.remove('active');});
 window.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d','e','q','p','j','escape','shift'].includes(k))e.preventDefault();if(k==='escape'){if(e.repeat)return;modal.open?close():pause();return;}if(k==='j'){if(e.repeat)return;modal.open?close():journal();return;}if(paused||!sim||sim.ending)return;keys.add(k);if(e.repeat)return;if(k==='e')invoke(()=>sim.interact());if(k===' ')invoke(()=>sim.action());if(k==='q')invoke(()=>sim.secondary());if(k==='p')invoke(()=>sim.place());});window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));window.addEventListener('blur',()=>{keys.clear();resetStick();if(sim&&!sim.ending&&!modal.open)pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden){keys.clear();resetStick();if(sim&&!sim.ending&&!modal.open)pause();}});
-if(document.modelContext?.registerTool){try{Promise.resolve(document.modelContext.registerTool({name:'read_simulation',description:'Read the visible RPG simulation: role, position, resources, clues, and nearby interaction.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute:()=>sim?{role:sim.role,position:{x:sim.p.x,y:sim.p.y},fear:sim.fear,stamina:sim.stamina,clues:sim.clues,phase:sim.phase,objective:sim.objective(),nearby:distance(sim.p,sim.nearest())<64?sim.nearest().id:null}: {screen:'role-selection'}})).catch(()=>{});Promise.resolve(document.modelContext.registerTool({name:'start_simulation',description:'Start a new run in a selected role from the role-selection screen.',inputSchema:{type:'object',properties:{role:{type:'string',enum:['visitor','employee']}},required:['role'],additionalProperties:false},execute:({role})=>{if(sim)throw Error('A run is active');if(!assetsReady||!['visitor','employee'].includes(role))throw Error('Cannot start');launch(role);return{role:sim.role,phase:sim.phase};}})).catch(()=>{});}catch{}}
-</script></body></html>
+if(document.modelContext?.registerTool){try{Promise.resolve(document.modelContext.registerTool({name:'read_simulation',description:'Read the visible RPG simulation: role, position, resources, clues, and nearby interaction.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute:()=>sim?{role:sim.role,room:sim.roomId,position:{x:sim.p.x,y:sim.p.y},fear:sim.fear,stamina:sim.stamina,clues:sim.clues,phase:sim.phase,objective:sim.objective(),nearby:distance(sim.p,sim.nearest())<64?sim.nearest().id:null}: {screen:'role-selection'}})).catch(()=>{});Promise.resolve(document.modelContext.registerTool({name:'start_simulation',description:'Start a new run in a selected role from the role-selection screen.',inputSchema:{type:'object',properties:{role:{type:'string',enum:['visitor','employee']},room:{type:'string',enum:Object.keys(ROOMS)}},required:['role'],additionalProperties:false},execute:({role,room})=>{if(sim)throw Error('A run is active');if(!assetsReady||!['visitor','employee'].includes(role)||room&&!ROOMS[room])throw Error('Cannot start');launch(role,room||startRoom);return{role:sim.role,room:sim.roomId,phase:sim.phase};}})).catch(()=>{});}catch{}}
+
+return{};})();</script></body></html>

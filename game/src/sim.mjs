@@ -1,81 +1,247 @@
 // Authoritative run state, navigation, interactions and NPC AI. No browser dependencies.
-export const W=1000,H=562;
-export const BLOCKS=[{x:365,y:180,w:275,h:144},{x:878,y:310,w:76,h:171},{x:58,y:431,w:134,h:76}];
-export const SPOTS=[{id:'curtain',x:105,y:265,label:'Rèm · nấp / bước ra'},{id:'portrait',x:258,y:262,label:'Bảng tên cũ'},{id:'ticket',x:460,y:346,label:'Vé 000 / đóng mộc'},{id:'bell',x:606,y:346,label:'Rung chuông'},{id:'tape',x:746,y:262,label:'Máy cát sét'},{id:'bench',x:174,y:410,label:'Ghế nghỉ'},{id:'wardrobe',x:847,y:401,label:'Tủ phục trang / phân ca'},{id:'door',x:887,y:261,label:'Cửa ra / đón khách'}];
+import {ROOMS, ROOM_ORDER} from './rooms.mjs';
+
+export const W=1000;
+export const H=562;
 export const EVIDENCE={ticket:'Vé 000',name:'Tên: An',tape:'Băng ghi âm'};
+export const FOUND={clip:'Kẹp tóc của Na'};
 export const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-export function passable(x,y,r=11){return x>=54+r&&x<=949-r&&y>=240+r&&y<=521-r&&!BLOCKS.some(b=>x+r>b.x&&x-r<b.x+b.w&&y+r>b.y&&y-r<b.y+b.h);}
-export function visible(a,b){const n=Math.ceil(distance(a,b)/12);for(let i=1;i<n;i++){const x=a.x+(b.x-a.x)*i/n,y=a.y+(b.y-a.y)*i/n;if(BLOCKS.some(c=>x>c.x&&x<c.x+c.w&&y>c.y&&y<c.y+c.h))return false;}return true;}
-// Static room: build the 20-unit walk grid once instead of on every path request.
-const NODES=[];for(let y=250;y<=510;y+=20)for(let x=70;x<=930;x+=20)if(passable(x,y))NODES.push({x,y});
-const nodeKey=p=>p.x+','+p.y,NODE_LOOKUP=new Map(NODES.map(n=>[nodeKey(n),n]));
-export function findPath(a,b){const nodes=NODES;const closest=p=>nodes.reduce((best,n)=>distance(n,p)<distance(best,p)?n:best,nodes[0]);const start=closest(a),end=closest(b),key=nodeKey,lookup=NODE_LOOKUP,queue=[start],prev=new Map([[key(start),null]]);for(let q=0;q<queue.length;q++){const p=queue[q];if(key(p)===key(end))break;for(const [dx,dy]of[[20,0],[-20,0],[0,20],[0,-20]]){const k=(p.x+dx)+','+(p.y+dy);if(lookup.has(k)&&!prev.has(k)){prev.set(k,key(p));queue.push(lookup.get(k));}}}if(!prev.has(key(end)))return[];let result=[],k=key(end);while(k!==null){result.push(lookup.get(k));k=prev.get(k);}result.reverse();if(result.length&&distance(result[0],a)<10)result.shift();return result;}
-function moveActor(a,dx,dy){let moved=false;if(passable(a.x+dx,a.y)){a.x+=dx;moved=moved||dx!==0;}if(passable(a.x,a.y+dy)){a.y+=dy;moved=moved||dy!==0;}if(dx||dy)a.face=Math.atan2(dy,dx);a.moving=moved;return moved;}
-function follow(a,dt,speed){if(!a.path?.length){a.moving=false;return;}const t=a.path[0],d=distance(a,t);if(d<3){a.path.shift();return;}const k=Math.min(speed*dt,d)/d;moveActor(a,(t.x-a.x)*k,(t.y-a.y)*k);}
-const routes=[[{x:780,y:330},{x:680,y:390},{x:500,y:410},{x:300,y:365},{x:260,y:270},{x:450,y:450},{x:720,y:400},{x:887,y:270}],[{x:810,y:370},{x:750,y:275},{x:670,y:430},{x:500,y:375},{x:330,y:345},{x:290,y:420},{x:740,y:370},{x:887,y:270}]];
+const inside=(r,x,y)=>x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h;
+
+export function passable(room,x,y,r=11){const b=room.bounds;return x>=b.x0+r&&x<=b.x1-r&&y>=b.y0+r&&y<=b.y1-r&&!room.blocks.some(k=>x+r>k.x&&x-r<k.x+k.w&&y+r>k.y&&y-r<k.y+k.h);}
+export function visible(room,a,b){const n=Math.ceil(distance(a,b)/12);for(let i=1;i<n;i++){const x=a.x+(b.x-a.x)*i/n,y=a.y+(b.y-a.y)*i/n;if(room.blocks.some(c=>inside(c,x,y)))return false;}return true;}
+
+// Rooms are static: build each room's 20-unit walk grid once instead of on every path request.
+const nodeKey=p=>p.x+','+p.y,grids=new Map();
+function grid(room){
+ if(!grids.has(room.id)){const b=room.bounds,nodes=[];for(let y=b.y0+10;y<=b.y1-11;y+=20)for(let x=b.x0+16;x<=b.x1-19;x+=20)if(passable(room,x,y))nodes.push({x,y});grids.set(room.id,{nodes,lookup:new Map(nodes.map(n=>[nodeKey(n),n]))});}
+ return grids.get(room.id);
+}
+export function findPath(room,a,b){const {nodes,lookup}=grid(room);const closest=p=>nodes.reduce((best,n)=>distance(n,p)<distance(best,p)?n:best,nodes[0]);const start=closest(a),end=closest(b),key=nodeKey,queue=[start],prev=new Map([[key(start),null]]);for(let q=0;q<queue.length;q++){const p=queue[q];if(key(p)===key(end))break;for(const [dx,dy]of[[20,0],[-20,0],[0,20],[0,-20]]){const k=(p.x+dx)+','+(p.y+dy);if(lookup.has(k)&&!prev.has(k)){prev.set(k,key(p));queue.push(lookup.get(k));}}}if(!prev.has(key(end)))return[];let result=[],k=key(end);while(k!==null){result.push(lookup.get(k));k=prev.get(k);}result.reverse();if(result.length&&distance(result[0],a)<10)result.shift();return result;}
+function moveActor(room,a,dx,dy){let moved=false;if(passable(room,a.x+dx,a.y)){a.x+=dx;moved=moved||dx!==0;}if(passable(room,a.x,a.y+dy)){a.y+=dy;moved=moved||dy!==0;}if(dx||dy)a.face=Math.atan2(dy,dx);a.moving=moved;return moved;}
+function follow(room,a,dt,speed){if(!a.path?.length){a.moving=false;return;}const t=a.path[0],d=distance(a,t);if(d<3){a.path.shift();return;}const k=Math.min(speed*dt,d)/d;moveActor(room,a,(t.x-a.x)*k,(t.y-a.y)*k);}
+
+// Authored effects of using a fixture. `state` is what it does to the room's ghost.
+const EFFECTS={
+ bell:{state:'investigate',duration:7,cooldown:11,color:'#e9c577',label:'Bị tiếng chuông thu hút'},
+ tape:{state:'charmed',duration:5,cooldown:14,color:'#a6e9f0',label:'Đứng nghe băng'},
+ portrait:{state:'confused',duration:5,cooldown:12,color:'#c3a7ed',label:'Hoảng hốt vì bóng trong tranh'},
+ wardrobe:{state:'investigate',duration:6,cooldown:10,color:'#edb080',label:'Quay về tiếng cửa tủ'},
+ curtain:{state:'search',duration:4,cooldown:6,color:'#8edacc',label:'Mất dấu · đang tìm'},
+ coat:{state:'search',duration:4,cooldown:6,color:'#8edacc',label:'Mất dấu · đang tìm'},
+ bench:{state:'repelled',duration:4,cooldown:8,color:'#d3e8aa',label:'Lùi khỏi vùng an toàn'},
+ coffin:{state:'investigate',duration:6,cooldown:10,color:'#edb080',label:'Lần theo tiếng gõ quan tài'},
+};
+const EFFECT_HINT={bell:'Tranh thủ đi vòng qua ma!',tape:'Bạn có thời gian tìm vé.',coffin:'Đi vòng sang phía bên kia!'};
+
 export class Simulation{
- constructor(role){if(!['visitor','employee'].includes(role))throw Error('Invalid role');this.role=role;this.time=0;this.phase=role==='employee'?'prep':'explore';this.p={x:500,y:483,face:-Math.PI/2,sprite:role==='employee'?3:0,path:[],moving:false};this.fear=20;this.stamina=100;this.battery=100;this.hidden=false;this.resting=false;this.torch=false;this.cooldown=0;this.propCooldown=0;this.clues=[];this.journal=[];this.props=[];this.events=[];this.floaters=[];this.score=0;this.wave=0;this.served=0;this.scared=0;this.distracted=0;this.avoided=0;this.npcs=[];this.target=null;this.pending=null;this.ending=null;this.mystery=false;this.invited=false;this.completed=false;this.huntTimer=2;this.objectCooldowns={};this.effectUses={};this.worldEffects=[];this.combo=0;this.lastEffect=null;this.monster={x:700,y:340,face:2.5,sprite:3,path:[],state:'patrol',t:0,index:0};this.companions=[{x:420,y:477,sprite:1,face:0,path:[],moving:false},{x:580,y:477,sprite:2,face:0,path:[],moving:false}];this.bubble=null;this.notice(role==='employee'?'Mr. D: Dàn đạo cụ, rồi tới cửa đón khách.':'Na: Đứa nào ré lên trước thì bao nước nhé.');}
+ constructor(role,roomId=ROOM_ORDER[0]){
+  if(!['visitor','employee'].includes(role))throw Error('Invalid role');
+  if(!ROOMS[roomId])throw Error('Invalid room');
+  this.role=role;this.time=0;this.fear=20;this.stamina=100;this.battery=100;this.torch=false;this.cooldown=0;this.propCooldown=0;
+  this.clues=[];this.found=[];this.journal=[];this.events=[];this.floaters=[];this.score=0;this.wave=0;this.served=0;this.scared=0;this.distracted=0;this.avoided=0;
+  this.ending=null;this.mystery=false;this.invited=false;this.completed=false;this.combo=0;this.lastEffect=null;this.bubble=null;this.visited=[];
+  this.p={x:0,y:0,face:-Math.PI/2,sprite:0,path:[],moving:false};
+  this.companions=[{x:0,y:0,sprite:1,face:0,path:[],moving:false},{x:0,y:0,sprite:2,face:0,path:[],moving:false}];
+  this.enterRoom(roomId,true);
+ }
+ // Place the run in a room. Fear, stamina, battery, clues and score carry over between rooms.
+ enterRoom(id,fresh=false){
+  const room=ROOMS[id];this.room=room;this.roomId=id;this.visited.push(id);
+  Object.assign(this.p,{x:room.start.x,y:room.start.y,face:-Math.PI/2,path:[],moving:false});
+  if(this.role==='employee')this.p.sprite=room.employeeSprite;
+  this.companions.forEach((c,i)=>Object.assign(c,{x:room.start.x+room.companionOffsets[i].x,y:room.start.y+room.companionOffsets[i].y,path:[],moving:false,face:0}));
+  const g=room.ghost;this.monster={x:g.spawn.x,y:g.spawn.y,face:2.5,sprite:g.sprite,path:[],state:'patrol',t:0,index:0};
+  this.phase=this.role==='employee'?'prep':'explore';this.target=null;this.pending=null;this.hidden=false;this.hideSpot=null;this.resting=false;
+  this.objectCooldowns={};this.effectUses={};this.worldEffects=[];this.props=[];this.npcs=[];this.lastEffect=null;this.combo=0;
+  this.coin=room.coin?{...room.coin}:null;this.coinHeld=false;this.coinFlight=null;this.noiseTimer=0;this.revealTimer=0;
+  this.notice(fresh?room.intro[this.role]:room.arrive||room.intro[this.role]);
+ }
  notice(text){this.bubble={text,until:this.time+4.8};this.events.push(text);if(this.events.length>6)this.events.shift();}
  log(text){this.journal.push(text);this.notice(text);}
- navigate(x,y,spot=null){if(this.ending)return;this.resting=false;if(this.hidden){this.hidden=false;this.notice('Bạn bước ra khỏi rèm.');}this.p.path=findPath(this.p,{x,y});this.target={x,y};this.pending=spot;}
- nearest(){return SPOTS.reduce((best,s)=>distance(s,this.p)<distance(best,this.p)?s:best,SPOTS[0]);}
+ // Fixed spots plus things that come and go: the coin on the floor, a lost item not yet found.
+ spots(){const s=this.room.spots.filter(s=>s.kind!=='lost'||!this.found.includes(s.id));if(this.coin&&!this.coinHeld)s.push({id:'coin',kind:'coin',x:this.coin.x,y:this.coin.y,label:'Đồng xu'});return s;}
+ navigate(x,y,spot=null){if(this.ending)return;this.resting=false;if(this.hidden){this.hidden=false;this.notice('Bạn bước ra khỏi chỗ nấp.');}this.p.path=findPath(this.room,this.p,{x,y});this.target={x,y};this.pending=spot;}
+ nearest(){const s=this.spots();return s.reduce((best,x)=>distance(x,this.p)<distance(best,this.p)?x:best,s[0]);}
  effect(id,spot){
- if(this.mystery||this.ending)return false;
- if((this.objectCooldowns[id]||0)>0){this.notice(`Đạo cụ đang hồi: ${Math.ceil(this.objectCooldowns[id])} giây.`);return false;}
- const data={bell:{state:'investigate',duration:7,cooldown:11,color:'#e9c577',label:'Bị tiếng chuông thu hút'},tape:{state:'charmed',duration:5,cooldown:14,color:'#a6e9f0',label:'Đứng nghe băng'},portrait:{state:'confused',duration:5,cooldown:12,color:'#c3a7ed',label:'Hoảng hốt vì bóng trong tranh'},wardrobe:{state:'investigate',duration:6,cooldown:10,color:'#edb080',label:'Quay về tiếng cửa tủ'},curtain:{state:'search',duration:4,cooldown:6,color:'#8edacc',label:'Mất dấu · đang tìm'},bench:{state:'repelled',duration:4,cooldown:8,color:'#d3e8aa',label:'Lùi khỏi vùng an toàn'}}[id];
- if(!data)return false;
- this.objectCooldowns[id]=data.cooldown;this.effectUses[id]=(this.effectUses[id]||0)+1;
- const duration=Math.max(2,data.duration-(this.effectUses[id]-1)*.65);
- this.worldEffects.push({x:spot.x,y:spot.y,id,until:this.time+2.4,color:data.color});
- if(this.role==='employee'){
-  let hits=0;for(const n of this.npcs){if(n.gone||n.leaving||distance(n,spot)>360)continue;n.path=findPath(n,spot);n.distract=duration;n.interest=20;n.caution=.05;hits++;}
-  this.distracted+=hits;this.notice(hits?`${hits} khách bị đạo cụ thu hút. Vòng ra sau rồi tung chiêu!`:'Đạo cụ đã hoạt động. Chờ khách tới gần để dàn cảnh.');return true;
+  if(this.mystery||this.ending)return false;
+  if((this.objectCooldowns[id]||0)>0){this.notice(`Đạo cụ đang hồi: ${Math.ceil(this.objectCooldowns[id])} giây.`);return false;}
+  const data=EFFECTS[id];
+  if(!data)return false;
+  this.objectCooldowns[id]=data.cooldown;this.effectUses[id]=(this.effectUses[id]||0)+1;
+  const duration=Math.max(2,data.duration-(this.effectUses[id]-1)*.65);
+  this.worldEffects.push({x:spot.x,y:spot.y,id,until:this.time+2.4,color:data.color});
+  if(this.role==='employee'){
+   let hits=0;for(const n of this.npcs){if(n.gone||n.leaving||distance(n,spot)>360)continue;n.path=findPath(this.room,n,spot);n.distract=duration;n.interest=20;n.caution=.05;hits++;}
+   this.distracted+=hits;this.notice(hits?`${hits} khách bị đạo cụ thu hút. Vòng ra sau rồi tung chiêu!`:'Đạo cụ đã hoạt động. Chờ khách tới gần để dàn cảnh.');return true;
+  }
+  const m=this.monster,g=this.room.ghost;m.state=data.state;m.t=duration;m.effectLabel=data.label;m.effectDuration=duration;
+  m.path=['confused','repelled'].includes(data.state)?findPath(this.room,m,g.retreat):data.state==='charmed'?[]:findPath(this.room,m,spot);
+  if(this.lastEffect&&this.lastEffect!==id){this.combo++;this.floaters.push({x:m.x,y:m.y-95,text:'PHỐI HỢP ×'+(this.combo+1),until:this.time+2});}else this.combo=0;
+  this.lastEffect=id;this.notice(data.label+' · '+duration.toFixed(1)+' giây. '+(EFFECT_HINT[id]||'Di chuyển để tận dụng khoảng trống.'));return true;
  }
- const m=this.monster;m.state=data.state;m.t=duration;m.effectLabel=data.label;m.effectDuration=duration;
- m.path=['confused','repelled'].includes(data.state)?findPath(m,{x:700,y:430}):data.state==='charmed'?[]:findPath(m,spot);
- if(this.lastEffect&&this.lastEffect!==id){this.combo++;this.floaters.push({x:m.x,y:m.y-95,text:'PHỐI HỢP ×'+(this.combo+1),until:this.time+2});}else this.combo=0;
- this.lastEffect=id;this.notice(data.label+' · '+duration.toFixed(1)+' giây. '+(id==='bell'?'Tranh thủ đi vòng qua ma!':id==='tape'?'Bạn có thời gian tìm vé.':'Di chuyển để tận dụng khoảng trống.'));return true;
+ interact(id){
+  if(this.ending)return false;
+  const spot=this.spots().find(s=>s.id===id)||this.nearest();
+  if(distance(this.p,spot)>64){this.notice('Lại gần hơn để tương tác.');return false;}
+  this.pending=null;this.p.path=[];this.target=null;
+  const employee=this.role==='employee';
+  switch(spot.kind){
+   case 'effect':this.effect(spot.id,spot);return true;
+   case 'hide':{
+    this.hidden=!this.hidden;this.resting=false;this.hideSpot=this.hidden?spot:null;
+    if(!spot.torchReveals)this.torch=false;
+    if(!this.hidden){this.notice('Bạn bước ra khỏi chỗ nấp.');return true;}
+    this.effect(spot.id,spot);
+    if(this.torch)this.notice('Đèn vẫn bật… vệt sáng sẽ lộ chỗ nấp. Tắt đèn đi!');
+    return true;
+   }
+   case 'rest':this.resting=!this.resting;this.torch=false;if(this.resting)this.effect(spot.id,spot);this.notice(this.resting?'Vùng đèn an toàn đẩy ma lùi. Đang hồi sức và pin.':'Bạn đứng dậy.');return true;
+   case 'exit':case 'entrance':{
+    if(employee){if(this.room.admitSpot===spot.id)this.admit();else this.notice('Lối sang phòng kế tiếp. Khách sẽ ra ở đây.');return true;}
+    if(spot.kind==='entrance'){this.finish('leave');return true;}
+    if(this.room.next){this.enterRoom(this.room.next);return true;}
+    this.completed=this.time>=20||this.clues.length>0;this.finish(this.completed?'tricks':'leave');return true;
+   }
+   case 'wardrobe':if(this.mystery){this.finish('new');}else if(employee){this.stamina=Math.min(100,this.stamina+10);this.notice('Chỉnh lại áo choàng. +10 thể lực. Bảng phân ca còn một chỗ trống.');}else this.effect('wardrobe',spot);return true;
+   case 'coffin':
+    if(employee){this.hidden=!this.hidden;this.hideSpot=this.hidden?spot:null;this.resting=false;this.notice(this.hidden?'Chui vào quan tài. Đợi khách tới gần rồi bung nắp (Hù).':'Bạn bước ra khỏi quan tài.');}
+    else this.effect('coffin',spot);
+    return true;
+   case 'coin':this.coinHeld=true;this.notice('Nhặt được đồng xu. Nhấn Q để ném về hướng đang nhìn; tiếng xu rơi sẽ kéo Xác Sống đi.');return true;
+   case 'lost':this.found.push(spot.id);this.journal.push(FOUND[spot.id]);this.notice('Na: Ơ, kẹp tóc của tui! Tưởng mất luôn rồi. Cảm ơn nha.');return true;
+   case 'ticket':if(this.mystery){this.finish('ticket');return true;}// otherwise it is a clue
+   case 'clue':{
+    const clue=spot.clue;
+    if(!this.clues.includes(clue)){this.clues.push(clue);this.journal.push(EVIDENCE[clue]);this.notice({name:'Dưới lớp bụi có một cái tên: AN.',ticket:'Vé 000: bốn dấu mộc, một ô cuối để trống.',tape:'Băng cũ: “Chào mừng An đến với Nhà Ma.”'}[clue]);}else this.notice('Manh mối này đã ở trong nhật ký.');
+    if(spot.kind==='clue')this.effect(spot.id,spot);this.tryMystery();return true;
+   }
+  }
+  return true;
  }
- interact(id){if(this.ending)return false;const spot=SPOTS.find(s=>s.id===id)||this.nearest();if(distance(this.p,spot)>64){this.notice('Lại gần hơn để tương tác.');return false;}this.pending=null;this.p.path=[];this.target=null;
- if(spot.id==='bell'){this.effect('bell',spot);return true;}
- if(spot.id==='curtain'){this.hidden=!this.hidden;this.torch=false;this.resting=false;if(this.hidden)this.effect('curtain',spot);else this.notice('Bạn bước ra khỏi rèm.');return true;}
- if(spot.id==='bench'){this.resting=!this.resting;this.torch=false;if(this.resting)this.effect('bench',spot);this.notice(this.resting?'Vùng đèn an toàn đẩy ma lùi. Đang hồi sức và pin.':'Bạn đứng dậy.');return true;}
- if(spot.id==='door'){if(this.role==='employee'){if(this.npcs.some(n=>!n.gone)){this.notice('Khách vẫn đang trong phòng. Chăm sóc nhóm này trước nhé.');return true;}this.wave++;this.phase='live';this.npcs=[0,1].map((v)=>({x:880+v*20,y:280+v*18,sprite:v+1,face:Math.PI,path:findPath({x:880+v*20,y:280+v*18},routes[v][0]),route:routes[v],index:0,wait:0,time:0,interest:20,fear:0,caution:.1,hits:0,usedProps:[],distract:0,flee:0,gone:false,moving:false}));this.notice(`Nhóm ${this.wave} bước vào. Hãy di chuyển, đánh lạc hướng rồi dọa!`);}else{this.completed=this.time>=20||this.clues.length>0;this.finish(this.completed?'tricks':'leave');}return true;}
- if(spot.id==='wardrobe'){if(this.mystery){this.finish('new');}else if(this.role==='employee'){this.stamina=Math.min(100,this.stamina+10);this.notice('Chỉnh lại áo choàng. +10 thể lực. Bảng phân ca còn một chỗ trống.');}else this.effect('wardrobe',spot);return true;}
- if(spot.id==='ticket'&&this.mystery){this.finish('ticket');return true;}
- const clue={portrait:'name',ticket:'ticket',tape:'tape'}[spot.id];if(clue){if(!this.clues.includes(clue)){this.clues.push(clue);this.journal.push(EVIDENCE[clue]);this.notice({name:'Dưới lớp bụi có một cái tên: AN.',ticket:'Vé 000: bốn dấu mộc, một ô cuối để trống.',tape:'Băng cũ: “Chào mừng An đến với Nhà Ma.”'}[clue]);}else this.notice('Manh mối này đã ở trong nhật ký.');if(['portrait','tape'].includes(spot.id))this.effect(spot.id,spot);this.tryMystery();return true;}
- return true;}
- action(){if(this.ending)return;if(this.role==='visitor'){if(this.hidden){this.notice('Bước ra khỏi rèm trước khi bật đèn.');return;}if(this.battery<2&&!this.torch){this.notice('Hết pin. Tới ghế nghỉ để sạc lại.');return;}this.torch=!this.torch;this.notice(this.torch?'Đèn bật. Quay về phía ma để giữ khoảng cách.':'Bạn tắt đèn để tiết kiệm pin.');return;}
- if(this.cooldown>0){this.notice('Chiêu đang hồi. Đổi vị trí trong lúc chờ.');return;}if(this.stamina<22){this.notice('Chưa đủ thể lực. Tới ghế nghỉ hoặc đi chậm để hồi.');return;}this.stamina-=22;this.cooldown=3;this.hidden=false;this.resting=false;this.events.push('scare');let hits=0;for(const n of this.npcs){if(n.gone||distance(n,this.p)>145||!visible(this.p,n)||n.flee>0)continue;const dx=this.p.x-n.x,dy=this.p.y-n.y;const facing=Math.cos(Math.atan2(dy,dx)-n.face)>.5;const surprise=n.distract>0||!facing||n.caution<.4;const points=n.hits>=2?3:surprise?25:10;n.hits++;n.fear+=points;n.interest=20;n.caution=1;n.flee=1.5;n.distract=0;this.score+=points;this.scared++;hits++;this.floaters.push({x:n.x,y:n.y-70,text:surprise?'Á! +'+points:'Thấy rồi! +'+points,until:this.time+1.8});}this.notice(hits?`Hù trúng ${hits} khách. Đổi vị trí để tránh bị bắt bài.`:'Không có khách trong tầm. Lại gần và đợi họ quay đi.');}
+ admit(){
+  if(this.npcs.some(n=>!n.gone)){this.notice('Khách vẫn đang trong phòng. Chăm sóc nhóm này trước nhé.');return;}
+  const r=this.room;this.wave++;this.phase='live';
+  this.npcs=[0,1].map(v=>{const s=r.guestSpawn[v];return{x:s.x,y:s.y,sprite:v+1,face:Math.PI,path:findPath(r,s,r.routes[v][0]),route:r.routes[v],index:0,wait:0,time:0,interest:20,fear:0,caution:.1,hits:0,usedProps:[],distract:0,flee:0,gone:false,moving:false};});
+  this.notice(`Nhóm ${this.wave} bước vào. Hãy di chuyển, đánh lạc hướng rồi dọa!`);
+ }
+ action(){
+  if(this.ending)return;
+  if(this.role==='visitor'){
+   if(this.hidden&&!this.hideSpot?.torchReveals){this.notice('Bước ra khỏi rèm trước khi bật đèn.');return;}
+   if(this.battery<2&&!this.torch){this.notice('Hết pin. Tới ghế nghỉ để sạc lại.');return;}
+   this.torch=!this.torch;this.notice(this.torch?(this.hidden?'Đèn bật trong chỗ nấp… vệt sáng lộ vị trí!':'Đèn bật. Quay về phía ma để giữ khoảng cách.'):'Bạn tắt đèn để tiết kiệm pin.');return;
+  }
+  if(this.cooldown>0){this.notice('Chiêu đang hồi. Đổi vị trí trong lúc chờ.');return;}
+  if(this.stamina<22){this.notice('Chưa đủ thể lực. Tới ghế nghỉ hoặc đi chậm để hồi.');return;}
+  // Bursting out of a coffin reaches a little further and always catches guests off guard.
+  const ambush=this.hidden&&this.hideSpot?.kind==='coffin',range=ambush?180:145;
+  this.stamina-=22;this.cooldown=3;this.hidden=false;this.hideSpot=null;this.resting=false;this.events.push('scare');let hits=0;
+  for(const n of this.npcs){if(n.gone||distance(n,this.p)>range||!visible(this.room,this.p,n)||n.flee>0)continue;const dx=this.p.x-n.x,dy=this.p.y-n.y;const facing=Math.cos(Math.atan2(dy,dx)-n.face)>.5;const surprise=ambush||n.distract>0||!facing||n.caution<.4;const points=n.hits>=2?3:surprise?25:10;n.hits++;n.fear+=points;n.interest=20;n.caution=1;n.flee=1.5;n.distract=0;this.score+=points;this.scared++;hits++;this.floaters.push({x:n.x,y:n.y-70,text:surprise?'Á! +'+points:'Thấy rồi! +'+points,until:this.time+1.8});}
+  this.notice(hits?(ambush?`Bung nắp quan tài! Hù trúng ${hits} khách.`:`Hù trúng ${hits} khách. Đổi vị trí để tránh bị bắt bài.`):ambush?'Bung nắp quá sớm. Khách còn ở xa.':'Không có khách trong tầm. Lại gần và đợi họ quay đi.');
+ }
  place(){if(this.role!=='employee'||this.ending)return;if(this.props.length>=3){this.notice('Đã đặt đủ 3 loa. Nhấn Q để kích hoạt loa gần nhất.');return;}if(this.stamina<5){this.notice('Cần 5 thể lực để đặt đạo cụ.');return;}if(this.props.some(p=>distance(p,this.p)<60)){this.notice('Đặt loa cách nhau một chút.');return;}this.props.push({x:this.p.x,y:this.p.y,id:this.props.length,pulse:0});this.stamina-=5;this.notice('Đã đặt loa. Di chuyển sang bên khác rồi nhấn Q.');}
- secondary(){if(this.ending)return;if(this.role==='visitor'){if(distance(this.p,SPOTS[0])<70)this.interact('curtain');else{this.torch=false;this.resting=false;this.notice('Đi chậm giúp giữ sức. Muốn nấp, tới rèm bên trái.');}return;}
- if(!this.props.length){this.notice('Nhấn P để đặt loa trước.');return;}if(this.propCooldown>0){this.notice('Loa đang hồi.');return;}const prop=this.props.reduce((a,b)=>distance(a,this.p)<distance(b,this.p)?a:b);prop.pulse=2.5;this.propCooldown=5;let count=0;for(const n of this.npcs){if(n.gone||distance(n,prop)>300||n.usedProps.includes(prop.id))continue;n.usedProps.push(prop.id);n.path=findPath(n,prop);n.distract=5;n.interest=20;n.caution=.1;count++;}this.distracted+=count;this.notice(count?`${count} khách quay về phía loa. Vòng sang phía khác để hù!`:'Tiếng loa vang lên. Khách ở quá xa hoặc đã quen tiếng này.');}
+ secondary(){
+  if(this.ending)return;
+  if(this.role==='visitor'){
+   const hide=this.room.spots.find(s=>s.kind==='hide');
+   if(hide&&distance(this.p,hide)<70)this.interact(hide.id);
+   else if(this.coinHeld)this.throwCoin();
+   else{this.torch=false;this.resting=false;this.notice('Đi chậm giúp giữ sức. Muốn nấp, tới '+(hide?.hint||'chỗ tối')+'.');}
+   return;
+  }
+  if(!this.props.length){this.notice('Nhấn P để đặt loa trước.');return;}if(this.propCooldown>0){this.notice('Loa đang hồi.');return;}const prop=this.props.reduce((a,b)=>distance(a,this.p)<distance(b,this.p)?a:b);prop.pulse=2.5;this.propCooldown=5;let count=0;for(const n of this.npcs){if(n.gone||distance(n,prop)>300||n.usedProps.includes(prop.id))continue;n.usedProps.push(prop.id);n.path=findPath(this.room,n,prop);n.distract=5;n.interest=20;n.caution=.1;count++;}this.distracted+=count;this.notice(count?`${count} khách quay về phía loa. Vòng sang phía khác để hù!`:'Tiếng loa vang lên. Khách ở quá xa hoặc đã quen tiếng này.');
+ }
+ // Throw the held coin up to 170 units the way the player faces; it lands on the floor and can be picked up again.
+ throwCoin(){
+  if(!this.coinHeld||this.ending)return false;
+  const p=this.p;let x=p.x,y=p.y;
+  for(let d=170;d>20;d-=10){const tx=p.x+Math.cos(p.face)*d,ty=p.y+Math.sin(p.face)*d;if(passable(this.room,tx,ty,6)){x=tx;y=ty;break;}}
+  this.coinHeld=false;this.coin={x,y};this.coinFlight={from:{x:p.x,y:p.y-34},to:{x,y},start:this.time,until:this.time+.45};
+  const heard=this.noise(x,y,320,'Keng!');this.notice(heard?'Keng! Xác Sống quay đầu về phía tiếng xu.':'Keng! Đồng xu lăn trên nền đá.');return true;
+ }
+ // A sound at (x,y). The cemetery zombie hunts by ear: it walks to any sound within `radius`.
+ noise(x,y,radius,text){
+  this.worldEffects.push({x,y,id:'noise',until:this.time+1.6,color:'#f0d79a',radius});
+  if(text)this.floaters.push({x,y:y-26,text,until:this.time+1.2});
+  const m=this.monster;
+  if(this.role!=='visitor'||this.room.ghost.kind!=='zombie'||this.mystery)return false;
+  if(!['patrol','investigate','search'].includes(m.state)||distance(m,{x,y})>radius)return false;
+  m.state='investigate';m.t=5;m.effectDuration=5;m.effectLabel='Nghe tiếng động';m.path=findPath(this.room,m,{x,y});return true;
+ }
  finish(key){this.ending=key;this.torch=false;this.p.path=[];this.notice('Ca đêm kết thúc.');}
- tryMystery(){if(this.clues.length===3&&!this.mystery&&(this.role==='visitor'?this.time>=20:this.completed)){this.mystery=true;this.monster.state='rest';this.monster.t=999;this.log('Khách Số 0: Còn một phòng nữa mà… Mang vé tới bàn đóng mộc, hoặc ghi tên An ở tủ phân ca.');}}
- step(dt,input={}){if(this.ending)return;dt=Math.min(.06,Math.max(0,dt));this.time+=dt;this.cooldown=Math.max(0,this.cooldown-dt);this.propCooldown=Math.max(0,this.propCooldown-dt);for(const k in this.objectCooldowns)this.objectCooldowns[k]=Math.max(0,this.objectCooldowns[k]-dt);this.worldEffects=this.worldEffects.filter(e=>e.until>this.time);this.floaters=this.floaters.filter(f=>f.until>this.time);this.props.forEach(p=>p.pulse=Math.max(0,p.pulse-dt));
- const dx=input.dx||0,dy=input.dy||0;const moving=!!(dx||dy);if(moving){this.hidden=false;this.resting=false;this.pending=null;this.target=null;this.p.path=[];const len=Math.hypot(dx,dy),running=input.run&&this.stamina>2,speed=running?172:104;moveActor(this.p,dx/len*speed*dt,dy/len*speed*dt);if(running)this.stamina=Math.max(0,this.stamina-dt*14);}else if(!this.hidden&&!this.resting){follow(this.p,dt,104);if(this.pending){const spot=SPOTS.find(s=>s.id===this.pending);if(spot&&distance(this.p,spot)<48)this.interact(spot.id);}if(!this.p.path.length)this.target=null;}else this.p.moving=false;
- this.stamina=Math.min(100,this.stamina+dt*(this.resting?22:input.run&&moving?0:3));if(this.resting){this.fear=Math.max(0,this.fear-dt*16);this.battery=Math.min(100,this.battery+dt*24);}if(this.torch){this.battery=Math.max(0,this.battery-dt*6);if(this.battery===0){this.torch=false;this.notice('Le lói… đèn hết pin.');}}
- if(this.role==='visitor')this.stepVisitor(dt);else this.stepGuests(dt);this.tryMystery();
+ tryMystery(){if(this.room.story&&this.clues.length===3&&!this.mystery&&(this.role==='visitor'?this.time>=20:this.completed)){this.mystery=true;this.monster.state='rest';this.monster.t=999;this.log('Khách Số 0: Còn một phòng nữa mà… Mang vé tới bàn đóng mộc, hoặc ghi tên An ở tủ phân ca.');}}
+ step(dt,input={}){
+  if(this.ending)return;dt=Math.min(.06,Math.max(0,dt));this.time+=dt;this.cooldown=Math.max(0,this.cooldown-dt);this.propCooldown=Math.max(0,this.propCooldown-dt);for(const k in this.objectCooldowns)this.objectCooldowns[k]=Math.max(0,this.objectCooldowns[k]-dt);this.worldEffects=this.worldEffects.filter(e=>e.until>this.time);this.floaters=this.floaters.filter(f=>f.until>this.time);this.props.forEach(p=>p.pulse=Math.max(0,p.pulse-dt));if(this.coinFlight&&this.coinFlight.until<=this.time)this.coinFlight=null;
+  const dx=input.dx||0,dy=input.dy||0;const moving=!!(dx||dy);const running=moving&&input.run&&this.stamina>2;
+  if(moving){this.hidden=false;this.hideSpot=null;this.resting=false;this.pending=null;this.target=null;this.p.path=[];const len=Math.hypot(dx,dy),speed=running?172:104;moveActor(this.room,this.p,dx/len*speed*dt,dy/len*speed*dt);if(running)this.stamina=Math.max(0,this.stamina-dt*14);}else if(!this.hidden&&!this.resting){follow(this.room,this.p,dt,104);if(this.pending){const spot=this.spots().find(s=>s.id===this.pending);if(spot&&distance(this.p,spot)<48)this.interact(spot.id);}if(!this.p.path.length)this.target=null;}else this.p.moving=false;
+  this.stamina=Math.min(100,this.stamina+dt*(this.resting?22:input.run&&moving?0:3));if(this.resting){this.fear=Math.max(0,this.fear-dt*16);this.battery=Math.min(100,this.battery+dt*24);}if(this.torch){this.battery=Math.max(0,this.battery-dt*6);if(this.battery===0){this.torch=false;this.notice('Le lói… đèn hết pin.');}}
+  // Footsteps: loose boards always creak; running is loud anywhere in a room whose ghost listens.
+  if(this.role==='visitor'&&this.p.moving&&!this.ending){this.noiseTimer-=dt;const boards=this.room.creaky.some(r=>inside(r,this.p.x,this.p.y));if((boards||running&&this.room.ghost.kind==='zombie')&&this.noiseTimer<=0){this.noiseTimer=.45;this.noise(this.p.x,this.p.y,boards?(running?300:230):170,boards?'cót két':null);}}
+  if(this.ending)return;
+  if(this.role==='visitor')this.stepVisitor(dt);else this.stepGuests(dt);this.tryMystery();
  }
- stepVisitor(dt){const m=this.monster;for(let i=0;i<this.companions.length;i++){const c=this.companions[i],target={x:this.p.x+(i?58:-58),y:this.p.y+15};if(distance(c,target)>75&&!c.path.length)c.path=findPath(c,target);follow(c,dt,83);}
- if(this.mystery){m.moving=false;return;}
- const d=distance(m,this.p),angle=Math.atan2(m.y-this.p.y,m.x-this.p.x),lit=this.torch&&d<245&&Math.cos(angle-this.p.face)>.58&&visible(this.p,m);if(lit&&!['stunned','charmed','confused','repelled'].includes(m.state)){m.state='stunned';m.t=3.5;m.path=findPath(m,{x:700,y:300});m.effectLabel='Chói mắt · lùi lại';m.effectDuration=3.5;this.avoided++;this.floaters.push({x:m.x,y:m.y-70,text:'Chói quá!',until:this.time+2});}
- if(['investigate','charmed','confused','search','repelled'].includes(m.state)){m.t-=dt;follow(m,dt,m.state==='repelled'?110:72);if(m.t<=0){m.state='patrol';m.path=[];m.effectLabel=null;}return;}
- if(m.state==='stunned'||m.state==='rest'){m.t-=dt;follow(m,dt,95);if(m.t<=0){m.state='patrol';m.path=[];}return;}
- if(this.hidden||this.resting){if(m.state==='windup')this.avoided++;if(m.state!=='patrol')m.path=[];m.state='patrol';}
- if(m.state==='windup'){m.t-=dt;m.face=Math.atan2(this.p.y-m.y,this.p.x-m.x);if(m.t<=0){if(d<135&&!this.hidden&&!this.resting&&visible(m,this.p)){this.fear=Math.min(100,this.fear+24);this.events.push('hit');this.floaters.push({x:this.p.x,y:this.p.y-70,text:'+24 sợ hãi',until:this.time+2});this.notice('Na: Tui đang khởi động gân cốt thôi!');}else{this.avoided++;this.notice('Bạn tránh được màn hù.');}m.state='rest';m.t=3;}return;}
- if(d<115&&!this.hidden&&!this.resting&&visible(m,this.p)){m.state='windup';m.t=1.25;m.path=[];this.notice('Ma đang lấy đà… Lùi lại, nấp hoặc rọi đèn!');return;}
- if(d<240&&!this.hidden&&!this.resting&&visible(m,this.p)){m.repath=(m.repath||0)-dt;if(m.repath<=0){m.path=findPath(m,this.p);m.repath=.7;}}else if(!m.path.length){const pts=[{x:680,y:350},{x:500,y:410},{x:300,y:360},{x:320,y:270},{x:710,y:450}];m.index=(m.index+1)%pts.length;m.path=findPath(m,pts[m.index]);}follow(m,dt,58);
- if(d<160&&!this.hidden&&!this.resting&&!lit)this.fear=Math.min(100,this.fear+dt*1.5);
- if(this.fear>=100){this.fear=40;this.p.x=220;this.p.y=410;this.p.path=[];this.pending=null;this.resting=true;this.torch=false;m.state='rest';m.t=8;this.notice('Mr. D đưa bạn ra ghế nghỉ. Không mất đồ; khi sẵn sàng, cứ đi tiếp.');}
+ stepVisitor(dt){
+  for(let i=0;i<this.companions.length;i++){const c=this.companions[i],target={x:this.p.x+(i?58:-58),y:this.p.y+15};if(distance(c,target)>75&&!c.path.length)c.path=findPath(this.room,c,target);follow(this.room,c,dt,83);}
+  if(this.mystery){this.monster.moving=false;return;}
+  if(this.room.ghost.kind==='zombie')this.stepZombie(dt);else this.stepVampire(dt);
+  if(this.fear>=100){const r=this.room.restPoint,m=this.monster;this.fear=40;this.p.x=r.x;this.p.y=r.y;this.p.path=[];this.pending=null;this.resting=true;this.hidden=false;this.torch=false;m.state='rest';m.t=8;m.effectLabel=null;this.notice('Mr. D đưa bạn ra ghế nghỉ. Không mất đồ; khi sẵn sàng, cứ đi tiếp.');}
  }
- stepGuests(dt){let live=false;for(const n of this.npcs){if(n.gone)continue;live=true;n.time+=dt;n.interest-=dt;n.distract=Math.max(0,n.distract-dt);n.flee=Math.max(0,n.flee-dt);const d=distance(n,this.p);if(d<200&&!this.hidden&&visible(n,this.p)&&n.distract===0)n.caution=Math.min(1,n.caution+dt*.17);else n.caution=Math.max(.1,n.caution-dt*.08);
- if(n.interest<=0||n.fear>=80||n.time>=75){if(!n.leaving){n.leaving=true;n.path=findPath(n,{x:885,y:270});this.notice(n.fear>=80?'Khách cần nghỉ. Hãy để họ ra ngoài.':'Khách đã xem xong và đi sang phòng tiếp theo.');}}
- if(n.leaving&&distance(n,{x:885,y:270})<35){n.gone=true;this.served++;continue;}
- if(n.flee>0){n.moving=false;continue;}
- if(!n.path.length){if(n.distract>0){n.moving=false;continue;}n.wait+=dt;if(n.wait>2.4){n.wait=0;n.index++;if(n.index>=n.route.length){n.leaving=true;n.path=findPath(n,{x:885,y:270});}else n.path=findPath(n,n.route[n.index]);}}
- follow(n,dt,n.distract>0?76:44);}
- if(live&&this.npcs.every(n=>n.gone)){this.phase='between';this.completed=true;this.notice('Nhóm đã ra hết. Tới cửa đón nhóm mới, hoặc tìm hiểu vé 000.');}
+ // Ma Cà Rồng hunts by sight: pursues within 240 with line of sight; light makes it retreat.
+ stepVampire(dt){
+  const m=this.monster,g=this.room.ghost,room=this.room;
+  const d=distance(m,this.p),angle=Math.atan2(m.y-this.p.y,m.x-this.p.x),lit=this.torch&&d<245&&Math.cos(angle-this.p.face)>.58&&visible(room,this.p,m);if(lit&&!['stunned','charmed','confused','repelled'].includes(m.state)){m.state='stunned';m.t=3.5;m.path=findPath(room,m,g.stunRetreat||g.retreat);m.effectLabel='Chói mắt · lùi lại';m.effectDuration=3.5;this.avoided++;this.floaters.push({x:m.x,y:m.y-70,text:'Chói quá!',until:this.time+2});}
+  if(['investigate','charmed','confused','search','repelled'].includes(m.state)){m.t-=dt;follow(room,m,dt,m.state==='repelled'?110:72);if(m.t<=0){m.state='patrol';m.path=[];m.effectLabel=null;}return;}
+  if(m.state==='stunned'||m.state==='rest'){m.t-=dt;follow(room,m,dt,95);if(m.t<=0){m.state='patrol';m.path=[];}return;}
+  if(this.hidden||this.resting){if(m.state==='windup')this.avoided++;if(m.state!=='patrol')m.path=[];m.state='patrol';}
+  if(m.state==='windup'){m.t-=dt;m.face=Math.atan2(this.p.y-m.y,this.p.x-m.x);if(m.t<=0){if(d<135&&!this.hidden&&!this.resting&&visible(room,m,this.p)){this.scareHit();}else{this.avoided++;this.notice('Bạn tránh được màn hù.');}m.state='rest';m.t=3;}return;}
+  if(d<115&&!this.hidden&&!this.resting&&visible(room,m,this.p)){m.state='windup';m.t=1.25;m.path=[];this.notice('Ma đang lấy đà… Lùi lại, nấp hoặc rọi đèn!');return;}
+  if(d<240&&!this.hidden&&!this.resting&&visible(room,m,this.p)){m.repath=(m.repath||0)-dt;if(m.repath<=0){m.path=findPath(room,m,this.p);m.repath=.7;}}else if(!m.path.length){m.index=(m.index+1)%g.patrol.length;m.path=findPath(room,m,g.patrol[m.index]);}follow(room,m,dt,58);
+  if(d<160&&!this.hidden&&!this.resting&&!lit)this.fear=Math.min(100,this.fear+dt*1.5);
  }
- objective(){if(this.ending)return'Ca đêm đã kết thúc';if(this.mystery)return'Tới bàn đóng mộc hoặc tủ phân ca để giúp An';if(this.role==='visitor')return'Tự khám phá, tránh ma và tìm đường ra · Manh mối '+this.clues.length+'/3';if(this.phase==='prep')return'Đặt loa, rồi tới cửa đón khách';if(this.phase==='between')return'Đón nhóm mới hoặc điều tra vé 000 · '+this.clues.length+'/3 manh mối';return'Kích đạo cụ, vòng ra sau khách rồi tung chiêu';}
+ // Xác Sống hunts by ear: it barely sees, walks to sounds, and smells you only up close.
+ // Light makes it flinch briefly, then it shuffles toward where the light came from.
+ stepZombie(dt){
+  const m=this.monster,g=this.room.ghost,room=this.room,p=this.p,d=distance(m,p);
+  const revealed=this.hidden&&this.torch&&this.hideSpot?.torchReveals;
+  const exposed=!this.resting&&(!this.hidden||revealed);
+  if(revealed){this.revealTimer-=dt;if(this.revealTimer<=0){this.revealTimer=1;this.noise(p.x,p.y,260,'vệt sáng');}}
+  const lit=this.torch&&!this.hidden&&d<200&&Math.cos(Math.atan2(m.y-p.y,m.x-p.x)-p.face)>.58&&visible(room,p,m);
+  if(lit&&['patrol','investigate','search','windup'].includes(m.state)){m.state='stunned';m.t=2;m.path=findPath(room,m,g.retreat);m.effectLabel='Lóa mắt · khựng lại';m.effectDuration=2;m.followLight=true;this.avoided++;this.floaters.push({x:m.x,y:m.y-70,text:'Lóa!',until:this.time+1.6});}
+  if(['investigate','charmed','confused','search','repelled'].includes(m.state)){
+   m.t-=dt;follow(room,m,dt,m.state==='repelled'?100:70);
+   if(m.state==='investigate'&&exposed&&d<85&&visible(room,m,p)){this.zombieWindup();return;}
+   if(m.t<=0){m.state='patrol';m.path=[];m.effectLabel=null;}return;
+  }
+  if(m.state==='stunned'||m.state==='rest'){
+   m.t-=dt;follow(room,m,dt,60);
+   if(m.t<=0){if(m.state==='stunned'&&m.followLight){m.followLight=false;m.state='investigate';m.t=4;m.effectDuration=4;m.effectLabel='Lần theo ánh đèn';m.path=findPath(room,m,p);}else{m.state='patrol';m.path=[];m.effectLabel=null;}}
+   return;
+  }
+  if(m.state==='windup'&&!exposed){this.avoided++;m.state='patrol';m.path=[];}
+  if(m.state==='windup'){m.t-=dt;m.face=Math.atan2(p.y-m.y,p.x-m.x);if(m.t<=0){if(d<120&&exposed&&visible(room,m,p))this.scareHit();else{this.avoided++;this.notice('Bạn lách khỏi tầm với của Xác Sống.');}m.state='rest';m.t=3;}return;}
+  if(exposed&&d<75&&visible(room,m,p)){this.zombieWindup();return;}
+  if(!m.path.length){m.index=(m.index+1)%g.patrol.length;m.path=findPath(room,m,g.patrol[m.index]);}follow(room,m,dt,40);
+  if(exposed&&d<120)this.fear=Math.min(100,this.fear+dt*1.5);
+ }
+ zombieWindup(){const m=this.monster;m.state='windup';m.t=1.4;m.path=[];m.effectLabel=null;this.notice('Xác Sống đánh hơi thấy bạn… Lùi lại, rọi đèn hoặc nấp!');}
+ scareHit(){this.fear=Math.min(100,this.fear+24);this.events.push('hit');this.floaters.push({x:this.p.x,y:this.p.y-70,text:'+24 sợ hãi',until:this.time+2});this.notice('Na: Tui đang khởi động gân cốt thôi!');}
+ stepGuests(dt){
+  const exit=this.room.guestExit;let live=false;
+  for(const n of this.npcs){if(n.gone)continue;live=true;n.time+=dt;n.interest-=dt;n.distract=Math.max(0,n.distract-dt);n.flee=Math.max(0,n.flee-dt);const d=distance(n,this.p);if(d<200&&!this.hidden&&visible(this.room,n,this.p)&&n.distract===0)n.caution=Math.min(1,n.caution+dt*.17);else n.caution=Math.max(.1,n.caution-dt*.08);
+   if(n.interest<=0||n.fear>=80||n.time>=75){if(!n.leaving){n.leaving=true;n.path=findPath(this.room,n,exit);this.notice(n.fear>=80?'Khách cần nghỉ. Hãy để họ ra ngoài.':'Khách đã xem xong và đi sang phòng tiếp theo.');}}
+   if(n.leaving&&distance(n,exit)<35){n.gone=true;this.served++;continue;}
+   if(n.flee>0){n.moving=false;continue;}
+   if(!n.path.length){if(n.distract>0){n.moving=false;continue;}n.wait+=dt;if(n.wait>2.4){n.wait=0;n.index++;if(n.index>=n.route.length){n.leaving=true;n.path=findPath(this.room,n,exit);}else n.path=findPath(this.room,n,n.route[n.index]);}}
+   follow(this.room,n,dt,n.distract>0?76:44);}
+  if(live&&this.npcs.every(n=>n.gone)){this.phase='between';this.completed=true;this.notice(this.room.story?'Nhóm đã ra hết. Tới cửa đón nhóm mới, hoặc tìm hiểu vé 000.':'Nhóm đã ra hết. Tới cửa vào đón nhóm mới, hoặc chấm công.');}
+ }
+ objective(){
+  if(this.ending)return'Ca đêm đã kết thúc';if(this.mystery)return'Tới bàn đóng mộc hoặc tủ phân ca để giúp An';
+  const cemetery=this.roomId==='cemetery';
+  if(this.role==='visitor')return cemetery?'Lắng nghe Xác Sống, tránh ván cót két, tìm lối sang Bàn Tiệc'+(this.coinHeld?' · Đang cầm xu (Q để ném)':''):'Tự khám phá, tránh ma và tìm đường ra · Manh mối '+this.clues.length+'/3';
+  if(this.phase==='prep')return cemetery?'Đặt loa, chọn chỗ chui ra (quan tài), rồi tới cửa vào đón khách':'Đặt loa, rồi tới cửa đón khách';
+  if(this.phase==='between')return cemetery?'Đón nhóm mới ở cửa vào, hoặc chấm công':'Đón nhóm mới hoặc điều tra vé 000 · '+this.clues.length+'/3 manh mối';
+  return cemetery?'Kích loa, chui vào quan tài, đợi khách tới gần rồi bung nắp':'Kích đạo cụ, vòng ra sau khách rồi tung chiêu';
+ }
 }

@@ -41,7 +41,12 @@ function paintWall(g,rand){
  for(let x=60;x<940;x+=18){rect(x,172,4,40,C.iron);rect(x-2,168,8,4,C.iron);rect(x,164,4,4,C.iron);}
  rect(54,180,892,4,C.iron);rect(54,200,892,4,C.iron);
  for(let y=208,row=0;y<240;y+=10,row++)for(let x=54+(row%2)*14;x<946;x+=28){rect(x,y,26,8,rand()<.5?C.stone:C.stoneDark);rect(x,y,26,2,C.stoneLight);}
- // Room frame: top border and side walls, like the dining room.
+ paintFrame(g);
+}
+
+// Room frame: top border and side walls, like the dining room.
+function paintFrame(g){
+ const {rect}=pen(g);
  rect(0,0,1000,30,C.night);for(let x=10;x<990;x+=30){rect(x,12,26,14,C.stoneDark);rect(x,12,26,4,C.stone);}
  for(const sx of [0,946]){rect(sx,0,54,562,C.wallDark);for(let y=30;y<540;y+=28){rect(sx+14,y,26,24,C.stoneDark);rect(sx+14,y,26,4,C.stone);}}
 }
@@ -127,16 +132,90 @@ function paintCoffin(g,b){
  rect(b.x+4,b.y+b.h-2,b.w-8,4,C.woodGap);
 }
 
-const PROPS={crypt:paintCrypt,grave:paintGrave,bench:paintBench,coffin:paintCoffin};
+// ---- Hành lang Ma Cổ Dài
+const K={paper:'#173533',paperDark:'#122a29',paperLight:'#21463f',brass:'#b08a4a',brassLight:'#d8b26a',plank:'#26303c',plankLight:'#2d3a48',plankGap:'#161c24',carpet:'#7a2630',carpetDark:'#5a1c25',glass:'#24435a',glassLight:'#3b6580',neck:'#d9cfc4'};
+
+function paintCorridorBackdrop(g,rand,room){
+ const {rect,disc}=pen(g);
+ // Damask wallpaper above a wooden wainscot.
+ rect(54,30,892,210,K.paper);
+ for(let y=46,row=0;y<236;y+=28,row++)for(let x=60+(row%2)*12;x<946;x+=24){rect(x,y,4,4,K.paperLight);rect(x-4,y+4,12,2,K.paperLight);rect(x,y+6,4,4,K.paperLight);rect(x+2,y+14,2,2,K.paperDark);}
+ for(let x=54;x<946;x+=48)rect(x,30,2,206,K.paperDark);
+ rect(54,30,892,12,C.woodDark);rect(54,40,892,2,C.woodLight);
+ // Ceiling rail the head rides on, with pulley wheels.
+ rect(54,50,892,6,C.iron);rect(54,50,892,2,C.stoneDark);
+ for(let x=120;x<940;x+=140){disc(x,53,7,C.stone);disc(x,53,3,C.iron);}
+ rect(54,236,892,64,C.wood);rect(54,236,892,6,C.woodLight);
+ for(let x=64;x<940;x+=70){rect(x,250,58,40,C.woodDark);rect(x+2,252,54,36,C.wood);}
+ // Portraits; the middle one is missing its head.
+ const frame=(x,y,w,h)=>{rect(x-4,y-4,w+8,h+8,K.brass);rect(x-4,y-4,w+8,2,K.brassLight);rect(x,y,w,h,'#22202c');};
+ frame(130,98,60,78);rect(146,140,28,36,'#3a4a5a');disc(160,128,10,'#c9b9a6');rect(150,118,20,6,'#1b1720');
+ frame(330,94,60,82);rect(346,140,28,36,'#4a3a4e');rect(357,94,6,48,K.neck);
+ frame(690,98,60,78);rect(706,140,28,36,'#2f4a44');disc(720,128,10,'#c9b9a6');rect(712,124,4,2,'#1b1720');rect(724,124,4,2,'#1b1720');
+ paintLantern(g,250,150);paintLantern(g,420,150);
+ // Alcove (hiding spot).
+ rect(612,200,56,100,C.stoneDark);disc(640,204,28,C.stoneDark);rect(618,206,44,94,'#060b12');disc(640,208,22,'#060b12');rect(636,282,8,10,C.bone);rect(638,276,4,4,C.mint);
+ // Mirror at the end: the reflection still has a long neck in it.
+ rect(826,144,68,154,C.stoneLight);rect(830,148,60,146,K.glass);
+ for(let i=0;i<10;i++)rect(836+i*4,284-i*12,6,6,K.glassLight);
+ rect(858,148,5,70,'#3a5a70');disc(860,226,9,'#3a5a70');rect(852,236,16,40,'#2e4a5e');
+ // Pulley box with two ropes running up to the rail.
+ rect(492,56,3,172,'#c8b48a');rect(507,56,3,172,'#c8b48a');
+ rect(468,226,64,66,C.woodDark);rect(472,230,56,58,C.wood);disc(500,256,16,C.stone);disc(500,256,6,C.iron);rect(522,262,14,4,C.iron);rect(534,252,4,14,C.red);
+ // Floorboards, then a carpet runner along the lower lane.
+ for(let y=300,i=0;y<480;y+=12,i++){rect(54,y,892,10,i%2?K.plank:K.plankLight);rect(54,y+10,892,2,K.plankGap);for(let x=54+((i*37)%120);x<946;x+=120+((i*13)%60))rect(x,y,2,10,K.plankGap);}
+ for(let x=54;x<946;x+=2)rect(x,300,2,6,K.plankGap);
+ rect(54,410,892,56,K.carpet);rect(54,410,892,4,K.brass);rect(54,462,892,4,K.brass);
+ for(let x=80;x<940;x+=40){rect(x,434,8,8,K.carpetDark);rect(x+2,436,4,4,K.brass);}
+ // Bottom wall: staff doors (cửa hậu), the radio on its ledge.
+ rect(54,480,892,82,C.night);rect(54,480,892,16,C.woodDark);rect(54,480,892,4,C.woodLight);
+ for(const dx of [205,765]){rect(dx,480,50,24,'#05090f');rect(dx+12,484,26,8,C.brass);rect(dx+16,486,18,4,C.woodDark);}
+ rect(410,470,20,12,C.stoneDark);rect(412,472,10,6,C.mint);rect(426,458,2,14,C.iron);
+ // Left emergency exit and the lit door at the far right.
+ rect(0,404,54,72,'#05090f');rect(10,392,34,10,'#2f7a5c');rect(16,394,22,6,C.mint);
+ rect(946,356,54,88,'#3b2c1c');rect(950,360,46,80,'#e7c083');for(let r=90;r>10;r-=16){g.globalAlpha=.05;disc(946,400,r,'#e7c083');}g.globalAlpha=1;
+}
+
+function paintRail(g,b){
+ const {rect}=pen(g,b.x-10,b.y-50);
+ rect(b.x,b.y+6,b.w,6,'#0008');
+ for(let x=b.x;x<=b.x+b.w-4;x+=30)rect(x,b.y-24,4,32,K.brass);
+ rect(b.x-2,b.y-28,b.w+4,6,K.brass);rect(b.x-2,b.y-28,b.w+4,2,K.brassLight);
+}
+
+// Ma Cổ Dài: white áo dài, long hair, a neck far too long. 42 × 112 art pixels plus outline.
+export function paintLongNeck(){
+ const [c,g]=canvas(44,114);
+ const r=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x+1,y+1,w,h);};
+ const hair='#16121a',skin='#e3d6c8',skinShade='#c3b3a3',dress='#e8ecef',dressShade='#c3cbd3',pants='#1e2430';
+ r(8,10,5,44,hair);r(29,10,5,44,hair);
+ r(11,2,20,6,hair);r(9,5,24,10,hair);
+ r(13,9,16,18,skin);r(12,12,18,12,skin);r(26,12,3,12,skinShade);
+ r(12,8,18,4,hair);r(13,12,2,5,hair);r(27,12,2,7,hair);r(20,11,2,3,hair);
+ r(15,16,4,2,'#1a1418');r(23,16,4,2,'#1a1418');r(16,16,1,1,'#ffffff');r(24,16,1,1,'#ffffff');r(15,19,4,1,skinShade);r(23,19,4,1,skinShade);
+ r(19,22,4,2,'#b0303c');
+ r(18,27,6,30,skin);r(22,27,2,30,skinShade);for(const y of [34,41,48])r(18,y,6,1,skinShade);
+ r(16,56,10,3,dress);
+ r(11,58,20,22,dress);r(27,59,4,20,dressShade);r(7,59,5,20,dress);r(30,59,5,20,dressShade);r(7,79,5,4,skin);r(30,79,5,4,skinShade);
+ r(22,60,1,1,'#9aa6b0');r(24,62,1,1,'#9aa6b0');r(26,64,1,1,'#9aa6b0');
+ r(12,80,8,26,pants);r(22,80,8,26,pants);r(15,80,12,22,'#eef1f3');r(25,80,2,22,dressShade);
+ r(12,105,8,3,C.wood);r(22,105,8,3,C.wood);
+ const img=g.getImageData(0,0,44,114),d=img.data,solid=i=>d[i*4+3]>0,out=[];
+ for(let y=0;y<114;y++)for(let x=0;x<44;x++){const i=y*44+x;if(solid(i))continue;if((x>0&&solid(i-1))||(x<43&&solid(i+1))||(y>0&&solid(i-44))||(y<113&&solid(i+44)))out.push(i);}
+ for(const i of out){d[i*4]=18;d[i*4+1]=13;d[i*4+2]=20;d[i*4+3]=255;}
+ g.putImageData(img,0,0);
+ return c;
+}
+
+const PROPS={crypt:paintCrypt,grave:paintGrave,bench:paintBench,coffin:paintCoffin,rail:paintRail};
 
 // Returns the backdrop plus one depth-sorted prop per collider block.
 export function paintRoom(room){
  const rand=rng(20011031);
  const [bg,g]=canvas(500,281);
  g.fillStyle=C.night;g.fillRect(0,0,500,281);
- paintSky(g,rand);paintWall(g,rand);paintArch(g);paintFloor(g,rand,room);
- paintLantern(g,120,150);paintLantern(g,760,150);
- const coat=room.spots.find(s=>s.kind==='hide');if(coat)paintCoat(g,coat.x);
+ if(room.art==='corridor'){paintFrame(g);paintCorridorBackdrop(g,rand,room);}
+ else{paintSky(g,rand);paintWall(g,rand);paintArch(g);paintFloor(g,rand,room);paintLantern(g,120,150);paintLantern(g,760,150);const coat=room.spots.find(s=>s.kind==='hide');if(coat)paintCoat(g,coat.x);}
  // Soft vignette toward the corners.
  const v=g.createRadialGradient(250,150,80,250,150,320);v.addColorStop(0,'#0000');v.addColorStop(1,'#020812a0');g.fillStyle=v;g.fillRect(0,0,500,281);
  const props=room.blocks.filter(b=>PROPS[b.art]).map(b=>{const w=b.w+20,h=b.h+56,[c,pg]=canvas(Math.ceil(w/2),Math.ceil(h/2));PROPS[b.art](pg,b,rand);return{canvas:c,x:b.x-10,y:b.y-50,w,h,sortY:b.y+b.h-6};});

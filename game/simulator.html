@@ -5,7 +5,7 @@
 @media(pointer:coarse),(max-width:900px){#toolbar{display:none}#touch-controls{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:17px max(14px,env(safe-area-inset-right)) 14px max(14px,env(safe-area-inset-left));min-height:196px;background:linear-gradient(#0a1d2b,#061421);border-top:1px solid #28495b}#game{position:relative}nav button{min-width:42px;min-height:42px}#help{min-height:38px}footer{padding-bottom:max(10px,env(safe-area-inset-bottom))}.world-wrap{height:clamp(300px,46svh,520px);aspect-ratio:auto}#speech{bottom:10px;font-size:12px}#nearby{bottom:72px;font-size:11px}#objective{font-size:12px}.objective{min-height:57px;padding:8px 12px}body:has(#start:not([hidden])) #touch-controls{display:none}body:has(#start:not([hidden])) .world-wrap{height:75svh;min-height:445px}body:has(#start:not([hidden])) .objective{display:none}body:has(#end:not([hidden])) #touch-controls{opacity:.3;pointer-events:none}.brand small{font-size:9px}.res{font-size:10px}.res strong{font-size:11px}}
 @media(max-width:370px){#joystick{width:113px;height:113px}#stick{width:51px;height:51px}.touch-actions{width:150px}.touch-middle button{width:46px;height:46px}.main-round{width:75px;height:75px}.small-round{width:55px;height:55px}.use-round{width:65px;height:65px;right:20px}#touch-controls{gap:3px;padding-left:10px;padding-right:10px}.res{min-width:41px}header{gap:6px}.brand span{font-size:10px}}
 @media(pointer:coarse) and (orientation:landscape) and (max-height:600px){body{padding:0}#game{width:100%;height:100dvh;border:0}header{height:47px;padding:4px max(16px,env(safe-area-inset-left))}.world-wrap{height:calc(100dvh - 90px);min-height:0}.objective{height:43px;min-height:43px;padding:4px 17px}footer{display:none}#touch-controls{position:absolute;left:0;right:0;bottom:53px;z-index:4;min-height:0;height:130px;background:none;border:0;padding:0 max(25px,env(safe-area-inset-right)) 0 max(25px,env(safe-area-inset-left));pointer-events:none}#touch-controls button,#joystick{pointer-events:auto}#joystick{width:110px;height:110px;background-color:#0b2236a0}#stick{width:48px;height:48px}.touch-caption{display:none}.touch-actions{height:130px;width:158px}.main-round{width:74px;height:74px}.small-round{width:54px;height:54px;top:7px}.use-round{width:60px;height:60px;right:37px}.touch-middle{margin-right:auto;margin-left:17px;gap:7px}.touch-middle button{width:48px;height:48px}#speech{max-width:50%;font-size:11px;bottom:10px}#nearby{bottom:62px}body:has(#start:not([hidden])) .world-wrap{height:calc(100dvh - 47px);min-height:0}.intro{padding:10px 6%}h1{font-size:25px;line-height:1.25;margin:7px 0}.intro p{font-size:11px;margin:6px 0}.roles{margin:9px 0}.roles button{padding:8px 15px}.roles strong{font-size:18px}.start-help{display:none}.endcard{max-width:690px;padding:10px}.endcard h2{font-size:22px;margin:4px}.endcard p{font-size:12px;margin:8px}.endstats{margin:8px}.endcard small{font-size:9px}}
-</style></head><body><main id="game"><header><div class="brand">☾ <span>ÁNH TRĂNG<small>CA ĐÊM · 2001</small></span></div><div id="resources"></div><nav><button id="journal">Nhật ký <kbd>J</kbd></button><button id="pause" aria-label="Tạm dừng">Ⅱ</button></nav></header><div class="world-wrap"><canvas id="world" width="1600" height="899" aria-label="Bản đồ nhà ma có thể di chuyển. Dùng WASD hoặc phím mũi tên; E tương tác; Space dùng hành động." tabindex="0"></canvas><div class="topline"><span id="roomName">CÔNG VIÊN ÁNH TRĂNG</span><span id="mode">RPG / MÔ PHỎNG</span></div><div id="speech" aria-live="polite"></div><div id="nearby"></div><div id="loading">Đang mở cửa công viên…</div><div id="start" hidden><div class="intro"><span class="eyebrow">ĐÊM 01 · BẢN CHƠI THỬ HAI PHÒNG</span><h1>Ca đêm ở<br><em>Công viên Ánh Trăng</em></h1><p>Tự bước vào. Tự tìm đường.<br>Hoặc trở thành người đứng sau những tiếng hét.</p><div class="roles"><button data-role="visitor"><small>KHÁM PHÁ · TRỐN · ĐIỀU TRA</small><strong>Làm khách</strong><span>“Để xem có gì mà sợ.”</span></button><button data-role="employee"><small>DÀN CẢNH · HÙ DỌA · VẬN HÀNH</small><strong>Làm nhân viên</strong><span>“Tối nay, mình là người dọa.”</span></button></div><div class="rooms" role="group" aria-label="Phòng bắt đầu"><span>Bắt đầu ở</span><button data-room="cemetery" class="active" aria-pressed="true">Nghĩa Địa</button><button data-room="dining" aria-pressed="false">Bàn Tiệc</button></div><p class="start-help">Kéo cần trái để đi · Nút bên phải để dùng kỹ năng<br>Chạm đồ vật để tự đi tới · Máy tính hỗ trợ WASD</p></div></div><div id="end" hidden></div></div><div class="objective"><span class="label">MỤC TIÊU</span><span id="objective">Chọn vai để bắt đầu.</span><button id="help">Cách chơi</button></div><section id="touch-controls" aria-label="Điều khiển cảm ứng">
+</style></head><body><main id="game"><header><div class="brand">☾ <span>ÁNH TRĂNG<small>CA ĐÊM · 2001</small></span></div><div id="resources"></div><nav><button id="journal">Nhật ký <kbd>J</kbd></button><button id="pause" aria-label="Tạm dừng">Ⅱ</button></nav></header><div class="world-wrap"><canvas id="world" width="1600" height="899" aria-label="Bản đồ nhà ma có thể di chuyển. Dùng WASD hoặc phím mũi tên; E tương tác; Space dùng hành động." tabindex="0"></canvas><div class="topline"><span id="roomName">CÔNG VIÊN ÁNH TRĂNG</span><span id="mode">RPG / MÔ PHỎNG</span></div><div id="speech" aria-live="polite"></div><div id="nearby"></div><div id="loading">Đang mở cửa công viên…</div><div id="start" hidden><div class="intro"><span class="eyebrow">ĐÊM 01 · BẢN CHƠI THỬ BA PHÒNG</span><h1>Ca đêm ở<br><em>Công viên Ánh Trăng</em></h1><p>Tự bước vào. Tự tìm đường.<br>Hoặc trở thành người đứng sau những tiếng hét.</p><div class="roles"><button data-role="visitor"><small>KHÁM PHÁ · TRỐN · ĐIỀU TRA</small><strong>Làm khách</strong><span>“Để xem có gì mà sợ.”</span></button><button data-role="employee"><small>DÀN CẢNH · HÙ DỌA · VẬN HÀNH</small><strong>Làm nhân viên</strong><span>“Tối nay, mình là người dọa.”</span></button></div><div class="rooms" role="group" aria-label="Phòng bắt đầu"><span>Bắt đầu ở</span><button data-room="cemetery" class="active" aria-pressed="true">Nghĩa Địa</button><button data-room="dining" aria-pressed="false">Bàn Tiệc</button><button data-room="corridor" aria-pressed="false">Hành Lang</button></div><p class="start-help">Kéo cần trái để đi · Nút bên phải để dùng kỹ năng<br>Chạm đồ vật để tự đi tới · Máy tính hỗ trợ WASD</p></div></div><div id="end" hidden></div></div><div class="objective"><span class="label">MỤC TIÊU</span><span id="objective">Chọn vai để bắt đầu.</span><button id="help">Cách chơi</button></div><section id="touch-controls" aria-label="Điều khiển cảm ứng">
  <div class="joystick-area"><div id="joystick" role="group" aria-label="Cần điều khiển di chuyển"><span class="joystick-arrows">✦</span><div id="stick"></div></div><span class="touch-caption">DI CHUYỂN</span></div>
  <div class="touch-middle"><button id="touchRun" aria-label="Giữ để chạy">»<small>Giữ chạy</small></button><button id="touchPlace" hidden>＋<small>Đặt loa</small></button></div>
  <div class="touch-actions"><button id="touchSecondary" class="round small-round"><span>◌</span><small id="touchSecondaryLabel">Nấp</small></button><button id="touchPrimary" class="round main-round"><span id="touchPrimaryIcon">☀</span><small id="touchPrimaryLabel">Đèn pin</small></button><button id="touchInteract" class="round use-round"><span>✋</span><small id="touchInteractLabel">Sử dụng</small></button></div>
@@ -16,10 +16,13 @@ const {ROOMS,ROOM_ORDER}=(()=>{
 // World coordinates are 1000 × 562 for every room; actor positions are their feet.
 // Spot `kind` decides what interacting does (see Simulation.interact):
 //   hide · rest · effect · clue · ticket · wardrobe · coffin · lost · exit · entrance
+//   pulley · backdoor · radio · mirror
+// A spot with `role` is only offered to that role.
 
 const ROOMS = {
   cemetery: {
     id: 'cemetery',
+    title: 'Nghĩa Địa',
     name: 'PHÒNG NGHĨA ĐỊA',
     art: 'cemetery',
     next: 'dining',
@@ -71,8 +74,10 @@ const ROOMS = {
 
   dining: {
     id: 'dining',
+    title: 'Bàn Tiệc',
     name: 'BÀN TIỆC MA CÀ RỒNG',
     art: 'world',
+    next: 'corridor',
     bounds: {x0: 54, x1: 949, y0: 240, y1: 521},
     blocks: [
       {x: 365, y: 180, w: 275, h: 144},
@@ -117,9 +122,59 @@ const ROOMS = {
     // Shown when the visitor walks in from the previous room instead of starting here.
     arrive: 'Ma Cà Rồng: Nhà có khách. Mời ngồi.',
   },
+
+  corridor: {
+    id: 'corridor',
+    title: 'Hành Lang',
+    name: 'HÀNH LANG MA CỔ DÀI',
+    art: 'corridor',
+    // A narrow hall: the walkable floor is only 178 units deep.
+    bounds: {x0: 54, x1: 949, y0: 300, y1: 478},
+    blocks: [
+      {x: 62, y: 300, w: 110, h: 26, art: 'bench'},
+      {x: 260, y: 384, w: 180, h: 10, art: 'rail'},
+      {x: 520, y: 384, w: 200, h: 10, art: 'rail'},
+    ],
+    creaky: [],
+    spots: [
+      {id: 'bench', kind: 'rest', x: 117, y: 345, label: 'Ghế dưới đèn · nghỉ'},
+      {id: 'entrance', kind: 'entrance', x: 70, y: 440, label: 'Cửa thoát hiểm / đón khách'},
+      {id: 'backdoor', kind: 'backdoor', x: 230, y: 468, label: 'Cửa hậu · đi vòng hậu trường', to: {x: 790, y: 462}},
+      {id: 'radio', kind: 'radio', role: 'employee', x: 420, y: 468, label: 'Bộ đàm · gọi đồng nghiệp'},
+      {id: 'pulley', kind: 'pulley', x: 500, y: 314, label: 'Dây kéo ròng rọc'},
+      {id: 'alcove', kind: 'hide', x: 640, y: 314, label: 'Hốc tường · nấp', hint: 'hốc tường phía trên'},
+      {id: 'mirror', kind: 'mirror', x: 860, y: 314, label: 'Gương cuối hành lang'},
+      {id: 'door', kind: 'exit', x: 925, y: 400, label: 'Cửa cuối hành lang'},
+    ],
+    start: {x: 150, y: 440},
+    companionOffsets: [{x: -40, y: -50}, {x: 50, y: -60}],
+    restPoint: {x: 120, y: 350},
+    ghost: {
+      // The head rides a ceiling rail; its shadow on the floor is where it can drop.
+      kind: 'neck', name: 'Ma Cổ Dài', sprite: 5,
+      spawn: {x: 620, y: 390},
+      rail: [190, 860],
+      swing: {y: 390, amp: 72},
+      mechanism: {x: 500, y: 262},
+      retreat: {x: 620, y: 390},
+    },
+    employeeSprite: 5,
+    admitSpot: 'entrance',
+    guestSpawn: [{x: 80, y: 420}, {x: 90, y: 458}],
+    guestExit: {x: 925, y: 400},
+    routes: [
+      [{x: 180, y: 430}, {x: 320, y: 350}, {x: 480, y: 340}, {x: 610, y: 350}, {x: 760, y: 340}, {x: 860, y: 350}, {x: 925, y: 400}],
+      [{x: 200, y: 460}, {x: 380, y: 440}, {x: 480, y: 410}, {x: 600, y: 440}, {x: 760, y: 450}, {x: 880, y: 430}, {x: 925, y: 400}],
+    ],
+    intro: {
+      visitor: 'Bơ: Ê… trên trần có cái gì đang trượt kìa.',
+      employee: 'Mr. D: Ca này cậu kéo dây Ma Cổ Dài. Đừng thả đầu khi chưa có ai nhìn lên.',
+    },
+    arrive: 'Bơ: Ê… trên trần có cái gì đang trượt kìa.',
+  },
 };
 
-const ROOM_ORDER = ['cemetery', 'dining'];
+const ROOM_ORDER = ['cemetery', 'dining', 'corridor'];
 
 return{ROOMS,ROOM_ORDER};})();
 // ---- sim.mjs
@@ -129,7 +184,7 @@ const {W,H,EVIDENCE,FOUND,distance,passable,visible,findPath,Simulation}=(()=>{
 const W=1000;
 const H=562;
 const EVIDENCE={ticket:'Vé 000',name:'Tên: An',tape:'Băng ghi âm'};
-const FOUND={clip:'Kẹp tóc của Na'};
+const FOUND={clip:'Kẹp tóc của Na',mirror:'Gương: vẫn còn một cái cổ khác'};
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const inside=(r,x,y)=>x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h;
 
@@ -156,8 +211,10 @@ const EFFECTS={
  coat:{state:'search',duration:4,cooldown:6,color:'#8edacc',label:'Mất dấu · đang tìm'},
  bench:{state:'repelled',duration:4,cooldown:8,color:'#d3e8aa',label:'Lùi khỏi vùng an toàn'},
  coffin:{state:'investigate',duration:6,cooldown:10,color:'#edb080',label:'Lần theo tiếng gõ quan tài'},
+ alcove:{state:'search',duration:4,cooldown:6,color:'#8edacc',label:'Mất dấu · đang tìm'},
+ pulley:{state:'retract',duration:6,cooldown:12,color:'#e9c577',label:'Bị kéo lên trần'},
 };
-const EFFECT_HINT={bell:'Tranh thủ đi vòng qua ma!',tape:'Bạn có thời gian tìm vé.',coffin:'Đi vòng sang phía bên kia!'};
+const EFFECT_HINT={bell:'Tranh thủ đi vòng qua ma!',tape:'Bạn có thời gian tìm vé.',coffin:'Đi vòng sang phía bên kia!',pulley:'Đi nhanh qua đoạn này!'};
 
 class Simulation{
  constructor(role,roomId=ROOM_ORDER[0]){
@@ -176,7 +233,8 @@ class Simulation{
   Object.assign(this.p,{x:room.start.x,y:room.start.y,face:-Math.PI/2,path:[],moving:false});
   if(this.role==='employee')this.p.sprite=room.employeeSprite;
   this.companions.forEach((c,i)=>Object.assign(c,{x:room.start.x+room.companionOffsets[i].x,y:room.start.y+room.companionOffsets[i].y,path:[],moving:false,face:0}));
-  const g=room.ghost;this.monster={x:g.spawn.x,y:g.spawn.y,face:2.5,sprite:g.sprite,path:[],state:'patrol',t:0,index:0};
+  const g=room.ghost;this.monster={x:g.spawn.x,y:g.spawn.y,face:2.5,sprite:g.sprite,path:[],state:'patrol',t:0,index:0,dir:1,jamReady:0};
+  this.decoy=g.kind==='neck'?{x:g.rail[0]+g.rail[1]-g.spawn.x,y:g.swing.y}:null;this.crouch=false;this.puppet=false;this.backstage=null;this.relief=0;this.headDrop=0;this.litWarned=false;
   this.phase=this.role==='employee'?'prep':'explore';this.target=null;this.pending=null;this.hidden=false;this.hideSpot=null;this.resting=false;
   this.objectCooldowns={};this.effectUses={};this.worldEffects=[];this.props=[];this.npcs=[];this.lastEffect=null;this.combo=0;
   this.coin=room.coin?{...room.coin}:null;this.coinHeld=false;this.coinFlight=null;this.noiseTimer=0;this.revealTimer=0;
@@ -185,7 +243,7 @@ class Simulation{
  notice(text){this.bubble={text,until:this.time+4.8};this.events.push(text);if(this.events.length>6)this.events.shift();}
  log(text){this.journal.push(text);this.notice(text);}
  // Fixed spots plus things that come and go: the coin on the floor, a lost item not yet found.
- spots(){const s=this.room.spots.filter(s=>s.kind!=='lost'||!this.found.includes(s.id));if(this.coin&&!this.coinHeld)s.push({id:'coin',kind:'coin',x:this.coin.x,y:this.coin.y,label:'Đồng xu'});return s;}
+ spots(){const s=this.room.spots.filter(s=>(!s.role||s.role===this.role)&&(!['lost','mirror'].includes(s.kind)||!this.found.includes(s.id)));if(this.coin&&!this.coinHeld)s.push({id:'coin',kind:'coin',x:this.coin.x,y:this.coin.y,label:'Đồng xu'});return s;}
  navigate(x,y,spot=null){if(this.ending)return;this.resting=false;if(this.hidden){this.hidden=false;this.notice('Bạn bước ra khỏi chỗ nấp.');}this.p.path=findPath(this.room,this.p,{x,y});this.target={x,y};this.pending=spot;}
  nearest(){const s=this.spots();return s.reduce((best,x)=>distance(x,this.p)<distance(best,this.p)?x:best,s[0]);}
  effect(id,spot){
@@ -214,7 +272,7 @@ class Simulation{
   switch(spot.kind){
    case 'effect':this.effect(spot.id,spot);return true;
    case 'hide':{
-    this.hidden=!this.hidden;this.resting=false;this.hideSpot=this.hidden?spot:null;
+    this.hidden=!this.hidden;this.resting=false;this.crouch=false;this.hideSpot=this.hidden?spot:null;
     if(!spot.torchReveals)this.torch=false;
     if(!this.hidden){this.notice('Bạn bước ra khỏi chỗ nấp.');return true;}
     this.effect(spot.id,spot);
@@ -235,6 +293,17 @@ class Simulation{
     return true;
    case 'coin':this.coinHeld=true;this.notice('Nhặt được đồng xu. Nhấn Q để ném về hướng đang nhìn; tiếng xu rơi sẽ kéo Xác Sống đi.');return true;
    case 'lost':this.found.push(spot.id);this.journal.push(FOUND[spot.id]);this.notice('Na: Ơ, kẹp tóc của tui! Tưởng mất luôn rồi. Cảm ơn nha.');return true;
+   case 'pulley':
+    if(employee){this.puppet=!this.puppet;this.hidden=this.puppet;this.hideSpot=null;this.notice(this.puppet?'Cầm dây kéo. Cần điều khiển giờ di chuyển bóng cổ dài; Hù để thả đầu xuống. E để buông.':'Bạn buông dây kéo.');}
+    else this.effect('pulley',spot);
+    return true;
+   case 'backdoor':
+    if(employee){this.notice('Cửa hậu dành cho nhân viên đi tắt. Khách không đi lối này.');return true;}
+    this.backstage={t:4,to:spot.to};this.hidden=true;this.crouch=false;this.torch=false;this.notice('Bạn lách vào cửa hậu. Tối om, chỉ nghe tiếng dây cáp kêu trên đầu…');return true;
+   case 'radio':
+    if(this.relief>0){this.notice(`Đồng nghiệp vừa đỡ ca. Gọi lại sau ${Math.ceil(this.relief)} giây.`);return true;}
+    this.relief=45;this.stamina=Math.min(100,this.stamina+35);this.notice('Ma Cổ Dài (bộ đàm): Để tui kéo đỡ một lúc. +35 thể lực.');return true;
+   case 'mirror':this.found.push('mirror');this.journal.push(FOUND.mirror);this.notice('Ma Cổ Dài tháo mặt nạ, nhìn vào gương: “Cái đó… đâu phải của tui.”');return true;
    case 'ticket':if(this.mystery){this.finish('ticket');return true;}// otherwise it is a clue
    case 'clue':{
     const clue=spot.clue;
@@ -257,6 +326,7 @@ class Simulation{
    if(this.battery<2&&!this.torch){this.notice('Hết pin. Tới ghế nghỉ để sạc lại.');return;}
    this.torch=!this.torch;this.notice(this.torch?(this.hidden?'Đèn bật trong chỗ nấp… vệt sáng lộ vị trí!':'Đèn bật. Quay về phía ma để giữ khoảng cách.'):'Bạn tắt đèn để tiết kiệm pin.');return;
   }
+  if(this.puppet)return this.dropHead();
   if(this.cooldown>0){this.notice('Chiêu đang hồi. Đổi vị trí trong lúc chờ.');return;}
   if(this.stamina<22){this.notice('Chưa đủ thể lực. Tới ghế nghỉ hoặc đi chậm để hồi.');return;}
   // Bursting out of a coffin reaches a little further and always catches guests off guard.
@@ -265,13 +335,14 @@ class Simulation{
   for(const n of this.npcs){if(n.gone||distance(n,this.p)>range||!visible(this.room,this.p,n)||n.flee>0)continue;const dx=this.p.x-n.x,dy=this.p.y-n.y;const facing=Math.cos(Math.atan2(dy,dx)-n.face)>.5;const surprise=ambush||n.distract>0||!facing||n.caution<.4;const points=n.hits>=2?3:surprise?25:10;n.hits++;n.fear+=points;n.interest=20;n.caution=1;n.flee=1.5;n.distract=0;this.score+=points;this.scared++;hits++;this.floaters.push({x:n.x,y:n.y-70,text:surprise?'Á! +'+points:'Thấy rồi! +'+points,until:this.time+1.8});}
   this.notice(hits?(ambush?`Bung nắp quan tài! Hù trúng ${hits} khách.`:`Hù trúng ${hits} khách. Đổi vị trí để tránh bị bắt bài.`):ambush?'Bung nắp quá sớm. Khách còn ở xa.':'Không có khách trong tầm. Lại gần và đợi họ quay đi.');
  }
- place(){if(this.role!=='employee'||this.ending)return;if(this.props.length>=3){this.notice('Đã đặt đủ 3 loa. Nhấn Q để kích hoạt loa gần nhất.');return;}if(this.stamina<5){this.notice('Cần 5 thể lực để đặt đạo cụ.');return;}if(this.props.some(p=>distance(p,this.p)<60)){this.notice('Đặt loa cách nhau một chút.');return;}this.props.push({x:this.p.x,y:this.p.y,id:this.props.length,pulse:0});this.stamina-=5;this.notice('Đã đặt loa. Di chuyển sang bên khác rồi nhấn Q.');}
+ place(){if(this.role!=='employee'||this.ending)return;if(this.puppet){this.notice('Buông dây kéo (E) rồi mới đặt loa.');return;}if(this.props.length>=3){this.notice('Đã đặt đủ 3 loa. Nhấn Q để kích hoạt loa gần nhất.');return;}if(this.stamina<5){this.notice('Cần 5 thể lực để đặt đạo cụ.');return;}if(this.props.some(p=>distance(p,this.p)<60)){this.notice('Đặt loa cách nhau một chút.');return;}this.props.push({x:this.p.x,y:this.p.y,id:this.props.length,pulse:0});this.stamina-=5;this.notice('Đã đặt loa. Di chuyển sang bên khác rồi nhấn Q.');}
  secondary(){
   if(this.ending)return;
   if(this.role==='visitor'){
    const hide=this.room.spots.find(s=>s.kind==='hide');
    if(hide&&distance(this.p,hide)<70)this.interact(hide.id);
    else if(this.coinHeld)this.throwCoin();
+   else if(this.room.ghost.kind==='neck'){this.crouch=!this.crouch;this.resting=false;this.notice(this.crouch?'Bạn cúi thấp. Đi chậm, nhưng cổ dài không với tới.':'Bạn đứng thẳng dậy.');}
    else{this.torch=false;this.resting=false;this.notice('Đi chậm giúp giữ sức. Muốn nấp, tới '+(hide?.hint||'chỗ tối')+'.');}
    return;
   }
@@ -298,9 +369,18 @@ class Simulation{
  tryMystery(){if(this.room.story&&this.clues.length===3&&!this.mystery&&(this.role==='visitor'?this.time>=20:this.completed)){this.mystery=true;this.monster.state='rest';this.monster.t=999;this.log('Khách Số 0: Còn một phòng nữa mà… Mang vé tới bàn đóng mộc, hoặc ghi tên An ở tủ phân ca.');}}
  step(dt,input={}){
   if(this.ending)return;dt=Math.min(.06,Math.max(0,dt));this.time+=dt;this.cooldown=Math.max(0,this.cooldown-dt);this.propCooldown=Math.max(0,this.propCooldown-dt);for(const k in this.objectCooldowns)this.objectCooldowns[k]=Math.max(0,this.objectCooldowns[k]-dt);this.worldEffects=this.worldEffects.filter(e=>e.until>this.time);this.floaters=this.floaters.filter(f=>f.until>this.time);this.props.forEach(p=>p.pulse=Math.max(0,p.pulse-dt));if(this.coinFlight&&this.coinFlight.until<=this.time)this.coinFlight=null;
-  const dx=input.dx||0,dy=input.dy||0;const moving=!!(dx||dy);const running=moving&&input.run&&this.stamina>2;
-  if(moving){this.hidden=false;this.hideSpot=null;this.resting=false;this.pending=null;this.target=null;this.p.path=[];const len=Math.hypot(dx,dy),speed=running?172:104;moveActor(this.room,this.p,dx/len*speed*dt,dy/len*speed*dt);if(running)this.stamina=Math.max(0,this.stamina-dt*14);}else if(!this.hidden&&!this.resting){follow(this.room,this.p,dt,104);if(this.pending){const spot=this.spots().find(s=>s.id===this.pending);if(spot&&distance(this.p,spot)<48)this.interact(spot.id);}if(!this.p.path.length)this.target=null;}else this.p.moving=false;
-  this.stamina=Math.min(100,this.stamina+dt*(this.resting?22:input.run&&moving?0:3));if(this.resting){this.fear=Math.max(0,this.fear-dt*16);this.battery=Math.min(100,this.battery+dt*24);}if(this.torch){this.battery=Math.max(0,this.battery-dt*6);if(this.battery===0){this.torch=false;this.notice('Le lói… đèn hết pin.');}}
+  this.relief=Math.max(0,this.relief-dt);this.headDrop=Math.max(0,this.headDrop-dt);
+  // Back door: the visitor is out of sight for a few seconds, then comes out near the far end.
+  if(this.backstage){
+   this.backstage.t-=dt;this.p.moving=false;
+   if(this.backstage.t<=0){const to=this.backstage.to;this.backstage=null;this.hidden=false;Object.assign(this.p,{x:to.x,y:to.y,path:[]});this.companions.forEach((c,i)=>Object.assign(c,{x:to.x-40-i*40,y:to.y-30,path:[]}));this.fear=Math.min(100,this.fear+6);this.notice('Bạn ra ở cuối hành lang. Na: Lần sau đi đường tắt nhớ rủ tui!');}
+   this.stepVisitor(dt);return;
+  }
+  const dx=input.dx||0,dy=input.dy||0;const steer=this.puppet&&!!(dx||dy),moving=!this.puppet&&!!(dx||dy);const running=moving&&input.run&&this.stamina>2&&!this.crouch;
+  // Holding the rope: movement input steers the head's shadow instead of the performer.
+  if(steer){const m=this.monster,b=this.room.bounds,len=Math.hypot(dx,dy);m.x=Math.min(b.x1-20,Math.max(b.x0+20,m.x+dx/len*150*dt));m.y=Math.min(b.y1-10,Math.max(b.y0+10,m.y+dy/len*150*dt));this.stamina=Math.max(0,this.stamina-dt*2);}
+  if(moving){this.hidden=false;this.hideSpot=null;this.resting=false;this.pending=null;this.target=null;this.p.path=[];const len=Math.hypot(dx,dy),speed=this.crouch?52:running?172:104;moveActor(this.room,this.p,dx/len*speed*dt,dy/len*speed*dt);if(running)this.stamina=Math.max(0,this.stamina-dt*14);}else if(!this.hidden&&!this.resting){follow(this.room,this.p,dt,this.crouch?52:104);if(this.pending){const spot=this.spots().find(s=>s.id===this.pending);if(spot&&distance(this.p,spot)<48)this.interact(spot.id);}if(!this.p.path.length)this.target=null;}else this.p.moving=false;
+  this.stamina=Math.min(100,this.stamina+dt*(this.resting?22:input.run&&moving||steer?0:3));if(this.resting){this.fear=Math.max(0,this.fear-dt*16);this.battery=Math.min(100,this.battery+dt*24);}if(this.torch){this.battery=Math.max(0,this.battery-dt*6);if(this.battery===0){this.torch=false;this.notice('Le lói… đèn hết pin.');}}
   // Footsteps: loose boards always creak; running is loud anywhere in a room whose ghost listens.
   if(this.role==='visitor'&&this.p.moving&&!this.ending){this.noiseTimer-=dt;const boards=this.room.creaky.some(r=>inside(r,this.p.x,this.p.y));if((boards||running&&this.room.ghost.kind==='zombie')&&this.noiseTimer<=0){this.noiseTimer=.45;this.noise(this.p.x,this.p.y,boards?(running?300:230):170,boards?'cót két':null);}}
   if(this.ending)return;
@@ -309,8 +389,8 @@ class Simulation{
  stepVisitor(dt){
   for(let i=0;i<this.companions.length;i++){const c=this.companions[i],target={x:this.p.x+(i?58:-58),y:this.p.y+15};if(distance(c,target)>75&&!c.path.length)c.path=findPath(this.room,c,target);follow(this.room,c,dt,83);}
   if(this.mystery){this.monster.moving=false;return;}
-  if(this.room.ghost.kind==='zombie')this.stepZombie(dt);else this.stepVampire(dt);
-  if(this.fear>=100){const r=this.room.restPoint,m=this.monster;this.fear=40;this.p.x=r.x;this.p.y=r.y;this.p.path=[];this.pending=null;this.resting=true;this.hidden=false;this.torch=false;m.state='rest';m.t=8;m.effectLabel=null;this.notice('Mr. D đưa bạn ra ghế nghỉ. Không mất đồ; khi sẵn sàng, cứ đi tiếp.');}
+  const kind=this.room.ghost.kind;if(kind==='zombie')this.stepZombie(dt);else if(kind==='neck')this.stepNeck(dt);else this.stepVampire(dt);
+  if(this.fear>=100){const r=this.room.restPoint,m=this.monster;this.fear=40;this.p.x=r.x;this.p.y=r.y;this.p.path=[];this.pending=null;this.resting=true;this.hidden=false;this.crouch=false;this.torch=false;m.state='rest';m.t=8;m.effectLabel=null;this.notice('Mr. D đưa bạn ra ghế nghỉ. Không mất đồ; khi sẵn sàng, cứ đi tiếp.');}
  }
  // Ma Cà Rồng hunts by sight: pursues within 240 with line of sight; light makes it retreat.
  stepVampire(dt){
@@ -349,11 +429,43 @@ class Simulation{
   if(!m.path.length){m.index=(m.index+1)%g.patrol.length;m.path=findPath(room,m,g.patrol[m.index]);}follow(room,m,dt,40);
   if(exposed&&d<120)this.fear=Math.min(100,this.fear+dt*1.5);
  }
+ // Ma Cổ Dài rides a ceiling rail: her head sways across the hall and drops onto whoever stands
+ // under its shadow. Crouching keeps you below her reach; light on her face only shows her where
+ // you are; light on the pulley jams the rail for a while; yanking the rope pulls her up.
+ stepNeck(dt){
+  const m=this.monster,g=this.room.ghost,p=this.p,room=this.room;
+  const exposed=!this.resting&&!this.hidden;const reachable=exposed&&!this.crouch;
+  m.jamReady=Math.max(0,m.jamReady-dt);
+  const aim=t=>this.torch&&!this.hidden&&Math.cos(Math.atan2(t.y-p.y,t.x-p.x)-p.face);
+  const active=['patrol','track','windup'].includes(m.state);
+  if(active&&m.jamReady<=0&&distance(p,g.mechanism)<260&&aim(g.mechanism)>.8){m.state='jammed';m.t=5;m.effectDuration=5;m.effectLabel='Kẹt ròng rọc';m.jamReady=11;this.avoided++;this.floaters.push({x:g.mechanism.x,y:g.mechanism.y+40,text:'Kẹt dây!',until:this.time+1.6});this.notice('Ánh đèn làm ròng rọc kẹt lại. Đi nhanh!');return;}
+  else if(active&&distance(p,m)<230&&aim(m)>.58&&!this.litWarned){this.litWarned=true;this.notice('Rọi vào mặt chỉ làm cô ấy thấy bạn rõ hơn. Thử rọi lên ròng rọc.');}
+  const sway=Math.sin(this.time*1.4)*g.swing.amp;
+  if(this.decoy&&!['jammed','retract'].includes(m.state)){this.decoy.x=g.rail[0]+g.rail[1]-m.x;this.decoy.y=g.swing.y-sway*.8;}
+  if(!active){m.t-=dt;if(m.t<=0){m.state='patrol';m.effectLabel=null;}return;}
+  const d=distance(m,p);
+  if(m.state==='windup'){m.t-=dt;if(m.t<=0){if(distance(m,p)<48&&reachable)this.scareHit();else{this.avoided++;this.notice(this.crouch?'Cái đầu lướt sát tóc bạn rồi rút lên.':'Bạn né khỏi bóng cổ dài.');}m.state='rest';m.t=3;}return;}
+  if(reachable&&d<38){m.state='windup';m.t=.9;this.notice('Cổ đang thả xuống… Cúi người hoặc bước khỏi bóng!');return;}
+  // Track the player along the rail when close or lit; otherwise patrol end to end.
+  const lit=aim(m)>.58&&d<230;
+  const tracking=exposed&&(Math.abs(p.x-m.x)<220||lit);m.state=tracking?'track':'patrol';
+  let tx;if(tracking)tx=p.x;else{if(m.x<=g.rail[0]+2)m.dir=1;else if(m.x>=g.rail[1]-2)m.dir=-1;tx=m.dir>0?g.rail[1]:g.rail[0];}
+  const speed=tracking?(lit?120:92):60,step=Math.max(-speed*dt,Math.min(speed*dt,tx-m.x));m.x=Math.min(g.rail[1],Math.max(g.rail[0],m.x+step));m.moving=Math.abs(step)>.01;
+  const ty=tracking?g.swing.y+sway*.4+(p.y-g.swing.y)*.6:g.swing.y+sway;m.y+=(ty-m.y)*Math.min(1,dt*3);
+  if(reachable&&d<80)this.fear=Math.min(100,this.fear+dt*2);
+ }
+ dropHead(){
+  if(this.cooldown>0){this.notice('Dây còn đang rút. Chờ một chút.');return;}
+  if(this.stamina<18){this.notice('Mỏi tay rồi. Gọi đồng nghiệp qua bộ đàm hoặc nghỉ một lát.');return;}
+  const m=this.monster;this.stamina-=18;this.cooldown=3;this.headDrop=.7;this.events.push('scare');let hits=0;
+  for(const n of this.npcs){if(n.gone||n.flee>0||distance(n,m)>70)continue;const surprise=n.distract>0||n.caution<.4;const points=n.hits>=2?3:surprise?25:10;n.hits++;n.fear+=points;n.interest=20;n.caution=1;n.flee=1.5;n.distract=0;this.score+=points;this.scared++;hits++;this.floaters.push({x:n.x,y:n.y-70,text:surprise?'Á! +'+points:'Thấy rồi! +'+points,until:this.time+1.8});}
+  this.notice(hits?`Thả đầu trúng ${hits} khách!`:'Thả đầu vào chỗ trống. Không ai ở dưới bóng.');
+ }
  zombieWindup(){const m=this.monster;m.state='windup';m.t=1.4;m.path=[];m.effectLabel=null;this.notice('Xác Sống đánh hơi thấy bạn… Lùi lại, rọi đèn hoặc nấp!');}
  scareHit(){this.fear=Math.min(100,this.fear+24);this.events.push('hit');this.floaters.push({x:this.p.x,y:this.p.y-70,text:'+24 sợ hãi',until:this.time+2});this.notice('Na: Tui đang khởi động gân cốt thôi!');}
  stepGuests(dt){
   const exit=this.room.guestExit;let live=false;
-  for(const n of this.npcs){if(n.gone)continue;live=true;n.time+=dt;n.interest-=dt;n.distract=Math.max(0,n.distract-dt);n.flee=Math.max(0,n.flee-dt);const d=distance(n,this.p);if(d<200&&!this.hidden&&visible(this.room,n,this.p)&&n.distract===0)n.caution=Math.min(1,n.caution+dt*.17);else n.caution=Math.max(.1,n.caution-dt*.08);
+  for(const n of this.npcs){if(n.gone)continue;live=true;n.time+=dt;n.interest-=dt;n.distract=Math.max(0,n.distract-dt);n.flee=Math.max(0,n.flee-dt);const d=distance(n,this.p),seen=this.puppet?distance(n,this.monster)<140:d<200&&!this.hidden&&visible(this.room,n,this.p);if(seen&&n.distract===0)n.caution=Math.min(1,n.caution+dt*.17);else n.caution=Math.max(.1,n.caution-dt*.08);
    if(n.interest<=0||n.fear>=80||n.time>=75){if(!n.leaving){n.leaving=true;n.path=findPath(this.room,n,exit);this.notice(n.fear>=80?'Khách cần nghỉ. Hãy để họ ra ngoài.':'Khách đã xem xong và đi sang phòng tiếp theo.');}}
    if(n.leaving&&distance(n,exit)<35){n.gone=true;this.served++;continue;}
    if(n.flee>0){n.moving=false;continue;}
@@ -364,6 +476,12 @@ class Simulation{
  objective(){
   if(this.ending)return'Ca đêm đã kết thúc';if(this.mystery)return'Tới bàn đóng mộc hoặc tủ phân ca để giúp An';
   const cemetery=this.roomId==='cemetery';
+  if(this.roomId==='corridor'){
+   if(this.role==='visitor')return'Canh bóng cổ dài: cúi (Q), giật dây kéo, rọi ròng rọc hoặc đi cửa hậu · tới cửa cuối hành lang';
+   if(this.phase==='prep')return'Đặt loa, đón khách ở cửa trái, rồi về cầm dây kéo';
+   if(this.phase==='between')return'Đón nhóm mới ở cửa trái, hoặc chấm công';
+   return this.puppet?'Giữ bóng xa khách, đợi họ phân tâm rồi thả đầu (Hù)':'Về dây kéo để điều khiển Ma Cổ Dài';
+  }
   if(this.role==='visitor')return cemetery?'Lắng nghe Xác Sống, tránh ván cót két, tìm lối sang Bàn Tiệc'+(this.coinHeld?' · Đang cầm xu (Q để ném)':''):'Tự khám phá, tránh ma và tìm đường ra · Manh mối '+this.clues.length+'/3';
   if(this.phase==='prep')return cemetery?'Đặt loa, chọn chỗ chui ra (quan tài), rồi tới cửa vào đón khách':'Đặt loa, rồi tới cửa đón khách';
   if(this.phase==='between')return cemetery?'Đón nhóm mới ở cửa vào, hoặc chấm công':'Đón nhóm mới hoặc điều tra vé 000 · '+this.clues.length+'/3 manh mối';
@@ -373,7 +491,7 @@ class Simulation{
 
 return{W,H,EVIDENCE,FOUND,distance,passable,visible,findPath,Simulation};})();
 // ---- art.mjs
-const {paintRoom,paintZombie}=(()=>{
+const {paintLongNeck,paintRoom,paintZombie}=(()=>{
 // Procedural pixel art for rooms without hand-made assets yet (placeholder until art production).
 // Everything is painted once into offscreen canvases from the same room data the simulation
 // collides against, so what you see always matches where you can walk.
@@ -417,7 +535,12 @@ function paintWall(g,rand){
  for(let x=60;x<940;x+=18){rect(x,172,4,40,C.iron);rect(x-2,168,8,4,C.iron);rect(x,164,4,4,C.iron);}
  rect(54,180,892,4,C.iron);rect(54,200,892,4,C.iron);
  for(let y=208,row=0;y<240;y+=10,row++)for(let x=54+(row%2)*14;x<946;x+=28){rect(x,y,26,8,rand()<.5?C.stone:C.stoneDark);rect(x,y,26,2,C.stoneLight);}
- // Room frame: top border and side walls, like the dining room.
+ paintFrame(g);
+}
+
+// Room frame: top border and side walls, like the dining room.
+function paintFrame(g){
+ const {rect}=pen(g);
  rect(0,0,1000,30,C.night);for(let x=10;x<990;x+=30){rect(x,12,26,14,C.stoneDark);rect(x,12,26,4,C.stone);}
  for(const sx of [0,946]){rect(sx,0,54,562,C.wallDark);for(let y=30;y<540;y+=28){rect(sx+14,y,26,24,C.stoneDark);rect(sx+14,y,26,4,C.stone);}}
 }
@@ -503,16 +626,90 @@ function paintCoffin(g,b){
  rect(b.x+4,b.y+b.h-2,b.w-8,4,C.woodGap);
 }
 
-const PROPS={crypt:paintCrypt,grave:paintGrave,bench:paintBench,coffin:paintCoffin};
+// ---- Hành lang Ma Cổ Dài
+const K={paper:'#173533',paperDark:'#122a29',paperLight:'#21463f',brass:'#b08a4a',brassLight:'#d8b26a',plank:'#26303c',plankLight:'#2d3a48',plankGap:'#161c24',carpet:'#7a2630',carpetDark:'#5a1c25',glass:'#24435a',glassLight:'#3b6580',neck:'#d9cfc4'};
+
+function paintCorridorBackdrop(g,rand,room){
+ const {rect,disc}=pen(g);
+ // Damask wallpaper above a wooden wainscot.
+ rect(54,30,892,210,K.paper);
+ for(let y=46,row=0;y<236;y+=28,row++)for(let x=60+(row%2)*12;x<946;x+=24){rect(x,y,4,4,K.paperLight);rect(x-4,y+4,12,2,K.paperLight);rect(x,y+6,4,4,K.paperLight);rect(x+2,y+14,2,2,K.paperDark);}
+ for(let x=54;x<946;x+=48)rect(x,30,2,206,K.paperDark);
+ rect(54,30,892,12,C.woodDark);rect(54,40,892,2,C.woodLight);
+ // Ceiling rail the head rides on, with pulley wheels.
+ rect(54,50,892,6,C.iron);rect(54,50,892,2,C.stoneDark);
+ for(let x=120;x<940;x+=140){disc(x,53,7,C.stone);disc(x,53,3,C.iron);}
+ rect(54,236,892,64,C.wood);rect(54,236,892,6,C.woodLight);
+ for(let x=64;x<940;x+=70){rect(x,250,58,40,C.woodDark);rect(x+2,252,54,36,C.wood);}
+ // Portraits; the middle one is missing its head.
+ const frame=(x,y,w,h)=>{rect(x-4,y-4,w+8,h+8,K.brass);rect(x-4,y-4,w+8,2,K.brassLight);rect(x,y,w,h,'#22202c');};
+ frame(130,98,60,78);rect(146,140,28,36,'#3a4a5a');disc(160,128,10,'#c9b9a6');rect(150,118,20,6,'#1b1720');
+ frame(330,94,60,82);rect(346,140,28,36,'#4a3a4e');rect(357,94,6,48,K.neck);
+ frame(690,98,60,78);rect(706,140,28,36,'#2f4a44');disc(720,128,10,'#c9b9a6');rect(712,124,4,2,'#1b1720');rect(724,124,4,2,'#1b1720');
+ paintLantern(g,250,150);paintLantern(g,420,150);
+ // Alcove (hiding spot).
+ rect(612,200,56,100,C.stoneDark);disc(640,204,28,C.stoneDark);rect(618,206,44,94,'#060b12');disc(640,208,22,'#060b12');rect(636,282,8,10,C.bone);rect(638,276,4,4,C.mint);
+ // Mirror at the end: the reflection still has a long neck in it.
+ rect(826,144,68,154,C.stoneLight);rect(830,148,60,146,K.glass);
+ for(let i=0;i<10;i++)rect(836+i*4,284-i*12,6,6,K.glassLight);
+ rect(858,148,5,70,'#3a5a70');disc(860,226,9,'#3a5a70');rect(852,236,16,40,'#2e4a5e');
+ // Pulley box with two ropes running up to the rail.
+ rect(492,56,3,172,'#c8b48a');rect(507,56,3,172,'#c8b48a');
+ rect(468,226,64,66,C.woodDark);rect(472,230,56,58,C.wood);disc(500,256,16,C.stone);disc(500,256,6,C.iron);rect(522,262,14,4,C.iron);rect(534,252,4,14,C.red);
+ // Floorboards, then a carpet runner along the lower lane.
+ for(let y=300,i=0;y<480;y+=12,i++){rect(54,y,892,10,i%2?K.plank:K.plankLight);rect(54,y+10,892,2,K.plankGap);for(let x=54+((i*37)%120);x<946;x+=120+((i*13)%60))rect(x,y,2,10,K.plankGap);}
+ for(let x=54;x<946;x+=2)rect(x,300,2,6,K.plankGap);
+ rect(54,410,892,56,K.carpet);rect(54,410,892,4,K.brass);rect(54,462,892,4,K.brass);
+ for(let x=80;x<940;x+=40){rect(x,434,8,8,K.carpetDark);rect(x+2,436,4,4,K.brass);}
+ // Bottom wall: staff doors (cửa hậu), the radio on its ledge.
+ rect(54,480,892,82,C.night);rect(54,480,892,16,C.woodDark);rect(54,480,892,4,C.woodLight);
+ for(const dx of [205,765]){rect(dx,480,50,24,'#05090f');rect(dx+12,484,26,8,C.brass);rect(dx+16,486,18,4,C.woodDark);}
+ rect(410,470,20,12,C.stoneDark);rect(412,472,10,6,C.mint);rect(426,458,2,14,C.iron);
+ // Left emergency exit and the lit door at the far right.
+ rect(0,404,54,72,'#05090f');rect(10,392,34,10,'#2f7a5c');rect(16,394,22,6,C.mint);
+ rect(946,356,54,88,'#3b2c1c');rect(950,360,46,80,'#e7c083');for(let r=90;r>10;r-=16){g.globalAlpha=.05;disc(946,400,r,'#e7c083');}g.globalAlpha=1;
+}
+
+function paintRail(g,b){
+ const {rect}=pen(g,b.x-10,b.y-50);
+ rect(b.x,b.y+6,b.w,6,'#0008');
+ for(let x=b.x;x<=b.x+b.w-4;x+=30)rect(x,b.y-24,4,32,K.brass);
+ rect(b.x-2,b.y-28,b.w+4,6,K.brass);rect(b.x-2,b.y-28,b.w+4,2,K.brassLight);
+}
+
+// Ma Cổ Dài: white áo dài, long hair, a neck far too long. 42 × 112 art pixels plus outline.
+function paintLongNeck(){
+ const [c,g]=canvas(44,114);
+ const r=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(x+1,y+1,w,h);};
+ const hair='#16121a',skin='#e3d6c8',skinShade='#c3b3a3',dress='#e8ecef',dressShade='#c3cbd3',pants='#1e2430';
+ r(8,10,5,44,hair);r(29,10,5,44,hair);
+ r(11,2,20,6,hair);r(9,5,24,10,hair);
+ r(13,9,16,18,skin);r(12,12,18,12,skin);r(26,12,3,12,skinShade);
+ r(12,8,18,4,hair);r(13,12,2,5,hair);r(27,12,2,7,hair);r(20,11,2,3,hair);
+ r(15,16,4,2,'#1a1418');r(23,16,4,2,'#1a1418');r(16,16,1,1,'#ffffff');r(24,16,1,1,'#ffffff');r(15,19,4,1,skinShade);r(23,19,4,1,skinShade);
+ r(19,22,4,2,'#b0303c');
+ r(18,27,6,30,skin);r(22,27,2,30,skinShade);for(const y of [34,41,48])r(18,y,6,1,skinShade);
+ r(16,56,10,3,dress);
+ r(11,58,20,22,dress);r(27,59,4,20,dressShade);r(7,59,5,20,dress);r(30,59,5,20,dressShade);r(7,79,5,4,skin);r(30,79,5,4,skinShade);
+ r(22,60,1,1,'#9aa6b0');r(24,62,1,1,'#9aa6b0');r(26,64,1,1,'#9aa6b0');
+ r(12,80,8,26,pants);r(22,80,8,26,pants);r(15,80,12,22,'#eef1f3');r(25,80,2,22,dressShade);
+ r(12,105,8,3,C.wood);r(22,105,8,3,C.wood);
+ const img=g.getImageData(0,0,44,114),d=img.data,solid=i=>d[i*4+3]>0,out=[];
+ for(let y=0;y<114;y++)for(let x=0;x<44;x++){const i=y*44+x;if(solid(i))continue;if((x>0&&solid(i-1))||(x<43&&solid(i+1))||(y>0&&solid(i-44))||(y<113&&solid(i+44)))out.push(i);}
+ for(const i of out){d[i*4]=18;d[i*4+1]=13;d[i*4+2]=20;d[i*4+3]=255;}
+ g.putImageData(img,0,0);
+ return c;
+}
+
+const PROPS={crypt:paintCrypt,grave:paintGrave,bench:paintBench,coffin:paintCoffin,rail:paintRail};
 
 // Returns the backdrop plus one depth-sorted prop per collider block.
 function paintRoom(room){
  const rand=rng(20011031);
  const [bg,g]=canvas(500,281);
  g.fillStyle=C.night;g.fillRect(0,0,500,281);
- paintSky(g,rand);paintWall(g,rand);paintArch(g);paintFloor(g,rand,room);
- paintLantern(g,120,150);paintLantern(g,760,150);
- const coat=room.spots.find(s=>s.kind==='hide');if(coat)paintCoat(g,coat.x);
+ if(room.art==='corridor'){paintFrame(g);paintCorridorBackdrop(g,rand,room);}
+ else{paintSky(g,rand);paintWall(g,rand);paintArch(g);paintFloor(g,rand,room);paintLantern(g,120,150);paintLantern(g,760,150);const coat=room.spots.find(s=>s.kind==='hide');if(coat)paintCoat(g,coat.x);}
  // Soft vignette toward the corners.
  const v=g.createRadialGradient(250,150,80,250,150,320);v.addColorStop(0,'#0000');v.addColorStop(1,'#020812a0');g.fillStyle=v;g.fillRect(0,0,500,281);
  const props=room.blocks.filter(b=>PROPS[b.art]).map(b=>{const w=b.w+20,h=b.h+56,[c,pg]=canvas(Math.ceil(w/2),Math.ceil(h/2));PROPS[b.art](pg,b,rand);return{canvas:c,x:b.x-10,y:b.y-50,w,h,sortY:b.y+b.h-6};});
@@ -548,7 +745,7 @@ function paintZombie(){
  return c;
 }
 
-return{paintRoom,paintZombie};})();
+return{paintLongNeck,paintRoom,paintZombie};})();
 // ---- app.js
 (()=>{
 
@@ -560,13 +757,30 @@ const room=new Image(),atlas=new Image();room.src='data:image/png;base64,iVBORw0
 const crops=[[192,80,291,639],[639,115,339,606],[1122,115,239,606],[1477,36,499,685]];
 let joy={x:0,y:0,id:null},touchRunning=false,camera={scale:1,x:0,y:0},mobile=false;
 // Rooms without a PNG backdrop are painted at load time by art.mjs.
-const painted={};let zombieSprite=null,startRoom='cemetery';
+const painted={};let zombieSprite=null,neckSprite=null,startRoom='cemetery';
 let sim=null,paused=false,keys=new Set(),running=false,last=0,uiClock=0,assetsReady=false,hover=null,lastSpeech='',endShown=false,elapsed=0;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-Promise.all([room.decode(),atlas.decode()]).then(()=>{painted.cemetery=paintRoom(ROOMS.cemetery);zombieSprite=paintZombie();assetsReady=true;$('loading').hidden=true;$('start').hidden=false;draw();}).catch(()=>{$('loading').textContent='Chưa tải được hình. Hãy tải lại trang để thử lại.';});
+Promise.all([room.decode(),atlas.decode()]).then(()=>{for(const r of Object.values(ROOMS))if(r.art!=='world')painted[r.art]=paintRoom(r);zombieSprite=paintZombie();neckSprite=paintLongNeck();assetsReady=true;$('loading').hidden=true;$('start').hidden=false;draw();}).catch(()=>{$('loading').textContent='Chưa tải được hình. Hãy tải lại trang để thử lại.';});
 function launch(role,roomId=startRoom){resetStick();sim=new Simulation(role,roomId);paused=false;endShown=false;running=false;keys.clear();$('start').hidden=true;$('end').hidden=true;$('place').hidden=role!=='employee';$('stop').hidden=role!=='employee';$('touchPlace').hidden=role!=='employee';$('touchSecondaryLabel').textContent=role==='visitor'?'Nấp':'Kích loa';$('touchPrimaryIcon').textContent=role==='visitor'?'☀':'✦';$('primaryLabel').textContent=role==='visitor'?'Bật / tắt đèn':'Tung chiêu';$('secondaryLabel').textContent=role==='visitor'?'Nấp ở rèm':'Kích loa';$('mode').textContent=role==='visitor'?'KHÁCH THAM QUAN':'CA NHÂN VIÊN';canvas.focus();updateUI();}
-function sprite(a,label){const zombie=a.sprite===4,img=zombie?zombieSprite:atlas,c=zombie?[0,0,42,82]:crops[a.sprite],height=a.sprite===3?79:zombie?74:68,width=c[2]/c[3]*height,bob=a.moving?Math.sin(elapsed*13)*1.8:0;ctx.save();ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(a.x,a.y,17,5,0,0,Math.PI*2);ctx.fill();ctx.translate(a.x,a.y+bob);if(Math.cos(a.face)<-.15)ctx.scale(-1,1);ctx.globalAlpha*=a===sim?.p&&sim.hidden ? .55 : 1;ctx.drawImage(img,...c,-width/2,-height,width,height);ctx.restore();if(label){ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillStyle='#08121ed9';const w=ctx.measureText(label).width+12;ctx.fillRect(a.x-w/2,a.y-height-20,w,17);ctx.fillStyle=a===sim?.p?'#b7ffe4':'#d9e7e6';ctx.fillText(label,a.x,a.y-height-8);}}
+function sprite(a,label){if(a===sim?.p&&sim.backstage)return;const zombie=a.sprite===4,neck=a.sprite===5,img=zombie?zombieSprite:neck?neckSprite:atlas,c=zombie?[0,0,42,82]:neck?[0,0,44,114]:crops[a.sprite],height=a.sprite===3?79:zombie?74:neck?92:68,width=c[2]/c[3]*height,bob=a.moving?Math.sin(elapsed*13)*1.8:0;ctx.save();ctx.fillStyle='#0005';ctx.beginPath();ctx.ellipse(a.x,a.y,17,5,0,0,Math.PI*2);ctx.fill();ctx.translate(a.x,a.y+bob);if(Math.cos(a.face)<-.15)ctx.scale(-1,1);if(a===sim?.p&&sim.crouch)ctx.scale(1,.74);ctx.globalAlpha*=a===sim?.p&&sim.hidden ? .55 : 1;ctx.drawImage(img,...c,-width/2,-height,width,height);ctx.restore();if(label){ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillStyle='#08121ed9';const w=ctx.measureText(label).width+12;ctx.fillRect(a.x-w/2,a.y-height-20,w,17);ctx.fillStyle=a===sim?.p?'#b7ffe4':'#d9e7e6';ctx.fillText(label,a.x,a.y-height-8);}}
 function drawCoin(){if(!sim.coin||sim.coinHeld)return;let x=sim.coin.x,y=sim.coin.y;const f=sim.coinFlight;if(f){const k=Math.min(1,1-(f.until-sim.time)/(f.until-f.start));x=f.from.x+(f.to.x-f.from.x)*k;y=f.from.y+(f.to.y-f.from.y)*k-Math.sin(k*Math.PI)*40;}ctx.fillStyle='#0006';ctx.beginPath();ctx.ellipse(sim.coin.x,sim.coin.y+2,6,2,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e7c083';ctx.beginPath();ctx.arc(x,y-3,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff2c2';ctx.fillRect(x-2,y-6,2,2);if(!f&&Math.sin(elapsed*4)>.6)sparkle(x,y-6);}
+// Ma Cổ Dài hangs from the ceiling rail: shadow on the floor, neck from above, head at ceiling height.
+// The decoy is a wig on a second rope that casts the same kind of shadow.
+function drawNeck(){
+ if(sim.room.ghost.kind!=='neck')return;const m=sim.monster,d=sim.decoy;
+ let lift=['retract','rest','search','repelled'].includes(m.state)?190:m.state==='jammed'?150:120;
+ if(m.state==='windup'&&sim.role==='visitor')lift=120-(1-m.t/.9)*85;
+ if(sim.headDrop>0)lift=120-Math.sin(sim.headDrop/.7*Math.PI)*90;
+ m.lift=m.lift==null?lift:m.lift+(lift-m.lift)*.25;
+ if(d){ctx.fillStyle='#0006';ctx.beginPath();ctx.ellipse(d.x,d.y,26,8,0,0,Math.PI*2);ctx.fill();const dy=d.y-125;ctx.fillStyle='#c8b48a';ctx.fillRect(d.x-1,-60,2,dy+50);ctx.fillStyle='#16121a';ctx.beginPath();ctx.ellipse(d.x,dy,13,11,0,0,Math.PI*2);ctx.fill();ctx.fillRect(d.x-12,dy,24,26);}
+ const k=Math.max(0,Math.min(1,(190-m.lift)/160));ctx.fillStyle=`rgba(0,0,0,${.2+.45*k})`;ctx.beginPath();ctx.ellipse(m.x,m.y,30,10,0,0,Math.PI*2);ctx.fill();
+ if(m.state==='windup'&&sim.role==='visitor'){ring(m.x,m.y,46,'#e98091d0');}
+ const hx=m.x+Math.sin(elapsed*2)*3,hy=m.y-m.lift;
+ ctx.fillStyle='#d9cfc4';ctx.fillRect(hx-3,-60,6,hy+44);ctx.fillStyle='#b9ada2';for(let y=hy-24;y>-60;y-=14)ctx.fillRect(hx-3,y,6,1);
+ ctx.drawImage(neckSprite,0,0,44,32,hx-28,hy-40,56,41);
+ if(sim.role==='visitor'){if(m.state==='windup')tag(hx,hy-48,'Sắp thả xuống!','#ffa3af');else if(m.effectLabel&&m.t>0)tag(hx,hy-48,m.effectLabel+' · '+Math.ceil(m.t)+'s');}
+ if(sim.puppet)ring(m.x,m.y,70,'#a9ffe7a0');
+}
 function sparkle(x,y){const t=elapsed*3+x;ctx.fillStyle='#fff3c8';const s=1.5+Math.abs(Math.sin(t))*2;ctx.fillRect(x-s,y-.5,s*2,1);ctx.fillRect(x-.5,y-s,1,s*2);}
 function ring(x,y,r,color){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();}
 function tag(x,y,t,color='#a5edda'){ctx.font='11px system-ui';ctx.textAlign='center';const width=ctx.measureText(t).width+14;ctx.fillStyle='#07131de6';ctx.fillRect(x-width/2,y-16,width,22);ctx.strokeStyle='#456575';ctx.strokeRect(x-width/2,y-16,width,22);ctx.fillStyle=color;ctx.fillText(t,x,y);}
@@ -583,13 +797,13 @@ function draw(){
  if(sim.torch){ctx.save();ctx.globalCompositeOperation='screen';const start=p.face-.48,end=p.face+.48,g=ctx.createRadialGradient(p.x,p.y-30,3,p.x,p.y-30,240);g.addColorStop(0,'#e5fad050');g.addColorStop(1,'#bdffe000');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(p.x,p.y-30);ctx.arc(p.x,p.y-30,240,start,end);ctx.closePath();ctx.fill();ctx.restore();}
  if(sim.target&&!sim.pending){ring(sim.target.x,sim.target.y,8,'#9fe4d080');ctx.fillStyle='#9fe4d0';ctx.fillRect(sim.target.x-2,sim.target.y-2,4,4);}
  drawCoin();for(const prop of sim.props){ctx.fillStyle='#0a1c2be8';ctx.fillRect(prop.x-16,prop.y-23,32,25);ctx.strokeStyle='#9dddc9';ctx.strokeRect(prop.x-16,prop.y-23,32,25);ctx.fillStyle='#a3e5d2';ctx.font='10px monospace';ctx.textAlign='center';ctx.fillText('LOA',prop.x,prop.y-7);if(prop.pulse>0)ring(prop.x,prop.y,20+(2.5-prop.pulse)*45,'#a0e7cbb0');}
- const objects=sim.role==='visitor'?[...sim.companions,sim.monster,p]:[...sim.npcs.filter(n=>!n.gone),p];const layers=[...objects.map(a=>({y:a.y,a})),...(painted[sim.room.art]?.props||[]).map(q=>({y:q.sortY,q}))].sort((a,b)=>a.y-b.y);const playerLabel=sim.hidden?(sim.hideSpot?.kind==='coffin'?'Trong quan tài':'Đang nấp'):sim.resting?'Đang nghỉ':'Bạn';for(const {a,q} of layers){if(q){ctx.drawImage(q.canvas,q.x,q.y,q.w,q.h);continue;}if(a!==p&&sim.role==='employee'){if(a.distract>0)tag(a.x,a.y-88,'Nghe tiếng loa');else if(a.leaving)tag(a.x,a.y-88,'Đi tiếp');else if(a.caution>.6)tag(a.x,a.y-88,'Đề phòng','#efca93');}sprite(a,a===p?playerLabel:a===sim.monster?sim.room.ghost.name:a.sprite===1?'Na':'Bơ');}
- if(sim.role==='visitor'&&sim.monster.state==='windup'){const m=sim.monster;ring(m.x,m.y,130,'#e98091a0');tag(m.x,m.y-103,'Sắp hù!','#ffa3af');}if(sim.role==='visitor'&&sim.monster.effectLabel&&['stunned','charmed','investigate','confused','search','repelled'].includes(sim.monster.state)){
+ const neckRoom=sim.room.ghost.kind==='neck',objects=sim.role==='visitor'?[...sim.companions,...(neckRoom?[]:[sim.monster]),p]:[...sim.npcs.filter(n=>!n.gone),p];const layers=[...objects.map(a=>({y:a.y,a})),...(painted[sim.room.art]?.props||[]).map(q=>({y:q.sortY,q}))].sort((a,b)=>a.y-b.y);const playerLabel=sim.puppet?'Cầm dây kéo':sim.crouch?'Đang cúi':sim.hidden?(sim.hideSpot?.kind==='coffin'?'Trong quan tài':'Đang nấp'):sim.resting?'Đang nghỉ':'Bạn';for(const {a,q} of layers){if(q){ctx.drawImage(q.canvas,q.x,q.y,q.w,q.h);continue;}if(a!==p&&sim.role==='employee'){if(a.distract>0)tag(a.x,a.y-88,'Nghe tiếng loa');else if(a.leaving)tag(a.x,a.y-88,'Đi tiếp');else if(a.caution>.6)tag(a.x,a.y-88,'Đề phòng','#efca93');}sprite(a,a===p?playerLabel:a===sim.monster?sim.room.ghost.name:a.sprite===1?'Na':'Bơ');}
+ drawNeck();if(!neckRoom&&sim.role==='visitor'&&sim.monster.state==='windup'){const m=sim.monster;ring(m.x,m.y,130,'#e98091a0');tag(m.x,m.y-103,'Sắp hù!','#ffa3af');}if(!neckRoom&&sim.role==='visitor'&&sim.monster.effectLabel&&['stunned','charmed','investigate','confused','search','repelled'].includes(sim.monster.state)){
  const m=sim.monster;tag(m.x,m.y-100,m.effectLabel+' · '+Math.ceil(m.t)+'s');
  ctx.fillStyle='#152d3a';ctx.fillRect(m.x-30,m.y-91,60,3);ctx.fillStyle='#a1ebd3';ctx.fillRect(m.x-30,m.y-91,60*Math.min(1,m.t/(m.effectDuration||7)),3);
  if(m.state==='confused'){ctx.save();ctx.translate(m.x,m.y-82);ctx.rotate(elapsed*2);ctx.fillStyle='#d6b9f2';ctx.fillRect(-18,-2,5,5);ctx.fillRect(15,-2,5,5);ctx.restore();}
  }
- if(sim.role==='employee'&&sim.cooldown>2.45)ring(p.x,p.y,145,'#a9ffe7a0');
+ if(sim.role==='employee'&&!sim.puppet&&sim.cooldown>2.45)ring(p.x,p.y,145,'#a9ffe7a0');
  for(const spot of sim.spots()){const near=distance(p,spot)<64;if(spot.kind==='lost'&&distance(p,spot)>110)continue;if(spot.kind==='lost'&&!near){sparkle(spot.x,spot.y);continue;}const clue={portrait:'name',tape:'tape',ticket:'ticket'}[spot.id];if(clue&&sim.clues.includes(clue)&&!sim.mystery&&!near)continue;ctx.globalAlpha=near?1:.55;ring(spot.x,spot.y,near?12:7,near?'#eacf98':'#9bd7d0');ctx.font=near?'12px monospace':'10px monospace';ctx.textAlign='center';ctx.fillStyle=near?'#fff0c5':'#b0e9d9';ctx.fillText(near?'E':'+',spot.x,spot.y+4);ctx.globalAlpha=1;if((sim.objectCooldowns[spot.id]||0)>0)tag(spot.x,spot.y-16,Math.ceil(sim.objectCooldowns[spot.id])+'s','#a9bac5');else if(hover===spot.id)tag(spot.x,spot.y-20,spot.label);}
  if(sim.mystery){const ghost={x:680,y:450,face:0,sprite:0,moving:false};ctx.save();ctx.globalAlpha=.55+.1*Math.sin(elapsed*2);sprite(ghost,'An · vé 000');ctx.restore();ring(ghost.x,ghost.y,24,'#c7ffdf60');}
  for(const f of sim.floaters){ctx.textAlign='center';ctx.font='bold 13px system-ui';ctx.fillStyle='#061421';const fy=f.y-(2-(f.until-sim.time))*9;ctx.fillText(f.text,f.x+1,fy+1);ctx.fillStyle='#ffe5ad';ctx.fillText(f.text,f.x,fy);}
@@ -597,15 +811,15 @@ function draw(){
 function updateUI(){if(!sim){$('resources').innerHTML='';return;}const resource=(label,value,cls)=>`<div class="res ${cls}">${label}<strong>${Math.round(value)}</strong><div class="bar"><i style="width:${value}%"></i></div></div>`;$('resources').innerHTML=sim.role==='visitor'?resource('Sợ hãi',sim.fear,'fear')+resource('Thể lực',sim.stamina,'')+resource('Pin',sim.battery,'battery'):resource('Thể lực',sim.stamina,'')+`<div class="res">Điểm diễn<strong>${sim.score}</strong><div style="color:var(--mint);font-size:10px">${sim.served} khách đã ra</div></div>`;
  $('objective').textContent=sim.objective();const near=sim.nearest();
  const nearby=distance(sim.p,near)<64;
- const verbs={bell:'Rung chuông',tape:'Bật băng',portrait:'Xoay tranh',ticket:sim.mystery?'Đóng mộc':'Xem vé',curtain:sim.hidden?'Bước ra':'Nấp',bench:sim.resting?'Đứng dậy':'Nghỉ',wardrobe:sim.mystery?'Mời An':sim.role==='visitor'?'Đập cửa tủ':'Chỉnh áo',door:sim.role==='visitor'?(sim.room.next?'Sang phòng':'Ra ngoài'):sim.room.admitSpot==='door'?'Đón khách':'Lối ra',coat:sim.hidden?'Bước ra':'Nấp',coffin:sim.role==='visitor'?'Gõ quan tài':sim.hidden?'Bước ra':'Chui vào',coin:'Nhặt xu',clip:'Nhặt lên',entrance:sim.role==='visitor'?'Ra ngoài':'Đón khách'};
- const hideSpot=sim.room.spots.find(s=>s.kind==='hide'),nearHide=hideSpot&&distance(sim.p,hideSpot)<70,throwing=sim.role==='visitor'&&sim.coinHeld&&!nearHide;
+ const verbs={bell:'Rung chuông',tape:'Bật băng',portrait:'Xoay tranh',ticket:sim.mystery?'Đóng mộc':'Xem vé',curtain:sim.hidden?'Bước ra':'Nấp',bench:sim.resting?'Đứng dậy':'Nghỉ',wardrobe:sim.mystery?'Mời An':sim.role==='visitor'?'Đập cửa tủ':'Chỉnh áo',door:sim.role==='visitor'?(sim.room.next?'Sang phòng':'Ra ngoài'):sim.room.admitSpot==='door'?'Đón khách':'Lối ra',coat:sim.hidden?'Bước ra':'Nấp',coffin:sim.role==='visitor'?'Gõ quan tài':sim.hidden?'Bước ra':'Chui vào',coin:'Nhặt xu',clip:'Nhặt lên',pulley:sim.role==='visitor'?'Giật dây':sim.puppet?'Buông dây':'Cầm dây',backdoor:'Vào cửa hậu',radio:'Gọi bộ đàm',mirror:'Soi gương',alcove:sim.hidden?'Bước ra':'Nấp',entrance:sim.role==='visitor'?'Ra ngoài':'Đón khách'};
+ const hideSpot=sim.room.spots.find(s=>s.kind==='hide'),nearHide=hideSpot&&distance(sim.p,hideSpot)<70,throwing=sim.role==='visitor'&&sim.coinHeld&&!nearHide,ducking=sim.role==='visitor'&&!nearHide&&!sim.coinHeld&&sim.room.ghost.kind==='neck',secondaryText=throwing?'Ném xu':ducking?(sim.crouch?'Đứng dậy':'Cúi'):'Nấp';
  $('touchInteractLabel').textContent=nearby?verbs[near.id]:'Lại gần';$('touchInteract').disabled=!nearby||!!sim.ending;
- $('touchPrimaryLabel').textContent=sim.role==='visitor'?(sim.torch?'Tắt đèn':'Đèn pin'):sim.cooldown>0?Math.ceil(sim.cooldown)+'s':'Hù!';
+ $('touchPrimaryLabel').textContent=sim.role==='visitor'?(sim.torch?'Tắt đèn':'Đèn pin'):sim.cooldown>0?Math.ceil(sim.cooldown)+'s':sim.puppet?'Thả đầu':'Hù!';
  $('touchPrimary').classList.toggle('active',sim.torch);$('touchPrimary').style.setProperty('--cooldown',sim.role==='employee'?sim.cooldown/3*360+'deg':'0deg');
- $('touchSecondaryLabel').textContent=sim.role==='visitor'?(throwing?'Ném xu':'Nấp'):'Kích loa';$('secondaryLabel').textContent=sim.role==='visitor'?(throwing?'Ném đồng xu':'Nấp'):'Kích loa';
+ $('touchSecondaryLabel').textContent=sim.role==='visitor'?secondaryText:'Kích loa';$('secondaryLabel').textContent=sim.role==='visitor'?secondaryText:'Kích loa';
  $('roomName').textContent=sim.room.name;
- $('touchSecondary').disabled=sim.role==='visitor'?!nearHide&&!sim.hidden&&!sim.coinHeld:sim.props.length===0||sim.propCooldown>0;
- $('nearby').textContent=distance(sim.p,near)<64&&!sim.ending?(mobile?'Chạm Sử dụng · ':'E · ')+near.label:'';const speech=sim.bubble&&sim.bubble.until>sim.time?sim.bubble.text:'';if(speech!==lastSpeech){$('speech').textContent=speech;$('speech').classList.toggle('show',!!speech);lastSpeech=speech;}$('primary').classList.toggle('active',sim.torch);$('run').classList.toggle('active',running);$('primaryLabel').textContent=sim.role==='visitor'?(sim.torch?'Tắt đèn':'Bật đèn'):sim.cooldown>0?`Hồi ${sim.cooldown.toFixed(1)}s`:'Tung chiêu';$('status').textContent=sim.role==='visitor'?`Tránh ${sim.avoided} màn hù · ${sim.clues.length}/3 manh mối · ${sim.room.next?'Lối sang Bàn Tiệc ở góc phải':'Đi tới cửa để kết thúc chuyến chơi'}`:`${sim.props.length}/3 loa · ${sim.scared} lần hù trúng · ${sim.distracted} lần phân tâm · ${sim.clues.length}/3 manh mối`;
+ $('touchSecondary').disabled=sim.role==='visitor'?!nearHide&&!sim.hidden&&!sim.coinHeld&&!ducking:sim.props.length===0||sim.propCooldown>0;
+ $('nearby').textContent=distance(sim.p,near)<64&&!sim.ending?(mobile?'Chạm Sử dụng · ':'E · ')+near.label:'';const speech=sim.bubble&&sim.bubble.until>sim.time?sim.bubble.text:'';if(speech!==lastSpeech){$('speech').textContent=speech;$('speech').classList.toggle('show',!!speech);lastSpeech=speech;}$('primary').classList.toggle('active',sim.torch);$('run').classList.toggle('active',running);$('primaryLabel').textContent=sim.role==='visitor'?(sim.torch?'Tắt đèn':'Bật đèn'):sim.cooldown>0?`Hồi ${sim.cooldown.toFixed(1)}s`:'Tung chiêu';$('status').textContent=sim.role==='visitor'?`Tránh ${sim.avoided} màn hù · ${sim.clues.length}/3 manh mối · ${sim.room.next?'Đi tiếp sang '+ROOMS[sim.room.next].title:'Ra cửa cuối để kết thúc chuyến chơi'}`:`${sim.props.length}/3 loa · ${sim.scared} lần hù trúng · ${sim.distracted} lần phân tâm · ${sim.clues.length}/3 manh mối`;
  if(sim.ending&&!endShown)showEnding();}
 function frame(now){const dt=last?Math.min((now-last)/1000,.06):0;last=now;elapsed+=dt;if(sim&&!paused&&!sim.ending){sim.step(dt,{dx:joy.x+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0),dy:joy.y+(keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0),run:keys.has('shift')||running||touchRunning});}draw();uiClock+=dt;if(uiClock>.08){uiClock=0;updateUI();}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
@@ -616,7 +830,7 @@ $('interact').onclick=()=>invoke(()=>sim.interact());$('primary').onclick=()=>in
 function dialog(html){paused=true;keys.clear();resetStick();$('modalContent').innerHTML=html;if(!modal.open)modal.showModal();}
 function close(){modal.close();paused=false;last=0;canvas.focus();}
 $('closeModal').onclick=close;modal.addEventListener('cancel',e=>{e.preventDefault();close();});
-function help(){dialog(`<h2>Điều khiển & phối hợp đạo cụ</h2><p><b>Trên điện thoại:</b> kéo cần trái để đi; tay phải chạm Đèn pin / Hù và nút sử dụng. Giữ Chạy để tăng tốc. Có thể vừa di chuyển vừa dùng kỹ năng.</p><p><b>Đạo cụ tác động lên ma:</b> chuông kéo ma tới nguồn âm; băng cát sét giữ ma đứng nghe; tranh khiến ma hoảng lùi; rèm làm ma mất dấu; ghế nghỉ tạo vùng an toàn. Mỗi món có thời gian hồi và dùng lặp sẽ kém hiệu quả.</p><p><b>Phòng Nghĩa Địa:</b> Xác Sống gần như không nhìn thấy nhưng nghe rất thính. Ván gỗ cót két và tiếng chạy sẽ kéo hắn tới. Nhặt đồng xu rồi nhấn Q để ném đánh lạc hướng. Đèn pin chỉ làm hắn khựng lại rồi lần theo ánh sáng; đừng bật đèn khi nấp sau áo khoác. Nhân viên có thể chui vào quan tài đứng rồi bung nắp để hù.</p><p>Nhân vật đi trong phòng thật. Đến gần đồ vật để sử dụng; NPC vẫn di chuyển khi bạn đứng yên.</p><div class="help-grid"><b>WASD / ↑↓←→</b><span>Di chuyển. Hoặc chạm một điểm trên sàn để tự tìm đường.</span><b>E</b><span>Tương tác với vật gần nhất. Chạm điểm sáng cũng tự đi tới vật đó.</span><b>Space</b><span>Khách: bật / tắt đèn pin. Nhân viên: tung chiêu trong tầm gần.</span><b>Q</b><span>Khách: nấp khi ở cạnh rèm. Nhân viên: kích hoạt loa gần nhất.</span><b>P</b><span>Nhân viên đặt loa tại chỗ đang đứng, tối đa 3 loa.</span><b>Shift</b><span>Chạy nhanh, tốn thể lực.</span><b>Ghế nghỉ</b><span>Tới ghế ở góc trái để hồi sức, pin và giảm sợ hãi.</span><b>J / Esc</b><span>Nhật ký / tạm dừng.</span></div><p>${sim?.role==='employee'?'Gợi ý: đặt loa, mở cửa đón khách, kích loa rồi vòng sang hướng khác để hù. Khách quen chiêu sẽ khó bị dọa hơn.':'Gợi ý: khi ma lấy đà, quay mặt rọi đèn, lùi lại hoặc nấp. Bàn chặn cả đường đi lẫn một phần tầm nhìn.'}</p><div class="dialog-actions"><button id="resume">Vào chơi</button></div>`);$('resume').onclick=close;}
+function help(){dialog(`<h2>Điều khiển & phối hợp đạo cụ</h2><p><b>Trên điện thoại:</b> kéo cần trái để đi; tay phải chạm Đèn pin / Hù và nút sử dụng. Giữ Chạy để tăng tốc. Có thể vừa di chuyển vừa dùng kỹ năng.</p><p><b>Đạo cụ tác động lên ma:</b> chuông kéo ma tới nguồn âm; băng cát sét giữ ma đứng nghe; tranh khiến ma hoảng lùi; rèm làm ma mất dấu; ghế nghỉ tạo vùng an toàn. Mỗi món có thời gian hồi và dùng lặp sẽ kém hiệu quả.</p><p><b>Phòng Nghĩa Địa:</b> Xác Sống gần như không nhìn thấy nhưng nghe rất thính. Ván gỗ cót két và tiếng chạy sẽ kéo hắn tới. Nhặt đồng xu rồi nhấn Q để ném đánh lạc hướng. Đèn pin chỉ làm hắn khựng lại rồi lần theo ánh sáng; đừng bật đèn khi nấp sau áo khoác. Nhân viên có thể chui vào quan tài đứng rồi bung nắp để hù.</p><p><b>Hành lang Ma Cổ Dài:</b> cái đầu trượt trên trần và thả xuống ai đứng dưới bóng của nó. Nhấn Q để cúi người, giật dây kéo, hoặc rọi đèn lên ròng rọc để làm kẹt. Rọi vào mặt chỉ làm cô ấy thấy bạn. Cửa hậu là đường tắt tối om. Nhân viên cầm dây kéo để điều khiển cái đầu; gọi bộ đàm khi mỏi tay.</p><p>Nhân vật đi trong phòng thật. Đến gần đồ vật để sử dụng; NPC vẫn di chuyển khi bạn đứng yên.</p><div class="help-grid"><b>WASD / ↑↓←→</b><span>Di chuyển. Hoặc chạm một điểm trên sàn để tự tìm đường.</span><b>E</b><span>Tương tác với vật gần nhất. Chạm điểm sáng cũng tự đi tới vật đó.</span><b>Space</b><span>Khách: bật / tắt đèn pin. Nhân viên: tung chiêu trong tầm gần.</span><b>Q</b><span>Khách: nấp khi ở cạnh rèm. Nhân viên: kích hoạt loa gần nhất.</span><b>P</b><span>Nhân viên đặt loa tại chỗ đang đứng, tối đa 3 loa.</span><b>Shift</b><span>Chạy nhanh, tốn thể lực.</span><b>Ghế nghỉ</b><span>Tới ghế ở góc trái để hồi sức, pin và giảm sợ hãi.</span><b>J / Esc</b><span>Nhật ký / tạm dừng.</span></div><p>${sim?.role==='employee'?'Gợi ý: đặt loa, mở cửa đón khách, kích loa rồi vòng sang hướng khác để hù. Khách quen chiêu sẽ khó bị dọa hơn.':'Gợi ý: khi ma lấy đà, quay mặt rọi đèn, lùi lại hoặc nấp. Bàn chặn cả đường đi lẫn một phần tầm nhìn.'}</p><div class="dialog-actions"><button id="resume">Vào chơi</button></div>`);$('resume').onclick=close;}
 function journal(){dialog(`<span class="eyebrow">NHẬT KÝ CA ĐÊM</span><h2>Những điều đã thấy</h2><div class="clues">${Object.entries(EVIDENCE).map(([k,v])=>`<div class="clue ${sim?.clues.includes(k)?'':'locked'}">${sim?.clues.includes(k)?'✓ '+v:'? Chưa tìm thấy'}</div>`).join('')}</div><p>${sim?.mystery?'Để giúp An chơi xong: tới bàn đóng mộc. Để mời An làm nhân viên: tới tủ phân ca.':'Tìm các dấu vết trong phòng: bảng tên dưới tranh, vé trên bàn và máy cát sét.'}</p><ul>${(sim?.journal||[]).map(t=>`<li>${esc(t)}</li>`).join('')}</ul><div class="dialog-actions"><button id="resume">Quay lại phòng</button></div>`);$('resume').onclick=close;}
 function pause(){dialog(`<h2>Tạm nghỉ</h2><p>Khách, ma và đồng hồ đều dừng lại khi bảng này mở.</p><div class="dialog-actions"><button id="resume">Chơi tiếp</button><button id="guide">Xem cách chơi</button><button id="restart">Đổi vai / bắt đầu lại</button></div>`);$('resume').onclick=close;$('guide').onclick=help;$('restart').onclick=()=>{dialog('<h2>Bắt đầu lại?</h2><p>Ca hiện tại sẽ được đặt lại.</p><div class="dialog-actions"><button id="yes">Về chọn vai</button><button id="no">Chơi tiếp ca này</button></div>');$('yes').onclick=()=>{close();home();};$('no').onclick=close;};}
 function home(){resetStick();sim=null;endShown=false;keys.clear();$('end').hidden=true;$('start').hidden=false;$('speech').classList.remove('show');$('nearby').textContent='';$('objective').textContent='Chọn vai để bắt đầu.';$('mode').textContent='RPG / MÔ PHỎNG';$('roomName').textContent='CÔNG VIÊN ÁNH TRĂNG';$('stop').hidden=true;updateUI();}
@@ -631,7 +845,7 @@ function dragStick(e){if(e.pointerId!==joy.id)return;const b=joystick.getBoundin
 joystick.addEventListener('pointerdown',e=>{if(!sim||paused||sim.ending||joy.id!==null)return;e.preventDefault();joy.id=e.pointerId;joystick.setPointerCapture(e.pointerId);dragStick(e);});
 joystick.addEventListener('pointermove',dragStick);
 for(const type of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(type,e=>{if(joy.id===e.pointerId){joy={x:0,y:0,id:null};stick.style.transform='translate(0px,0px)';}});
-$('touchPrimary').onclick=()=>invoke(()=>{if(sim.role==='visitor'&&!sim.torch){const m=sim.monster;if(distance(sim.p,m)<300)sim.p.face=Math.atan2(m.y-sim.p.y,m.x-sim.p.x);}sim.action();});
+$('touchPrimary').onclick=()=>invoke(()=>{if(sim.role==='visitor'&&!sim.torch){const m=sim.room.ghost.mechanism||sim.monster;if(distance(sim.p,m)<300)sim.p.face=Math.atan2(m.y-sim.p.y,m.x-sim.p.x);}sim.action();});
 $('touchInteract').onclick=()=>invoke(()=>sim.interact());$('touchSecondary').onclick=()=>invoke(()=>sim.secondary());$('touchPlace').onclick=()=>invoke(()=>sim.place());
 $('touchRun').addEventListener('pointerdown',e=>{if(!sim||paused)return;e.preventDefault();e.currentTarget.setPointerCapture(e.pointerId);touchRunning=true;e.currentTarget.classList.add('active');});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])$('touchRun').addEventListener(type,()=>{touchRunning=false;$('touchRun').classList.remove('active');});

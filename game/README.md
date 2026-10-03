@@ -1,6 +1,6 @@
 # Ánh Trăng — Ca đêm ở Công viên Ánh Trăng
 
-A haunted-house RPG / simulation prototype with two rooms and two roles:
+A haunted-house RPG / simulation prototype with three rooms and two roles:
 **visitor** (explore, hide, use the flashlight, find clues) and **employee** (place speakers,
 admit guests, scare them).
 
@@ -9,7 +9,12 @@ admit guests, scare them).
    flashlight gives away the coat hiding spot. Na's lost hair clip is hidden here. Staff can hide
    in the standing coffin and burst out for a guaranteed surprise. The arch leads on to room 2.
 2. **Bàn Tiệc Ma Cà Rồng** (dining room): the vampire hunts by sight. Three clues unlock Khách
-   Số 0 (An) and the story endings.
+   Số 0 (An) and the story endings. The door leads on to room 3.
+3. **Hành lang Ma Cổ Dài** (corridor): a head rides a ceiling rail and drops on whoever stands
+   under its shadow. Crouch (Q), yank the pulley rope, shine the flashlight on the pulley to jam
+   it, or take the dark staff back door. Light on her face only helps her find you. A wig on a
+   second rope casts a decoy shadow. Staff work the rope: movement steers the head, Space drops
+   it, and the walkie-talkie calls a coworker to take over for a while. The far door ends the visit.
 
 The start screen picks the starting room; a visitor run normally starts in the cemetery. Full design, script and architecture notes: [GAME-DESIGN.md](GAME-DESIGN.md).
 

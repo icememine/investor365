@@ -2,10 +2,13 @@
 // World coordinates are 1000 × 562 for every room; actor positions are their feet.
 // Spot `kind` decides what interacting does (see Simulation.interact):
 //   hide · rest · effect · clue · ticket · wardrobe · coffin · lost · exit · entrance
+//   pulley · backdoor · radio · mirror
+// A spot with `role` is only offered to that role.
 
 export const ROOMS = {
   cemetery: {
     id: 'cemetery',
+    title: 'Nghĩa Địa',
     name: 'PHÒNG NGHĨA ĐỊA',
     art: 'cemetery',
     next: 'dining',
@@ -57,8 +60,10 @@ export const ROOMS = {
 
   dining: {
     id: 'dining',
+    title: 'Bàn Tiệc',
     name: 'BÀN TIỆC MA CÀ RỒNG',
     art: 'world',
+    next: 'corridor',
     bounds: {x0: 54, x1: 949, y0: 240, y1: 521},
     blocks: [
       {x: 365, y: 180, w: 275, h: 144},
@@ -103,6 +108,56 @@ export const ROOMS = {
     // Shown when the visitor walks in from the previous room instead of starting here.
     arrive: 'Ma Cà Rồng: Nhà có khách. Mời ngồi.',
   },
+
+  corridor: {
+    id: 'corridor',
+    title: 'Hành Lang',
+    name: 'HÀNH LANG MA CỔ DÀI',
+    art: 'corridor',
+    // A narrow hall: the walkable floor is only 178 units deep.
+    bounds: {x0: 54, x1: 949, y0: 300, y1: 478},
+    blocks: [
+      {x: 62, y: 300, w: 110, h: 26, art: 'bench'},
+      {x: 260, y: 384, w: 180, h: 10, art: 'rail'},
+      {x: 520, y: 384, w: 200, h: 10, art: 'rail'},
+    ],
+    creaky: [],
+    spots: [
+      {id: 'bench', kind: 'rest', x: 117, y: 345, label: 'Ghế dưới đèn · nghỉ'},
+      {id: 'entrance', kind: 'entrance', x: 70, y: 440, label: 'Cửa thoát hiểm / đón khách'},
+      {id: 'backdoor', kind: 'backdoor', x: 230, y: 468, label: 'Cửa hậu · đi vòng hậu trường', to: {x: 790, y: 462}},
+      {id: 'radio', kind: 'radio', role: 'employee', x: 420, y: 468, label: 'Bộ đàm · gọi đồng nghiệp'},
+      {id: 'pulley', kind: 'pulley', x: 500, y: 314, label: 'Dây kéo ròng rọc'},
+      {id: 'alcove', kind: 'hide', x: 640, y: 314, label: 'Hốc tường · nấp', hint: 'hốc tường phía trên'},
+      {id: 'mirror', kind: 'mirror', x: 860, y: 314, label: 'Gương cuối hành lang'},
+      {id: 'door', kind: 'exit', x: 925, y: 400, label: 'Cửa cuối hành lang'},
+    ],
+    start: {x: 150, y: 440},
+    companionOffsets: [{x: -40, y: -50}, {x: 50, y: -60}],
+    restPoint: {x: 120, y: 350},
+    ghost: {
+      // The head rides a ceiling rail; its shadow on the floor is where it can drop.
+      kind: 'neck', name: 'Ma Cổ Dài', sprite: 5,
+      spawn: {x: 620, y: 390},
+      rail: [190, 860],
+      swing: {y: 390, amp: 72},
+      mechanism: {x: 500, y: 262},
+      retreat: {x: 620, y: 390},
+    },
+    employeeSprite: 5,
+    admitSpot: 'entrance',
+    guestSpawn: [{x: 80, y: 420}, {x: 90, y: 458}],
+    guestExit: {x: 925, y: 400},
+    routes: [
+      [{x: 180, y: 430}, {x: 320, y: 350}, {x: 480, y: 340}, {x: 610, y: 350}, {x: 760, y: 340}, {x: 860, y: 350}, {x: 925, y: 400}],
+      [{x: 200, y: 460}, {x: 380, y: 440}, {x: 480, y: 410}, {x: 600, y: 440}, {x: 760, y: 450}, {x: 880, y: 430}, {x: 925, y: 400}],
+    ],
+    intro: {
+      visitor: 'Bơ: Ê… trên trần có cái gì đang trượt kìa.',
+      employee: 'Mr. D: Ca này cậu kéo dây Ma Cổ Dài. Đừng thả đầu khi chưa có ai nhìn lên.',
+    },
+    arrive: 'Bơ: Ê… trên trần có cái gì đang trượt kìa.',
+  },
 };
 
-export const ROOM_ORDER = ['cemetery', 'dining'];
+export const ROOM_ORDER = ['cemetery', 'dining', 'corridor'];

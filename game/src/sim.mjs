@@ -4,7 +4,7 @@ import {ROOMS, ROOM_ORDER} from './rooms.mjs';
 export const W=1000;
 export const H=562;
 export const EVIDENCE={ticket:'Vé 000',name:'Tên: An',tape:'Băng ghi âm'};
-export const FOUND={clip:'Kẹp tóc của Na'};
+export const FOUND={clip:'Kẹp tóc của Na',mirror:'Gương: vẫn còn một cái cổ khác'};
 export const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const inside=(r,x,y)=>x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h;
 
@@ -31,8 +31,10 @@ const EFFECTS={
  coat:{state:'search',duration:4,cooldown:6,color:'#8edacc',label:'Mất dấu · đang tìm'},
  bench:{state:'repelled',duration:4,cooldown:8,color:'#d3e8aa',label:'Lùi khỏi vùng an toàn'},
  coffin:{state:'investigate',duration:6,cooldown:10,color:'#edb080',label:'Lần theo tiếng gõ quan tài'},
+ alcove:{state:'search',duration:4,cooldown:6,color:'#8edacc',label:'Mất dấu · đang tìm'},
+ pulley:{state:'retract',duration:6,cooldown:12,color:'#e9c577',label:'Bị kéo lên trần'},
 };
-const EFFECT_HINT={bell:'Tranh thủ đi vòng qua ma!',tape:'Bạn có thời gian tìm vé.',coffin:'Đi vòng sang phía bên kia!'};
+const EFFECT_HINT={bell:'Tranh thủ đi vòng qua ma!',tape:'Bạn có thời gian tìm vé.',coffin:'Đi vòng sang phía bên kia!',pulley:'Đi nhanh qua đoạn này!'};
 
 export class Simulation{
  constructor(role,roomId=ROOM_ORDER[0]){
@@ -51,7 +53,8 @@ export class Simulation{
   Object.assign(this.p,{x:room.start.x,y:room.start.y,face:-Math.PI/2,path:[],moving:false});
   if(this.role==='employee')this.p.sprite=room.employeeSprite;
   this.companions.forEach((c,i)=>Object.assign(c,{x:room.start.x+room.companionOffsets[i].x,y:room.start.y+room.companionOffsets[i].y,path:[],moving:false,face:0}));
-  const g=room.ghost;this.monster={x:g.spawn.x,y:g.spawn.y,face:2.5,sprite:g.sprite,path:[],state:'patrol',t:0,index:0};
+  const g=room.ghost;this.monster={x:g.spawn.x,y:g.spawn.y,face:2.5,sprite:g.sprite,path:[],state:'patrol',t:0,index:0,dir:1,jamReady:0};
+  this.decoy=g.kind==='neck'?{x:g.rail[0]+g.rail[1]-g.spawn.x,y:g.swing.y}:null;this.crouch=false;this.puppet=false;this.backstage=null;this.relief=0;this.headDrop=0;this.litWarned=false;
   this.phase=this.role==='employee'?'prep':'explore';this.target=null;this.pending=null;this.hidden=false;this.hideSpot=null;this.resting=false;
   this.objectCooldowns={};this.effectUses={};this.worldEffects=[];this.props=[];this.npcs=[];this.lastEffect=null;this.combo=0;
   this.coin=room.coin?{...room.coin}:null;this.coinHeld=false;this.coinFlight=null;this.noiseTimer=0;this.revealTimer=0;
@@ -60,7 +63,7 @@ export class Simulation{
  notice(text){this.bubble={text,until:this.time+4.8};this.events.push(text);if(this.events.length>6)this.events.shift();}
  log(text){this.journal.push(text);this.notice(text);}
  // Fixed spots plus things that come and go: the coin on the floor, a lost item not yet found.
- spots(){const s=this.room.spots.filter(s=>s.kind!=='lost'||!this.found.includes(s.id));if(this.coin&&!this.coinHeld)s.push({id:'coin',kind:'coin',x:this.coin.x,y:this.coin.y,label:'Đồng xu'});return s;}
+ spots(){const s=this.room.spots.filter(s=>(!s.role||s.role===this.role)&&(!['lost','mirror'].includes(s.kind)||!this.found.includes(s.id)));if(this.coin&&!this.coinHeld)s.push({id:'coin',kind:'coin',x:this.coin.x,y:this.coin.y,label:'Đồng xu'});return s;}
  navigate(x,y,spot=null){if(this.ending)return;this.resting=false;if(this.hidden){this.hidden=false;this.notice('Bạn bước ra khỏi chỗ nấp.');}this.p.path=findPath(this.room,this.p,{x,y});this.target={x,y};this.pending=spot;}
  nearest(){const s=this.spots();return s.reduce((best,x)=>distance(x,this.p)<distance(best,this.p)?x:best,s[0]);}
  effect(id,spot){
@@ -89,7 +92,7 @@ export class Simulation{
   switch(spot.kind){
    case 'effect':this.effect(spot.id,spot);return true;
    case 'hide':{
-    this.hidden=!this.hidden;this.resting=false;this.hideSpot=this.hidden?spot:null;
+    this.hidden=!this.hidden;this.resting=false;this.crouch=false;this.hideSpot=this.hidden?spot:null;
     if(!spot.torchReveals)this.torch=false;
     if(!this.hidden){this.notice('Bạn bước ra khỏi chỗ nấp.');return true;}
     this.effect(spot.id,spot);
@@ -110,6 +113,17 @@ export class Simulation{
     return true;
    case 'coin':this.coinHeld=true;this.notice('Nhặt được đồng xu. Nhấn Q để ném về hướng đang nhìn; tiếng xu rơi sẽ kéo Xác Sống đi.');return true;
    case 'lost':this.found.push(spot.id);this.journal.push(FOUND[spot.id]);this.notice('Na: Ơ, kẹp tóc của tui! Tưởng mất luôn rồi. Cảm ơn nha.');return true;
+   case 'pulley':
+    if(employee){this.puppet=!this.puppet;this.hidden=this.puppet;this.hideSpot=null;this.notice(this.puppet?'Cầm dây kéo. Cần điều khiển giờ di chuyển bóng cổ dài; Hù để thả đầu xuống. E để buông.':'Bạn buông dây kéo.');}
+    else this.effect('pulley',spot);
+    return true;
+   case 'backdoor':
+    if(employee){this.notice('Cửa hậu dành cho nhân viên đi tắt. Khách không đi lối này.');return true;}
+    this.backstage={t:4,to:spot.to};this.hidden=true;this.crouch=false;this.torch=false;this.notice('Bạn lách vào cửa hậu. Tối om, chỉ nghe tiếng dây cáp kêu trên đầu…');return true;
+   case 'radio':
+    if(this.relief>0){this.notice(`Đồng nghiệp vừa đỡ ca. Gọi lại sau ${Math.ceil(this.relief)} giây.`);return true;}
+    this.relief=45;this.stamina=Math.min(100,this.stamina+35);this.notice('Ma Cổ Dài (bộ đàm): Để tui kéo đỡ một lúc. +35 thể lực.');return true;
+   case 'mirror':this.found.push('mirror');this.journal.push(FOUND.mirror);this.notice('Ma Cổ Dài tháo mặt nạ, nhìn vào gương: “Cái đó… đâu phải của tui.”');return true;
    case 'ticket':if(this.mystery){this.finish('ticket');return true;}// otherwise it is a clue
    case 'clue':{
     const clue=spot.clue;
@@ -132,6 +146,7 @@ export class Simulation{
    if(this.battery<2&&!this.torch){this.notice('Hết pin. Tới ghế nghỉ để sạc lại.');return;}
    this.torch=!this.torch;this.notice(this.torch?(this.hidden?'Đèn bật trong chỗ nấp… vệt sáng lộ vị trí!':'Đèn bật. Quay về phía ma để giữ khoảng cách.'):'Bạn tắt đèn để tiết kiệm pin.');return;
   }
+  if(this.puppet)return this.dropHead();
   if(this.cooldown>0){this.notice('Chiêu đang hồi. Đổi vị trí trong lúc chờ.');return;}
   if(this.stamina<22){this.notice('Chưa đủ thể lực. Tới ghế nghỉ hoặc đi chậm để hồi.');return;}
   // Bursting out of a coffin reaches a little further and always catches guests off guard.
@@ -140,13 +155,14 @@ export class Simulation{
   for(const n of this.npcs){if(n.gone||distance(n,this.p)>range||!visible(this.room,this.p,n)||n.flee>0)continue;const dx=this.p.x-n.x,dy=this.p.y-n.y;const facing=Math.cos(Math.atan2(dy,dx)-n.face)>.5;const surprise=ambush||n.distract>0||!facing||n.caution<.4;const points=n.hits>=2?3:surprise?25:10;n.hits++;n.fear+=points;n.interest=20;n.caution=1;n.flee=1.5;n.distract=0;this.score+=points;this.scared++;hits++;this.floaters.push({x:n.x,y:n.y-70,text:surprise?'Á! +'+points:'Thấy rồi! +'+points,until:this.time+1.8});}
   this.notice(hits?(ambush?`Bung nắp quan tài! Hù trúng ${hits} khách.`:`Hù trúng ${hits} khách. Đổi vị trí để tránh bị bắt bài.`):ambush?'Bung nắp quá sớm. Khách còn ở xa.':'Không có khách trong tầm. Lại gần và đợi họ quay đi.');
  }
- place(){if(this.role!=='employee'||this.ending)return;if(this.props.length>=3){this.notice('Đã đặt đủ 3 loa. Nhấn Q để kích hoạt loa gần nhất.');return;}if(this.stamina<5){this.notice('Cần 5 thể lực để đặt đạo cụ.');return;}if(this.props.some(p=>distance(p,this.p)<60)){this.notice('Đặt loa cách nhau một chút.');return;}this.props.push({x:this.p.x,y:this.p.y,id:this.props.length,pulse:0});this.stamina-=5;this.notice('Đã đặt loa. Di chuyển sang bên khác rồi nhấn Q.');}
+ place(){if(this.role!=='employee'||this.ending)return;if(this.puppet){this.notice('Buông dây kéo (E) rồi mới đặt loa.');return;}if(this.props.length>=3){this.notice('Đã đặt đủ 3 loa. Nhấn Q để kích hoạt loa gần nhất.');return;}if(this.stamina<5){this.notice('Cần 5 thể lực để đặt đạo cụ.');return;}if(this.props.some(p=>distance(p,this.p)<60)){this.notice('Đặt loa cách nhau một chút.');return;}this.props.push({x:this.p.x,y:this.p.y,id:this.props.length,pulse:0});this.stamina-=5;this.notice('Đã đặt loa. Di chuyển sang bên khác rồi nhấn Q.');}
  secondary(){
   if(this.ending)return;
   if(this.role==='visitor'){
    const hide=this.room.spots.find(s=>s.kind==='hide');
    if(hide&&distance(this.p,hide)<70)this.interact(hide.id);
    else if(this.coinHeld)this.throwCoin();
+   else if(this.room.ghost.kind==='neck'){this.crouch=!this.crouch;this.resting=false;this.notice(this.crouch?'Bạn cúi thấp. Đi chậm, nhưng cổ dài không với tới.':'Bạn đứng thẳng dậy.');}
    else{this.torch=false;this.resting=false;this.notice('Đi chậm giúp giữ sức. Muốn nấp, tới '+(hide?.hint||'chỗ tối')+'.');}
    return;
   }
@@ -173,9 +189,18 @@ export class Simulation{
  tryMystery(){if(this.room.story&&this.clues.length===3&&!this.mystery&&(this.role==='visitor'?this.time>=20:this.completed)){this.mystery=true;this.monster.state='rest';this.monster.t=999;this.log('Khách Số 0: Còn một phòng nữa mà… Mang vé tới bàn đóng mộc, hoặc ghi tên An ở tủ phân ca.');}}
  step(dt,input={}){
   if(this.ending)return;dt=Math.min(.06,Math.max(0,dt));this.time+=dt;this.cooldown=Math.max(0,this.cooldown-dt);this.propCooldown=Math.max(0,this.propCooldown-dt);for(const k in this.objectCooldowns)this.objectCooldowns[k]=Math.max(0,this.objectCooldowns[k]-dt);this.worldEffects=this.worldEffects.filter(e=>e.until>this.time);this.floaters=this.floaters.filter(f=>f.until>this.time);this.props.forEach(p=>p.pulse=Math.max(0,p.pulse-dt));if(this.coinFlight&&this.coinFlight.until<=this.time)this.coinFlight=null;
-  const dx=input.dx||0,dy=input.dy||0;const moving=!!(dx||dy);const running=moving&&input.run&&this.stamina>2;
-  if(moving){this.hidden=false;this.hideSpot=null;this.resting=false;this.pending=null;this.target=null;this.p.path=[];const len=Math.hypot(dx,dy),speed=running?172:104;moveActor(this.room,this.p,dx/len*speed*dt,dy/len*speed*dt);if(running)this.stamina=Math.max(0,this.stamina-dt*14);}else if(!this.hidden&&!this.resting){follow(this.room,this.p,dt,104);if(this.pending){const spot=this.spots().find(s=>s.id===this.pending);if(spot&&distance(this.p,spot)<48)this.interact(spot.id);}if(!this.p.path.length)this.target=null;}else this.p.moving=false;
-  this.stamina=Math.min(100,this.stamina+dt*(this.resting?22:input.run&&moving?0:3));if(this.resting){this.fear=Math.max(0,this.fear-dt*16);this.battery=Math.min(100,this.battery+dt*24);}if(this.torch){this.battery=Math.max(0,this.battery-dt*6);if(this.battery===0){this.torch=false;this.notice('Le lói… đèn hết pin.');}}
+  this.relief=Math.max(0,this.relief-dt);this.headDrop=Math.max(0,this.headDrop-dt);
+  // Back door: the visitor is out of sight for a few seconds, then comes out near the far end.
+  if(this.backstage){
+   this.backstage.t-=dt;this.p.moving=false;
+   if(this.backstage.t<=0){const to=this.backstage.to;this.backstage=null;this.hidden=false;Object.assign(this.p,{x:to.x,y:to.y,path:[]});this.companions.forEach((c,i)=>Object.assign(c,{x:to.x-40-i*40,y:to.y-30,path:[]}));this.fear=Math.min(100,this.fear+6);this.notice('Bạn ra ở cuối hành lang. Na: Lần sau đi đường tắt nhớ rủ tui!');}
+   this.stepVisitor(dt);return;
+  }
+  const dx=input.dx||0,dy=input.dy||0;const steer=this.puppet&&!!(dx||dy),moving=!this.puppet&&!!(dx||dy);const running=moving&&input.run&&this.stamina>2&&!this.crouch;
+  // Holding the rope: movement input steers the head's shadow instead of the performer.
+  if(steer){const m=this.monster,b=this.room.bounds,len=Math.hypot(dx,dy);m.x=Math.min(b.x1-20,Math.max(b.x0+20,m.x+dx/len*150*dt));m.y=Math.min(b.y1-10,Math.max(b.y0+10,m.y+dy/len*150*dt));this.stamina=Math.max(0,this.stamina-dt*2);}
+  if(moving){this.hidden=false;this.hideSpot=null;this.resting=false;this.pending=null;this.target=null;this.p.path=[];const len=Math.hypot(dx,dy),speed=this.crouch?52:running?172:104;moveActor(this.room,this.p,dx/len*speed*dt,dy/len*speed*dt);if(running)this.stamina=Math.max(0,this.stamina-dt*14);}else if(!this.hidden&&!this.resting){follow(this.room,this.p,dt,this.crouch?52:104);if(this.pending){const spot=this.spots().find(s=>s.id===this.pending);if(spot&&distance(this.p,spot)<48)this.interact(spot.id);}if(!this.p.path.length)this.target=null;}else this.p.moving=false;
+  this.stamina=Math.min(100,this.stamina+dt*(this.resting?22:input.run&&moving||steer?0:3));if(this.resting){this.fear=Math.max(0,this.fear-dt*16);this.battery=Math.min(100,this.battery+dt*24);}if(this.torch){this.battery=Math.max(0,this.battery-dt*6);if(this.battery===0){this.torch=false;this.notice('Le lói… đèn hết pin.');}}
   // Footsteps: loose boards always creak; running is loud anywhere in a room whose ghost listens.
   if(this.role==='visitor'&&this.p.moving&&!this.ending){this.noiseTimer-=dt;const boards=this.room.creaky.some(r=>inside(r,this.p.x,this.p.y));if((boards||running&&this.room.ghost.kind==='zombie')&&this.noiseTimer<=0){this.noiseTimer=.45;this.noise(this.p.x,this.p.y,boards?(running?300:230):170,boards?'cót két':null);}}
   if(this.ending)return;
@@ -184,8 +209,8 @@ export class Simulation{
  stepVisitor(dt){
   for(let i=0;i<this.companions.length;i++){const c=this.companions[i],target={x:this.p.x+(i?58:-58),y:this.p.y+15};if(distance(c,target)>75&&!c.path.length)c.path=findPath(this.room,c,target);follow(this.room,c,dt,83);}
   if(this.mystery){this.monster.moving=false;return;}
-  if(this.room.ghost.kind==='zombie')this.stepZombie(dt);else this.stepVampire(dt);
-  if(this.fear>=100){const r=this.room.restPoint,m=this.monster;this.fear=40;this.p.x=r.x;this.p.y=r.y;this.p.path=[];this.pending=null;this.resting=true;this.hidden=false;this.torch=false;m.state='rest';m.t=8;m.effectLabel=null;this.notice('Mr. D đưa bạn ra ghế nghỉ. Không mất đồ; khi sẵn sàng, cứ đi tiếp.');}
+  const kind=this.room.ghost.kind;if(kind==='zombie')this.stepZombie(dt);else if(kind==='neck')this.stepNeck(dt);else this.stepVampire(dt);
+  if(this.fear>=100){const r=this.room.restPoint,m=this.monster;this.fear=40;this.p.x=r.x;this.p.y=r.y;this.p.path=[];this.pending=null;this.resting=true;this.hidden=false;this.crouch=false;this.torch=false;m.state='rest';m.t=8;m.effectLabel=null;this.notice('Mr. D đưa bạn ra ghế nghỉ. Không mất đồ; khi sẵn sàng, cứ đi tiếp.');}
  }
  // Ma Cà Rồng hunts by sight: pursues within 240 with line of sight; light makes it retreat.
  stepVampire(dt){
@@ -224,11 +249,43 @@ export class Simulation{
   if(!m.path.length){m.index=(m.index+1)%g.patrol.length;m.path=findPath(room,m,g.patrol[m.index]);}follow(room,m,dt,40);
   if(exposed&&d<120)this.fear=Math.min(100,this.fear+dt*1.5);
  }
+ // Ma Cổ Dài rides a ceiling rail: her head sways across the hall and drops onto whoever stands
+ // under its shadow. Crouching keeps you below her reach; light on her face only shows her where
+ // you are; light on the pulley jams the rail for a while; yanking the rope pulls her up.
+ stepNeck(dt){
+  const m=this.monster,g=this.room.ghost,p=this.p,room=this.room;
+  const exposed=!this.resting&&!this.hidden;const reachable=exposed&&!this.crouch;
+  m.jamReady=Math.max(0,m.jamReady-dt);
+  const aim=t=>this.torch&&!this.hidden&&Math.cos(Math.atan2(t.y-p.y,t.x-p.x)-p.face);
+  const active=['patrol','track','windup'].includes(m.state);
+  if(active&&m.jamReady<=0&&distance(p,g.mechanism)<260&&aim(g.mechanism)>.8){m.state='jammed';m.t=5;m.effectDuration=5;m.effectLabel='Kẹt ròng rọc';m.jamReady=11;this.avoided++;this.floaters.push({x:g.mechanism.x,y:g.mechanism.y+40,text:'Kẹt dây!',until:this.time+1.6});this.notice('Ánh đèn làm ròng rọc kẹt lại. Đi nhanh!');return;}
+  else if(active&&distance(p,m)<230&&aim(m)>.58&&!this.litWarned){this.litWarned=true;this.notice('Rọi vào mặt chỉ làm cô ấy thấy bạn rõ hơn. Thử rọi lên ròng rọc.');}
+  const sway=Math.sin(this.time*1.4)*g.swing.amp;
+  if(this.decoy&&!['jammed','retract'].includes(m.state)){this.decoy.x=g.rail[0]+g.rail[1]-m.x;this.decoy.y=g.swing.y-sway*.8;}
+  if(!active){m.t-=dt;if(m.t<=0){m.state='patrol';m.effectLabel=null;}return;}
+  const d=distance(m,p);
+  if(m.state==='windup'){m.t-=dt;if(m.t<=0){if(distance(m,p)<48&&reachable)this.scareHit();else{this.avoided++;this.notice(this.crouch?'Cái đầu lướt sát tóc bạn rồi rút lên.':'Bạn né khỏi bóng cổ dài.');}m.state='rest';m.t=3;}return;}
+  if(reachable&&d<38){m.state='windup';m.t=.9;this.notice('Cổ đang thả xuống… Cúi người hoặc bước khỏi bóng!');return;}
+  // Track the player along the rail when close or lit; otherwise patrol end to end.
+  const lit=aim(m)>.58&&d<230;
+  const tracking=exposed&&(Math.abs(p.x-m.x)<220||lit);m.state=tracking?'track':'patrol';
+  let tx;if(tracking)tx=p.x;else{if(m.x<=g.rail[0]+2)m.dir=1;else if(m.x>=g.rail[1]-2)m.dir=-1;tx=m.dir>0?g.rail[1]:g.rail[0];}
+  const speed=tracking?(lit?120:92):60,step=Math.max(-speed*dt,Math.min(speed*dt,tx-m.x));m.x=Math.min(g.rail[1],Math.max(g.rail[0],m.x+step));m.moving=Math.abs(step)>.01;
+  const ty=tracking?g.swing.y+sway*.4+(p.y-g.swing.y)*.6:g.swing.y+sway;m.y+=(ty-m.y)*Math.min(1,dt*3);
+  if(reachable&&d<80)this.fear=Math.min(100,this.fear+dt*2);
+ }
+ dropHead(){
+  if(this.cooldown>0){this.notice('Dây còn đang rút. Chờ một chút.');return;}
+  if(this.stamina<18){this.notice('Mỏi tay rồi. Gọi đồng nghiệp qua bộ đàm hoặc nghỉ một lát.');return;}
+  const m=this.monster;this.stamina-=18;this.cooldown=3;this.headDrop=.7;this.events.push('scare');let hits=0;
+  for(const n of this.npcs){if(n.gone||n.flee>0||distance(n,m)>70)continue;const surprise=n.distract>0||n.caution<.4;const points=n.hits>=2?3:surprise?25:10;n.hits++;n.fear+=points;n.interest=20;n.caution=1;n.flee=1.5;n.distract=0;this.score+=points;this.scared++;hits++;this.floaters.push({x:n.x,y:n.y-70,text:surprise?'Á! +'+points:'Thấy rồi! +'+points,until:this.time+1.8});}
+  this.notice(hits?`Thả đầu trúng ${hits} khách!`:'Thả đầu vào chỗ trống. Không ai ở dưới bóng.');
+ }
  zombieWindup(){const m=this.monster;m.state='windup';m.t=1.4;m.path=[];m.effectLabel=null;this.notice('Xác Sống đánh hơi thấy bạn… Lùi lại, rọi đèn hoặc nấp!');}
  scareHit(){this.fear=Math.min(100,this.fear+24);this.events.push('hit');this.floaters.push({x:this.p.x,y:this.p.y-70,text:'+24 sợ hãi',until:this.time+2});this.notice('Na: Tui đang khởi động gân cốt thôi!');}
  stepGuests(dt){
   const exit=this.room.guestExit;let live=false;
-  for(const n of this.npcs){if(n.gone)continue;live=true;n.time+=dt;n.interest-=dt;n.distract=Math.max(0,n.distract-dt);n.flee=Math.max(0,n.flee-dt);const d=distance(n,this.p);if(d<200&&!this.hidden&&visible(this.room,n,this.p)&&n.distract===0)n.caution=Math.min(1,n.caution+dt*.17);else n.caution=Math.max(.1,n.caution-dt*.08);
+  for(const n of this.npcs){if(n.gone)continue;live=true;n.time+=dt;n.interest-=dt;n.distract=Math.max(0,n.distract-dt);n.flee=Math.max(0,n.flee-dt);const d=distance(n,this.p),seen=this.puppet?distance(n,this.monster)<140:d<200&&!this.hidden&&visible(this.room,n,this.p);if(seen&&n.distract===0)n.caution=Math.min(1,n.caution+dt*.17);else n.caution=Math.max(.1,n.caution-dt*.08);
    if(n.interest<=0||n.fear>=80||n.time>=75){if(!n.leaving){n.leaving=true;n.path=findPath(this.room,n,exit);this.notice(n.fear>=80?'Khách cần nghỉ. Hãy để họ ra ngoài.':'Khách đã xem xong và đi sang phòng tiếp theo.');}}
    if(n.leaving&&distance(n,exit)<35){n.gone=true;this.served++;continue;}
    if(n.flee>0){n.moving=false;continue;}
@@ -239,6 +296,12 @@ export class Simulation{
  objective(){
   if(this.ending)return'Ca đêm đã kết thúc';if(this.mystery)return'Tới bàn đóng mộc hoặc tủ phân ca để giúp An';
   const cemetery=this.roomId==='cemetery';
+  if(this.roomId==='corridor'){
+   if(this.role==='visitor')return'Canh bóng cổ dài: cúi (Q), giật dây kéo, rọi ròng rọc hoặc đi cửa hậu · tới cửa cuối hành lang';
+   if(this.phase==='prep')return'Đặt loa, đón khách ở cửa trái, rồi về cầm dây kéo';
+   if(this.phase==='between')return'Đón nhóm mới ở cửa trái, hoặc chấm công';
+   return this.puppet?'Giữ bóng xa khách, đợi họ phân tâm rồi thả đầu (Hù)':'Về dây kéo để điều khiển Ma Cổ Dài';
+  }
   if(this.role==='visitor')return cemetery?'Lắng nghe Xác Sống, tránh ván cót két, tìm lối sang Bàn Tiệc'+(this.coinHeld?' · Đang cầm xu (Q để ném)':''):'Tự khám phá, tránh ma và tìm đường ra · Manh mối '+this.clues.length+'/3';
   if(this.phase==='prep')return cemetery?'Đặt loa, chọn chỗ chui ra (quan tài), rồi tới cửa vào đón khách':'Đặt loa, rồi tới cửa đón khách';
   if(this.phase==='between')return cemetery?'Đón nhóm mới ở cửa vào, hoặc chấm công':'Đón nhóm mới hoặc điều tra vé 000 · '+this.clues.length+'/3 manh mối';

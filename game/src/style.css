@@ -14,3 +14,4 @@
 dialog h3{font-size:14px;font-weight:500;color:var(--gold);margin:16px 0 4px}.stats-line{font-size:12px!important}
 .dungeon .touch-middle{display:grid;grid-template-columns:repeat(2,48px);gap:8px}.dungeon .touch-middle button{width:48px;height:48px;font-size:18px}.dungeon .touch-middle small{font-size:8px}
 @media(pointer:coarse),(max-width:900px){.dungeon #joystick{width:108px;height:108px}.dungeon #stick{width:46px;height:46px}.dungeon .touch-actions{width:150px}.dungeon .main-round{width:72px;height:72px}.dungeon .small-round{width:54px;height:54px}.dungeon .use-round{width:60px;height:60px;right:28px}.dungeon .touch-middle{grid-template-columns:repeat(2,42px);gap:6px}.dungeon .touch-middle button{width:42px;height:42px;font-size:16px}.dungeon #touch-controls{gap:4px;padding-left:10px;padding-right:10px}}
+.items>p{grid-column:1/-1}

@@ -22,6 +22,11 @@ A haunted-house game with three ways to play:
   locks the stairs until broken: Xác Sống (telegraphed slam, summons sheet ghosts), Ma Cà Rồng
   (aimed dash, bat ring) and Ma Cổ Dài (drops her head where you stand). Difficulty scales with depth.
 - Performers: Ma Vải (melee), Bộ Xương (fast), Ma Đèn Lồng (ranged), plus "Ngôi Sao" elites.
+- Companions: **Na** throws candy and cheers you up when your courage is low; **Bơ** flashes his
+  phone to stun performers who get close and sometimes spots the stamp or key (he guesses wrong a
+  quarter of the time). Performers go after whoever is closest. Out of courage, a friend steps
+  outside for 20 s and comes back. Trust grows when you fight side by side and drops when you leave
+  them behind; higher trust makes their help stronger.
 - Skills: Rọi đèn (free cone), Ném kẹo (projectile), Chuông đồng (stun, level 3), Đèn sân khấu
   (big beam, level 5), Lướt (dash, untouchable). Potions: bánh bao (courage), pin AA (battery).
 - Loot: torch, coat, charm and shoes in four rarities with random affixes. Mr. D's stand on floors

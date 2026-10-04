@@ -6,6 +6,8 @@ import {Dungeon, generateFloor, flowField, floorPassable as passable, makeItem, 
 const clearFloor = d => { d.enemies = []; d.drops = []; };
 const put = (d, type, dx, dy, opts = {}) => { const e = d.spawn(type, d.p.x + dx, d.p.y + dy, 1); Object.assign(e, opts); return e; };
 const run = (d, seconds, input = {}) => { for (let t = 0; t < seconds; t += 0.05) d.step(0.05, input); };
+// Send Na and Bơ out for a breather so a test only measures the player.
+const solo = d => { for (const c of d.companions) { c.state = 'away'; c.awayT = 1e9; } return d; };
 
 test('generated floors are fully connected, with stairs, stamp and key in different rooms', () => {
   for (let seed = 1; seed <= 60; seed++) {
@@ -101,12 +103,12 @@ test('the bell stuns nearby performers so their windup is cancelled', () => {
 });
 
 test('performers chase and scare an idle player; armor softens the scare', () => {
-  const d = new Dungeon(6); clearFloor(d);
+  const d = solo(new Dungeon(6)); clearFloor(d);
   put(d, 'sheet', 120, 0);
   run(d, 4);
   const lost = 100 - d.p.courage;
   assert.ok(lost > 0, 'the performer reached and scared the player');
-  const tough = new Dungeon(6); clearFloor(tough);
+  const tough = solo(new Dungeon(6)); clearFloor(tough);
   tough.equipped.coat = makeItem(rng(1), 1, 0, 'coat'); tough.equipped.coat.stats = {armor: 100};
   put(tough, 'sheet', 120, 0);
   run(tough, 4);
@@ -263,4 +265,88 @@ test('item rarity improves for bosses', () => {
 test('every enemy type has the fields the simulation needs', () => {
   for (const [k, e] of Object.entries(ENEMIES)) for (const f of ['name', 'hp', 'dmg', 'speed', 'cd', 'windup', 'xp', 'r']) assert.ok(e[f] !== undefined, `${k}.${f}`);
   assert.equal(TILE, 32);
+});
+
+// --- Na and Bơ ------------------------------------------------------------------
+
+const na = d => d.companions.find(c => c.id === 'na'), bo = d => d.companions.find(c => c.id === 'bo');
+
+test('Na and Bơ start beside you and keep up when you walk off', () => {
+  const d = new Dungeon(30); clearFloor(d);
+  for (const c of d.companions) assert.ok(Math.hypot(c.x - d.p.x, c.y - d.p.y) < 80);
+  d.moveTo(d.floor.stairs.x, d.floor.stairs.y);
+  run(d, 12);
+  for (const c of d.companions) assert.ok(Math.hypot(c.x - d.p.x, c.y - d.p.y) < 200, `${c.name} fell behind`);
+});
+
+test('they come along to the next floor', () => {
+  const d = new Dungeon(31); d.enterFloor(2);
+  for (const c of d.companions) assert.ok(Math.hypot(c.x - d.floor.start.x, c.y - d.floor.start.y) < 80);
+});
+
+test('Na throws candy at performers who are after you', () => {
+  const d = new Dungeon(32); clearFloor(d); bo(d).state = 'away'; bo(d).awayT = 1e9;
+  const e = put(d, 'sheet', 200, 0, {aggro: true, cd: 99, speed: 0});
+  run(d, 2.5);
+  assert.ok(e.hp < e.maxHp, 'Na hit the performer');
+});
+
+test('Na cheers you up when your courage is low, then needs time before doing it again', () => {
+  const d = new Dungeon(33); clearFloor(d);
+  d.p.courage = 20; na(d).cd2 = 0;
+  d.step(0.05);
+  assert.ok(d.p.courage > 40);
+  d.p.courage = 20; d.step(0.05);
+  assert.ok(d.p.courage < 25, 'on cooldown');
+});
+
+test('Bơ flashes his phone at performers who get close, stunning them', () => {
+  const d = new Dungeon(34); clearFloor(d); na(d).state = 'away'; na(d).awayT = 1e9;
+  const c = bo(d); c.cd = 0;
+  const e = put(d, 'sheet', 0, 0, {aggro: true, cd: 99}); e.x = c.x + 60; e.y = c.y;
+  d.stepCompanions(0.05);
+  assert.ok(e.stun > 0);
+  assert.ok(e.hp < e.maxHp);
+});
+
+test('Bơ sometimes spots the stamp for you', () => {
+  const d = new Dungeon(35); clearFloor(d);
+  const x = d.p.x + 300, y = d.p.y, tile = Math.floor(y / TILE) * MAP_W + Math.floor(x / TILE);
+  d.drops.push({id: 999, kind: 'quest', quest: 'stamp', x, y});
+  // He guesses wrong about a quarter of the time, so give him a few tries.
+  for (let i = 0; i < 12 && !d.explored[tile]; i++) { d.explored[tile] = 0; bo(d).cd2 = 0; d.stepCompanions(0.05); }
+  assert.equal(d.explored[tile], 1);
+});
+
+test('performers go for a companion standing closer than you', () => {
+  const d = new Dungeon(36); clearFloor(d); bo(d).state = 'away'; bo(d).awayT = 1e9;
+  const c = na(d); c.x = d.p.x + 100; c.y = d.p.y; c.cd = 99;
+  const e = put(d, 'sheet', 140, 0, {aggro: true});
+  const courage = c.courage, mine = d.p.courage;
+  for (let i = 0; i < 60; i++) { c.x = d.p.x + 100; c.y = d.p.y; d.step(0.05); }
+  assert.ok(c.courage < courage, 'Na got scared');
+  assert.equal(d.p.courage, mine);
+});
+
+test('a companion out of courage takes a breather and comes back', () => {
+  const d = new Dungeon(37); clearFloor(d);
+  const c = na(d);
+  d.hurtCompanion(c, 999);
+  assert.equal(c.state, 'away');
+  run(d, 20.5);
+  assert.equal(c.state, 'follow');
+  assert.equal(c.courage, d.companionMax());
+});
+
+test('trust drops when you leave them behind and grows when you fight together', () => {
+  const d = new Dungeon(38); clearFloor(d);
+  const c = na(d), start = c.trust;
+  c.x = d.p.x; c.y = d.p.y;
+  for (let i = 0; i < 120; i++) { c.x = d.p.x + 450; c.y = d.p.y; c.farT = Math.max(c.farT, 3.1); d.stepCompanions(0.05); }
+  assert.ok(c.trust < start);
+  const low = c.trust;
+  const e = put(d, 'sheet', 200, 0, {aggro: true, cd: 99, hp: 1e9, maxHp: 1e9});
+  for (let i = 0; i < 200; i++) { c.x = d.p.x - 30; c.y = d.p.y; d.stepCompanions(0.05); }
+  assert.ok(c.trust > low);
+  assert.ok(e);
 });

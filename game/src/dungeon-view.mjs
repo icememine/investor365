@@ -80,8 +80,9 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
  }
  function overlays(){
   for(const e of dg.live()){if(!e.aggro&&!e.elite&&!e.boss)continue;const w=e.boss?0:30,y=e.y-(e.type==='sheet'?54:e.type==='lantern'?66:e.type==='skeleton'?70:0);if(!e.boss){ctx.fillStyle='#0a1520';ctx.fillRect(e.x-w/2,y,w,4);ctx.fillStyle=e.elite?'#7fb6ff':'#a0ead4';ctx.fillRect(e.x-w/2,y,w*e.hp/e.maxHp,4);}if(e.elite)label(e.x,y-6,e.name,'#7fb6ff');}
+  for(const c of dg.companions){if(c.state==='away')continue;const max=dg.companionMax(),y=c.y-74;label(c.x,y-6,c.name,'#cfe8ff','#07131db0');if(c.courage<max){ctx.fillStyle='#0a1520';ctx.fillRect(c.x-14,y,28,3);ctx.fillStyle='#f3889c';ctx.fillRect(c.x-14,y,28*Math.max(0,c.courage)/max,3);}}
   for(const d of dg.drops)if(d.kind==='item'){d.labelBox=label(d.x,d.y-16,d.item.name,RARITY_COLOR[d.item.rarity]);}else if(d.kind==='quest')label(d.x,d.y-34,d.quest==='stamp'?`Con dấu tầng ${dg.depth}`:'Chìa khóa đồng',d.quest==='stamp'?'#f3889c':'#ffd36b');
-  for(const f of dg.floaters){const k=1-(f.until-dg.time)/1.1;ctx.font=`bold ${f.size}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#061421';ctx.fillText(f.text,f.x+1,f.y-k*24+1);ctx.fillStyle=f.color;ctx.fillText(f.text,f.x,f.y-k*24);}
+  for(const f of dg.floaters){const k=1-(f.until-dg.time)/(f.life||1.1);ctx.font=`bold ${f.size}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#061421';const rise=f.life>2?8:24;ctx.fillText(f.text,f.x+1,f.y-k*rise+1);ctx.fillStyle=f.color;ctx.fillText(f.text,f.x,f.y-k*rise);}
   const n=dg.nearby();if(n)label(dg.p.x,dg.p.y-86,(mobile?'':'E · ')+n.label,'#ffe5ad');
  }
  function hud(){
@@ -132,8 +133,8 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
    ctx.setTransform(scale*dpr,0,0,scale*dpr,-camera.x*scale*dpr,-camera.y*scale*dpr);ctx.imageSmoothingEnabled=false;
    ctx.drawImage(floorArt,0,0,MAP_W*TILE,MAP_H*TILE);
    fixtures();drops();telegraphs();effects();
-   const p=dg.p,actors=[...dg.enemies.map(e=>({y:e.y,e})),{y:p.y,p:true}];if(dg.vendor)actors.push({y:dg.vendor.y,v:true});actors.sort((a,b)=>a.y-b.y);
-   for(const a of actors){if(a.e)drawEnemy(a.e);else if(a.v){const v=dg.vendor;sprite(art.mrd,full(art.mrd),v.x,v.y-10,70,Math.PI);ctx.fillStyle='#5b3a26';ctx.fillRect(v.x-30,v.y-30,60,30);ctx.fillStyle='#7c5435';ctx.fillRect(v.x-30,v.y-32,60,5);ctx.fillStyle='#e7c083';ctx.font='9px system-ui';ctx.textAlign='center';ctx.fillText('BÁNH BAO · PIN',v.x,v.y-12);}else sprite(atlas,crops[0],p.x,p.y,68,p.face,p.dash>0?.55:1);}
+   const p=dg.p,actors=[...dg.enemies.map(e=>({y:e.y,e})),...dg.companions.filter(c=>c.state!=='away').map(c=>({y:c.y,c})),{y:p.y,p:true}];if(dg.vendor)actors.push({y:dg.vendor.y,v:true});actors.sort((a,b)=>a.y-b.y);
+   for(const a of actors){if(a.c){const c=a.c,bob=c.moving?Math.sin(elapsed*13+c.sprite)*1.6:0;sprite(atlas,crops[c.sprite],c.x,c.y+bob,62,c.face,c.hurt>0?.6:1);continue;}if(a.e)drawEnemy(a.e);else if(a.v){const v=dg.vendor;sprite(art.mrd,full(art.mrd),v.x,v.y-10,70,Math.PI);ctx.fillStyle='#5b3a26';ctx.fillRect(v.x-30,v.y-30,60,30);ctx.fillStyle='#7c5435';ctx.fillRect(v.x-30,v.y-32,60,5);ctx.fillStyle='#e7c083';ctx.font='9px system-ui';ctx.textAlign='center';ctx.fillText('BÁNH BAO · PIN',v.x,v.y-12);}else sprite(atlas,crops[0],p.x,p.y,68,p.face,p.dash>0?.55:1);}
    projectiles();lighting();overlays();hud();
   },
  };
@@ -148,6 +149,7 @@ export function bagHtml(dg){
  return`<span class="eyebrow">TÚI ĐỒ · CẤP ${dg.p.level}</span><h2>Đồ nghề đi hầm</h2>
  <p class="stats-line">Sát thương ${Math.round(d.damage)} · Chí mạng ${Math.round(d.crit*100)}% · Giáp ${d.armor} · Can đảm ${d.maxCourage} · Pin ${d.maxBattery} · Tốc ${Math.round(d.speed)}</p>
  <div class="items">${Object.keys(SLOTS).map(k=>itemCard(dg.equipped[k])).join('')}</div>
+ <h3>Bạn đồng hành</h3><div class="items">${dg.companions.map(c=>`<div class="item" style="--rarity:#cfe8ff"><b>${c.name}</b><small>${c.id==='na'?'Ném kẹo · cổ vũ khi bạn sợ':'Rọi điện thoại · đánh hơi con dấu, chìa khóa'}</small><span>Tin tưởng ${Math.round(c.trust)}/100</span><span>${c.state==='away'?`Đang nghỉ ngoài cửa (${Math.ceil(c.awayT)} giây)`:`Can đảm ${Math.max(0,Math.round(c.courage))}/${dg.companionMax()}`}</span></div>`).join('')}</div>
  <h3>Trong túi (${dg.inventory.length}/16)</h3>
  <div class="items">${dg.inventory.map((it,i)=>itemCard(it,`<div class="item-actions"><button data-equip="${i}">Trang bị</button><button data-drop="${i}">Vứt</button></div>`)).join('')||'<p>Túi trống. Hạ màn diễn viên để nhặt đồ.</p>'}</div>
  <div class="dialog-actions"><button id="resume">Quay lại hầm</button></div>`;

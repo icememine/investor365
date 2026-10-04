@@ -157,13 +157,17 @@ export const SKILLS={
  spotlight:{name:'Đèn sân khấu',cost:40,cd:12,level:5},
  dash:{name:'Lướt',cost:0,cd:3.5,level:1},
 };
+function makeCompanion(id){return id==='na'?{id,name:'Na',sprite:1,x:0,y:0,r:11,face:0,moving:false,courage:60,state:'follow',awayT:0,cd:1,cd2:0,trust:50,farT:0,calledOut:false,hurt:0,offset:{x:-34,y:20}}:{id,name:'Bơ',sprite:2,x:0,y:0,r:11,face:0,moving:false,courage:60,state:'follow',awayT:0,cd:2,cd2:8,trust:50,farT:0,calledOut:false,hurt:0,offset:{x:34,y:20}};}
+// Screen-up is north. Used for Bơ's hints.
+const compass=(a,b)=>{const ang=Math.atan2(b.y-a.y,b.x-a.x),dirs=['phía đông','phía đông nam','phía nam','phía tây nam','phía tây','phía tây bắc','phía bắc','phía đông bắc'];return dirs[(Math.round(ang/(Math.PI/4))+8)%8];};
 export const xpForLevel=l=>Math.round(40*Math.pow(l,1.6));
 
 export class Dungeon{
  constructor(seed=Date.now()%100000){
   this.seed=seed;this.rand=rng(seed*7+3);this.time=0;this.ending=null;this.bubble=null;this.floaters=[];this.effects=[];
   this.p={x:0,y:0,r:11,face:0,moving:false,level:1,xp:0,gold:0,courage:100,battery:100,dash:0,dashDir:0,hurt:0,path:[],target:null,pickTarget:null};
-  this.potions={bread:2,battery:1};this.keys=0;this.inventory=[];this.equipped={torch:null,coat:null,charm:null,shoes:null};
+  this.potions={bread:2,battery:1};this.keys=0;
+  this.companions=[makeCompanion('na'),makeCompanion('bo')];this.inventory=[];this.equipped={torch:null,coat:null,charm:null,shoes:null};
   this.cooldowns={flash:0,candy:0,bell:0,spotlight:0,dash:0,potion:0};
   this.stats={defeated:0,deepest:1,knockouts:0,bosses:0};
   this.equipped.torch={slot:'torch',rarity:'common',rarityName:'Thường',name:'Đèn pin cũ',ilvl:1,stats:{dmg:4},base:{dmg:4},affixes:[],value:3};
@@ -171,7 +175,8 @@ export class Dungeon{
   this.notice('Mr. D: Mỗi tầng có một con dấu, tìm được thì cầu thang mới mở. Thấy chìa khóa đồng thì giữ lấy: phòng trùm chỉ mở bằng nó.');
  }
  notice(text){this.bubble={text,until:this.time+4.5};}
- float(x,y,text,color='#ffe5ad',size=13){this.floaters.push({x,y,text,color,size,until:this.time+1.1});}
+ float(x,y,text,color='#ffe5ad',size=13,life=1.1){this.floaters.push({x,y,text,color,size,life,until:this.time+life});}
+ say(c,text){this.float(c.x,c.y-100,`${c.name}: ${text}`,'#cfe8ff',11,2.6);}
  // ---- Derived stats from level and equipment.
  get derived(){
   const s={dmg:0,dmgPct:0,crit:5,courage:0,armor:0,battery:0,regen:0,speed:0,gold:0,onBreak:0};
@@ -188,6 +193,7 @@ export class Dungeon{
   this.floor=generateFloor(depth,this.seed*31+depth);
   const f=this.floor,st=f.start;Object.assign(this.p,{x:st.x,y:st.y,path:[],target:null,pickTarget:null});
   this.explored=new Uint8Array(MAP_W*MAP_H);this.reveal();
+  for(const c of this.companions)this.regroup(c,true);
   this.enemies=[];this.projectiles=[];this.drops=[];this.marks=[];this.effects=[];this.field=null;this.fieldAt=-1;this.nextId=1;
   this.stampFound=false;this.bossBroken=false;
   this.vendor=depth%3===1?{x:st.x+70,y:st.y-30}:null;
@@ -319,6 +325,7 @@ export class Dungeon{
  knockout(){
   const p=this.p,lost=Math.floor(p.gold*.1);p.gold-=lost;this.stats.knockouts++;
   Object.assign(p,{x:this.floor.start.x,y:this.floor.start.y,path:[],target:null,pickTarget:null,courage:this.derived.maxCourage});
+  for(const c of this.companions)this.regroup(c,true);
   for(const e of this.live()){e.aggro=false;e.state='idle';e.x=e.home.x;e.y=e.home.y;if(e.boss)e.hp=e.maxHp;}this.marks=[];this.projectiles=[];
   this.notice(`Sợ quá! Mr. D dắt bạn về đầu tầng. Đồ vẫn còn${lost?`, rơi mất ${lost} xu`:''}.`);
  }
@@ -344,7 +351,7 @@ export class Dungeon{
   this.enemies=this.enemies.filter(e=>e.state!=='defeated'||e.t>0);
   // Keep performers from stacking on one spot.
   const live=this.live();for(let i=0;i<live.length;i++)for(let j=i+1;j<live.length;j++){const a=live[i],b=live[j],gap=dist(a,b),min=a.r+b.r;if(gap>0&&gap<min){const push=(min-gap)/2,ux=(a.x-b.x)/gap,uy=(a.y-b.y)/gap;moveCircle(f,a,ux*push,uy*push);moveCircle(f,b,-ux*push,-uy*push);}}
-  this.stepProjectiles(dt);this.stepMarks(dt);
+  this.stepCompanions(dt);this.stepProjectiles(dt);this.stepMarks(dt);
  }
  stepEnemy(e,dt){
   if(e.state==='defeated'){e.t-=dt;return;}
@@ -354,27 +361,32 @@ export class Dungeon{
   if(e.stun>0){e.stun-=dt;return;}
   e.cd-=dt;e.face=Math.atan2(p.y-e.y,p.x-e.x);
   if(e.boss&&this.stepBoss(e,dt,gap))return;
-  if(e.state==='windup'){e.t-=dt;if(e.t<=0){e.state='chase';e.cd=e.cdBase;if(ENEMIES[e.type].ranged)this.projectiles.push({x:e.x,y:e.y-20,vx:Math.cos(e.face)*230,vy:Math.sin(e.face)*230,r:7,dmg:e.dmg,owner:'enemy',life:1.6,kind:'orb'});else if(gap<e.range+16)this.hurt(e.dmg,e);}return;}
-  const ranged=ENEMIES[e.type].ranged,see=lineOfSight(f,e,p);
-  if(e.cd<=0&&see&&gap<e.range+(ranged?0:4)){e.state='windup';e.t=e.windupBase;return;}
+  // Ordinary performers go for whoever is closest: you, Na or Bơ.
+  const tgt=e.boss?p:this.targetFor(e),tg=dist(e,tgt);e.face=Math.atan2(tgt.y-e.y,tgt.x-e.x);
+  if(e.state==='windup'){e.t-=dt;if(e.t<=0){e.state='chase';e.cd=e.cdBase;const victim=e.tgt&&(e.tgt===p||e.tgt.state!=='away')?e.tgt:tgt;e.face=Math.atan2(victim.y-e.y,victim.x-e.x);if(ENEMIES[e.type].ranged)this.projectiles.push({x:e.x,y:e.y-20,vx:Math.cos(e.face)*230,vy:Math.sin(e.face)*230,r:7,dmg:e.dmg,owner:'enemy',life:1.6,kind:'orb'});else if(dist(e,victim)<e.range+16)this.hit(victim,e.dmg,e);}return;}
+  const ranged=ENEMIES[e.type].ranged,see=lineOfSight(f,e,tgt);
+  if(e.cd<=0&&see&&tg<e.range+(ranged?0:4)){e.state='windup';e.t=e.windupBase;e.tgt=tgt;return;}
   // Ranged performers keep their distance; everyone else closes in.
-  if(ranged&&see&&gap<150){this.stepAway(e,dt);return;}
-  if(ranged&&see&&gap<e.range)return;
-  this.chase(e,dt,gap,see);
+  if(ranged&&see&&tg<150){this.stepAway(e,dt,tgt);return;}
+  if(ranged&&see&&tg<e.range)return;
+  if(tgt!==p&&see){if(tg>e.r+tgt.r+4){const a=Math.atan2(tgt.y-e.y,tgt.x-e.x);moveCircle(f,e,Math.cos(a)*e.speed*dt,Math.sin(a)*e.speed*dt);}return;}
+  this.chase(e,dt,gap,lineOfSight(f,e,p));
  }
+ targetFor(e){let best=this.p,bd=dist(e,this.p);for(const c of this.companions){if(c.state==='away')continue;const d=dist(e,c);if(d<160&&d<bd){best=c;bd=d;}}return best;}
+ hit(target,amount,src){return target===this.p?this.hurt(amount,src):this.hurtCompanion(target,amount);}
  chase(e,dt,gap,see){
   const p=this.p,f=this.floor;if(gap<e.r+p.r+4)return;
   let tx=p.x,ty=p.y;
   if(!see||gap>140){const cx=Math.floor(e.x/TILE),cy=Math.floor(e.y/TILE);let best=null;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const v=this.field[(cy+dy)*MAP_W+cx+dx];if(v<0)continue;if(dx&&dy&&(!isFloor(f,cx+dx,cy)||!isFloor(f,cx,cy+dy)))continue;if(!best||v<best.v)best={v,x:(cx+dx+.5)*TILE,y:(cy+dy+.5)*TILE};}if(best){tx=best.x;ty=best.y;}}
   const a=Math.atan2(ty-e.y,tx-e.x);moveCircle(f,e,Math.cos(a)*e.speed*dt,Math.sin(a)*e.speed*dt);
  }
- stepAway(e,dt){const a=Math.atan2(e.y-this.p.y,e.x-this.p.x);moveCircle(this.floor,e,Math.cos(a)*e.speed*.8*dt,Math.sin(a)*e.speed*.8*dt);}
+ stepAway(e,dt,from=this.p){const a=Math.atan2(e.y-from.y,e.x-from.x);moveCircle(this.floor,e,Math.cos(a)*e.speed*.8*dt,Math.sin(a)*e.speed*.8*dt);}
  // Boss patterns. Every big attack is telegraphed with a ring or line before it lands.
  stepBoss(e,dt,gap){
   const p=this.p,f=this.floor,enraged=e.hp<e.maxHp/2;e.special-=dt;e.special2-=dt;
   if(e.type==='zombie'){
    if(e.special2<=0){e.special2=9;const minions=this.live().filter(m=>m.minion).length;if(minions<6)for(let i=0;i<2;i++){const a=this.rand()*Math.PI*2,x=e.x+Math.cos(a)*60,y=e.y+Math.sin(a)*60;if(floorPassable(f,x,y,12)){const m=this.spawn('sheet',x,y,scaleFor(this.depth));m.minion=true;m.aggro=true;}}this.float(e.x,e.y-90,'GÀOOO!','#f3889c',14);}
-   if(e.state==='windup'){e.t-=dt;if(e.t<=0){e.state='chase';e.cd=e.cdBase*(enraged?.7:1);this.effects.push({kind:'ring',x:e.x,y:e.y,r:e.range,color:'#f3889c',until:this.time+.3});if(gap<e.range)this.hurt(e.dmg,e);}return true;}
+   if(e.state==='windup'){e.t-=dt;if(e.t<=0){e.state='chase';e.cd=e.cdBase*(enraged?.7:1);this.effects.push({kind:'ring',x:e.x,y:e.y,r:e.range,color:'#f3889c',until:this.time+.3});if(gap<e.range)this.hurt(e.dmg,e);for(const c of this.companions)if(c.state!=='away'&&dist(e,c)<e.range)this.hurtCompanion(c,e.dmg);}return true;}
    if(e.cd<=0&&gap<e.range-10){e.state='windup';e.t=e.windupBase;e.slam={x:e.x,y:e.y};return true;}
    return false;
   }
@@ -393,14 +405,58 @@ export class Dungeon{
   }
   return false;
  }
- stepMarks(dt){for(const m of this.marks){m.t-=dt;if(m.t<=0){this.effects.push({kind:'ring',x:m.x,y:m.y,r:46,color:'#f3889c',until:this.time+.25});if(dist(m,this.p)<46)this.hurt(m.dmg);}}this.marks=this.marks.filter(m=>m.t>0);}
+ stepMarks(dt){for(const m of this.marks){m.t-=dt;if(m.t<=0){this.effects.push({kind:'ring',x:m.x,y:m.y,r:46,color:'#f3889c',until:this.time+.25});if(dist(m,this.p)<46)this.hurt(m.dmg);for(const c of this.companions)if(c.state!=='away'&&dist(m,c)<46)this.hurtCompanion(c,m.dmg);}}this.marks=this.marks.filter(m=>m.t>0);}
  stepProjectiles(dt){
   const f=this.floor,p=this.p;
   for(const q of this.projectiles){q.life-=dt;q.x+=q.vx*dt;q.y+=q.vy*dt;if(!isFloor(f,Math.floor(q.x/TILE),Math.floor((q.y+14)/TILE)))q.life=0;
    if(q.life<=0)continue;
    if(q.owner==='player'){const e=this.live().find(e=>Math.hypot(e.x-q.x,e.y-20-q.y)<e.r+q.r+8);if(e){this.damage(e,q.dmg);q.life=0;}}
-   else if(Math.hypot(p.x-q.x,p.y-20-q.y)<p.r+q.r+4){if(this.hurt(q.dmg))q.life=0;}}
+   else if(Math.hypot(p.x-q.x,p.y-20-q.y)<p.r+q.r+4){if(this.hurt(q.dmg))q.life=0;}
+   else{const c=this.companions.find(c=>c.state!=='away'&&Math.hypot(c.x-q.x,c.y-20-q.y)<c.r+q.r+4);if(c){this.hurtCompanion(c,q.dmg);q.life=0;}}}
   this.projectiles=this.projectiles.filter(q=>q.life>0);
+ }
+ // ---- Na and Bơ. They follow you, help in fights, and remember whether you stuck with them.
+ companionMax(){return 60+5*(this.p.level-1);}
+ trustFactor(c){return .6+c.trust/125;}
+ regroup(c,refill=false){const p=this.p,spots=[[c.offset.x,c.offset.y],[0,30],[-30,0],[30,0],[0,-30],[0,0]];for(const [dx,dy] of spots)if(floorPassable(this.floor,p.x+dx,p.y+dy,c.r)){c.x=p.x+dx;c.y=p.y+dy;break;}if(refill){c.state='follow';c.courage=this.companionMax();c.awayT=0;}c.farT=0;}
+ hurtCompanion(c,amount){
+  if(c.state==='away'||this.ending)return false;const value=Math.max(1,Math.round(amount));
+  c.courage-=value;c.hurt=.25;this.float(c.x,c.y-56,`-${value}`,'#f3889c',11);
+  if(c.courage<=0){c.state='away';c.awayT=20;c.trust=Math.max(0,c.trust-(dist(c,this.p)>300?8:2));this.say(c,c.id==='na'?'Tui ra ngoài thở cái đã!':'Bơ đi tìm Mr. D xíu nha…');}
+  return true;
+ }
+ stepCompanions(dt){
+  const p=this.p,f=this.floor,d=this.derived,combat=this.live().some(e=>e.aggro&&dist(e,p)<320);
+  for(const c of this.companions){
+   c.hurt=Math.max(0,c.hurt-dt);c.cd-=dt;c.cd2-=dt;c.moving=false;
+   if(c.state==='away'){c.awayT-=dt;if(c.awayT<=0){this.regroup(c,true);this.say(c,'Tui quay lại rồi đây!');}continue;}
+   const gap=dist(c,p);
+   if(gap>700){this.regroup(c);continue;}
+   // Follow a spot beside you; take the corridors when there is no straight line.
+   let tx=p.x+c.offset.x,ty=p.y+c.offset.y;if(!floorPassable(f,tx,ty,c.r)){tx=p.x;ty=p.y;}
+   const to=Math.hypot(tx-c.x,ty-c.y);
+   if(to>26){
+    if(!lineOfSight(f,c,{x:tx,y:ty})){const cx=Math.floor(c.x/TILE),cy=Math.floor(c.y/TILE);let best=null;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const v=this.field?.[(cy+dy)*MAP_W+cx+dx];if(v==null||v<0)continue;if(!best||v<best.v)best={v,x:(cx+dx+.5)*TILE,y:(cy+dy+.5)*TILE};}if(best){tx=best.x;ty=best.y;}}
+    const a=Math.atan2(ty-c.y,tx-c.x),speed=d.speed*(gap>260?1.3:1);c.face=a;c.moving=moveCircle(f,c,Math.cos(a)*speed*dt,Math.sin(a)*speed*dt);
+   }
+   // Trust: staying together through fights builds it; leaving them behind wears it down.
+   if(gap>380){c.farT+=dt;if(c.farT>3){c.trust=Math.max(0,c.trust-dt*1.5);if(!c.calledOut){c.calledOut=true;this.say(c,c.id==='na'?'Đợi tui với!':'Ủa, mọi người đâu rồi?');}}}
+   else{c.farT=0;c.calledOut=false;if(combat)c.trust=Math.min(100,c.trust+dt*.4);}
+   if(!combat)c.courage=Math.min(this.companionMax(),c.courage+dt*4);
+   const tf=this.trustFactor(c),foes=this.live().filter(e=>e.aggro&&lineOfSight(f,c,e)).sort((a,b)=>dist(a,c)-dist(b,c));
+   if(c.id==='na'){
+    // Na throws candy, and cheers you up when your courage runs low.
+    const e=foes.find(e=>dist(e,c)<260);
+    if(e&&c.cd<=0){c.cd=1.6;const a=Math.atan2(e.y-c.y,e.x-c.x);c.face=a;this.projectiles.push({x:c.x,y:c.y-14,vx:Math.cos(a)*380,vy:Math.sin(a)*380,r:5,dmg:d.damage*.45*tf,owner:'player',life:.9,kind:'candy',hue:Math.floor(this.rand()*4)});}
+    if(c.cd2<=0&&p.courage<d.maxCourage*.35&&gap<240){c.cd2=30-10*c.trust/100;p.courage=Math.min(d.maxCourage,p.courage+d.maxCourage*.25*tf);this.float(p.x,p.y-74,'+can đảm','#f3889c');this.say(c,'Bình tĩnh, có tui đây!');}
+   }else{
+    // Bơ flashes his phone at anyone too close, and sometimes spots the stamp or key.
+    const e=foes.find(e=>dist(e,c)<140);
+    if(e&&c.cd<=0){c.cd=4;const a=Math.atan2(e.y-c.y,e.x-c.x);c.face=a;this.effects.push({kind:'cone',x:c.x,y:c.y,face:a,spread:.4,range:140,until:this.time+.18});this.damage(e,d.damage*.3*tf,{stun:1});}
+    if(c.cd2<=0){c.cd2=14;const q=this.drops.filter(x=>x.kind==='quest'&&!this.explored[Math.floor(x.y/TILE)*MAP_W+Math.floor(x.x/TILE)]&&dist(x,p)<700).sort((a,b)=>dist(a,p)-dist(b,p))[0];
+     if(q){if(this.rand()<.75){const tx=Math.floor(q.x/TILE),ty=Math.floor(q.y/TILE);for(let y=ty-1;y<=ty+1;y++)for(let x=tx-1;x<=tx+1;x++)if(x>=0&&y>=0&&x<MAP_W&&y<MAP_H)this.explored[y*MAP_W+x]=1;this.say(c,`Ê, hình như có ${q.quest==='stamp'?'con dấu':'chìa khóa'} ở ${compass(p,q)}!`);}else this.say(c,'Chắc chắn bên này nè… à không, nhầm rồi.');}}
+   }
+  }
  }
  nearby(){
   const p=this.p,f=this.floor,item=this.drops.filter(d=>d.kind==='item').sort((a,b)=>dist(a,p)-dist(b,p))[0];

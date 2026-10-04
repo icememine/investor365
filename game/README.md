@@ -35,6 +35,22 @@ A haunted-house game with three ways to play:
   candy at the cursor, Space, R, F, Shift, E, 1 / 2, I for the bag. On phones the attack buttons
   auto-aim at the nearest performer.
 
+## Players and saves
+
+Players choose a name on the start screen; several players can share a device. Saves live in the
+player's own browser (there is no server):
+
+- `localStorage` key `anhtrang.save.v1` holds every player on this device: Hầm Ma character
+  (level, XP, coins, gear, bag, potions, keys, Na and Bơ's trust), an unfinished descent to resume
+  at the start of its floor, best depth, unlocked classic endings and the best employee score.
+  Each player record notes the device type (phone, tablet, desktop).
+- Cookies `anhtrang_device` (a random device ID, not a fingerprint) and `anhtrang_player` (who
+  played last). The ID is kept in both places, so clearing one does not lose it.
+- Leaving the dungeon keeps the character and clears the descent; "Nhân vật mới" resets it.
+- Private windows and sandboxed frames may refuse storage; the game then says progress will not
+  be kept. `src/save.mjs` takes storage and cookies as parameters, so a cloud backend can replace
+  them later without touching the game.
+
 ## Hand-made rooms (employee and classic tour)
 
 1. **Phòng Nghĩa Địa** (cemetery): Xác Sống hunts by ear. Loose boards creak, running is loud,
@@ -74,6 +90,7 @@ Phones get a joystick and action buttons.
 | `src/sim.mjs` | Authoritative game state, pathfinding, interactions, ghost/guest AI, endings. No DOM. |
 | `src/art.mjs` | Procedural placeholder art: room backdrops, dungeon tiles, and the zombie, long-neck, sheet ghost, skeleton, lantern and Mr. D sprites. |
 | `src/dungeon.mjs` | Hầm Ma rules: floor generation, combat, bosses, loot, levels. No DOM. |
+| `src/save.mjs` | Players, device ID and save games (localStorage + cookies). No DOM in the core. |
 | `src/dungeon-view.mjs` | Hầm Ma rendering (darkness, telegraphs, minimap, boss bar), pointer input, bag and shop HTML. |
 | `src/app.js` | Input, camera, Canvas rendering, HUD, dialogs. |
 | `src/index.html`, `src/style.css` | Layout, HUD, touch controls. |

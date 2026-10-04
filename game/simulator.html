@@ -16,7 +16,17 @@ dialog h3{font-size:14px;font-weight:500;color:var(--gold);margin:16px 0 4px}.st
 .dungeon .touch-middle{display:grid;grid-template-columns:repeat(2,48px);gap:8px}.dungeon .touch-middle button{width:48px;height:48px;font-size:18px}.dungeon .touch-middle small{font-size:8px}
 @media(pointer:coarse),(max-width:900px){.dungeon #joystick{width:108px;height:108px}.dungeon #stick{width:46px;height:46px}.dungeon .touch-actions{width:150px}.dungeon .main-round{width:72px;height:72px}.dungeon .small-round{width:54px;height:54px}.dungeon .use-round{width:60px;height:60px;right:28px}.dungeon .touch-middle{grid-template-columns:repeat(2,42px);gap:6px}.dungeon .touch-middle button{width:42px;height:42px;font-size:16px}.dungeon #touch-controls{gap:4px;padding-left:10px;padding-right:10px}}
 .items>p{grid-column:1/-1}
-</style></head><body><main id="game"><header><div class="brand">☾ <span>ÁNH TRĂNG<small>CA ĐÊM · 2001</small></span></div><div id="resources"></div><nav><button id="journal">Nhật ký <kbd>J</kbd></button><button id="pause" aria-label="Tạm dừng">Ⅱ</button></nav></header><div class="world-wrap"><canvas id="world" width="1600" height="899" aria-label="Bản đồ nhà ma có thể di chuyển. Dùng WASD hoặc phím mũi tên; E tương tác; Space dùng hành động." tabindex="0"></canvas><div class="topline"><span id="roomName">CÔNG VIÊN ÁNH TRĂNG</span><span id="mode">RPG / MÔ PHỎNG</span></div><div id="speech" aria-live="polite"></div><div id="nearby"></div><div id="loading">Đang mở cửa công viên…</div><div id="start" hidden><div class="intro"><span class="eyebrow">ĐÊM 01 · HẦM MA & CA DIỄN</span><h1>Ca đêm ở<br><em>Công viên Ánh Trăng</em></h1><p>Tự bước vào. Tự tìm đường.<br>Hoặc trở thành người đứng sau những tiếng hét.</p><div class="roles"><button data-role="dungeon"><small>KHÁM PHÁ · HẠ MÀN · NHẶT ĐỒ</small><strong>Vào Hầm Ma</strong><span>“Để xem có gì mà sợ.”</span></button><button data-role="employee"><small>DÀN CẢNH · HÙ DỌA · VẬN HÀNH</small><strong>Làm nhân viên</strong><span>“Tối nay, mình là người dọa.”</span></button></div><div class="rooms" role="group" aria-label="Phòng bắt đầu"><span>Phòng</span><button data-room="cemetery" class="active" aria-pressed="true">Nghĩa Địa</button><button data-room="dining" aria-pressed="false">Bàn Tiệc</button><button data-room="corridor" aria-pressed="false">Hành Lang</button><button data-role="visitor" class="classic">Tham quan cổ điển ›</button></div><p class="start-help">Kéo cần trái để đi · Nút bên phải để dùng kỹ năng<br>Chạm đồ vật để tự đi tới · Máy tính hỗ trợ WASD</p></div></div><div id="end" hidden></div></div><div class="objective"><span class="label">MỤC TIÊU</span><span id="objective">Chọn vai để bắt đầu.</span><button id="help">Cách chơi</button></div><section id="touch-controls" aria-label="Điều khiển cảm ứng">
+
+/* Player profile on the start screen. Roles stay disabled until a name is chosen. */
+.profile{margin:14px 0 4px;max-width:520px}.profile-form label{display:block;font-size:10px;letter-spacing:2px;color:var(--mint);margin-bottom:6px}
+.profile-row{display:flex;gap:8px}.profile-row input{flex:1;min-width:0;font:inherit;font-size:15px;color:#edf2ef;background:#0e2233eb;border:1px solid var(--line);padding:8px 12px}.profile-row input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}.profile-row button{padding:8px 14px;white-space:nowrap}
+.known{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.known button{font-size:12px;padding:3px 10px;border-radius:12px;background:#0e2233eb}
+.profile-card{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:10px 12px;background:#0e2233eb;border:1px solid var(--line);font-size:14px}.profile-card b{color:var(--mint);font-weight:600}.profile-card small{flex-basis:100%;color:var(--muted);font-size:11px;order:3}
+.profile-actions{margin-left:auto;display:flex;gap:6px}.profile-actions button{font-size:11px;padding:3px 9px;background:none}
+#start.no-profile .roles,#start.no-profile .rooms{opacity:.35;pointer-events:none}
+@media(max-width:760px){.profile{margin:8px 0 0}.profile-row input{font-size:16px;padding:6px 10px}.profile-card{font-size:12px;padding:8px}}
+@media(max-width:760px){.rooms{flex-wrap:wrap;gap:6px}.rooms button{padding:5px 10px;font-size:12px;white-space:nowrap}.rooms .classic{flex-basis:100%;margin-left:0;text-align:left;padding:2px 0}}
+</style></head><body><main id="game"><header><div class="brand">☾ <span>ÁNH TRĂNG<small>CA ĐÊM · 2001</small></span></div><div id="resources"></div><nav><button id="journal">Nhật ký <kbd>J</kbd></button><button id="pause" aria-label="Tạm dừng">Ⅱ</button></nav></header><div class="world-wrap"><canvas id="world" width="1600" height="899" aria-label="Bản đồ nhà ma có thể di chuyển. Dùng WASD hoặc phím mũi tên; E tương tác; Space dùng hành động." tabindex="0"></canvas><div class="topline"><span id="roomName">CÔNG VIÊN ÁNH TRĂNG</span><span id="mode">RPG / MÔ PHỎNG</span></div><div id="speech" aria-live="polite"></div><div id="nearby"></div><div id="loading">Đang mở cửa công viên…</div><div id="start" hidden><div class="intro"><span class="eyebrow">ĐÊM 01 · HẦM MA & CA DIỄN</span><h1>Ca đêm ở<br><em>Công viên Ánh Trăng</em></h1><p>Tự bước vào. Tự tìm đường.<br>Hoặc trở thành người đứng sau những tiếng hét.</p><div class="profile"><form id="profileForm" class="profile-form"><label for="playerName">Tên người chơi</label><div class="profile-row"><input id="playerName" name="playerName" maxlength="20" autocomplete="nickname" placeholder="Ví dụ: Bin" required><button type="submit">Vào công viên</button></div><div id="knownPlayers" class="known"></div></form><div id="profileCard" class="profile-card" hidden><span>Chào, <b id="playerLabel"></b></span><small id="saveInfo"></small><span class="profile-actions"><button id="newCharacter" type="button" hidden>Nhân vật mới</button><button id="switchPlayer" type="button">Đổi người chơi</button></span></div></div><div class="roles"><button data-role="dungeon"><small>KHÁM PHÁ · HẠ MÀN · NHẶT ĐỒ</small><strong>Vào Hầm Ma</strong><span id="dungeonSub">“Để xem có gì mà sợ.”</span></button><button data-role="employee"><small>DÀN CẢNH · HÙ DỌA · VẬN HÀNH</small><strong>Làm nhân viên</strong><span>“Tối nay, mình là người dọa.”</span></button></div><div class="rooms" role="group" aria-label="Phòng bắt đầu"><span>Phòng</span><button data-room="cemetery" class="active" aria-pressed="true">Nghĩa Địa</button><button data-room="dining" aria-pressed="false">Bàn Tiệc</button><button data-room="corridor" aria-pressed="false">Hành Lang</button><button data-role="visitor" class="classic">Tham quan cổ điển ›</button></div><p class="start-help">Kéo cần trái để đi · Nút bên phải để dùng kỹ năng<br>Chạm đồ vật để tự đi tới · Máy tính hỗ trợ WASD</p></div></div><div id="end" hidden></div></div><div class="objective"><span class="label">MỤC TIÊU</span><span id="objective">Chọn vai để bắt đầu.</span><button id="help">Cách chơi</button></div><section id="touch-controls" aria-label="Điều khiển cảm ứng">
  <div class="joystick-area"><div id="joystick" role="group" aria-label="Cần điều khiển di chuyển"><span class="joystick-arrows">✦</span><div id="stick"></div></div><span class="touch-caption">DI CHUYỂN</span></div>
  <div class="touch-middle"><button id="touchRun" aria-label="Giữ để chạy">»<small>Giữ chạy</small></button><button id="touchPlace" hidden>＋<small>Đặt loa</small></button><button id="touchUlt" hidden>✺<small id="touchUltLabel">Sân khấu</small></button><button id="touchBread" hidden>◒<small id="touchBreadLabel">Bánh</small></button><button id="touchBattery" hidden>▮<small id="touchBatteryLabel">Pin</small></button></div>
  <div class="touch-actions"><button id="touchSecondary" class="round small-round"><span>◌</span><small id="touchSecondaryLabel">Nấp</small></button><button id="touchPrimary" class="round main-round"><span id="touchPrimaryIcon">☀</span><small id="touchPrimaryLabel">Đèn pin</small></button><button id="touchInteract" class="round use-round"><span>✋</span><small id="touchInteractLabel">Sử dụng</small></button></div>
@@ -1492,8 +1502,109 @@ function shopHtml(dg){
 }
 
 return{RARITY_COLOR,createDungeonView,itemCard,bagHtml,shopHtml};})();
+// ---- save.mjs
+const {SAVE_VERSION,COOKIE_DEVICE,COOKIE_PLAYER,cleanName,nameKey,deviceType,SaveStore,snapshotDungeon,restoreDungeon,browserStorage,browserCookies}=(()=>{
+// Save games, kept in the player's own browser. There is no server: saves live in localStorage,
+// and two small cookies remember this device's random ID and the last player who played on it.
+// Storage and cookies are passed in, so the rules can be tested headless and a cloud backend can
+// replace them later without touching the game.
+
+const SAVE_VERSION=1;
+const SAVE_KEY='anhtrang.save.v1';
+const COOKIE_DEVICE='anhtrang_device';
+const COOKIE_PLAYER='anhtrang_player';
+
+// Names: 1-20 visible characters, Vietnamese letters welcome, no markup.
+function cleanName(raw){return String(raw??'').replace(/[<>"'`\\]/g,'').replace(/\s+/g,' ').trim().slice(0,20);}
+const nameKey=name=>cleanName(name).toLocaleLowerCase('vi');
+
+// Coarse device class for the save record. Not used for identification.
+function deviceType({ua='',coarse=false,width=1024}={}){
+ if(/iPad|Tablet|Nexus (7|9|10)/i.test(ua)||(/Android/i.test(ua)&&!/Mobile/i.test(ua))||(/Macintosh/i.test(ua)&&coarse))return'tablet';
+ if(/Mobi|iPhone|iPod|Android/i.test(ua)||(coarse&&width<700))return'phone';
+ return'desktop';
+}
+
+class SaveStore{
+ // storage: {getItem,setItem,removeItem}; cookies: {get(name),set(name,value)}; both may be missing or throw.
+ constructor({storage=null,cookies=null,now=()=>Date.now(),randomId=defaultId,device='desktop'}={}){
+  this.storage=storage;this.cookies=cookies;this.now=now;this.randomId=randomId;this.device=device;
+  this.data=this.read();
+  // The device ID is kept in both places so clearing one does not lose it.
+  const fromCookie=safe(()=>this.cookies?.get(COOKIE_DEVICE));
+  this.data.deviceId=this.data.deviceId||fromCookie||this.randomId();
+  this.data.deviceType=device;
+  safe(()=>this.cookies?.set(COOKIE_DEVICE,this.data.deviceId));
+  const last=safe(()=>this.cookies?.get(COOKIE_PLAYER));
+  if(!this.data.current&&last&&this.data.profiles[nameKey(last)])this.data.current=nameKey(last);
+  this.write();
+ }
+ read(){
+  const fresh={version:SAVE_VERSION,deviceId:null,deviceType:null,current:null,profiles:{}};
+  const raw=safe(()=>this.storage?.getItem(SAVE_KEY));if(!raw)return fresh;
+  try{const d=JSON.parse(raw);if(!d||d.version!==SAVE_VERSION||typeof d.profiles!=='object')return{...fresh,deviceId:d?.deviceId||null};return{...fresh,...d};}catch{return fresh;}
+ }
+ // False when nothing could be stored (no storage, private window, quota), so the UI can say so.
+ write(){if(!this.storage)return false;return!!safe(()=>{this.storage.setItem(SAVE_KEY,JSON.stringify(this.data));return true;});}
+ get persistent(){return!!this.storage;}
+ get deviceId(){return this.data.deviceId;}
+ profiles(){return Object.values(this.data.profiles).sort((a,b)=>b.updated-a.updated);}
+ current(){return this.data.current?this.data.profiles[this.data.current]||null:null;}
+ // Picks an existing player by name, or creates one. Returns the profile, or null for an empty name.
+ select(raw){
+  const name=cleanName(raw),key=nameKey(name);if(!name)return null;
+  const t=this.now();let p=this.data.profiles[key];
+  if(!p)p=this.data.profiles[key]={name,created:t,updated:t,deviceType:this.device,dungeon:null,character:null,endings:[],best:{depth:0,score:0}};
+  p.updated=t;p.deviceType=this.device;this.data.current=key;
+  safe(()=>this.cookies?.set(COOKIE_PLAYER,name));this.write();return p;
+ }
+ signOut(){this.data.current=null;safe(()=>this.cookies?.set(COOKIE_PLAYER,''));this.write();}
+ remove(raw){const key=nameKey(raw);delete this.data.profiles[key];if(this.data.current===key)this.signOut();else this.write();}
+ update(fn){const p=this.current();if(!p)return false;fn(p);p.updated=this.now();p.deviceType=this.device;return this.write();}
+ // Hầm Ma: the character always persists; `dungeon` is set only while a descent is unfinished.
+ saveDungeon(snapshot,{finished=false}={}){return this.update(p=>{p.character=snapshot.character;p.dungeon=finished?null:snapshot;p.best.depth=Math.max(p.best.depth||0,snapshot.stats?.deepest||0);});}
+ resetCharacter(){return this.update(p=>{p.character=null;p.dungeon=null;});}
+ recordEnding(key){return this.update(p=>{if(!p.endings.includes(key))p.endings.push(key);});}
+ recordScore(score){return this.update(p=>{p.best.score=Math.max(p.best.score||0,score);});}
+}
+
+// ---- Hầm Ma snapshots: plain JSON, nothing that depends on the current floor's layout.
+function snapshotDungeon(dg){
+ return{
+  seed:dg.seed,depth:dg.depth,stats:{...dg.stats},
+  character:{level:dg.p.level,xp:dg.p.xp,gold:dg.p.gold,potions:{...dg.potions},keys:dg.keys,inventory:dg.inventory.map(clone),equipped:Object.fromEntries(Object.entries(dg.equipped).map(([k,v])=>[k,v?clone(v):null])),trust:Object.fromEntries(dg.companions.map(c=>[c.id,Math.round(c.trust)]))},
+ };
+}
+// Applies a saved character (and, for an unfinished descent, the floor) to a fresh Dungeon.
+function restoreDungeon(dg,{character,depth=1,stats=null}){
+ if(character){
+  Object.assign(dg.p,{level:character.level||1,xp:character.xp||0,gold:character.gold||0});
+  dg.potions={bread:0,battery:0,...character.potions};dg.keys=character.keys||0;
+  dg.inventory=(character.inventory||[]).map(clone);
+  for(const k of Object.keys(dg.equipped))if(character.equipped&&k in character.equipped)dg.equipped[k]=character.equipped[k]?clone(character.equipped[k]):null;
+  for(const c of dg.companions)if(character.trust?.[c.id]!=null)c.trust=character.trust[c.id];
+ }
+ if(stats)dg.stats={...dg.stats,...stats};
+ const d=dg.derived;dg.p.courage=d.maxCourage;dg.p.battery=d.maxBattery;
+ dg.enterFloor(depth);
+ return dg;
+}
+
+const clone=o=>JSON.parse(JSON.stringify(o));
+function safe(fn){try{return fn();}catch{return null;}}
+function defaultId(){try{if(globalThis.crypto?.randomUUID)return crypto.randomUUID();}catch{}return'd-'+Math.random().toString(36).slice(2)+Date.now().toString(36);}
+
+// Browser adapters. Each call is guarded: private windows and sandboxed frames can refuse storage.
+function browserStorage(){try{const s=globalThis.localStorage;const k='__anhtrang_probe';s.setItem(k,'1');s.removeItem(k);return s;}catch{return null;}}
+const browserCookies={
+ get(name){const m=document.cookie.match(new RegExp('(?:^|; )'+name+'=([^;]*)'));return m?decodeURIComponent(m[1]):null;},
+ set(name,value){document.cookie=`${name}=${encodeURIComponent(value)}; max-age=${value?31536000:0}; path=/; SameSite=Lax`;},
+};
+
+return{SAVE_VERSION,COOKIE_DEVICE,COOKIE_PLAYER,cleanName,nameKey,deviceType,SaveStore,snapshotDungeon,restoreDungeon,browserStorage,browserCookies};})();
 // ---- app.js
 (()=>{
+
 
 
 
@@ -1583,9 +1694,9 @@ $('closeModal').onclick=close;modal.addEventListener('cancel',e=>{e.preventDefau
 function help(){if(dg)return dungeonHelp();dialog(`<h2>Điều khiển & phối hợp đạo cụ</h2><p><b>Trên điện thoại:</b> kéo cần trái để đi; tay phải chạm Đèn pin / Hù và nút sử dụng. Giữ Chạy để tăng tốc. Có thể vừa di chuyển vừa dùng kỹ năng.</p><p><b>Đạo cụ tác động lên ma:</b> chuông kéo ma tới nguồn âm; băng cát sét giữ ma đứng nghe; tranh khiến ma hoảng lùi; rèm làm ma mất dấu; ghế nghỉ tạo vùng an toàn. Mỗi món có thời gian hồi và dùng lặp sẽ kém hiệu quả.</p><p><b>Phòng Nghĩa Địa:</b> Xác Sống gần như không nhìn thấy nhưng nghe rất thính. Ván gỗ cót két và tiếng chạy sẽ kéo hắn tới. Nhặt đồng xu rồi nhấn Q để ném đánh lạc hướng. Đèn pin chỉ làm hắn khựng lại rồi lần theo ánh sáng; đừng bật đèn khi nấp sau áo khoác. Nhân viên có thể chui vào quan tài đứng rồi bung nắp để hù.</p><p><b>Hành lang Ma Cổ Dài:</b> cái đầu trượt trên trần và thả xuống ai đứng dưới bóng của nó. Nhấn Q để cúi người, giật dây kéo, hoặc rọi đèn lên ròng rọc để làm kẹt. Rọi vào mặt chỉ làm cô ấy thấy bạn. Cửa hậu là đường tắt tối om. Nhân viên cầm dây kéo để điều khiển cái đầu; gọi bộ đàm khi mỏi tay.</p><p>Nhân vật đi trong phòng thật. Đến gần đồ vật để sử dụng; NPC vẫn di chuyển khi bạn đứng yên.</p><div class="help-grid"><b>WASD / ↑↓←→</b><span>Di chuyển. Hoặc chạm một điểm trên sàn để tự tìm đường.</span><b>E</b><span>Tương tác với vật gần nhất. Chạm điểm sáng cũng tự đi tới vật đó.</span><b>Space</b><span>Khách: bật / tắt đèn pin. Nhân viên: tung chiêu trong tầm gần.</span><b>Q</b><span>Khách: nấp khi ở cạnh rèm. Nhân viên: kích hoạt loa gần nhất.</span><b>P</b><span>Nhân viên đặt loa tại chỗ đang đứng, tối đa 3 loa.</span><b>Shift</b><span>Chạy nhanh, tốn thể lực.</span><b>Ghế nghỉ</b><span>Tới ghế ở góc trái để hồi sức, pin và giảm sợ hãi.</span><b>J / Esc</b><span>Nhật ký / tạm dừng.</span></div><p>${sim?.role==='employee'?'Gợi ý: đặt loa, mở cửa đón khách, kích loa rồi vòng sang hướng khác để hù. Khách quen chiêu sẽ khó bị dọa hơn.':'Gợi ý: khi ma lấy đà, quay mặt rọi đèn, lùi lại hoặc nấp. Bàn chặn cả đường đi lẫn một phần tầm nhìn.'}</p><div class="dialog-actions"><button id="resume">Vào chơi</button></div>`);$('resume').onclick=close;}
 function journal(){if(dg)return bag();dialog(`<span class="eyebrow">NHẬT KÝ CA ĐÊM</span><h2>Những điều đã thấy</h2><div class="clues">${Object.entries(EVIDENCE).map(([k,v])=>`<div class="clue ${sim?.clues.includes(k)?'':'locked'}">${sim?.clues.includes(k)?'✓ '+v:'? Chưa tìm thấy'}</div>`).join('')}</div><p>${sim?.mystery?'Để giúp An chơi xong: tới bàn đóng mộc. Để mời An làm nhân viên: tới tủ phân ca.':'Tìm các dấu vết trong phòng: bảng tên dưới tranh, vé trên bàn và máy cát sét.'}</p><ul>${(sim?.journal||[]).map(t=>`<li>${esc(t)}</li>`).join('')}</ul><div class="dialog-actions"><button id="resume">Quay lại phòng</button></div>`);$('resume').onclick=close;}
 function pause(){dialog(`<h2>Tạm nghỉ</h2><p>Khách, ma và đồng hồ đều dừng lại khi bảng này mở.</p><div class="dialog-actions"><button id="resume">Chơi tiếp</button><button id="guide">Xem cách chơi</button><button id="restart">Đổi vai / bắt đầu lại</button></div>`);$('resume').onclick=close;$('guide').onclick=help;$('restart').onclick=()=>{dialog('<h2>Bắt đầu lại?</h2><p>Ca hiện tại sẽ được đặt lại.</p><div class="dialog-actions"><button id="yes">Về chọn vai</button><button id="no">Chơi tiếp ca này</button></div>');$('yes').onclick=()=>{close();home();};$('no').onclick=close;};}
-function home(){resetStick();sim=null;leaveDungeon();endShown=false;keys.clear();$('end').hidden=true;$('start').hidden=false;$('speech').classList.remove('show');$('nearby').textContent='';$('objective').textContent='Chọn vai để bắt đầu.';$('mode').textContent='RPG / MÔ PHỎNG';$('roomName').textContent='CÔNG VIÊN ÁNH TRĂNG';$('stop').hidden=true;updateUI();}
+function home(){resetStick();sim=null;leaveDungeon();renderProfile();endShown=false;keys.clear();$('end').hidden=true;$('start').hidden=false;$('speech').classList.remove('show');$('nearby').textContent='';$('objective').textContent='Chọn vai để bắt đầu.';$('mode').textContent='RPG / MÔ PHỎNG';$('roomName').textContent='CÔNG VIÊN ÁNH TRĂNG';$('stop').hidden=true;updateUI();}
 const endings={leave:['Mai chơi tiếp','Na đặt một lon nước cạnh bạn. “Lần sau chơi tiếp, nhưng cậu phải đi trước.” Không cần gồng. Tấm vé vẫn còn.'],tricks:['Rành quá rồi','Bạn đã đi qua phòng. Bơ cười: “Toàn máy móc gài bẫy thôi.” Cái loa rút điện ở góc phòng khẽ đáp: “Ừ.”'],ticket:['Xé vé','Băng cũ vang lên: “Chào mừng An đến với Nhà Ma.” Bạn đóng mộc cuối. An nói “Lâu quá…” rồi biến mất. Tấm vé đã khô.'],new:['Ma mới','Bạn ghi tên An vào bảng phân ca. Mr. D nhìn một lúc rồi viết: “Đứa này khỏi cần phát đồng phục.” Chiếc ghế tự kéo ra đón khách.'],together:['Không bỏ ai lại','Đèn sáng. Bạn dẫn mọi người ra khỏi nhà ma. Sau cánh cửa vừa khóa, ai đó nói rất khẽ: “Cảm ơn.”'],shift:['Hết ca','Khách đã về. Bạn treo áo choàng và trả bộ đàm. Ngày mai, căn phòng sẽ lại cần một người đứng sau tiếng hét.']};
-function showEnding(){endShown=true;const [title,text]=endings[sim.ending]||endings.shift;$('end').innerHTML=`<div class="endcard"><span class="eyebrow">CÔNG VIÊN ÁNH TRĂNG · KẾT CA</span><h2>${title}</h2><p>${text}</p><div class="endstats"><span>${sim.role==='employee'?sim.score+' điểm diễn':sim.avoided+' lần tránh ma'}</span><span>${sim.clues.length}/3 manh mối</span><span>${Math.floor(sim.time/60)}:${String(Math.floor(sim.time%60)).padStart(2,'0')}</span></div><div class="endactions"><button id="again">Chơi lại vai này</button><button id="other">Đổi vai</button></div><p><small>Bản thử cơ chế một phòng · Công viên nhiều khu và tiến trình nhiều đêm sẽ được phát triển tiếp.</small></p></div>`;$('end').hidden=false;$('again').onclick=()=>launch(sim.role,sim.visited[0]);$('other').onclick=()=>launch(sim.role==='visitor'?'employee':'visitor',sim.visited[0]);}
+function showEnding(){endShown=true;saves.recordEnding(sim.ending);if(sim.role==='employee')saves.recordScore(sim.score);const [title,text]=endings[sim.ending]||endings.shift;$('end').innerHTML=`<div class="endcard"><span class="eyebrow">CÔNG VIÊN ÁNH TRĂNG · KẾT CA</span><h2>${title}</h2><p>${text}</p><div class="endstats"><span>${sim.role==='employee'?sim.score+' điểm diễn':sim.avoided+' lần tránh ma'}</span><span>${sim.clues.length}/3 manh mối</span><span>${Math.floor(sim.time/60)}:${String(Math.floor(sim.time%60)).padStart(2,'0')}</span></div><div class="endactions"><button id="again">Chơi lại vai này</button><button id="other">Đổi vai</button></div><p><small>${esc(saves.current()?.name||'Bạn')} đã mở ${saves.current()?.endings.filter(k=>k in endings).length||1}/${Object.keys(endings).length} kết cục.</small></p></div>`;$('end').hidden=false;$('again').onclick=()=>launch(sim.role,sim.visited[0]);$('other').onclick=()=>launch(sim.role==='visitor'?'employee':'visitor',sim.visited[0]);}
 $('stop').onclick=()=>{if(!sim)return;dialog('<h2>Kết thúc ca?</h2><p>Bật đèn đưa khách ra, hoặc chấm công khi nhóm đã ra hết. Phần thưởng đã kiếm được vẫn được giữ.</p><div class="dialog-actions"><button id="safe">Dừng show, đưa khách ra</button><button id="shiftEnd">Chấm công hết ca</button><button id="resume">Tiếp tục ca</button></div>');$('safe').onclick=()=>{close();sim.finish('together');updateUI();};$('shiftEnd').disabled=sim.npcs.some(n=>!n.gone);$('shiftEnd').onclick=()=>{close();sim.finish('shift');updateUI();};$('resume').onclick=close;};
 $('help').onclick=help;$('journal').onclick=journal;$('pause').onclick=pause;document.querySelectorAll('[data-role]').forEach(b=>b.onclick=()=>b.dataset.role==='dungeon'?launchDungeon():launch(b.dataset.role));
 document.querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>{startRoom=b.dataset.room;document.querySelectorAll('[data-room]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',x===b);});});
@@ -1610,7 +1721,12 @@ function moveInput(){return{dx:joy.x+(keys.has('d')||keys.has('arrowright')?1:0)
 // Mouse players aim at the cursor; touch players aim at the closest performer in range.
 const aim=range=>lastPointer==='mouse'&&dview.mouse?dview.mouse:dview.autoAim(range);
 function launchDungeon(){
- resetStick();sim=null;dg=new Dungeon(Math.floor(Math.random()*1e5));dview.attach(dg);paused=false;endShown=false;keys.clear();
+ resetStick();sim=null;
+ // Continue an unfinished descent, or start at floor 1 with the saved character, or start fresh.
+ const p=saves.current();
+ if(p?.dungeon)dg=restoreDungeon(new Dungeon(p.dungeon.seed),p.dungeon);
+ else{dg=new Dungeon(Math.floor(Math.random()*1e5));if(p?.character)restoreDungeon(dg,{character:p.character,depth:1});}
+ savedDepth=dg.depth;savedAt=dg.time;dview.attach(dg);paused=false;endShown=false;keys.clear();
  document.body.classList.add('dungeon');$('start').hidden=true;$('end').hidden=true;$('stop').hidden=true;$('place').hidden=false;$('touchPlace').hidden=false;
  for(const [id,html] of Object.entries(DUNGEON_HTML))$(id).innerHTML=html;for(const id of DUNGEON_ONLY)$(id).hidden=false;
  $('primaryLabel').textContent='Rọi đèn';$('touchPrimaryIcon').textContent='☀';$('mode').textContent='HẦM MA';
@@ -1618,6 +1734,7 @@ function launchDungeon(){
 }
 function leaveDungeon(){
  if(!dg&&!document.body.classList.contains('dungeon'))return;
+ if(dg&&!dg.ending)saves.saveDungeon(snapshotDungeon(dg));
  dg=null;dview?.detach();document.body.classList.remove('dungeon');
  for(const [id,html] of Object.entries(CLASSIC_HTML))$(id).innerHTML=html;for(const id of DUNGEON_ONLY)$(id).hidden=true;
 }
@@ -1644,6 +1761,7 @@ function updateDungeonUI(){
  const dash=dg.cooldowns.dash;if($('touchRunLabel'))$('touchRunLabel').textContent=dash>0?Math.ceil(dash)+'s':'Lướt';
  $('touchBreadLabel').textContent=`Bánh ×${dg.potions.bread}`;$('touchBatteryLabel').textContent=`Pin ×${dg.potions.battery}`;$('breadLabel').textContent=`Bánh bao ×${dg.potions.bread}`;$('battLabel').textContent=`Pin AA ×${dg.potions.battery}`;
  $('status').textContent=`Đã hạ màn ${dg.stats.defeated} · ${dg.stats.bosses} trùm · sâu nhất tầng ${dg.stats.deepest} · `+(lastPointer==='mouse'?'Chuột trái: đi / đánh · chuột phải: ném kẹo · I: túi đồ':'Nút Rọi đèn tự nhắm diễn viên gần nhất · Nhật ký: túi đồ');
+ if(!dg.ending&&(dg.depth!==savedDepth||dg.time-savedAt>5)){saves.saveDungeon(snapshotDungeon(dg));savedDepth=dg.depth;savedAt=dg.time;}
  if(dg.ending&&!endShown)showDungeonEnding();
 }
 function wire(map){for(const [attr,fn] of Object.entries(map))$('modalContent').querySelectorAll(`[data-${attr}]`).forEach(b=>b.onclick=()=>fn(b.dataset[attr]));const r=$('resume');if(r)r.onclick=close;}
@@ -1651,13 +1769,32 @@ function bag(){if(!dg)return;dialog(bagHtml(dg));wire({equip:i=>{dg.equip(dg.inv
 function shop(){if(!dg)return;dialog(shopHtml(dg));wire({buy:k=>{dg.buy(k);shop();},sell:i=>{dg.sell(dg.inventory[+i]);shop();}});}
 function dungeonHelp(){dialog(`<h2>Hầm Ma: cách chơi</h2><p>Diễn viên trong hầm sẽ hù bạn. Hạ màn họ bằng cách làm họ mất bình tĩnh: khi thanh bình tĩnh về 0, họ phì cười, rơi đồ rồi rời sân khấu. Hết can đảm thì Mr. D dắt bạn về đầu tầng; đồ vẫn còn, chỉ rơi ít xu.</p><div class="help-grid"><b>Chuột trái</b><span>Đi tới chỗ bấm; giữ để đi liên tục. Bấm diễn viên để tự đánh; bấm tên món đồ để nhặt.</span><b>Chuột phải / Q</b><span>Ném kẹo về phía con trỏ (8 pin).</span><b>Space</b><span>Rọi đèn: đánh hình nón phía trước, không tốn pin.</span><b>R</b><span>Chuông đồng (cấp 3): làm choáng xung quanh.</span><b>F</b><span>Đèn sân khấu (cấp 5): chùm sáng lớn.</span><b>Shift</b><span>Lướt né: không bị hù trong lúc lướt.</span><b>E</b><span>Nhặt đồ, xuống cầu thang, mua bán ở quầy Mr. D.</span><b>1 / 2</b><span>Bánh bao (hồi can đảm) / pin AA (hồi pin).</span><b>I</b><span>Túi đồ: trang bị đèn, áo, bùa, giày.</span></div><p><b>Con dấu và chìa khóa:</b> cầu thang mỗi tầng bị niêm phong cho tới khi bạn nhặt con dấu tầng (cột sáng hồng). Chìa khóa đồng (cột sáng vàng) thì tùy chọn, nhưng mỗi tầng thứ ba phòng trùm bị khóa và chỉ chìa khóa đồng mở được. Tới tầng trùm mà chưa có chìa thì phải giành chiếc chìa dự phòng ở phòng đông diễn viên nhất.</p><p><b>Na và Bơ</b> đi cùng bạn. Na ném kẹo và cổ vũ khi bạn sợ; Bơ rọi điện thoại làm diễn viên khựng lại và đôi khi đánh hơi ra con dấu hay chìa khóa. Đi cùng họ qua các trận thì họ tin bạn hơn và giúp mạnh hơn; bỏ họ lại phía sau thì ngược lại. Hết can đảm, họ ra ngoài nghỉ một lúc rồi quay lại.</p><p>Vòng đỏ là đòn sắp tới: bước ra khỏi vòng hoặc lướt. Mỗi tầng thứ ba có trùm giữ cầu thang. Trên điện thoại, nút đánh tự nhắm vào diễn viên gần nhất.</p><div class="dialog-actions"><button id="resume">Vào hầm</button></div>`);$('resume').onclick=close;}
 function showDungeonEnding(){
- endShown=true;let best=dg.stats.deepest;try{best=Math.max(best,+localStorage.getItem('anhtrang.hamMa.best')||0);localStorage.setItem('anhtrang.hamMa.best',String(best));}catch{}
+ endShown=true;saves.saveDungeon(snapshotDungeon(dg),{finished:true});const best=Math.max(dg.stats.deepest,saves.current()?.best.depth||0);
  const s=dg.stats,trust=Math.min(...dg.companions.map(c=>c.trust)),friends=trust>=70?' Na và Bơ đòi xuống hầm cùng bạn lần nữa.':trust<30?' Na khoanh tay: “Lần sau đừng bỏ tụi tui lại nữa.”':'',text=(s.bosses?`Mr. D đếm số trùm bạn làm phì cười: ${s.bosses}. “Mai có ca mới, nhớ ghé.”`:'Na đợi sẵn ở cửa hầm với lon nước. “Lần sau xuống sâu hơn nha.”')+friends;
- $('end').innerHTML=`<div class="endcard"><span class="eyebrow">HẦM MA · KẾT CHUYẾN</span><h2>Lên khỏi hầm</h2><p>${text}</p><div class="endstats"><span>Sâu nhất tầng ${s.deepest}</span><span>Cấp ${dg.p.level}</span><span>${s.defeated} lần hạ màn</span><span>${dg.p.gold} xu</span></div><p><small>Kỷ lục của bạn: tầng ${best}</small></p><div class="endactions"><button id="again">Xuống hầm lần nữa</button><button id="other">Về màn hình chính</button></div></div>`;
+ $('end').innerHTML=`<div class="endcard"><span class="eyebrow">HẦM MA · KẾT CHUYẾN</span><h2>Lên khỏi hầm</h2><p>${text}</p><div class="endstats"><span>Sâu nhất tầng ${s.deepest}</span><span>Cấp ${dg.p.level}</span><span>${s.defeated} lần hạ màn</span><span>${dg.p.gold} xu</span></div><p><small>Kỷ lục của ${esc(saves.current()?.name||'bạn')}: tầng ${best} · nhân vật cấp ${dg.p.level} được lưu lại cho lần sau</small></p><div class="endactions"><button id="again">Xuống hầm lần nữa</button><button id="other">Về màn hình chính</button></div></div>`;
  $('end').hidden=false;$('again').onclick=()=>launchDungeon();$('other').onclick=()=>home();
 }
 window.addEventListener('pointerdown',e=>{lastPointer=e.pointerType;},true);
+// ---- Players and saves ---------------------------------------------------------
+const saves=new SaveStore({storage:browserStorage(),cookies:browserCookies,device:deviceType({ua:navigator.userAgent,coarse:matchMedia('(pointer:coarse)').matches,width:innerWidth})});
+let savedDepth=0,savedAt=0;
+const DEVICE_NAME={phone:'điện thoại',tablet:'máy tính bảng',desktop:'máy tính'};
+function renderProfile(){
+ const p=saves.current();$('start').classList.toggle('no-profile',!p);$('profileForm').hidden=!!p;$('profileCard').hidden=!p;
+ if(!p){$('knownPlayers').innerHTML=saves.profiles().slice(0,6).map(x=>`<button type="button" data-player="${esc(x.name)}">${esc(x.name)}</button>`).join('');$('knownPlayers').querySelectorAll('[data-player]').forEach(b=>b.onclick=()=>{saves.select(b.dataset.player);renderProfile();});$('dungeonSub').textContent='“Để xem có gì mà sợ.”';return;}
+ const ch=p.character,run=p.dungeon;
+ $('playerLabel').textContent=p.name;
+ $('saveInfo').textContent=[`Lưu trên ${DEVICE_NAME[saves.device]||'thiết bị này'}`,ch?`Hầm Ma: cấp ${ch.level}, kỷ lục tầng ${p.best.depth||1}`:'Hầm Ma: chưa có nhân vật',`${p.endings.length} kết cục đã mở`].join(' · ')+(saves.persistent?'':' · Trình duyệt này không cho lưu (chế độ ẩn danh?), tiến trình sẽ mất khi đóng trang.');
+ $('dungeonSub').textContent=run?`Chơi tiếp: tầng ${run.depth} · cấp ${run.character.level}`:ch?`Cấp ${ch.level} · xuống lại từ tầng 1`:'“Để xem có gì mà sợ.”';
+ $('newCharacter').hidden=!ch;
+}
+$('profileForm').addEventListener('submit',e=>{e.preventDefault();if(saves.select($('playerName').value)){$('playerName').value='';renderProfile();}});
+$('switchPlayer').onclick=()=>{saves.signOut();renderProfile();$('playerName').focus();};
+$('newCharacter').onclick=()=>{dialog(`<h2>Tạo nhân vật mới?</h2><p>Nhân vật Hầm Ma của ${esc(saves.current().name)} (cấp ${saves.current().character.level}, đồ nghề và xu) sẽ bị xóa. Kết cục đã mở vẫn giữ.</p><div class="dialog-actions"><button id="yes">Xóa và bắt đầu lại</button><button id="no">Giữ nhân vật</button></div>`);$('yes').onclick=()=>{saves.resetCharacter();close();renderProfile();};$('no').onclick=close;};
+// Save when the page is hidden or closed, since phones may never come back to it.
+for(const type of ['visibilitychange','pagehide'])addEventListener(type,()=>{if(dg&&!dg.ending)saves.saveDungeon(snapshotDungeon(dg));});
+renderProfile();
 // Local testing aid: open with ?debug to inspect the running game from the console or a test driver.
-if(new URLSearchParams(location.search).has('debug'))window.anhTrangDebug={get dg(){return dg;},get sim(){return sim;}};
+if(new URLSearchParams(location.search).has('debug'))window.anhTrangDebug={get dg(){return dg;},get sim(){return sim;},saves};
 
 return{};})();</script></body></html>

@@ -3,7 +3,7 @@ import {ROOMS, ROOM_ORDER} from './rooms.mjs';
 
 export const W=1000;
 export const H=562;
-export const EVIDENCE={ticket:'Vé 000',name:'Tên: An',tape:'Băng ghi âm'};
+export const EVIDENCE={ticket:'Vé 000',name:'Tên: Zin',tape:'Băng ghi âm'};
 export const FOUND={clip:'Kẹp tóc của Na',mirror:'Gương: vẫn còn một cái cổ khác'};
 export const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const inside=(r,x,y)=>x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h;
@@ -127,7 +127,7 @@ export class Simulation{
    case 'ticket':if(this.mystery){this.finish('ticket');return true;}// otherwise it is a clue
    case 'clue':{
     const clue=spot.clue;
-    if(!this.clues.includes(clue)){this.clues.push(clue);this.journal.push(EVIDENCE[clue]);this.notice({name:'Dưới lớp bụi có một cái tên: AN.',ticket:'Vé 000: bốn dấu mộc, một ô cuối để trống.',tape:'Băng cũ: “Chào mừng An đến với Nhà Ma.”'}[clue]);}else this.notice('Manh mối này đã ở trong nhật ký.');
+    if(!this.clues.includes(clue)){this.clues.push(clue);this.journal.push(EVIDENCE[clue]);this.notice({name:'Dưới lớp bụi có một cái tên: ZIN.',ticket:'Vé 000: bốn dấu mộc, một ô cuối để trống.',tape:'Băng cũ: “Chào mừng Zin đến với Nhà Ma.”'}[clue]);}else this.notice('Manh mối này đã ở trong nhật ký.');
     if(spot.kind==='clue')this.effect(spot.id,spot);this.tryMystery();return true;
    }
   }
@@ -186,7 +186,7 @@ export class Simulation{
   m.state='investigate';m.t=5;m.effectDuration=5;m.effectLabel='Nghe tiếng động';m.path=findPath(this.room,m,{x,y});return true;
  }
  finish(key){this.ending=key;this.torch=false;this.p.path=[];this.notice('Ca đêm kết thúc.');}
- tryMystery(){if(this.room.story&&this.clues.length===3&&!this.mystery&&(this.role==='visitor'?this.time>=20:this.completed)){this.mystery=true;this.monster.state='rest';this.monster.t=999;this.log('Khách Số 0: Còn một phòng nữa mà… Mang vé tới bàn đóng mộc, hoặc ghi tên An ở tủ phân ca.');}}
+ tryMystery(){if(this.room.story&&this.clues.length===3&&!this.mystery&&(this.role==='visitor'?this.time>=20:this.completed)){this.mystery=true;this.monster.state='rest';this.monster.t=999;this.log('Khách Số 0: Còn một phòng nữa mà… Mang vé tới bàn đóng mộc, hoặc ghi tên Zin ở tủ phân ca.');}}
  step(dt,input={}){
   if(this.ending)return;dt=Math.min(.06,Math.max(0,dt));this.time+=dt;this.cooldown=Math.max(0,this.cooldown-dt);this.propCooldown=Math.max(0,this.propCooldown-dt);for(const k in this.objectCooldowns)this.objectCooldowns[k]=Math.max(0,this.objectCooldowns[k]-dt);this.worldEffects=this.worldEffects.filter(e=>e.until>this.time);this.floaters=this.floaters.filter(f=>f.until>this.time);this.props.forEach(p=>p.pulse=Math.max(0,p.pulse-dt));if(this.coinFlight&&this.coinFlight.until<=this.time)this.coinFlight=null;
   this.relief=Math.max(0,this.relief-dt);this.headDrop=Math.max(0,this.headDrop-dt);
@@ -294,7 +294,7 @@ export class Simulation{
   if(live&&this.npcs.every(n=>n.gone)){this.phase='between';this.completed=true;this.notice(this.room.story?'Nhóm đã ra hết. Tới cửa đón nhóm mới, hoặc tìm hiểu vé 000.':'Nhóm đã ra hết. Tới cửa vào đón nhóm mới, hoặc chấm công.');}
  }
  objective(){
-  if(this.ending)return'Ca đêm đã kết thúc';if(this.mystery)return'Tới bàn đóng mộc hoặc tủ phân ca để giúp An';
+  if(this.ending)return'Ca đêm đã kết thúc';if(this.mystery)return'Tới bàn đóng mộc hoặc tủ phân ca để giúp Zin';
   const cemetery=this.roomId==='cemetery';
   if(this.roomId==='corridor'){
    if(this.role==='visitor')return'Canh bóng cổ dài: cúi (Q), giật dây kéo, rọi ròng rọc hoặc đi cửa hậu · tới cửa cuối hành lang';

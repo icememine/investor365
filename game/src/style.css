@@ -35,3 +35,28 @@ dialog h3{font-size:14px;font-weight:500;color:var(--gold);margin:16px 0 4px}.st
 .thumb #touch-controls .joystick-area,.thumb #touch-controls .touch-middle,.thumb #touchSecondary{display:none!important}
 .radial{position:absolute;right:0;bottom:calc(100% + 8px);z-index:6;display:grid;grid-template-columns:repeat(4,52px);gap:6px;padding:8px;background:#071321f0;border:1px solid var(--line);border-radius:14px;pointer-events:auto}
 .radial button{width:52px;height:52px;border-radius:50%;font-size:11px;padding:0;background:#142a3be8}.radial button:disabled{opacity:.35}
+
+/* Hầm Ma screen: the world fills the window; status lives on the canvas, actions are icon buttons on top. */
+body.dungeon{padding:0}.dungeon #game{width:100%;max-width:none;height:100dvh;border:0;display:flex;flex-direction:column}
+.dungeon header,.dungeon .objective,.dungeon #touch-controls,.dungeon #toolbar,.dungeon footer,.dungeon .topline,.dungeon #nearby{display:none!important}
+.dungeon .world-wrap{flex:1;height:auto;min-height:0;aspect-ratio:auto}
+.dungeon #speech{bottom:150px;max-width:min(560px,92%)}
+.dhud{position:absolute;inset:0;pointer-events:none;z-index:3}.dhud>*{pointer-events:auto}
+.dbtn{position:relative;border-radius:50%;border:2px solid #b08a4a;background:#1d150e center/62% no-repeat;image-rendering:pixelated;box-shadow:0 3px 10px #0008;padding:0}
+.dbtn:disabled{filter:grayscale(1);opacity:.5}.dbtn i{position:absolute;inset:0;border-radius:50%;background:conic-gradient(#000a var(--cd,0deg),transparent 0)}
+.dbtn kbd{position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);font:9px monospace;color:#e7c083;opacity:.8}
+.dbtn b{position:absolute;right:-4px;bottom:-4px;min-width:18px;padding:0 4px;border-radius:9px;background:#07131d;border:1px solid #b08a4a;font:bold 10px system-ui;color:#ffe5ad}
+.dbtn b:empty{display:none}
+.dpause{position:absolute;top:8px;left:8px;width:22px;height:22px;border-width:1px;background-size:70%;z-index:2;opacity:.85}
+.dskills{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:10px;padding:8px 12px;border-radius:30px;background:#0a0704c0;border:1px solid #5b3a26}
+.dskill{width:54px;height:54px}.dskill[data-skill=flash]{width:62px;height:62px;border-color:#ffd36b}
+.dside{position:absolute;right:12px;bottom:100px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.dsmall{width:46px;height:46px}
+.duse{position:absolute;left:50%;bottom:104px;transform:translateX(-50%);padding:8px 22px;border-radius:8px;border:2px solid #b08a4a;background:#2a1d12e8;color:#ffe5ad;font-size:14px;letter-spacing:.5px;box-shadow:0 3px 10px #0008;white-space:nowrap}
+.dstick{position:absolute;left:14px;bottom:100px}.dstick #joystick{width:112px;height:112px;background-color:#0b2236a0}.dstick #stick{width:48px;height:48px}
+.thumb .dstick{display:none}
+@media(max-width:520px){.dskills{gap:6px;padding:6px 8px;bottom:18px}.dskill{width:46px;height:46px}.dskill[data-skill=flash]{width:54px;height:54px}.dside{right:8px;bottom:92px;gap:8px}.dsmall{width:40px;height:40px}.duse{bottom:92px;font-size:13px}.dbtn kbd{display:none}.dungeon #speech{bottom:140px}}
+@media(pointer:coarse){.dbtn kbd{display:none}}
+@media(pointer:fine){.dstick{display:none}}
+@media(max-width:520px){.dungeon #speech{left:10px;right:62px;transform:none;width:auto;max-width:none}}
+.dbtn,.dbtn:hover,.dbtn:focus{background-color:#1d150e;background-repeat:no-repeat!important;background-position:center!important;background-size:62%!important}.dbtn:hover{border-color:#ffd36b}

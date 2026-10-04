@@ -13,13 +13,17 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const angleDiff=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
 export function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 
-// Every three floors the theme changes and the third floor of each theme has its boss.
+// Each floor rolls its look at random; boss floors are always hell. The boss rotates by act of three floors.
 export const THEMES=[
- {id:'cemetery',name:'Nghĩa Địa',boss:'zombie'},
- {id:'dining',name:'Bàn Tiệc',boss:'vampire'},
- {id:'corridor',name:'Hành Lang',boss:'neck'},
+ {id:'catacomb',name:'Hầm Mộ'},
+ {id:'cemetery',name:'Nghĩa Địa'},
+ {id:'dining',name:'Phòng Ăn'},
+ {id:'corridor',name:'Hành Lang'},
 ];
-export const themeFor=depth=>THEMES[Math.floor((depth-1)/3)%THEMES.length];
+export const HELL={id:'hell',name:'Địa Ngục'};
+export const ACT_BOSSES=['zombie','vampire','neck'];
+export const bossFor=depth=>ACT_BOSSES[Math.floor((depth-1)/3)%ACT_BOSSES.length];
+export const themeFor=(depth,seed)=>isBossFloor(depth)?HELL:THEMES[Math.floor(rng(seed^0x5bd1e995)()*THEMES.length)];
 export const isBossFloor=depth=>depth%3===0;
 
 // ---- Floor generation: rooms on a tile grid joined by two-tile-wide corridors.
@@ -57,7 +61,7 @@ function buildFloor(depth,seed){
  for(let k=0;k<2;k++){const i=others[ri(0,others.length-1)],j=others[ri(0,others.length-1)];if(i!==j)edges.push([i,j]);}
  if(boss){let near=others[0];for(const j of others)if(gap(bossRoom,j)<gap(bossRoom,near))near=j;edges.push([near,bossRoom]);}
  for(const [i,j] of edges)corridor(rooms[i],rooms[j]);
- const floor={depth,seed,tiles,rooms,theme:themeFor(depth),bossRoom,doorOpen:!boss};
+ const floor={depth,seed,tiles,rooms,theme:themeFor(depth,seed),boss:bossFor(depth),bossRoom,doorOpen:!boss};
  const tileOf=r=>r.cy*MAP_W+r.cx,center=r=>({x:(r.cx+.5)*TILE,y:(r.cy+.5)*TILE});
  if(boss){
   // The door is every edge tile of the boss room that opens onto floor outside it.
@@ -229,7 +233,7 @@ export class Dungeon{
   const keyHere=!boss||this.keys===0;
   f.rooms.forEach((room,i)=>{
    if(i===0)return;
-   if(i===f.bossRoom){this.spawn(theme.boss,(room.cx-1.5)*TILE,(room.cy+.5)*TILE,scale);return;}
+   if(i===f.bossRoom){this.spawn(f.boss,(room.cx-1.5)*TILE,(room.cy+.5)*TILE,scale);return;}
    // The rooms holding the stamp and the key are guarded harder.
    const guarded=i===f.stampRoom||i===f.keyRoom&&keyHere,keyRoom=i===f.keyRoom&&keyHere;
    const pack=2+Math.floor(this.rand()*3)+Math.min(3,Math.floor(depth/3))+(keyRoom?2:0);
@@ -244,7 +248,7 @@ export class Dungeon{
   if(keyHere)this.drops.push({id:this.nextId++,kind:'quest',quest:'key',x:f.key.x,y:f.key.y});
   this.float(st.x,st.y-60,`TẦNG ${depth} · ${theme.name.toUpperCase()}`,'#a0ead4',16);
   if(!boss)this.notice(`Tầng ${depth}: cầu thang bị niêm phong. Tìm con dấu tầng để mở. Chìa khóa đồng thì tùy, nhưng phòng trùm chỉ mở bằng nó.`);
-  else if(this.keys>0)this.notice(`Tầng ${depth}: ${ENEMIES[theme.boss].name} ở sau cánh cửa khóa. Bạn có ${this.keys} chìa khóa đồng.`);
+  else if(this.keys>0)this.notice(`Tầng ${depth}: ${ENEMIES[f.boss].name} ở sau cánh cửa khóa. Bạn có ${this.keys} chìa khóa đồng.`);
   else this.notice(`Tầng ${depth}: phòng trùm khóa mà bạn chưa có chìa. Mr. D: “Hình như có đứa đánh rơi một chiếc ở tầng này… chỗ đó đông diễn viên lắm.”`);
  }
  // Stairs open with the floor stamp, or on a boss floor once the boss is broken.
@@ -302,7 +306,7 @@ export class Dungeon{
    this.keys--;this.openDoor();this.notice(`Cạch! Chìa khóa đồng mở cửa phòng trùm.${this.keys?` Còn ${this.keys} chìa.`:''}`);return true;
   }
   if(dist(f.stairs,p)<46){
-   if(this.stairsLocked){this.notice(isBossFloor(this.depth)?`Cầu thang khóa. Hạ màn ${ENEMIES[f.theme.boss].name} trước.`:`Cầu thang bị niêm phong. Tìm con dấu tầng ${this.depth}.`);return true;}
+   if(this.stairsLocked){this.notice(isBossFloor(this.depth)?`Cầu thang khóa. Hạ màn ${ENEMIES[f.boss].name} trước.`:`Cầu thang bị niêm phong. Tìm con dấu tầng ${this.depth}.`);return true;}
    if(this.fragments.length>=3&&!this.zinFloorDone&&!this.zinState)this.enterZinFloor();else this.enterFloor(this.depth+1);return true;
   }
   if(dist(f.exitUp,p)<46){this.finish();return true;}
@@ -387,8 +391,9 @@ export class Dungeon{
   const items=e.boss?3:e.elite?(this.rand()<.7?1:0)+1:this.rand()<.13?1:0;
   for(let i=0;i<items;i++)drop('item',{item:e.boss&&i===0&&SETS[e.type]?makeSetItem(this.rand,this.depth,e.type):makeItem(this.rand,this.depth,e.boss?1.2:e.elite?.6:0)});
   // Zin's ticket: one "Vé 000" fragment per theme, rarely carried by elites and bosses.
-  const theme=this.floor.theme.id;
-  if(!this.fragments.includes(theme)&&!this.drops.some(x=>x.quest==='fragment')&&(e.boss||e.elite)&&this.rand()<(e.boss?FRAGMENT_CHANCE.boss:FRAGMENT_CHANCE.elite))drop('quest',{quest:'fragment',theme});
+  // Fragments belong to an act (its boss), so each act holds exactly one.
+  const theme=this.floor.boss;
+  if(theme&&!this.fragments.includes(theme)&&!this.drops.some(x=>x.quest==='fragment')&&(e.boss||e.elite)&&this.rand()<(e.boss?FRAGMENT_CHANCE.boss:FRAGMENT_CHANCE.elite))drop('quest',{quest:'fragment',theme});
   if(e.boss){this.bossBroken=true;this.stats.bosses++;this.notice(`${e.name} cười bò ra sàn rồi mở khóa cầu thang. Lối xuống đã mở!`);}
  }
  gainXp(n){const p=this.p;p.xp+=n;while(p.xp>=xpForLevel(p.level)){p.xp-=xpForLevel(p.level);p.level++;const d=this.derived;p.courage=d.maxCourage;p.battery=d.maxBattery;this.float(p.x,p.y-90,`LÊN CẤP ${p.level}!`,'#ffd36b',16);const unlock=Object.values(SKILLS).find(s=>s.level===p.level);this.notice(unlock?`Lên cấp ${p.level}! Mở kỹ năng mới: ${unlock.name}.`:`Lên cấp ${p.level}! Can đảm và sát thương tăng.`);}}

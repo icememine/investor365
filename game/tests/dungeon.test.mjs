@@ -208,7 +208,7 @@ test('boss floor: the door needs a key, the boss locks the stairs until broken',
   d.drops = [];                            // the boss's loot lands by the stairs; E would pick it up first
   d.interact();
   assert.equal(d.depth, 4);
-  assert.equal(d.floor.theme.id, 'dining');
+  assert.equal(d.floor.boss, 'vampire', 'act 2 belongs to Ma Cà Rồng');
 });
 
 test('arriving at a boss floor without a key spawns a guarded spare key, so you are never stuck', () => {
@@ -349,4 +349,17 @@ test('trust drops when you leave them behind and grows when you fight together',
   for (let i = 0; i < 200; i++) { c.x = d.p.x - 30; c.y = d.p.y; d.stepCompanions(0.05); }
   assert.ok(c.trust > low);
   assert.ok(e);
+});
+
+test('floors roll their look at random; boss floors are always hell', () => {
+  const seen = new Set();
+  for (let seed = 1; seed <= 40; seed++) {
+    const f = generateFloor(1 + seed % 2, seed * 17);
+    assert.notEqual(f.theme.id, 'hell');
+    seen.add(f.theme.id);
+    assert.equal(generateFloor(3, seed * 17).theme.id, 'hell');
+  }
+  assert.deepEqual([...seen].sort(), ['catacomb', 'cemetery', 'corridor', 'dining']);
+  assert.equal(generateFloor(4, 9).boss, 'vampire');
+  assert.equal(generateFloor(9, 9).boss, 'neck');
 });

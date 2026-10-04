@@ -250,3 +250,35 @@ export function paintZombie(){
  g.putImageData(img,0,0);
  return c;
 }
+
+// Shared outline pass for hand-placed pixel sprites.
+function outline(g,w,h){
+ const img=g.getImageData(0,0,w,h),d=img.data,solid=i=>d[i*4+3]>0,out=[];
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x;if(solid(i))continue;if((x>0&&solid(i-1))||(x<w-1&&solid(i+1))||(y>0&&solid(i-w))||(y<h-1&&solid(i+w)))out.push(i);}
+ for(const i of out){d[i*4]=18;d[i*4+1]=13;d[i*4+2]=20;d[i*4+3]=255;}
+ g.putImageData(img,0,0);
+}
+function sprite(w,h,draw){const [c,g]=canvas(w+2,h+2);const r=(x,y,ww,hh,col)=>{g.fillStyle=col;g.fillRect(x+1,y+1,ww,hh);};draw(r);outline(g,w+2,h+2);return c;}
+
+// ---- Cats: Zin (orange), Bơ (tam thể, with his blue cap and glasses), Na (mướp, with a pink bow).
+const CAT={
+ zin:{base:'#e8873a',shade:'#c86a24',stripe:'#b85a1a',belly:'#f6c48e'},
+ bo:{base:'#f2eee6',shade:'#d8d2c6',stripe:null,belly:'#ffffff',patches:[['#e8873a',[[5,3,6,6],[16,17,6,5],[21,20,4,4]]],['#2b2626',[[16,3,7,5],[7,19,5,5],[23,23,3,3]]]]},
+ na:{base:'#8d8270',shade:'#6d6354',stripe:'#4a4237',belly:'#c9bfae'},
+};
+export function paintCat(kind){
+ const c=CAT[kind];return sprite(28,31,r=>{
+  r(22,16,4,3,c.shade);r(24,13,3,4,c.shade);r(21,19,3,8,c.base);
+  r(6,15,16,13,c.base);r(9,18,10,9,c.belly);r(19,16,3,11,c.shade);
+  r(8,27,5,3,c.belly);r(15,27,5,3,c.belly);
+  r(4,4,20,12,c.base);r(5,3,18,2,c.base);r(4,0,4,5,c.base);r(20,0,4,5,c.base);r(5,1,2,3,'#f3a3b5');r(21,1,2,3,'#f3a3b5');r(21,4,3,11,c.shade);
+  if(c.stripe){r(10,4,2,3,c.stripe);r(13,4,2,4,c.stripe);r(16,4,2,3,c.stripe);r(6,17,3,2,c.stripe);r(19,19,3,2,c.stripe);r(6,22,3,2,c.stripe);r(23,13,2,2,c.stripe);}
+  for(const [col,boxes] of c.patches||[])for(const b of boxes)r(...b,col);
+  r(8,8,3,3,'#1a1418');r(17,8,3,3,'#1a1418');r(9,8,1,1,'#ffffff');r(18,8,1,1,'#ffffff');
+  r(13,11,2,1,'#e46a86');r(12,12,1,1,'#3a2a2a');r(15,12,1,1,'#3a2a2a');
+  r(2,10,3,1,'#f2eee6');r(23,10,3,1,'#f2eee6');
+  if(kind==='bo'){r(4,0,20,3,'#2e5fa8');r(3,3,22,2,'#2e5fa8');r(22,4,4,1,'#2e5fa8');r(7,7,5,5,'#1a1418');r(16,7,5,5,'#1a1418');r(8,8,3,3,'#cfe3ff');r(17,8,3,3,'#cfe3ff');r(12,9,4,1,'#1a1418');r(9,9,1,1,'#1a1418');r(18,9,1,1,'#1a1418');}
+  if(kind==='na'){r(19,1,3,3,'#f07aa0');r(23,1,3,3,'#f07aa0');r(22,2,1,1,'#c94a76');}
+ });
+}
+

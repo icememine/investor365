@@ -13,7 +13,7 @@ admit guests, scare them).
    flashlight gives away the coat hiding spot. Na's lost hair clip is hidden here. Staff can hide
    in the standing coffin and burst out for a guaranteed surprise. The arch leads on to room 2.
 2. **Bàn Tiệc Ma Cà Rồng** (dining room): the vampire hunts by sight. Three clues unlock Khách
-   Số 0 (An) and the story endings. The door leads on to room 3.
+   Số 0 (Zin) and the story endings. The door leads on to room 3.
 3. **Hành lang Ma Cổ Dài** (corridor): a head rides a ceiling rail and drops on whoever stands
    under its shadow. Crouch (Q), yank the pulley rope, shine the flashlight on the pulley to jam
    it, or take the dark staff back door. Light on her face only helps her find you. A wig on a

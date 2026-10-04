@@ -86,7 +86,7 @@ test('the dining room door leads on to the corridor', () => {
   assert.equal(sim.ending, null);
 });
 
-test('An appears with all clues after 20 s, and the table resolves the ticket', () => {
+test('Zin appears with all clues after 20 s, and the table resolves the ticket', () => {
   const sim = new Simulation('visitor', 'dining'); parkGhost(sim);
   sim.clues.push('name', 'tape', 'ticket');
   sim.time = 19; sim.tryMystery(); assert.equal(sim.mystery, false);
@@ -95,7 +95,7 @@ test('An appears with all clues after 20 s, and the table resolves the ticket', 
   assert.equal(sim.ending, 'ticket');
 });
 
-test('wardrobe invites An onto the staff once the story is active', () => {
+test('wardrobe invites Zin onto the staff once the story is active', () => {
   const sim = new Simulation('visitor', 'dining');
   sim.clues.push('name', 'tape', 'ticket'); sim.time = 25; sim.tryMystery();
   standAt(sim, 'wardrobe'); sim.interact('wardrobe');

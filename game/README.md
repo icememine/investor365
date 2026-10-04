@@ -47,14 +47,23 @@ A haunted-house game with three ways to play:
 - **Town hub:** between descents (start screen or end screen), Mr. D sells stand upgrades (extra
   bánh bao or pin AA each descent, a map that shows each stamp), costumes with small stats, and
   gadgets for Bơ. Purchases are saved with the character.
-- **Zin (Khách Số 0):** each theme hides one "Vé 000" fragment (bosses 50%, elites 10%). With one
+- **Zin (Khách Số 0):** each act hides one "Vé 000" fragment (bosses 50%, elites 10%). With one
   fragment, press Z (or ✧ / the radial) once per floor: Zin restores your courage, stuns nearby
   performers and fights for 12 s with the strength of you, Na and Bơ together. Three fragments
   send the next stairs to Tầng 000: stamp the ticket (Xé vé: Zin moves on and can no longer be
   called) or sign the roster (Ma mới: Zin joins the staff and stays callable).
+- **Screen layout (Greedy Cave style):** the dungeon fills the window. Top left: portrait, red courage
+  and blue battery bars with numbers, a level badge and status icons (keys, stamp, Vé 000, coins,
+  skill points), with the quest under them. Top right: minimap. Bottom: round skill icons; right
+  side: bánh bao, pin AA, Zin, skill tree and bag; a contextual action button above the skill bar.
 - **One-thumb phone mode:** default on touch screens, switchable in Pause. No joystick: tap the floor
-  to walk, tap a performer to attack, the flashlight fires by itself at anyone in reach, and ✦
-  opens a radial with the other skills, potions and Zin.
+  to walk, tap a performer to attack, and the flashlight fires by itself at anyone in reach.
+- **Floors:** each floor rolls its look at random (Hầm Mộ, Nghĩa Địa, Phòng Ăn, Hành Lang); boss
+  floors are always Địa Ngục. Bosses rotate by act of three floors (Xác Sống, Ma Cà Rồng, Ma Cổ Dài),
+  and each act holds one Vé 000 fragment.
+- **Companions are cats:** Na (mướp, pink bow), Bơ (tam thể, blue cap and glasses) and Zin (orange),
+  in Hầm Ma and in the classic tour.
+- **Items on the floor** are large icons with a glow in their rarity colour; coins and snacks too.
 - **Art drop-in:** finished sprites placed in `assets/art/` replace the painted placeholders; see
   `assets/art/README.md` for the file list and specs.
 
@@ -81,7 +90,7 @@ player's own browser (there is no server):
    flashlight gives away the coat hiding spot. Na's lost hair clip is hidden here. Staff can hide
    in the standing coffin and burst out for a guaranteed surprise. The arch leads on to room 2.
 2. **Bàn Tiệc Ma Cà Rồng** (dining room): the vampire hunts by sight. Three clues unlock Khách
-   Số 0 (An) and the story endings. The door leads on to room 3.
+   Số 0 (Zin) and the story endings. The door leads on to room 3.
 3. **Hành lang Ma Cổ Dài** (corridor): a head rides a ceiling rail and drops on whoever stands
    under its shadow. Crouch (Q), yank the pulley rope, shine the flashlight on the pulley to jam
    it, or take the dark staff back door. Light on her face only helps her find you. A wig on a

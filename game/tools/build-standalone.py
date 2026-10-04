@@ -28,6 +28,7 @@ def main():
         js = (SRC / name).read_text(encoding="utf-8")
         # Each module runs in its own function scope so private names cannot collide;
         # its exports are returned and become top-level constants for the modules after it.
+        assert not re.search(r"^import\s*\{[^}]*\bas\b", js, flags=re.M), f"aliased import in {name}: use the exported name"
         js = re.sub(r"^import\s*\{[^}]*\}\s*from\s*'\./[\w.-]+';\s*$", "", js, flags=re.M)
         assert not re.search(r"^\s*import\b", js, flags=re.M), f"unhandled import in {name}"
         exports = re.findall(r"^export\s+(?:const|let|function|class)\s+([\w$]+)", js, flags=re.M)

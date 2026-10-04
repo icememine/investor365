@@ -56,7 +56,7 @@ Each object must be within 64 world units to use directly. Tapping a marker from
 
 Repeated activation of the same object reduces its effect duration by 0.65 seconds per prior use, with a minimum duration of 2 seconds. Cooldowns prevent immediate refreshing. Props can override another prop's state; flashlight interruption follows its own allowed-state rules. These are authored effects, not a general physical engine.
 
-A clue is collected the first time the player checks the portrait, ticket or cassette. Later uses can still activate that object's effect. Once the An story resolution is active, ordinary prop effects stop so the story can be completed safely.
+A clue is collected the first time the player checks the portrait, ticket or cassette. Later uses can still activate that object's effect. Once the Zin story resolution is active, ordinary prop effects stop so the story can be completed safely.
 
 ## Employee
 
@@ -72,18 +72,18 @@ After both guests leave, another group can be admitted. Rest at the bench, inspe
 
 ## Clues and endings
 
-- Portrait: **name — An**.
+- Portrait: **name — Zin**.
 - Table: **ticket — 000**.
 - Cassette: **tape — old welcome**.
 
-With all three clues, An appears after at least 20 seconds of a visitor run, or after an employee has completed a group. The normal vampire stops pursuing. Use the table to complete the ticket, or the wardrobe/roster to invite An onto the staff.
+With all three clues, Zin appears after at least 20 seconds of a visitor run, or after an employee has completed a group. The normal vampire stops pursuing. Use the table to complete the ticket, or the wardrobe/roster to invite Zin onto the staff.
 
 | Ending | Implemented trigger |
 |---|---|
 | Mai chơi tiếp | Visitor exits before 20 seconds without clues |
 | Rành quá rồi | Visitor exits after 20 seconds or after finding a clue |
-| Xé vé | Use table when An's resolution is active |
-| Ma mới | Use wardrobe when An's resolution is active |
+| Xé vé | Use table when Zin's resolution is active |
+| Ma mới | Use wardrobe when Zin's resolution is active |
 | Không bỏ ai lại | Employee stops the show through the safety dialog |
 | Hết ca | Employee checks out while no guests remain |
 
@@ -232,8 +232,8 @@ Khách có thể đi thẳng tìm đường ra, dùng đèn để ngăn một ph
 Ba manh mối nằm ở những điểm cụ thể, phải tự đến gần:
 
 1. Tấm vé ở bàn: bốn dấu mộc và một ô trắng.
-2. Máy cát sét: lời chào cũ “Chào mừng An đến với Nhà Ma.”
-3. Bảng tên trên ghế: AN.
+2. Máy cát sét: lời chào cũ “Chào mừng Zin đến với Nhà Ma.”
+3. Bảng tên trên ghế: ZIN.
 
 Khi có đủ manh mối và một nhóm đã hoàn thành lượt chơi, chiếc ghế thứ năm tự xê dịch. Diễn viên dừng động tác đang làm.
 
@@ -263,9 +263,9 @@ Ra cuối phòng, Ma Cổ Dài đã tháo mặt nạ mà trong gương vẫn có
 
 ### Cảnh 6: Phòng cuối
 
-Khách Số 0 đứng trước máy đóng mộc. Người chơi có thể tiến đến nói chuyện, đặt băng vào máy, đem vé tới bàn đóng mộc, mở cửa ra ngoài hoặc dẫn An về phía hậu trường.
+Khách Số 0 đứng trước máy đóng mộc. Người chơi có thể tiến đến nói chuyện, đặt băng vào máy, đem vé tới bàn đóng mộc, mở cửa ra ngoài hoặc dẫn Zin về phía hậu trường.
 
-**An:** “Còn một phòng nữa mà…”
+**Zin:** “Còn một phòng nữa mà…”
 
 Không có màn hình “chọn kết thúc”. Kết thúc được xác định bởi hành động hoàn tất:
 
@@ -275,12 +275,12 @@ Không có màn hình “chọn kết thúc”. Kết thúc được xác địn
 | Hết ca | Nhân viên chấm công sau một ca bình thường |
 | Rành quá rồi | Khách vượt qua khu cuối, không giải quyết chuyện vé 000 |
 | Không bỏ ai lại | Bật đèn, tập hợp nhóm và đưa mọi người ra |
-| Xé vé | Mang đủ bằng chứng, bật lời chào, đóng mộc cuối cho An |
-| Ma mới | Dẫn An tới bảng phân ca, đăng ký một vị trí cho An |
+| Xé vé | Mang đủ bằng chứng, bật lời chào, đóng mộc cuối cho Zin |
+| Ma mới | Dẫn Zin tới bảng phân ca, đăng ký một vị trí cho Zin |
 
-**An, khi được đóng mộc:** “Lâu quá…”
+**Zin, khi được đóng mộc:** “Lâu quá…”
 
-Hôm sau, góc vé có thêm hình chiếc ô. Nếu An gia nhập, bảng phân ca xuất hiện dòng chữ của Mr. D: “Đứa này khỏi cần phát đồng phục.” Không tự hủy kết thúc đã chọn để kể lại cùng một truyện ở đêm sau.
+Hôm sau, góc vé có thêm hình chiếc ô. Nếu Zin gia nhập, bảng phân ca xuất hiện dòng chữ của Mr. D: “Đứa này khỏi cần phát đồng phục.” Không tự hủy kết thúc đã chọn để kể lại cùng một truyện ở đêm sau.
 
 ## 6. Nhiệm vụ, tiến trình và quan hệ trong bản đầy đủ
 
@@ -392,7 +392,7 @@ Important public operations:
 | `place()` | Place employee sound prop with limits and costs |
 | `effect(id,spot)` | Apply fixture cooldown, visuals and behavior changes |
 | `step(dt,input)` | Advance movement, resources, timers and role-specific NPC systems |
-| `tryMystery()` | Gate the An story resolution |
+| `tryMystery()` | Gate the Zin story resolution |
 | `finish(key)` | End the run and stop its simulation advancement |
 
 The controller should call these operations instead of editing fear, clues or NPC state from button handlers. The current mobile flashlight handler also sets initial facing toward a nearby ghost; consider moving that aim-assist rule into the model when input complexity grows.
@@ -436,7 +436,7 @@ Keyboard movement is normalized; diagonal input is not faster. The current simul
 
 Each sprite is drawn with a bottom-center anchor, fixed display height, optional horizontal mirroring and a small movement bob. Depth sorting uses actor foot Y. The table is painted into the backdrop, so there is no general foreground occlusion/tile-layer pipeline. When adding rooms, separate background, colliders, foreground occluders, actors and effects.
 
-An currently reuses the player sprite with transparency. Labels, rings, cones and timing bars are runtime feedback geometry. Sound props use a small labeled marker rather than a finished prop sprite. Those placeholders should be replaced during art production.
+Zin currently reuses the player sprite with transparency. Labels, rings, cones and timing bars are runtime feedback geometry. Sound props use a small labeled marker rather than a finished prop sprite. Those placeholders should be replaced during art production.
 
 The supplied character atlas is a reusable image source, not a complete animation library. The key-screen images under `references/` are concept references, not runtime textures or browser screenshots. The latest approved hybrid style is reference 01; older choices-based layouts should not be reintroduced as the primary gameplay.
 
@@ -448,7 +448,7 @@ If you add new files, fonts, sounds or modules, extend the export tool explicitl
 
 ## Current limitations and next steps
 
-1. Add real walk/idle/scare/hurt animations and directional sprites, including An and Mr. D.
+1. Add real walk/idle/scare/hurt animations and directional sprites, including Zin and Mr. D.
 2. Split room data, interactables, effects and ghost species into data files rather than long conditional methods.
 3. Cache pathfinding nodes; add NPC separation and authored entrance/exit transitions.
 4. Add persistent progress with versioned save data. There is no localStorage/cloud save now.

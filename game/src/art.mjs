@@ -301,6 +301,8 @@ const TILE_THEMES={
  cemetery:{floor:[C.grass,C.dirt,C.grassDark,C.grassLight],wall:C.stoneDark,face:C.stone,faceLight:C.stoneLight,cap:'#0d1a22'},
  dining:{floor:['#22384c','#1d3144','#284159','#1a2c3d'],wall:'#142a2c',face:'#1f3d3a',faceLight:'#2a4f49',cap:'#0b1620'},
  corridor:{floor:[K.plank,K.plankLight,K.plank,'#232b36'],wall:C.woodDark,face:K.paper,faceLight:K.paperLight,cap:'#120e0c'},
+ catacomb:{floor:['#5a4a36','#4d3f2e','#64533c','#3f3426'],wall:'#3a2e22',face:'#8a7558',faceLight:'#a48c69',cap:'#1a140e'},
+ hell:{floor:['#3c1a14','#47201a','#32140f','#55261a'],wall:'#3a0e08',face:'#5a1e14',faceLight:'#8a2e1a',cap:'#120606'},
 };
 // Paints a whole dungeon floor (tiles of 32 world units = 16 px) once per floor.
 export function paintDungeonFloor(floor,mapW,mapH,tile){
@@ -313,6 +315,8 @@ export function paintDungeonFloor(floor,mapW,mapH,tile){
    for(let yy=0;yy<px;yy+=2)for(let xx=0;xx<px;xx+=2){const r=rand();g.fillStyle=theme.floor[r<.55?0:r<.75?1:r<.92?2:3];g.fillRect(ox+xx,oy+yy,2,2);}
    if(floor.theme.id==='dining'){g.fillStyle='#14243380';g.fillRect(ox,oy,px,1);g.fillRect(ox,oy,1,px);}
    if(floor.theme.id==='corridor'){g.fillStyle=K.plankGap;g.fillRect(ox,oy+px-1,px,1);if((x+y)%3===0)g.fillRect(ox+((x*5)%px),oy,1,px);}
+   if(floor.theme.id==='catacomb'){g.fillStyle='#2e251a';if(x%2===0)g.fillRect(ox,oy,1,px);if(y%2===0)g.fillRect(ox,oy,px,1);}
+   if(floor.theme.id==='hell'&&rand()<.16){g.fillStyle='#ff7a2e';const len=4+Math.floor(rand()*8);for(let i=0;i<len;i++)g.fillRect(ox+((i*3+x)%px),oy+((i*2+y*3)%px),2,1);}
    if(!at(x,y-1)){g.fillStyle='#0008';g.fillRect(ox,oy,px,3);}
    continue;
   }
@@ -324,6 +328,8 @@ export function paintDungeonFloor(floor,mapW,mapH,tile){
    g.fillStyle=theme.faceLight;
    if(floor.theme.id==='cemetery'){g.fillRect(ox+((x%2)*8),oy+6,7,4);g.fillRect(ox+(((x+1)%2)*8),oy+11,7,4);}
    else if(floor.theme.id==='dining'){g.fillRect(ox+3,oy+7,2,2);g.fillRect(ox+10,oy+9,2,2);g.fillStyle=C.wood;g.fillRect(ox,oy+12,px,4);}
+   else if(floor.theme.id==='catacomb'){g.fillRect(ox+((x%2)*8),oy+6,7,3);g.fillRect(ox+(((x+1)%2)*8),oy+10,7,3);if(x%5===0){g.fillStyle='#1a140e';g.fillRect(ox+4,oy+7,8,6);g.fillStyle=C.bone;g.fillRect(ox+6,oy+8,4,3);g.fillStyle='#1a140e';g.fillRect(ox+6,oy+9,1,1);g.fillRect(ox+9,oy+9,1,1);}}
+   else if(floor.theme.id==='hell'){g.fillRect(ox+((x%2)*8),oy+7,6,3);g.fillStyle='#ff7a2e';if(x%3===0)g.fillRect(ox+7,oy+5,1,px-5);g.fillStyle='#ffb347';if(x%7===0)g.fillRect(ox+3,oy+12,2,2);}
    else{g.fillRect(ox+6,oy+7,3,3);g.fillStyle=C.wood;g.fillRect(ox,oy+11,px,5);}
   }else{g.fillStyle=theme.cap;g.fillRect(ox,oy,px,px);g.fillStyle=theme.wall;if(at(x-1,y))g.fillRect(ox,oy,2,px);if(at(x+1,y))g.fillRect(ox+px-2,oy,2,px);if(at(x,y-1))g.fillRect(ox,oy,px,2);}
  }
@@ -333,7 +339,59 @@ export function paintDungeonFloor(floor,mapW,mapH,tile){
   if(!at(x,y)||!at(x,y-1)||rand()>.035)continue;const wx=x*tile+8,wy=y*tile+10;
   if(floor.theme.id==='cemetery'){if(rand()<.5){rect(wx,wy-10,14,18,C.stoneDark);rect(wx+2,wy-8,10,14,C.stone);rect(wx+6,wy-6,2,8,C.stoneEdge);}else{rect(wx,wy,10,2,C.bone);rect(wx-2,wy-2,2,6,C.bone);}}
   else if(floor.theme.id==='dining'){rect(wx,wy,6,10,'#e9e4d6');rect(wx+2,wy-4,2,4,C.mint);for(let r=16;r>4;r-=6){g.globalAlpha=.06;disc(wx+3,wy,r,C.mint);}g.globalAlpha=1;}
+  else if(floor.theme.id==='catacomb'){const k=rand();if(k<.4){rect(wx,wy-6,10,8,C.bone);rect(wx+2,wy-4,2,2,'#1a140e');rect(wx+6,wy-4,2,2,'#1a140e');rect(wx+2,wy+2,6,2,C.bone);}else if(k<.7){rect(wx-4,wy,16,3,C.bone);rect(wx,wy-3,3,9,C.bone);}else{rect(wx,wy-12,4,14,'#3a2a1c');rect(wx-2,wy-16,8,4,'#5b3a26');for(let r=14;r>4;r-=5){g.globalAlpha=.08;disc(wx+2,wy-18,r,'#ffb347');}g.globalAlpha=1;rect(wx,wy-22,4,6,'#ffb347');}}
+  else if(floor.theme.id==='hell'){if(rand()<.55){for(let r=18;r>6;r-=6){g.globalAlpha=.12;disc(wx+4,wy,r,'#ff5a1e');}g.globalAlpha=1;rect(wx-6,wy-3,20,7,'#ff7a2e');rect(wx-2,wy-1,12,3,'#ffd36b');}else{rect(wx,wy-4,10,8,C.bone);rect(wx+2,wy-2,2,2,'#120606');rect(wx+6,wy-2,2,2,'#120606');}}
   else{rect(wx-6,wy,20,8,K.carpet);rect(wx-6,wy,20,2,K.brass);}
  }
  return c;
 }
+
+// ---- Cats: Zin (orange), Bơ (tam thể, with his blue cap and glasses), Na (mướp, with a pink bow).
+const CAT={
+ zin:{base:'#e8873a',shade:'#c86a24',stripe:'#b85a1a',belly:'#f6c48e'},
+ bo:{base:'#f2eee6',shade:'#d8d2c6',stripe:null,belly:'#ffffff',patches:[['#e8873a',[[5,3,6,6],[16,17,6,5],[21,20,4,4]]],['#2b2626',[[16,3,7,5],[7,19,5,5],[23,23,3,3]]]]},
+ na:{base:'#8d8270',shade:'#6d6354',stripe:'#4a4237',belly:'#c9bfae'},
+};
+export function paintCat(kind){
+ const c=CAT[kind];return sprite(28,31,r=>{
+  r(22,16,4,3,c.shade);r(24,13,3,4,c.shade);r(21,19,3,8,c.base);
+  r(6,15,16,13,c.base);r(9,18,10,9,c.belly);r(19,16,3,11,c.shade);
+  r(8,27,5,3,c.belly);r(15,27,5,3,c.belly);
+  r(4,4,20,12,c.base);r(5,3,18,2,c.base);r(4,0,4,5,c.base);r(20,0,4,5,c.base);r(5,1,2,3,'#f3a3b5');r(21,1,2,3,'#f3a3b5');r(21,4,3,11,c.shade);
+  if(c.stripe){r(10,4,2,3,c.stripe);r(13,4,2,4,c.stripe);r(16,4,2,3,c.stripe);r(6,17,3,2,c.stripe);r(19,19,3,2,c.stripe);r(6,22,3,2,c.stripe);r(23,13,2,2,c.stripe);}
+  for(const [col,boxes] of c.patches||[])for(const b of boxes)r(...b,col);
+  r(8,8,3,3,'#1a1418');r(17,8,3,3,'#1a1418');r(9,8,1,1,'#ffffff');r(18,8,1,1,'#ffffff');
+  r(13,11,2,1,'#e46a86');r(12,12,1,1,'#3a2a2a');r(15,12,1,1,'#3a2a2a');
+  r(2,10,3,1,'#f2eee6');r(23,10,3,1,'#f2eee6');
+  if(kind==='bo'){r(4,0,20,3,'#2e5fa8');r(3,3,22,2,'#2e5fa8');r(22,4,4,1,'#2e5fa8');r(7,7,5,5,'#1a1418');r(16,7,5,5,'#1a1418');r(8,8,3,3,'#cfe3ff');r(17,8,3,3,'#cfe3ff');r(12,9,4,1,'#1a1418');r(9,9,1,1,'#1a1418');r(18,9,1,1,'#1a1418');}
+  if(kind==='na'){r(19,1,3,3,'#f07aa0');r(23,1,3,3,'#f07aa0');r(22,2,1,1,'#c94a76');}
+ });
+}
+
+// ---- HUD and item icons, 16 × 16 art pixels each.
+const ICONS={
+ flash:r=>{r(2,6,8,5,'#3a4a5a');r(2,6,8,1,'#6d8295');r(10,5,3,7,'#9fb3c2');r(13,4,2,9,'#fff3c4');r(15,6,1,5,'#ffe08a');},
+ candy:r=>{r(5,5,6,6,'#f3889c');r(6,6,2,2,'#ffd1dc');r(2,6,3,4,'#ffd36b');r(11,6,3,4,'#ffd36b');r(1,7,1,2,'#ffd36b');r(14,7,1,2,'#ffd36b');},
+ bell:r=>{r(7,1,2,2,'#b08a4a');r(5,3,6,2,'#e7c083');r(4,5,8,6,'#e7c083');r(3,11,10,2,'#d4a85e');r(5,5,1,5,'#fff0c2');r(7,13,2,2,'#8a6a3a');},
+ spotlight:r=>{r(2,9,5,5,'#3a4a5a');r(3,10,3,3,'#fff3c4');r(7,4,3,6,'#fff3c450');r(9,2,4,5,'#fff3c440');r(4,13,1,2,'#6d8295');},
+ dash:r=>{r(6,4,6,8,'#a0ead4');r(8,3,4,2,'#a0ead4');r(1,5,4,1,'#cfe8ff');r(0,8,5,1,'#cfe8ff');r(2,11,4,1,'#cfe8ff');r(9,12,5,2,'#5fb39f');},
+ bread:r=>{r(3,6,10,7,'#f4ead2');r(4,5,8,1,'#f4ead2');r(4,13,8,1,'#d8c39a');r(6,4,4,2,'#fffaf0');r(7,6,2,1,'#d8c39a');},
+ battery:r=>{r(4,3,8,11,'#2e5fa8');r(6,1,4,2,'#9fb3c2');r(4,3,8,3,'#5e95e8');r(7,7,2,5,'#ffd36b');r(6,9,4,1,'#ffd36b');},
+ zin:r=>{r(3,4,10,8,'#e8873a');r(3,2,2,3,'#e8873a');r(11,2,2,3,'#e8873a');r(5,7,2,2,'#1a1418');r(9,7,2,2,'#1a1418');r(7,10,2,1,'#e46a86');r(5,11,6,2,'#f6c48e');r(6,4,1,2,'#b85a1a');r(9,4,1,2,'#b85a1a');},
+ bag:r=>{r(3,5,10,9,'#8a5a32');r(5,3,6,3,'#6a4022');r(3,5,10,2,'#a8743e');r(6,9,4,3,'#c99a5a');r(7,10,2,1,'#6a4022');},
+ tree:r=>{r(7,1,2,14,'#e7c083');r(3,4,4,2,'#a0ead4');r(9,7,4,2,'#a0ead4');r(3,10,4,2,'#a0ead4');r(2,3,2,4,'#5fb39f');r(12,6,2,4,'#5fb39f');r(2,9,2,4,'#5fb39f');},
+ key:r=>{r(2,5,5,5,'#ffd36b');r(3,6,3,3,'#3a2a1c');r(7,7,7,2,'#ffd36b');r(11,9,2,3,'#ffd36b');r(13,9,1,2,'#ffd36b');},
+ stamp:r=>{r(6,1,4,5,'#7c5435');r(5,1,6,2,'#9a6a44');r(7,6,2,3,'#5b3a26');r(3,9,10,4,'#c23b3b');r(3,9,10,1,'#f3889c');r(2,13,12,1,'#8e2b33');},
+ ticket:r=>{r(1,4,14,8,'#e9e4d6');r(1,4,14,1,'#ffffff');r(3,6,4,3,'#c23b3b');r(9,6,4,1,'#5b3a26');r(9,8,3,1,'#5b3a26');r(11,4,1,8,'#c9bfae');},
+ coin:r=>{r(4,3,8,10,'#e7c083');r(3,5,10,6,'#e7c083');r(5,4,2,2,'#fff0c2');r(7,6,2,4,'#b08a4a');},
+ use:r=>{r(5,2,2,7,'#f2d2b0');r(7,1,2,8,'#f2d2b0');r(9,2,2,7,'#f2d2b0');r(11,4,2,6,'#f2d2b0');r(4,8,9,6,'#f2d2b0');r(3,7,2,3,'#f2d2b0');r(4,13,8,1,'#c99a7a');},
+ pause:r=>{r(4,3,3,10,'#e6e9e4');r(9,3,3,10,'#e6e9e4');},
+ torch:r=>{r(2,6,8,5,'#3a4a5a');r(2,6,8,1,'#6d8295');r(10,5,3,7,'#9fb3c2');r(13,4,2,9,'#fff3c4');},
+ coat:r=>{r(3,3,10,11,'#4a6a8a');r(1,4,3,8,'#4a6a8a');r(12,4,3,8,'#4a6a8a');r(6,3,4,3,'#2e4a66');r(7,6,2,8,'#2e4a66');r(4,10,2,2,'#e7c083');},
+ charm:r=>{r(7,1,2,3,'#b08a4a');r(4,4,8,8,'#a0ead4');r(5,5,3,3,'#e9fff6');r(6,12,4,2,'#5fb39f');},
+ shoes:r=>{r(1,8,7,5,'#c23b3b');r(1,12,8,2,'#f4f1e6');r(8,7,7,6,'#c23b3b');r(8,12,8,2,'#f4f1e6');r(3,9,2,1,'#f4f1e6');r(10,8,2,1,'#f4f1e6');},
+ hat:r=>{r(3,4,10,6,'#2e5fa8');r(2,9,13,2,'#2e5fa8');r(12,10,4,2,'#244c88');r(6,5,3,2,'#5e95e8');},
+ badge:r=>{r(4,2,8,8,'#e7c083');r(3,4,10,4,'#e7c083');r(6,4,4,4,'#c23b3b');r(5,10,2,5,'#2e5fa8');r(9,10,2,5,'#2e5fa8');},
+};
+export function paintIcon(name){return sprite(16,16,r=>ICONS[name](r));}
+export const ICON_NAMES=Object.keys(ICONS);

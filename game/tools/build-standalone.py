@@ -17,7 +17,7 @@ def data_uri(name):
     return "data:image/png;base64," + base64.b64encode((ASSETS / name).read_bytes()).decode()
 
 
-MODULES = ["rooms.mjs", "sim.mjs", "art.mjs", "dungeon.mjs", "dungeon-view.mjs", "save.mjs", "app.js"]  # dependency order
+MODULES = ["rooms.mjs", "sim.mjs", "art.mjs", "progression.mjs", "dungeon.mjs", "dungeon-view.mjs", "save.mjs", "app.js"]  # dependency order
 
 
 def main():
@@ -39,6 +39,11 @@ def main():
         head = f"const {{{names}}}=" if exports else ""
         code.append(f"// ---- {name}\n{head}(()=>{{\n{js}\nreturn{{{names}}};}})();")
     js = "\n".join(code)
+    # Optional artist sprites in assets/art/ are inlined so the single file uses them too.
+    art = {p.stem: data_uri("art/" + p.name) for p in sorted((ASSETS / "art").glob("*.png"))} if (ASSETS / "art").is_dir() else {}
+    marker = "/*ART*/{}/*ART*/"
+    assert marker in js, "missing ART_URLS marker in app.js"
+    js = js.replace(marker, "{" + ",".join(f"{k!r}:{v!r}" for k, v in art.items()) + "}")
     for name in ("world.png", "actors.png"):
         ref = f"'../assets/{name}'"
         assert ref in js, f"missing {ref} in app.js"

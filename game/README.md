@@ -35,6 +35,29 @@ A haunted-house game with three ways to play:
   candy at the cursor, Space, R, F, Shift, E, 1 / 2, I for the bag. On phones the attack buttons
   auto-aim at the nearest performer.
 
+## Progression (Hầm Ma)
+
+- **Skill tree (K):** 12 nodes in two branches, Đèn (light skills) and Bạn bè (companion buffs);
+  one point per level after the first; respec for 50 xu at Mr. D's.
+- **Gear:** seven slots (torch, coat, charm, shoes, hat, bag, badge); rarities Thường, Xịn, Hiếm,
+  Huyền thoại, plus green **Bộ** set pieces: each boss drops a piece of its 2-piece set (Xác Sống:
+  armor and courage per break; Ma Cà Rồng: damage returns as courage; Ma Cổ Dài: crit and faster
+  dash). Hiếm and Huyền thoại items can roll one conditional affix ("+X% damage below 30% courage",
+  "+X% against untouched performers", legendary "100% crit below 20% courage").
+- **Town hub:** between descents (start screen or end screen), Mr. D sells stand upgrades (extra
+  bánh bao or pin AA each descent, a map that shows each stamp), costumes with small stats, and
+  gadgets for Bơ. Purchases are saved with the character.
+- **Zin (Khách Số 0):** each theme hides one "Vé 000" fragment (bosses 50%, elites 10%). With one
+  fragment, press Z (or ✧ / the radial) once per floor: Zin restores your courage, stuns nearby
+  performers and fights for 12 s with the strength of you, Na and Bơ together. Three fragments
+  send the next stairs to Tầng 000: stamp the ticket (Xé vé: Zin moves on and can no longer be
+  called) or sign the roster (Ma mới: Zin joins the staff and stays callable).
+- **One-thumb phone mode:** default on touch screens, switchable in Pause. No joystick: tap the floor
+  to walk, tap a performer to attack, the flashlight fires by itself at anyone in reach, and ✦
+  opens a radial with the other skills, potions and Zin.
+- **Art drop-in:** finished sprites placed in `assets/art/` replace the painted placeholders; see
+  `assets/art/README.md` for the file list and specs.
+
 ## Players and saves
 
 Players choose a name on the start screen; several players can share a device. Saves live in the
@@ -89,6 +112,7 @@ Phones get a joystick and action buttons.
 | `src/rooms.mjs` | Room data: bounds, colliders, spots, ghost type, guest routes. Add rooms here. |
 | `src/sim.mjs` | Authoritative game state, pathfinding, interactions, ghost/guest AI, endings. No DOM. |
 | `src/art.mjs` | Procedural placeholder art: room backdrops, dungeon tiles, and the zombie, long-neck, sheet ghost, skeleton, lantern and Mr. D sprites. |
+| `src/progression.mjs` | Skill tree, boss sets, town catalog, Zin constants. No DOM. |
 | `src/dungeon.mjs` | Hầm Ma rules: floor generation, combat, bosses, loot, levels. No DOM. |
 | `src/save.mjs` | Players, device ID and save games (localStorage + cookies). No DOM in the core. |
 | `src/dungeon-view.mjs` | Hầm Ma rendering (darkness, telegraphs, minimap, boss bar), pointer input, bag and shop HTML. |

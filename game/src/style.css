@@ -25,3 +25,13 @@ dialog h3{font-size:14px;font-weight:500;color:var(--gold);margin:16px 0 4px}.st
 #start.no-profile .roles,#start.no-profile .rooms{opacity:.35;pointer-events:none}
 @media(max-width:760px){.profile{margin:8px 0 0}.profile-row input{font-size:16px;padding:6px 10px}.profile-card{font-size:12px;padding:8px}}
 @media(max-width:760px){.rooms{flex-wrap:wrap;gap:6px}.rooms button{padding:5px 10px;font-size:12px;white-space:nowrap}.rooms .classic{flex-basis:100%;margin-left:0;text-align:left;padding:2px 0}}
+
+/* Skill tree, town, set items. */
+.tree{display:grid;grid-template-columns:1fr 1fr;gap:12px}.branch{display:flex;flex-direction:column;gap:6px;min-width:0}.branch h3{margin:0 0 2px}
+.node{border:1px solid var(--line);background:#0e2233;padding:7px 9px;font-size:12px;color:#bcd1dc;display:flex;flex-direction:column;gap:3px}.node b{color:#e6e9e4;font-weight:600;font-size:13px}.node b small{color:var(--muted);font-weight:400}.node.learned{border-color:var(--mint)}.node.learned b{color:var(--mint)}.node.locked{opacity:.5}.node button{align-self:flex-start;padding:3px 10px;font-size:11px}
+.set-line{color:#7ee08a}
+/* One-thumb mode (Hầm Ma on phones): no joystick; tap the floor to walk, a radial holds the skills. */
+.thumb-hint{margin:0;font-size:11px;color:var(--muted);max-width:150px;align-self:center}
+.thumb #touch-controls .joystick-area,.thumb #touch-controls .touch-middle,.thumb #touchSecondary{display:none!important}
+.radial{position:absolute;right:0;bottom:calc(100% + 8px);z-index:6;display:grid;grid-template-columns:repeat(4,52px);gap:6px;padding:8px;background:#071321f0;border:1px solid var(--line);border-radius:14px;pointer-events:auto}
+.radial button{width:52px;height:52px;border-radius:50%;font-size:11px;padding:0;background:#142a3be8}.radial button:disabled{opacity:.35}

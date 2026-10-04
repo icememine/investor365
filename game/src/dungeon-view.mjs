@@ -1,12 +1,17 @@
 // Hầm Ma renderer and pointer input. Draws the dungeon simulation; never changes rules itself.
-import {TILE, MAP_W, MAP_H, ENEMIES, SLOTS} from './dungeon.mjs';
+import {TILE, MAP_W, MAP_H, ENEMIES, SLOTS, describeBase} from './dungeon.mjs';
+import {SKILL_TREE, BRANCHES, rank, skillPoints, canLearn, RESPEC_COST, TOWN, townPrice, SETS} from './progression.mjs';
 import {paintDungeonFloor, paintSheetGhost, paintSkeleton, paintLanternGhost, paintMrD} from './art.mjs';
 
-export const RARITY_COLOR={common:'#e6e9e4',magic:'#7fb6ff',rare:'#ffd36b',legendary:'#ff9d4d'};
+export const RARITY_COLOR={common:'#e6e9e4',magic:'#7fb6ff',rare:'#ffd36b',legendary:'#ff9d4d',set:'#7ee08a'};
+const QUEST={stamp:{color:'#f3889c',label:d=>`Con dấu tầng ${d}`},key:{color:'#ffd36b',label:()=>'Chìa khóa đồng'},fragment:{color:'#cfe8ff',label:()=>'Mảnh vé 000'}};
 const CANDY=['#f3889c','#a0ead4','#ffd36b','#c3a7ed'];
 
-export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
- const art={sheet:paintSheetGhost(),skeleton:paintSkeleton(),lantern:paintLanternGhost(),mrd:paintMrD()};
+// `custom` maps sprite names to finished artist images; anything missing falls back to the painted placeholder.
+export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck,custom={}}){
+ const art={sheet:paintSheetGhost(),skeleton:paintSkeleton(),lantern:paintLanternGhost(),mrd:paintMrD(),...custom};
+ if(custom.zombie)zombie=custom.zombie;if(custom.neck)neck=custom.neck;
+ const zcrop=()=>custom.zombie?full(zombie):[0,0,42,82],ncrop=()=>custom.neck?full(neck):[0,0,44,114];
  const fog=document.createElement('canvas');fog.width=MAP_W;fog.height=MAP_H;const fg=fog.getContext('2d');
  const shade=document.createElement('canvas'),sg=shade.getContext('2d');
  let dg=null,floorArt=null,floorSeed=null,camera={scale:1,x:0,y:0},mouse=null,hold=false,holdTimer=0,elapsed=0,box={width:1,height:1},mobile=false;
@@ -28,9 +33,9 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
   if(e.type==='sheet')sprite(art.sheet,full(art.sheet),e.x,e.y-lift,46,e.face,a,squash);
   else if(e.type==='skeleton')sprite(art.skeleton,full(art.skeleton),e.x,e.y-lift,62,e.face,a,squash);
   else if(e.type==='lantern')sprite(art.lantern,full(art.lantern),e.x,e.y-14+bob-lift,42,e.face,a);
-  else if(e.type==='zombie')sprite(zombie,[0,0,42,82],e.x,e.y-lift,96,e.face,a,squash);
+  else if(e.type==='zombie')sprite(zombie,zcrop(),e.x,e.y-lift,96,e.face,a,squash);
   else if(e.type==='vampire')sprite(atlas,crops[3],e.x,e.y-lift,100,e.face,a,squash);
-  else if(e.type==='neck')sprite(neck,[0,0,44,114],e.x,e.y-10+bob-lift,118,e.face,a);
+  else if(e.type==='neck')sprite(neck,ncrop(),e.x,e.y-10+bob-lift,118,e.face,a);
   if(e.flash>0){ctx.save();ctx.globalAlpha=.5;ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(e.x,e.y-e.r*2,e.r*1.2,e.r*2,0,0,Math.PI*2);ctx.fill();ctx.restore();}
   if(e.stun>0&&e.state!=='defeated'){ctx.fillStyle='#ffe5ad';for(let i=0;i<3;i++){const t=elapsed*4+i*2.1;ctx.fillRect(e.x+Math.cos(t)*12-1.5,e.y-60+Math.sin(t)*4,3,3);}}
  }
@@ -49,14 +54,17 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
   for(const d of dg.drops){
    if(d.kind==='gold'){ctx.fillStyle='#e7c083';ctx.beginPath();ctx.arc(d.x,d.y-3,4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(d.x+5,d.y,3.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff2c2';ctx.fillRect(d.x-1,d.y-5,2,2);}
    else if(d.kind==='potion'){if(d.potion==='bread'){ctx.fillStyle='#f4ead2';ctx.beginPath();ctx.ellipse(d.x,d.y-4,7,5,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d8c39a';ctx.fillRect(d.x-3,d.y-8,6,2);}else{ctx.fillStyle='#2e3f63';ctx.fillRect(d.x-3,d.y-12,6,12);ctx.fillStyle='#e7c083';ctx.fillRect(d.x-3,d.y-12,6,4);}}
-   else if(d.kind==='quest'){const col=d.quest==='stamp'?'#f3889c':'#ffd36b',bob=Math.sin(elapsed*3)*2;ctx.save();ctx.globalAlpha=.3+.15*Math.sin(elapsed*3);ctx.fillStyle=col;ctx.fillRect(d.x-3,d.y-90,6,90);ctx.restore();
+   else if(d.kind==='quest'){const col=QUEST[d.quest].color,bob=Math.sin(elapsed*3)*2;ctx.save();ctx.globalAlpha=.3+.15*Math.sin(elapsed*3);ctx.fillStyle=col;ctx.fillRect(d.x-3,d.y-90,6,90);ctx.restore();
     if(d.quest==='stamp'){ctx.fillStyle='#5b3a26';ctx.fillRect(d.x-3,d.y-22+bob,6,10);ctx.fillStyle='#7c5435';ctx.beginPath();ctx.arc(d.x,d.y-24+bob,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#c23b3b';ctx.fillRect(d.x-8,d.y-12+bob,16,7);ctx.fillStyle='#f3889c';ctx.fillRect(d.x-8,d.y-12+bob,16,2);}
+    else if(d.quest==='fragment'){ctx.fillStyle='#e9e4d6';ctx.fillRect(d.x-9,d.y-20+bob,18,11);ctx.fillStyle='#c23b3b';ctx.fillRect(d.x-7,d.y-18+bob,5,3);ctx.fillStyle='#5b3a26';ctx.fillRect(d.x+1,d.y-17+bob,6,1);ctx.fillRect(d.x+1,d.y-14+bob,6,1);ctx.strokeStyle='#cfe8ff';ctx.lineWidth=1;ctx.strokeRect(d.x-9,d.y-20+bob,18,11);}
     else{ctx.strokeStyle=col;ctx.lineWidth=3;ctx.beginPath();ctx.arc(d.x-6,d.y-14+bob,5,0,Math.PI*2);ctx.stroke();ctx.fillStyle=col;ctx.fillRect(d.x-1,d.y-15+bob,13,3);ctx.fillRect(d.x+8,d.y-13+bob,2,5);ctx.fillRect(d.x+4,d.y-13+bob,2,4);}}
    else{const col=RARITY_COLOR[d.item.rarity];ctx.save();ctx.globalAlpha=.25+.1*Math.sin(elapsed*3);ctx.fillStyle=col;ctx.fillRect(d.x-2,d.y-60,4,60);ctx.restore();ctx.fillStyle=col;ctx.fillRect(d.x-6,d.y-6,12,8);ctx.fillStyle='#07131d';ctx.fillRect(d.x-4,d.y-4,8,4);}
   }
  }
  function fixtures(){
   const f=dg.floor,s=f.stairs,u=f.exitUp;
+  if(f.special==='zin'){const t=f.table,r=f.roster;ctx.fillStyle='#5b3a26';ctx.fillRect(t.x-34,t.y-16,68,26);ctx.fillStyle='#7c5435';ctx.fillRect(t.x-34,t.y-18,68,5);ctx.fillStyle='#2b2f3a';ctx.fillRect(t.x-8,t.y-34,16,18);ctx.fillStyle='#c23b3b';ctx.fillRect(t.x-10,t.y-18,20,4);ctx.fillStyle='#e9e4d6';ctx.fillRect(t.x+14,t.y-14,14,9);
+   ctx.fillStyle='#3a2418';ctx.fillRect(r.x-30,r.y-60,60,46);ctx.fillStyle='#e9e4d6';ctx.fillRect(r.x-26,r.y-56,52,38);ctx.fillStyle='#5b3a26';for(let i=0;i<5;i++)ctx.fillRect(r.x-22,r.y-50+i*7,i===4?14:40,2);ctx.fillRect(r.x-2,r.y-14,4,14);}
   ctx.fillStyle='#05090f';ctx.fillRect(s.x-22,s.y-18,44,36);for(let i=0;i<4;i++){ctx.fillStyle=i%2?'#1b2733':'#24323f';ctx.fillRect(s.x-20+i*3,s.y-16+i*8,40-i*6,6);}
   ctx.strokeStyle=dg.stairsLocked?'#f3889c':'#a0ead4';ctx.lineWidth=2;ctx.strokeRect(s.x-22,s.y-18,44,36);
   if(dg.stairsLocked){ctx.fillStyle='#f3889c';ctx.fillRect(s.x-5,s.y-4,10,8);ctx.strokeStyle='#f3889c';ctx.beginPath();ctx.arc(s.x,s.y-5,4,Math.PI,0);ctx.stroke();}
@@ -81,7 +89,8 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
  function overlays(){
   for(const e of dg.live()){if(!e.aggro&&!e.elite&&!e.boss)continue;const w=e.boss?0:30,y=e.y-(e.type==='sheet'?54:e.type==='lantern'?66:e.type==='skeleton'?70:0);if(!e.boss){ctx.fillStyle='#0a1520';ctx.fillRect(e.x-w/2,y,w,4);ctx.fillStyle=e.elite?'#7fb6ff':'#a0ead4';ctx.fillRect(e.x-w/2,y,w*e.hp/e.maxHp,4);}if(e.elite)label(e.x,y-6,e.name,'#7fb6ff');}
   for(const c of dg.companions){if(c.state==='away')continue;const max=dg.companionMax(),y=c.y-74;label(c.x,y-6,c.name,'#cfe8ff','#07131db0');if(c.courage<max){ctx.fillStyle='#0a1520';ctx.fillRect(c.x-14,y,28,3);ctx.fillStyle='#f3889c';ctx.fillRect(c.x-14,y,28*Math.max(0,c.courage)/max,3);}}
-  for(const d of dg.drops)if(d.kind==='item'){d.labelBox=label(d.x,d.y-16,d.item.name,RARITY_COLOR[d.item.rarity]);}else if(d.kind==='quest')label(d.x,d.y-34,d.quest==='stamp'?`Con dấu tầng ${dg.depth}`:'Chìa khóa đồng',d.quest==='stamp'?'#f3889c':'#ffd36b');
+  for(const d of dg.drops)if(d.kind==='item'){d.labelBox=label(d.x,d.y-16,d.item.name,RARITY_COLOR[d.item.rarity]);}else if(d.kind==='quest')label(d.x,d.y-34,QUEST[d.quest].label(dg.depth),QUEST[d.quest].color);
+  if(dg.zin)label(dg.zin.x,dg.zin.y-82,`Zin · ${Math.ceil(dg.zin.t)}s`,'#cfe8ff');if(dg.floor.special==='zin')label(dg.floor.zinSpot.x,dg.floor.zinSpot.y-82,'Zin · Khách Số 0','#cfe8ff');
   for(const f of dg.floaters){const k=1-(f.until-dg.time)/(f.life||1.1);ctx.font=`bold ${f.size}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#061421';const rise=f.life>2?8:24;ctx.fillText(f.text,f.x+1,f.y-k*rise+1);ctx.fillStyle=f.color;ctx.fillText(f.text,f.x,f.y-k*rise);}
   const n=dg.nearby();if(n)label(dg.p.x,dg.p.y-86,(mobile?'':'E · ')+n.label,'#ffe5ad');
  }
@@ -96,7 +105,7 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
   for(let y=0;y<MAP_H;y++)for(let x=0;x<MAP_W;x++){const i=y*MAP_W+x;if(dg.explored[i]&&dg.floor.tiles[i]){ctx.fillStyle='#2b4a58';ctx.fillRect(mx+x*s,my+y*s,s,s);}}
   const st=dg.floor.stairs,sx=Math.floor(st.x/TILE),sy=Math.floor(st.y/TILE);if(dg.explored[sy*MAP_W+sx]){ctx.fillStyle=dg.stairsLocked?'#f3889c':'#a0ead4';ctx.fillRect(mx+sx*s-2,my+sy*s-2,s+4,s+4);}
   const seen=pt=>dg.explored[Math.floor(pt.y/TILE)*MAP_W+Math.floor(pt.x/TILE)];
-  for(const d of dg.drops)if(d.kind==='quest'&&seen(d)){ctx.fillStyle=d.quest==='stamp'?'#f3889c':'#ffd36b';ctx.fillRect(mx+d.x/TILE*s-2,my+d.y/TILE*s-2,4,4);}
+  for(const d of dg.drops)if(d.kind==='quest'&&seen(d)){ctx.fillStyle=QUEST[d.quest].color;ctx.fillRect(mx+d.x/TILE*s-2,my+d.y/TILE*s-2,4,4);}
   const door=dg.floor.door;if(door&&!dg.floor.doorOpen&&seen(door)){ctx.strokeStyle='#ffd36b';ctx.lineWidth=1;ctx.strokeRect(mx+door.x/TILE*s-3,my+door.y/TILE*s-3,6,6);}
   for(const e of dg.live())if(e.aggro){ctx.fillStyle='#f3889c';ctx.fillRect(mx+e.x/TILE*s-1,my+e.y/TILE*s-1,2,2);}
   ctx.fillStyle='#ffe5ad';ctx.fillRect(mx+dg.p.x/TILE*s-2,my+dg.p.y/TILE*s-2,4,4);
@@ -133,8 +142,8 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
    ctx.setTransform(scale*dpr,0,0,scale*dpr,-camera.x*scale*dpr,-camera.y*scale*dpr);ctx.imageSmoothingEnabled=false;
    ctx.drawImage(floorArt,0,0,MAP_W*TILE,MAP_H*TILE);
    fixtures();drops();telegraphs();effects();
-   const p=dg.p,actors=[...dg.enemies.map(e=>({y:e.y,e})),...dg.companions.filter(c=>c.state!=='away').map(c=>({y:c.y,c})),{y:p.y,p:true}];if(dg.vendor)actors.push({y:dg.vendor.y,v:true});actors.sort((a,b)=>a.y-b.y);
-   for(const a of actors){if(a.c){const c=a.c,bob=c.moving?Math.sin(elapsed*13+c.sprite)*1.6:0;sprite(atlas,crops[c.sprite],c.x,c.y+bob,62,c.face,c.hurt>0?.6:1);continue;}if(a.e)drawEnemy(a.e);else if(a.v){const v=dg.vendor;sprite(art.mrd,full(art.mrd),v.x,v.y-10,70,Math.PI);ctx.fillStyle='#5b3a26';ctx.fillRect(v.x-30,v.y-30,60,30);ctx.fillStyle='#7c5435';ctx.fillRect(v.x-30,v.y-32,60,5);ctx.fillStyle='#e7c083';ctx.font='9px system-ui';ctx.textAlign='center';ctx.fillText('BÁNH BAO · PIN',v.x,v.y-12);}else sprite(atlas,crops[0],p.x,p.y,68,p.face,p.dash>0?.55:1);}
+   const p=dg.p,actors=[...dg.enemies.map(e=>({y:e.y,e})),...dg.companions.filter(c=>c.state!=='away').map(c=>({y:c.y,c})),{y:p.y,p:true}];if(dg.vendor)actors.push({y:dg.vendor.y,v:true});if(dg.zin)actors.push({y:dg.zin.y,z:dg.zin});if(dg.floor.special==='zin')actors.push({y:dg.floor.zinSpot.y,z:{...dg.floor.zinSpot,face:Math.PI,still:true}});actors.sort((a,b)=>a.y-b.y);
+   for(const a of actors){if(a.z){const z=a.z;if(art.zin)sprite(art.zin,full(art.zin),z.x,z.y,68,z.face||0,.92);else{ctx.save();ctx.globalAlpha=.55+.12*Math.sin(elapsed*3);ctx.fillStyle='#cfe8ff40';ctx.beginPath();ctx.ellipse(z.x,z.y-30,24,38,0,0,Math.PI*2);ctx.fill();ctx.restore();sprite(atlas,crops[0],z.x,z.y-(z.still?0:Math.sin(elapsed*4)*3),68,z.face||0,.6);}continue;}if(a.c){const c=a.c,bob=c.moving?Math.sin(elapsed*13+c.sprite)*1.6:0;sprite(atlas,crops[c.sprite],c.x,c.y+bob,62,c.face,c.hurt>0?.6:1);continue;}if(a.e)drawEnemy(a.e);else if(a.v){const v=dg.vendor;sprite(art.mrd,full(art.mrd),v.x,v.y-10,70,Math.PI);ctx.fillStyle='#5b3a26';ctx.fillRect(v.x-30,v.y-30,60,30);ctx.fillStyle='#7c5435';ctx.fillRect(v.x-30,v.y-32,60,5);ctx.fillStyle='#e7c083';ctx.font='9px system-ui';ctx.textAlign='center';ctx.fillText('BÁNH BAO · PIN',v.x,v.y-12);}else sprite(atlas,crops[0],p.x,p.y,68,p.face,p.dash>0?.55:1);}
    projectiles();lighting();overlays();hud();
   },
  };
@@ -142,14 +151,15 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
 
 // HTML for the bag and shop dialogs. The app wires the buttons by their data attributes.
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function itemCard(item,actions=''){if(!item)return'<div class="item empty">Trống</div>';return`<div class="item" style="--rarity:${RARITY_COLOR[item.rarity]}"><b>${esc(item.name)}</b><small>${esc(SLOTS[item.slot].label)} · ${esc(item.rarityName)} · cấp ${item.ilvl}</small><span>${esc(describeStat(item))}</span>${item.affixes.map(a=>`<span>${esc(a)}</span>`).join('')}${actions}</div>`;}
-function describeStat(item){const b=item.base;return item.slot==='torch'?`${b.dmg} sát thương`:item.slot==='coat'?`${b.armor} giáp`:item.slot==='charm'?`+${b.battery} pin tối đa`:`+${b.speed}% tốc chạy`;}
+export function itemCard(item,actions=''){if(!item)return'<div class="item empty">Trống</div>';return`<div class="item" style="--rarity:${RARITY_COLOR[item.rarity]}"><b>${esc(item.name)}</b><small>${esc(SLOTS[item.slot].label)} · ${esc(item.rarityName)} · cấp ${item.ilvl}</small><span>${esc(describeBase(item))}</span>${item.affixes.map(a=>`<span>${esc(a)}</span>`).join('')}${item.set?`<span class="set-line">${esc(item.setName)}: ${esc(item.setText)}</span>`:''}${actions}</div>`;}
 export function bagHtml(dg){
  const d=dg.derived;
  return`<span class="eyebrow">TÚI ĐỒ · CẤP ${dg.p.level}</span><h2>Đồ nghề đi hầm</h2>
  <p class="stats-line">Sát thương ${Math.round(d.damage)} · Chí mạng ${Math.round(d.crit*100)}% · Giáp ${d.armor} · Can đảm ${d.maxCourage} · Pin ${d.maxBattery} · Tốc ${Math.round(d.speed)}</p>
  <div class="items">${Object.keys(SLOTS).map(k=>itemCard(dg.equipped[k])).join('')}</div>
  <h3>Bạn đồng hành</h3><div class="items">${dg.companions.map(c=>`<div class="item" style="--rarity:#cfe8ff"><b>${c.name}</b><small>${c.id==='na'?'Ném kẹo · cổ vũ khi bạn sợ':'Rọi điện thoại · đánh hơi con dấu, chìa khóa'}</small><span>Tin tưởng ${Math.round(c.trust)}/100</span><span>${c.state==='away'?`Đang nghỉ ngoài cửa (${Math.ceil(c.awayT)} giây)`:`Can đảm ${Math.max(0,Math.round(c.courage))}/${dg.companionMax()}`}</span></div>`).join('')}</div>
+ <p class="stats-line">Mảnh vé 000: ${dg.fragments.length}/3${dg.zinState==='staff'?' · Zin là nhân viên, gọi được mỗi tầng':dg.zinState==='gone'?' · Zin đã được đóng mộc vé':dg.fragments.length?' · gọi Zin một lần mỗi tầng (Z)':''}</p>
+ <div class="dialog-actions"><button data-open="tree">Cây kỹ năng${dg.skillPoints?` · ${dg.skillPoints} điểm chưa dùng`:''}</button></div>
  <h3>Trong túi (${dg.inventory.length}/16)</h3>
  <div class="items">${dg.inventory.map((it,i)=>itemCard(it,`<div class="item-actions"><button data-equip="${i}">Trang bị</button><button data-drop="${i}">Vứt</button></div>`)).join('')||'<p>Túi trống. Hạ màn diễn viên để nhặt đồ.</p>'}</div>
  <div class="dialog-actions"><button id="resume">Quay lại hầm</button></div>`;
@@ -157,6 +167,23 @@ export function bagHtml(dg){
 export function shopHtml(dg){
  return`<span class="eyebrow">QUẦY MR. D</span><h2>Bánh bao, pin, mua đồ cũ</h2><p>Bạn có ${dg.p.gold} xu.</p>
  <div class="dialog-actions"><button data-buy="bread" ${dg.p.gold<20?'disabled':''}>Mua bánh bao (+can đảm) · 20 xu · đang có ${dg.potions.bread}</button><button data-buy="battery" ${dg.p.gold<20?'disabled':''}>Mua pin AA (+pin) · 20 xu · đang có ${dg.potions.battery}</button></div>
+ <div class="dialog-actions"><button data-respec="1" ${dg.p.gold<RESPEC_COST||!Object.keys(dg.tree).length?'disabled':''}>Tẩy điểm kỹ năng · ${RESPEC_COST} xu</button></div>
  <h3>Bán đồ trong túi</h3><div class="items">${dg.inventory.map((it,i)=>itemCard(it,`<div class="item-actions"><button data-sell="${i}">Bán · ${it.value} xu</button></div>`)).join('')||'<p>Không có gì để bán.</p>'}</div>
  <div class="dialog-actions"><button id="resume">Quay lại hầm</button></div>`;
+}
+
+// Skill tree dialog: two columns, top to bottom. `level` and `tree` come from the running dungeon.
+export function treeHtml({level,tree}){
+ const pts=skillPoints(level,tree);
+ const col=b=>SKILL_TREE.filter(n=>n.branch===b).map(n=>{const r=rank(tree,n.id),why=canLearn(level,tree,n.id);return`<div class="node${r?' learned':''}${why==='locked'?' locked':''}"><b>${esc(n.name)} <small>${r}/${n.max}</small></b><span>${esc(n.text(Math.max(1,r)))}</span>${why===null?`<button data-learn="${n.id}">Học (+1)</button>`:why==='locked'?'<small>Cần học ô phía trên trước</small>':''}</div>`;}).join('');
+ return`<span class="eyebrow">CÂY KỸ NĂNG · CẤP ${level}</span><h2>${pts} điểm chưa dùng</h2><p>Mỗi cấp được 1 điểm. Tẩy điểm ở quầy Mr. D (${RESPEC_COST} xu).</p><div class="tree">${Object.entries(BRANCHES).map(([b,name])=>`<div class="branch"><h3>${name}</h3>${col(b)}</div>`).join('')}</div><div class="dialog-actions"><button id="resume">Quay lại hầm</button></div>`;
+}
+// Town hub between descents, working on the saved character.
+export function townHtml(character,name){
+ const town=character.town,kinds={stand:'Nâng cấp quầy',costume:'Trang phục',gadget:'Đồ chơi của Bơ'};
+ const card=t=>{const price=townPrice(town,t.id),lvl=town.stand[t.id]||0,owned=t.kind==='costume'?town.costumes.includes(t.id):t.kind==='gadget'&&town.gadgets.includes(t.id);
+  const status=t.kind==='stand'?`Cấp ${lvl}/${t.levels.length}`:owned?(town.costume===t.id?'Đang mặc':'Đã có'):'';
+  const btn=t.kind==='costume'&&owned?`<button data-town="${t.id}">${town.costume===t.id?'Cởi ra':'Mặc'}</button>`:price==null?'':`<button data-town="${t.id}" ${character.gold<price?'disabled':''}>Mua · ${price} xu</button>`;
+  return`<div class="item" style="--rarity:#e7c083"><b>${esc(t.name)}</b><small>${status}</small><span>${esc(t.text(Math.max(1,lvl+(t.kind==='stand'&&price!=null?1:0))))}</span><div class="item-actions">${btn}</div></div>`;};
+ return`<span class="eyebrow">QUẦY MR. D · GIỮA HAI CHUYẾN</span><h2>${esc(name)} có ${character.gold||0} xu</h2><p>Mua sắm ở đây được giữ cho mọi chuyến xuống hầm sau.</p>${Object.entries(kinds).map(([k,label])=>`<h3>${label}</h3><div class="items">${TOWN.filter(t=>t.kind===k).map(card).join('')}</div>`).join('')}<div class="dialog-actions"><button data-respec="town" ${(character.gold||0)<RESPEC_COST||!Object.keys(character.tree||{}).length?'disabled':''}>Tẩy điểm kỹ năng · ${RESPEC_COST} xu</button><button id="resume">Xong</button></div>`;
 }

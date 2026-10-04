@@ -13,7 +13,7 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
 
  const toWorld=e=>{const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/camera.scale+camera.x,y:(e.clientY-r.top)/camera.scale+camera.y};};
  const enemyAt=pt=>dg.live().filter(e=>Math.hypot(e.x-pt.x,e.y-20-pt.y)<e.r+18).sort((a,b)=>Math.hypot(a.x-pt.x,a.y-pt.y)-Math.hypot(b.x-pt.x,b.y-pt.y))[0];
- const dropAt=pt=>dg.drops.filter(d=>d.kind==='item'&&(Math.hypot(d.x-pt.x,d.y-pt.y)<22||(d.labelBox&&pt.x>d.labelBox.x&&pt.x<d.labelBox.x+d.labelBox.w&&pt.y>d.labelBox.y&&pt.y<d.labelBox.y+d.labelBox.h))).sort((a,b)=>Math.hypot(a.x-pt.x,a.y-pt.y)-Math.hypot(b.x-pt.x,b.y-pt.y))[0];
+ const dropAt=pt=>dg.drops.filter(d=>(d.kind==='item'||d.kind==='quest')&&(Math.hypot(d.x-pt.x,d.y-pt.y)<22||(d.labelBox&&pt.x>d.labelBox.x&&pt.x<d.labelBox.x+d.labelBox.w&&pt.y>d.labelBox.y&&pt.y<d.labelBox.y+d.labelBox.h))).sort((a,b)=>Math.hypot(a.x-pt.x,a.y-pt.y)-Math.hypot(b.x-pt.x,b.y-pt.y))[0];
 
  // Closest visible performer within range, for touch auto-aim.
  function autoAim(range){if(!dg)return null;const p=dg.p;let best=null;for(const e of dg.live()){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<range&&(!best||d<best.d))best={d,e};}return best?{x:best.e.x,y:best.e.y-10}:null;}
@@ -49,6 +49,9 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
   for(const d of dg.drops){
    if(d.kind==='gold'){ctx.fillStyle='#e7c083';ctx.beginPath();ctx.arc(d.x,d.y-3,4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(d.x+5,d.y,3.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff2c2';ctx.fillRect(d.x-1,d.y-5,2,2);}
    else if(d.kind==='potion'){if(d.potion==='bread'){ctx.fillStyle='#f4ead2';ctx.beginPath();ctx.ellipse(d.x,d.y-4,7,5,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d8c39a';ctx.fillRect(d.x-3,d.y-8,6,2);}else{ctx.fillStyle='#2e3f63';ctx.fillRect(d.x-3,d.y-12,6,12);ctx.fillStyle='#e7c083';ctx.fillRect(d.x-3,d.y-12,6,4);}}
+   else if(d.kind==='quest'){const col=d.quest==='stamp'?'#f3889c':'#ffd36b',bob=Math.sin(elapsed*3)*2;ctx.save();ctx.globalAlpha=.3+.15*Math.sin(elapsed*3);ctx.fillStyle=col;ctx.fillRect(d.x-3,d.y-90,6,90);ctx.restore();
+    if(d.quest==='stamp'){ctx.fillStyle='#5b3a26';ctx.fillRect(d.x-3,d.y-22+bob,6,10);ctx.fillStyle='#7c5435';ctx.beginPath();ctx.arc(d.x,d.y-24+bob,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#c23b3b';ctx.fillRect(d.x-8,d.y-12+bob,16,7);ctx.fillStyle='#f3889c';ctx.fillRect(d.x-8,d.y-12+bob,16,2);}
+    else{ctx.strokeStyle=col;ctx.lineWidth=3;ctx.beginPath();ctx.arc(d.x-6,d.y-14+bob,5,0,Math.PI*2);ctx.stroke();ctx.fillStyle=col;ctx.fillRect(d.x-1,d.y-15+bob,13,3);ctx.fillRect(d.x+8,d.y-13+bob,2,5);ctx.fillRect(d.x+4,d.y-13+bob,2,4);}}
    else{const col=RARITY_COLOR[d.item.rarity];ctx.save();ctx.globalAlpha=.25+.1*Math.sin(elapsed*3);ctx.fillStyle=col;ctx.fillRect(d.x-2,d.y-60,4,60);ctx.restore();ctx.fillStyle=col;ctx.fillRect(d.x-6,d.y-6,12,8);ctx.fillStyle='#07131d';ctx.fillRect(d.x-4,d.y-4,8,4);}
   }
  }
@@ -58,6 +61,8 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
   ctx.strokeStyle=dg.stairsLocked?'#f3889c':'#a0ead4';ctx.lineWidth=2;ctx.strokeRect(s.x-22,s.y-18,44,36);
   if(dg.stairsLocked){ctx.fillStyle='#f3889c';ctx.fillRect(s.x-5,s.y-4,10,8);ctx.strokeStyle='#f3889c';ctx.beginPath();ctx.arc(s.x,s.y-5,4,Math.PI,0);ctx.stroke();}
   ctx.fillStyle='#5b3a26';for(let i=0;i<5;i++)ctx.fillRect(u.x-10,u.y-34+i*8,20,2);ctx.fillRect(u.x-12,u.y-36,3,40);ctx.fillRect(u.x+9,u.y-36,3,40);
+  if(f.door&&!f.doorOpen){for(const i of f.door.tiles){const x=(i%MAP_W)*TILE,y=Math.floor(i/MAP_W)*TILE;ctx.fillStyle='#3a2418';ctx.fillRect(x,y,TILE,TILE);ctx.fillStyle='#7c5435';ctx.fillRect(x+3,y+3,TILE-6,TILE-6);ctx.fillStyle='#5b3a26';ctx.fillRect(x+TILE/2-1,y+3,2,TILE-6);ctx.fillStyle='#b08a4a';ctx.fillRect(x+3,y+8,TILE-6,3);ctx.fillRect(x+3,y+TILE-11,TILE-6,3);}
+   const k=f.door;ctx.fillStyle='#ffd36b';ctx.fillRect(k.x-6,k.y-4,12,10);ctx.strokeStyle='#ffd36b';ctx.lineWidth=2;ctx.beginPath();ctx.arc(k.x,k.y-5,4,Math.PI,0);ctx.stroke();ctx.fillStyle='#3a2418';ctx.fillRect(k.x-1,k.y-1,2,4);}
   if(dg.vendor){const v=dg.vendor;ctx.fillStyle='#3a2418';ctx.fillRect(v.x-30,v.y-92,3,86);ctx.fillRect(v.x+27,v.y-92,3,86);ctx.fillStyle='#c23b3b';ctx.fillRect(v.x-34,v.y-98,68,10);ctx.fillStyle='#f4f1e6';for(let i=0;i<8;i+=2)ctx.fillRect(v.x-34+i*8.5,v.y-98,8.5,10);}
  }
  function projectiles(){for(const q of dg.projectiles){if(q.kind==='candy'){ctx.fillStyle=CANDY[q.hue];ctx.beginPath();ctx.arc(q.x,q.y,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(q.x-1,q.y-3,2,2);}else if(q.kind==='orb'){ctx.save();ctx.globalAlpha=.35;ctx.fillStyle='#a0ead4';ctx.beginPath();ctx.arc(q.x,q.y,11,0,Math.PI*2);ctx.fill();ctx.restore();ctx.fillStyle='#e9fff6';ctx.beginPath();ctx.arc(q.x,q.y,5,0,Math.PI*2);ctx.fill();}else{const a=Math.atan2(q.vy,q.vx),w=Math.sin(elapsed*20)*4;ctx.save();ctx.translate(q.x,q.y);ctx.rotate(a);ctx.fillStyle='#2a1f33';ctx.beginPath();ctx.moveTo(6,0);ctx.lineTo(-4,-6-w);ctx.lineTo(-2,0);ctx.lineTo(-4,6+w);ctx.closePath();ctx.fill();ctx.restore();}}}
@@ -75,7 +80,7 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
  }
  function overlays(){
   for(const e of dg.live()){if(!e.aggro&&!e.elite&&!e.boss)continue;const w=e.boss?0:30,y=e.y-(e.type==='sheet'?54:e.type==='lantern'?66:e.type==='skeleton'?70:0);if(!e.boss){ctx.fillStyle='#0a1520';ctx.fillRect(e.x-w/2,y,w,4);ctx.fillStyle=e.elite?'#7fb6ff':'#a0ead4';ctx.fillRect(e.x-w/2,y,w*e.hp/e.maxHp,4);}if(e.elite)label(e.x,y-6,e.name,'#7fb6ff');}
-  for(const d of dg.drops)if(d.kind==='item'){d.labelBox=label(d.x,d.y-16,d.item.name,RARITY_COLOR[d.item.rarity]);}
+  for(const d of dg.drops)if(d.kind==='item'){d.labelBox=label(d.x,d.y-16,d.item.name,RARITY_COLOR[d.item.rarity]);}else if(d.kind==='quest')label(d.x,d.y-34,d.quest==='stamp'?`Con dấu tầng ${dg.depth}`:'Chìa khóa đồng',d.quest==='stamp'?'#f3889c':'#ffd36b');
   for(const f of dg.floaters){const k=1-(f.until-dg.time)/1.1;ctx.font=`bold ${f.size}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#061421';ctx.fillText(f.text,f.x+1,f.y-k*24+1);ctx.fillStyle=f.color;ctx.fillText(f.text,f.x,f.y-k*24);}
   const n=dg.nearby();if(n)label(dg.p.x,dg.p.y-86,(mobile?'':'E · ')+n.label,'#ffe5ad');
  }
@@ -85,10 +90,13 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
   const boss=dg.live().find(e=>e.boss&&e.aggro);
   if(boss){const w=Math.min(420,box.width-40),x=(box.width-w)/2,y=12;ctx.fillStyle='#07131de6';ctx.fillRect(x-2,y-2,w+4,24);ctx.fillStyle='#3a1820';ctx.fillRect(x,y,w,20);ctx.fillStyle='#c23b5a';ctx.fillRect(x,y,w*boss.hp/boss.maxHp,20);ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.fillText(`${boss.name} · bình tĩnh ${Math.ceil(boss.hp)}/${boss.maxHp}`,box.width/2,y+14);}
   // Minimap of explored tiles.
-  const s=mobile?1.6:2.4,mw=MAP_W*s,mh=MAP_H*s,mx=box.width-mw-10,my=boss?44:10;
+  const s=mobile?1.6:2.4,mw=MAP_W*s,mh=MAP_H*s,mx=box.width-mw-10,my=boss?50:30;
   ctx.fillStyle='#03070dcc';ctx.fillRect(mx-3,my-3,mw+6,mh+6);
   for(let y=0;y<MAP_H;y++)for(let x=0;x<MAP_W;x++){const i=y*MAP_W+x;if(dg.explored[i]&&dg.floor.tiles[i]){ctx.fillStyle='#2b4a58';ctx.fillRect(mx+x*s,my+y*s,s,s);}}
   const st=dg.floor.stairs,sx=Math.floor(st.x/TILE),sy=Math.floor(st.y/TILE);if(dg.explored[sy*MAP_W+sx]){ctx.fillStyle=dg.stairsLocked?'#f3889c':'#a0ead4';ctx.fillRect(mx+sx*s-2,my+sy*s-2,s+4,s+4);}
+  const seen=pt=>dg.explored[Math.floor(pt.y/TILE)*MAP_W+Math.floor(pt.x/TILE)];
+  for(const d of dg.drops)if(d.kind==='quest'&&seen(d)){ctx.fillStyle=d.quest==='stamp'?'#f3889c':'#ffd36b';ctx.fillRect(mx+d.x/TILE*s-2,my+d.y/TILE*s-2,4,4);}
+  const door=dg.floor.door;if(door&&!dg.floor.doorOpen&&seen(door)){ctx.strokeStyle='#ffd36b';ctx.lineWidth=1;ctx.strokeRect(mx+door.x/TILE*s-3,my+door.y/TILE*s-3,6,6);}
   for(const e of dg.live())if(e.aggro){ctx.fillStyle='#f3889c';ctx.fillRect(mx+e.x/TILE*s-1,my+e.y/TILE*s-1,2,2);}
   ctx.fillStyle='#ffe5ad';ctx.fillRect(mx+dg.p.x/TILE*s-2,my+dg.p.y/TILE*s-2,4,4);
   ctx.font='10px system-ui';ctx.textAlign='right';ctx.fillStyle='#b8d6d6';ctx.fillText(`TẦNG ${dg.depth} · ${dg.floor.theme.name.toUpperCase()}`,mx+mw,my+mh+14);
@@ -116,7 +124,7 @@ export function createDungeonView(canvas,ctx,{atlas,crops,zombie,neck}){
    if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch;}
    mobile=matchMedia('(pointer:coarse), (max-width:900px)').matches;
    if(!dg)return;
-   if(floorSeed!==dg.floor.seed){floorArt=paintDungeonFloor(dg.floor,MAP_W,MAP_H,TILE);floorSeed=dg.floor.seed;}
+   const artKey=dg.floor.seed+':'+dg.floor.doorOpen;if(floorSeed!==artKey){floorArt=paintDungeonFloor(dg.floor,MAP_W,MAP_H,TILE);floorSeed=artKey;}
    // About 26 tiles across on desktop, 15 on a phone in portrait.
    const target=mobile&&box.width<box.height*1.3?480:Math.min(840,Math.max(560,box.width*.75)),scale=box.width/target;
    const vw=box.width/scale,vh=box.height/scale;camera={scale,x:dg.p.x-vw/2,y:dg.p.y-20-vh/2};

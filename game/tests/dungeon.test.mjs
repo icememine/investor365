@@ -1,22 +1,46 @@
 // Headless checks for Hầm Ma, the action-RPG mode. Run: node --test tests/*.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Dungeon, generateFloor, flowField, floorPassable as passable, makeItem, rng, xpForLevel, isBossFloor, MAP_W, TILE, ENEMIES} from '../src/dungeon.mjs';
+import {Dungeon, generateFloor, flowField, floorPassable as passable, makeItem, rng, xpForLevel, isBossFloor, MAP_W, TILE, ENEMIES, DOOR} from '../src/dungeon.mjs';
 
 const clearFloor = d => { d.enemies = []; d.drops = []; };
 const put = (d, type, dx, dy, opts = {}) => { const e = d.spawn(type, d.p.x + dx, d.p.y + dy, 1); Object.assign(e, opts); return e; };
 const run = (d, seconds, input = {}) => { for (let t = 0; t < seconds; t += 0.05) d.step(0.05, input); };
 
-test('generated floors are fully connected, with stairs far from the start', () => {
-  for (let seed = 1; seed <= 40; seed++) {
-    const f = generateFloor(1 + seed % 9, seed * 131);
-    assert.ok(f.rooms.length >= 5, `seed ${seed}: only ${f.rooms.length} rooms`);
+test('generated floors are fully connected, with stairs, stamp and key in different rooms', () => {
+  for (let seed = 1; seed <= 60; seed++) {
+    const depth = 1 + seed % 9, f = generateFloor(depth, seed * 131);
     const field = flowField(f, f.rooms[0].cx, f.rooms[0].cy);
-    for (const r of f.rooms) assert.ok(field[r.cy * MAP_W + r.cx] >= 0, `seed ${seed}: room unreachable`);
+    f.rooms.forEach((r, i) => {
+      if (i === f.bossRoom) assert.ok(field[r.cy * MAP_W + r.cx] < 0, `seed ${seed}: boss room reachable without the door`);
+      else assert.ok(field[r.cy * MAP_W + r.cx] >= 0, `seed ${seed}: room ${i} unreachable`);
+    });
     assert.ok(passable(f, f.start.x, f.start.y), `seed ${seed}: start blocked`);
     assert.ok(passable(f, f.stairs.x, f.stairs.y), `seed ${seed}: stairs blocked`);
-    assert.notEqual(f.stairsRoom, 0);
+    assert.ok(passable(f, f.key.x, f.key.y, 6), `seed ${seed}: key blocked`);
+    assert.notEqual(f.keyRoom, f.stairsRoom);
+    if (isBossFloor(depth)) {
+      assert.equal(f.stairsRoom, f.bossRoom);
+      assert.ok(f.door.tiles.length >= 1 && f.door.tiles.length <= 4);
+      assert.ok(f.door.tiles.every(i => f.tiles[i] === DOOR));
+    } else {
+      assert.ok(passable(f, f.stamp.x, f.stamp.y, 6), `seed ${seed}: stamp blocked`);
+      assert.notEqual(f.stampRoom, f.keyRoom);
+      assert.notEqual(f.stampRoom, f.stairsRoom);
+      assert.notEqual(f.stampRoom, 0);
+    }
   }
+});
+
+test('opening the boss door connects the boss room', () => {
+  const d = new Dungeon(21); d.keys = 1; d.enterFloor(3);
+  const f = d.floor, r = f.rooms[f.bossRoom];
+  Object.assign(d.p, {x: f.door.x, y: f.door.y});
+  d.interact();
+  assert.equal(f.doorOpen, true);
+  assert.equal(d.keys, 0);
+  const field = flowField(f, f.rooms[0].cx, f.rooms[0].cy);
+  assert.ok(field[r.cy * MAP_W + r.cx] >= 0);
 });
 
 test('floors are deterministic per seed', () => {
@@ -144,17 +168,38 @@ test('Mr. D buys gear and sells snacks on floor 1', () => {
   assert.equal(d.buy('bread'), false, 'not enough coins');
 });
 
-test('stairs lead down; every third floor a boss locks them until broken', () => {
-  const d = new Dungeon(12); clearFloor(d);
+const grab = (d, quest) => { const q = d.drops.find(x => x.quest === quest); Object.assign(d.p, {x: q.x, y: q.y}); d.step(0.05); };
+
+test('the stairs stay sealed until you pick up the floor stamp', () => {
+  const d = new Dungeon(12); d.enemies = [];
+  Object.assign(d.p, d.floor.stairs); d.interact();
+  assert.equal(d.depth, 1, 'sealed without the stamp');
+  grab(d, 'stamp');
+  assert.equal(d.stampFound, true);
   Object.assign(d.p, d.floor.stairs); d.interact();
   assert.equal(d.depth, 2);
-  clearFloor(d); Object.assign(d.p, d.floor.stairs); d.interact();
-  assert.equal(d.depth, 3);
-  assert.ok(isBossFloor(3));
-  const boss = d.enemies.find(e => e.boss);
+  assert.equal(d.stampFound, false, 'each floor needs its own stamp');
+});
+
+test('keys are optional on normal floors and carry over', () => {
+  const d = new Dungeon(15); d.enemies = [];
+  assert.ok(d.drops.some(x => x.quest === 'key'));
+  grab(d, 'key');
+  assert.equal(d.keys, 1);
+  grab(d, 'stamp'); Object.assign(d.p, d.floor.stairs); d.drops = d.drops.filter(x => x.kind !== 'item'); d.interact();
+  assert.equal(d.depth, 2);
+  assert.equal(d.keys, 1);
+});
+
+test('boss floor: the door needs a key, the boss locks the stairs until broken', () => {
+  const d = new Dungeon(16); d.keys = 1; d.enterFloor(3); d.enemies = d.enemies.filter(e => e.boss);
+  assert.ok(!d.drops.some(x => x.quest === 'key'), 'no spare key when you brought one');
+  assert.equal(d.floor.doorOpen, false);
+  const boss = d.enemies[0];
   assert.equal(boss.type, 'zombie');
+  d.openDoor(); d.keys = 0;
   Object.assign(d.p, d.floor.stairs); d.interact();
-  assert.equal(d.depth, 3, 'locked');
+  assert.equal(d.depth, 3, 'stairs locked while the boss stands');
   d.damage(boss, 99999);
   assert.equal(d.stairsLocked, false);
   assert.equal(d.drops.filter(x => x.kind === 'item').length, 3);
@@ -162,6 +207,23 @@ test('stairs lead down; every third floor a boss locks them until broken', () =>
   d.interact();
   assert.equal(d.depth, 4);
   assert.equal(d.floor.theme.id, 'dining');
+});
+
+test('arriving at a boss floor without a key spawns a guarded spare key, so you are never stuck', () => {
+  const d = new Dungeon(17); d.keys = 0; d.enterFloor(3);
+  const key = d.drops.find(x => x.quest === 'key');
+  assert.ok(key);
+  const room = d.floor.rooms[d.floor.keyRoom];
+  const guards = d.enemies.filter(e => !e.boss && e.x >= room.x * TILE && e.x < (room.x + room.w) * TILE && e.y >= room.y * TILE && e.y < (room.y + room.h) * TILE);
+  assert.ok(guards.length >= 4, `key room has ${guards.length} guards`);
+  assert.ok(guards.some(e => e.elite));
+  Object.assign(d.p, d.floor.door); d.interact();
+  assert.equal(d.floor.doorOpen, false, 'cannot open without a key');
+});
+
+test('Mr. D keeping you safe does not take your keys', () => {
+  const d = new Dungeon(18); d.keys = 2; d.hurt(9999);
+  assert.equal(d.keys, 2);
 });
 
 test('Ma Cổ Dài drops her head where you stood: step away and it misses, stay and it lands', () => {

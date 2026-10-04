@@ -21,14 +21,23 @@ export const themeFor=depth=>THEMES[Math.floor((depth-1)/3)%THEMES.length];
 export const isBossFloor=depth=>depth%3===0;
 
 // ---- Floor generation: rooms on a tile grid joined by two-tile-wide corridors.
+// Tile values: 0 wall, 1 floor, 2 closed door (blocks walking and sight until opened).
+export const DOOR=2;
+// Every floor has a stamp (con dấu) that unseals the stairs and an optional bronze key. On boss
+// floors the boss room is a dead end behind one locked door that only a key opens.
 export function generateFloor(depth,seed){
- const rand=rng(seed),tiles=new Uint8Array(MAP_W*MAP_H),rooms=[];
+ for(let attempt=0;attempt<60;attempt++){const f=buildFloor(depth,seed+attempt*7919);if(f)return f;}
+ throw Error(`could not generate floor ${depth}`);
+}
+function buildFloor(depth,seed){
+ const rand=rng(seed),tiles=new Uint8Array(MAP_W*MAP_H),rooms=[],boss=isBossFloor(depth);
  const ri=(a,b)=>a+Math.floor(rand()*(b-a+1));
  for(let tries=0;tries<300&&rooms.length<13;tries++){
   const w=ri(7,13),h=ri(6,10),x=ri(2,MAP_W-w-3),y=ri(2,MAP_H-h-3);
   if(rooms.some(r=>x<r.x+r.w+3&&x+w+3>r.x&&y<r.y+r.h+3&&y+h+3>r.y))continue;
   rooms.push({x,y,w,h,cx:x+Math.floor(w/2),cy:y+Math.floor(h/2)});
  }
+ if(rooms.length<6)return null;
  const carve=(x,y)=>{if(x>0&&y>0&&x<MAP_W-1&&y<MAP_H-1)tiles[y*MAP_W+x]=1;};
  for(const r of rooms)for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++)carve(x,y);
  const corridor=(a,b)=>{
@@ -37,18 +46,42 @@ export function generateFloor(depth,seed){
   const stepY=()=>{while(y!==b.cy){carve(x,y);carve(x+1,y);y+=Math.sign(b.cy-y);}};
   if(horizontalFirst){stepX();stepY();}else{stepY();stepX();}carve(x,y);carve(x+1,y+1);
  };
+ const gap=(i,j)=>Math.hypot(rooms[i].cx-rooms[j].cx,rooms[i].cy-rooms[j].cy);
+ // On boss floors the room furthest from the start is kept out of the tree and joined by one corridor.
+ let bossRoom=-1;if(boss){bossRoom=1;for(let i=2;i<rooms.length;i++)if(gap(0,i)>gap(0,bossRoom))bossRoom=i;}
+ const others=rooms.map((_,i)=>i).filter(i=>i!==bossRoom),linked=[0],edges=[];
  // Minimum spanning tree over room centres, plus a couple of loops so floors are not pure trees.
- const linked=[0],edges=[];
- while(linked.length<rooms.length){let best=null;for(const i of linked)for(let j=0;j<rooms.length;j++){if(linked.includes(j))continue;const d=Math.hypot(rooms[i].cx-rooms[j].cx,rooms[i].cy-rooms[j].cy);if(!best||d<best.d)best={i,j,d};}linked.push(best.j);edges.push([best.i,best.j]);}
- for(let k=0;k<2&&rooms.length>3;k++){const i=ri(0,rooms.length-1),j=ri(0,rooms.length-1);if(i!==j)edges.push([i,j]);}
+ while(linked.length<others.length){let best=null;for(const i of linked)for(const j of others){if(linked.includes(j))continue;const d=gap(i,j);if(!best||d<best.d)best={i,j,d};}linked.push(best.j);edges.push([best.i,best.j]);}
+ for(let k=0;k<2;k++){const i=others[ri(0,others.length-1)],j=others[ri(0,others.length-1)];if(i!==j)edges.push([i,j]);}
+ if(boss){let near=others[0];for(const j of others)if(gap(bossRoom,j)<gap(bossRoom,near))near=j;edges.push([near,bossRoom]);}
  for(const [i,j] of edges)corridor(rooms[i],rooms[j]);
- const floor={depth,seed,tiles,rooms,theme:themeFor(depth)};
- // The stairs go in the room furthest (by walking distance) from the start room.
- const field=flowField(floor,rooms[0].cx,rooms[0].cy);
- let far=1;for(let i=1;i<rooms.length;i++)if(field[rooms[i].cy*MAP_W+rooms[i].cx]>field[rooms[far].cy*MAP_W+rooms[far].cx])far=i;
- floor.stairsRoom=far;
- const center=r=>({x:(r.cx+.5)*TILE,y:(r.cy+.5)*TILE});
- floor.start=center(rooms[0]);floor.exitUp={x:floor.start.x-48,y:floor.start.y-40};floor.stairs=center(rooms[far]);
+ const floor={depth,seed,tiles,rooms,theme:themeFor(depth),bossRoom,doorOpen:!boss};
+ const tileOf=r=>r.cy*MAP_W+r.cx,center=r=>({x:(r.cx+.5)*TILE,y:(r.cy+.5)*TILE});
+ if(boss){
+  // The door is every edge tile of the boss room that opens onto floor outside it.
+  const r=rooms[bossRoom],inside=(x,y)=>x>=r.x&&x<r.x+r.w&&y>=r.y&&y<r.y+r.h,door=[];
+  for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++){if(x!==r.x&&x!==r.x+r.w-1&&y!==r.y&&y!==r.y+r.h-1)continue;if([[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>!inside(x+dx,y+dy)&&tiles[(y+dy)*MAP_W+x+dx]===1))door.push(y*MAP_W+x);}
+  if(door.length<1||door.length>4)return null;
+  for(const i of door)tiles[i]=DOOR;
+  const field=flowField(floor,rooms[0].cx,rooms[0].cy);
+  if(others.some(i=>field[tileOf(rooms[i])]<0)||field[tileOf(r)]>=0)return null;
+  floor.door={tiles:door,x:door.reduce((s,i)=>s+(i%MAP_W+.5)*TILE,0)/door.length,y:door.reduce((s,i)=>s+(Math.floor(i/MAP_W)+.5)*TILE,0)/door.length};
+  floor.stairsRoom=bossRoom;
+ }else{
+  // The stairs go in the room furthest (by walking distance) from the start room.
+  const field=flowField(floor,rooms[0].cx,rooms[0].cy);
+  if(rooms.some(r=>field[tileOf(r)]<0))return null;
+  let far=1;for(let i=1;i<rooms.length;i++)if(field[tileOf(rooms[i])]>field[tileOf(rooms[far])])far=i;
+  floor.stairsRoom=far;
+ }
+ // Stamp in a room about halfway out; key in the furthest room left over (on boss floors: the fallback key).
+ const field=flowField(floor,rooms[0].cx,rooms[0].cy),spare=others.filter(i=>i!==0&&i!==floor.stairsRoom).sort((a,b)=>field[tileOf(rooms[a])]-field[tileOf(rooms[b])]);
+ if(spare.length<2)return null;
+ const spot=i=>{const r=rooms[i];return{x:(r.x+1.5+rand()*(r.w-3))*TILE,y:(r.y+1.5+rand()*(r.h-3))*TILE};};
+ floor.keyRoom=spare[spare.length-1];floor.key=spot(floor.keyRoom);
+ if(!boss){floor.stampRoom=spare[Math.floor((spare.length-1)/2)];floor.stamp=spot(floor.stampRoom);}
+ floor.start=center(rooms[0]);floor.exitUp={x:floor.start.x-48,y:floor.start.y-40};
+ const sr=rooms[floor.stairsRoom];floor.stairs=boss?{x:(sr.x+sr.w-1.5)*TILE,y:(sr.y+1.5)*TILE}:center(sr);
  return floor;
 }
 
@@ -130,12 +163,12 @@ export class Dungeon{
  constructor(seed=Date.now()%100000){
   this.seed=seed;this.rand=rng(seed*7+3);this.time=0;this.ending=null;this.bubble=null;this.floaters=[];this.effects=[];
   this.p={x:0,y:0,r:11,face:0,moving:false,level:1,xp:0,gold:0,courage:100,battery:100,dash:0,dashDir:0,hurt:0,path:[],target:null,pickTarget:null};
-  this.potions={bread:2,battery:1};this.inventory=[];this.equipped={torch:null,coat:null,charm:null,shoes:null};
+  this.potions={bread:2,battery:1};this.keys=0;this.inventory=[];this.equipped={torch:null,coat:null,charm:null,shoes:null};
   this.cooldowns={flash:0,candy:0,bell:0,spotlight:0,dash:0,potion:0};
   this.stats={defeated:0,deepest:1,knockouts:0,bosses:0};
   this.equipped.torch={slot:'torch',rarity:'common',rarityName:'Thường',name:'Đèn pin cũ',ilvl:1,stats:{dmg:4},base:{dmg:4},affixes:[],value:3};
   this.enterFloor(1);
-  this.notice('Mr. D: Hầm dưới nhà ma mở cửa rồi. Hạ màn hết mấy diễn viên, tìm cầu thang xuống.');
+  this.notice('Mr. D: Mỗi tầng có một con dấu, tìm được thì cầu thang mới mở. Thấy chìa khóa đồng thì giữ lấy: phòng trùm chỉ mở bằng nó.');
  }
  notice(text){this.bubble={text,until:this.time+4.5};}
  float(x,y,text,color='#ffe5ad',size=13){this.floaters.push({x,y,text,color,size,until:this.time+1.1});}
@@ -156,23 +189,34 @@ export class Dungeon{
   const f=this.floor,st=f.start;Object.assign(this.p,{x:st.x,y:st.y,path:[],target:null,pickTarget:null});
   this.explored=new Uint8Array(MAP_W*MAP_H);this.reveal();
   this.enemies=[];this.projectiles=[];this.drops=[];this.marks=[];this.effects=[];this.field=null;this.fieldAt=-1;this.nextId=1;
-  this.stairsLocked=isBossFloor(depth);
+  this.stampFound=false;this.bossBroken=false;
   this.vendor=depth%3===1?{x:st.x+70,y:st.y-30}:null;
-  const scale=scaleFor(depth),theme=f.theme;
+  const scale=scaleFor(depth),theme=f.theme,boss=isBossFloor(depth);
+  // The key only appears on a boss floor if you arrive without one, so you can never be stuck.
+  const keyHere=!boss||this.keys===0;
   f.rooms.forEach((room,i)=>{
    if(i===0)return;
-   if(i===f.stairsRoom&&isBossFloor(depth)){this.spawn(theme.boss,(room.cx+.5)*TILE,(room.cy+.5)*TILE,scale);return;}
-   const pack=2+Math.floor(this.rand()*3)+Math.min(3,Math.floor(depth/3));
+   if(i===f.bossRoom){this.spawn(theme.boss,(room.cx-1.5)*TILE,(room.cy+.5)*TILE,scale);return;}
+   // The rooms holding the stamp and the key are guarded harder.
+   const guarded=i===f.stampRoom||i===f.keyRoom&&keyHere,keyRoom=i===f.keyRoom&&keyHere;
+   const pack=2+Math.floor(this.rand()*3)+Math.min(3,Math.floor(depth/3))+(keyRoom?2:0);
    const kinds=Object.entries(ENEMIES).filter(([,e])=>!e.boss&&e.from<=depth).map(([k])=>k);
-   const elite=this.rand()<.12+depth*.01;
+   const elite=guarded||this.rand()<.12+depth*.01;
    for(let n=0;n<pack;n++){
     const x=(room.x+1+this.rand()*(room.w-2))*TILE,y=(room.y+1+this.rand()*(room.h-2))*TILE;
-    if(floorPassable(f,x,y,12))this.spawn(kinds[Math.floor(this.rand()*kinds.length)],x,y,scale,elite&&n===0);
+    if(floorPassable(f,x,y,12))this.spawn(kinds[Math.floor(this.rand()*kinds.length)],x,y,scale,elite&&(n===0||keyRoom&&n===1));
    }
   });
+  if(f.stamp)this.drops.push({id:this.nextId++,kind:'quest',quest:'stamp',x:f.stamp.x,y:f.stamp.y});
+  if(keyHere)this.drops.push({id:this.nextId++,kind:'quest',quest:'key',x:f.key.x,y:f.key.y});
   this.float(st.x,st.y-60,`TẦNG ${depth} · ${theme.name.toUpperCase()}`,'#a0ead4',16);
-  if(isBossFloor(depth))this.notice(`Tầng ${depth}: ${ENEMIES[theme.boss].name} giữ cầu thang. Hạ màn trùm để mở lối xuống.`);
+  if(!boss)this.notice(`Tầng ${depth}: cầu thang bị niêm phong. Tìm con dấu tầng để mở. Chìa khóa đồng thì tùy, nhưng phòng trùm chỉ mở bằng nó.`);
+  else if(this.keys>0)this.notice(`Tầng ${depth}: ${ENEMIES[theme.boss].name} ở sau cánh cửa khóa. Bạn có ${this.keys} chìa khóa đồng.`);
+  else this.notice(`Tầng ${depth}: phòng trùm khóa mà bạn chưa có chìa. Mr. D: “Hình như có đứa đánh rơi một chiếc ở tầng này… chỗ đó đông diễn viên lắm.”`);
  }
+ // Stairs open with the floor stamp, or on a boss floor once the boss is broken.
+ get stairsLocked(){return isBossFloor(this.depth)?!this.bossBroken:!this.stampFound;}
+ openDoor(){const f=this.floor;for(const i of f.door.tiles)f.tiles[i]=1;f.doorOpen=true;this.fieldAt=-1;this.effects.push({kind:'ring',x:f.door.x,y:f.door.y,r:60,color:'#ffd36b',until:this.time+.5});}
  spawn(type,x,y,scale,elite=false){
   const e=ENEMIES[type],hp=Math.round(e.hp*scale*(elite?2.5:1));
   const m={id:this.nextId++,type,name:elite?`${e.name} Ngôi Sao`:e.name,x,y,r:e.r,hp,maxHp:hp,dmg:e.dmg*scale*(elite?1.4:1),speed:e.speed*(elite?1.1:1),range:e.range,cdBase:e.cd,windupBase:e.windup,xp:Math.round(e.xp*scale*(elite?3:1)),elite,boss:!!e.boss,state:'idle',t:0,cd:1+this.rand(),face:0,stun:0,aggro:false,special:4,special2:7,home:{x,y}};
@@ -212,8 +256,12 @@ export class Dungeon{
   if(this.ending)return false;const p=this.p,f=this.floor;
   const drop=this.drops.filter(d=>d.kind==='item').sort((a,b)=>dist(a,p)-dist(b,p))[0];
   if(drop&&dist(drop,p)<44){this.collect(drop);return true;}
+  if(f.door&&!f.doorOpen&&dist(f.door,p)<72){
+   if(!this.keys){this.notice('Cửa phòng trùm khóa chặt. Cần một chiếc chìa khóa đồng.');return true;}
+   this.keys--;this.openDoor();this.notice(`Cạch! Chìa khóa đồng mở cửa phòng trùm.${this.keys?` Còn ${this.keys} chìa.`:''}`);return true;
+  }
   if(dist(f.stairs,p)<46){
-   if(this.stairsLocked){this.notice(`Cầu thang khóa. Hạ màn ${ENEMIES[f.theme.boss].name} trước.`);return true;}
+   if(this.stairsLocked){this.notice(isBossFloor(this.depth)?`Cầu thang khóa. Hạ màn ${ENEMIES[f.theme.boss].name} trước.`:`Cầu thang bị niêm phong. Tìm con dấu tầng ${this.depth}.`);return true;}
    this.enterFloor(this.depth+1);return true;
   }
   if(dist(f.exitUp,p)<46){this.finish();return true;}
@@ -229,6 +277,7 @@ export class Dungeon{
  collect(d){
   const i=this.drops.indexOf(d);if(i<0)return;
   if(d.kind==='item'){if(this.inventory.length>=16){this.notice('Túi đầy. Mở túi (I) để vứt hoặc bán bớt.');return;}this.inventory.push(d.item);this.notice(`Nhặt được ${d.item.name} (${d.item.rarityName}).`);}
+  else if(d.kind==='quest'){if(d.quest==='stamp'){this.stampFound=true;this.notice(`Có con dấu tầng ${this.depth}! Cầu thang xuống đã mở.`);}else{this.keys++;this.notice(`Nhặt được chìa khóa đồng (đang có ${this.keys}). Giữ lại để mở phòng trùm.`);}this.float(d.x,d.y-24,d.quest==='stamp'?'+ con dấu':'+ chìa khóa','#ffd36b',13);}
   else if(d.kind==='gold'){this.p.gold+=d.amount;this.float(d.x,d.y-20,`+${d.amount} xu`,'#e7c083',11);}
   else{this.potions[d.potion]++;this.float(d.x,d.y-20,d.potion==='bread'?'+1 bánh bao':'+1 pin AA','#a0ead4',11);}
   this.drops.splice(i,1);
@@ -258,7 +307,7 @@ export class Dungeon{
   if(this.rand()<.12||e.boss)drop('potion',{potion:this.rand()<.6?'bread':'battery'});
   const items=e.boss?3:e.elite?(this.rand()<.7?1:0)+1:this.rand()<.13?1:0;
   for(let i=0;i<items;i++)drop('item',{item:makeItem(this.rand,this.depth,e.boss?(i===0?1.6:.8):e.elite?.6:0)});
-  if(e.boss){this.stairsLocked=false;this.stats.bosses++;this.notice(`${e.name} cười bò ra sàn rồi mở khóa cầu thang. Lối xuống đã mở!`);}
+  if(e.boss){this.bossBroken=true;this.stats.bosses++;this.notice(`${e.name} cười bò ra sàn rồi mở khóa cầu thang. Lối xuống đã mở!`);}
  }
  gainXp(n){const p=this.p;p.xp+=n;while(p.xp>=xpForLevel(p.level)){p.xp-=xpForLevel(p.level);p.level++;const d=this.derived;p.courage=d.maxCourage;p.battery=d.maxBattery;this.float(p.x,p.y-90,`LÊN CẤP ${p.level}!`,'#ffd36b',16);const unlock=Object.values(SKILLS).find(s=>s.level===p.level);this.notice(unlock?`Lên cấp ${p.level}! Mở kỹ năng mới: ${unlock.name}.`:`Lên cấp ${p.level}! Can đảm và sát thương tăng.`);}}
  hurt(amount,source){
@@ -356,14 +405,19 @@ export class Dungeon{
  nearby(){
   const p=this.p,f=this.floor,item=this.drops.filter(d=>d.kind==='item').sort((a,b)=>dist(a,p)-dist(b,p))[0];
   if(item&&dist(item,p)<44)return{verb:'Nhặt',label:item.item.name};
-  if(dist(f.stairs,p)<46)return{verb:this.stairsLocked?'Khóa':'Xuống',label:this.stairsLocked?'Cầu thang (đang khóa)':`Cầu thang xuống tầng ${this.depth+1}`};
+  if(f.door&&!f.doorOpen&&dist(f.door,p)<72)return{verb:this.keys?'Mở cửa':'Khóa',label:this.keys?`Mở cửa phòng trùm (còn ${this.keys} chìa)`:'Cửa phòng trùm · cần chìa khóa đồng'};
+  if(dist(f.stairs,p)<46)return{verb:this.stairsLocked?'Khóa':'Xuống',label:this.stairsLocked?(isBossFloor(this.depth)?'Cầu thang (hạ màn trùm trước)':'Cầu thang niêm phong · cần con dấu'):`Cầu thang xuống tầng ${this.depth+1}`};
   if(dist(f.exitUp,p)<46)return{verb:'Rời hầm',label:'Thang lên · kết thúc chuyến'};
   if(this.vendor&&dist(this.vendor,p)<56)return{verb:'Mua bán',label:'Quầy Mr. D'};
   return null;
  }
  objective(){
-  const boss=this.live().find(e=>e.boss);
-  if(boss)return`Tầng ${this.depth}: hạ màn ${boss.name} để mở cầu thang`;
-  return`Tầng ${this.depth} · ${this.floor.theme.name}: tìm cầu thang xuống · đã hạ màn ${this.stats.defeated} diễn viên`;
+  const f=this.floor,keys=this.keys?` · ${this.keys} chìa khóa`:'';
+  if(isBossFloor(this.depth)){
+   if(!f.doorOpen)return this.keys?`Tầng ${this.depth}: mở cửa phòng trùm bằng chìa khóa đồng${keys}`:`Tầng ${this.depth}: tìm chìa khóa đồng để mở phòng trùm`;
+   const boss=this.live().find(e=>e.boss);return boss?`Tầng ${this.depth}: hạ màn ${boss.name}`:`Tầng ${this.depth}: cầu thang xuống đã mở${keys}`;
+  }
+  const key=this.drops.some(d=>d.quest==='key')?' · chìa khóa đồng (tùy chọn) ở đâu đó':'';
+  return this.stampFound?`Tầng ${this.depth}: đã có con dấu, tới cầu thang xuống${key}${keys}`:`Tầng ${this.depth}: tìm con dấu tầng để mở cầu thang${key}${keys}`;
  }
 }

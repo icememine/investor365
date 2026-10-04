@@ -12,8 +12,14 @@ A haunted-house game with three ways to play:
 ## Hầm Ma
 
 - Floors: 64 × 44 tiles, rooms joined by corridors, stairs in the room furthest from the start.
-  Themes change every three floors (Nghĩa Địa, Bàn Tiệc, Hành Lang) and the third floor of each
-  has a boss who locks the stairs: Xác Sống (telegraphed slam, summons sheet ghosts), Ma Cà Rồng
+  The stairs stay sealed until you pick up that floor's **stamp** (con dấu, pink beam), kept in a
+  guarded room about halfway out. Each normal floor also hides an optional **bronze key** (chìa
+  khóa đồng, gold beam) in its furthest, most crowded room. Keys carry over between floors.
+- Every third floor the boss waits in a dead-end room behind a locked door that only a key
+  opens. Arrive without a key and a spare one appears in the most heavily guarded room of the boss
+  floor, so you are never stuck, but skipping keys costs you that fight.
+  Themes change every three floors (Nghĩa Địa, Bàn Tiệc, Hành Lang) and each boss floor's boss
+  locks the stairs until broken: Xác Sống (telegraphed slam, summons sheet ghosts), Ma Cà Rồng
   (aimed dash, bat ring) and Ma Cổ Dài (drops her head where you stand). Difficulty scales with depth.
 - Performers: Ma Vải (melee), Bộ Xương (fast), Ma Đèn Lồng (ranged), plus "Ngôi Sao" elites.
 - Skills: Rọi đèn (free cone), Ném kẹo (projectile), Chuông đồng (stun, level 3), Đèn sân khấu

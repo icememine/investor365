@@ -1,0 +1,27 @@
+{
+ "summary": {
+  "total": 1,
+  "agree": 1,
+  "disagree": 0,
+  "skipped": 0,
+  "invariantHolds": 1,
+  "oracle": "fixtures/oracle.py (python3 -I)",
+  "transformer": {
+   "app": "6f29074338f27a37c5ba1a48c007bdd07f7bfa8a661e41af30e60adb17793471",
+   "profile": "edfedf5bcf1bc7cfe8c6b4d33ad4d78c647bb0d9bbf50dd743e3815078062a96",
+   "runtime": "fd854bcb708f3031824b14819fe126b0be96b241ced19416035b6f49d4d7c55e",
+   "supplier": "0c35544ed5e56d00479656114dd226712a416054bf23b4140c30466d27011bff"
+  }
+ },
+ "results": [
+  {
+   "name": "big-invalid-10000",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 374638,
+   "operations": 4060110,
+   "invariant": "holds",
+   "diffs": []
+  }
+ ]
+}

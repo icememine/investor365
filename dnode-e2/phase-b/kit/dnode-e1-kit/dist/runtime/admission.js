@@ -1,0 +1,5 @@
+// This verifier relies on the platform crypto and the caller's trust anchor.
+// A signed bundle is not self-authenticating: distribute the public-key fingerprint separately.
+import {json,Fault} from './engine.js';
+export async function sha(text){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)))].map(x=>x.toString(16).padStart(2,'0')).join('')}
+export async function verifyBundle(read,trustedKey){const release=JSON.parse(await read('generated/release.json'));const key=await crypto.subtle.importKey('jwk',trustedKey,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);const data=new TextEncoder().encode(json(release.attestation));const sig=Uint8Array.from(atob(release.signature),c=>c.charCodeAt(0));if(!await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,sig,data))throw new Fault('AdmissionDenied','signature');const texts={};for(const [path,hash] of Object.entries(release.attestation.files)){const text=await read(path);if(await sha(text)!==hash)throw new Fault('AdmissionDenied','changed '+path);texts[path]=text}return {release,texts};}

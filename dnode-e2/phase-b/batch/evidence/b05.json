@@ -1,0 +1,220 @@
+{
+ "checks": [
+  {
+   "group": "B05",
+   "name": "(a) process killed by SIGKILL",
+   "pass": true,
+   "observed": {
+    "signal": "SIGKILL",
+    "stderr": "FAULT HOOK after-temp-write: killing process 3938"
+   }
+  },
+  {
+   "group": "B05",
+   "name": "(a) destination snapshot is the OLD complete bytes",
+   "pass": true,
+   "observed": "fd51b72adb05ecd1676dbd746f9ddde9312aafbc7652d80ca3f64daaa414bacb"
+  },
+  {
+   "group": "B05",
+   "name": "(a) report is the OLD report",
+   "pass": true
+  },
+  {
+   "group": "B05",
+   "name": "(a) staged temp file left beside it (never a published name)",
+   "pass": true,
+   "observed": [
+    "batch-runs.log",
+    "snapshot.json",
+    "snapshot.json.3938.tmp",
+    "snapshot.json.report.json"
+   ]
+  },
+  {
+   "group": "B05",
+   "name": "(a) --verify: old pair still VERIFIED CURRENT (old, not new)",
+   "pass": true,
+   "observed": "VERIFIED CURRENT: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-a/snapshot.json (sha256 fd51b72adb05ecd1676dbd746f9ddde9312aafbc7652d80ca3f64daaa414bacb) — snapshot matches accepted report of run 145b25d39a8d702bb010127db6e321c07f2ec53117682d4979370a92dc9ba482."
+  },
+  {
+   "group": "B05",
+   "name": "(a) re-run publishes new snapshot and reports leftover temp",
+   "pass": true,
+   "observed": "Note: leftover temp file(s) from an interrupted earlier run: snapshot.json.3938.tmp (never imported; safe to delete)."
+  },
+  {
+   "group": "B05",
+   "name": "(b) process killed by SIGKILL",
+   "pass": true,
+   "observed": {
+    "signal": "SIGKILL",
+    "stderr": "FAULT HOOK between-renames: killing process 3985"
+   }
+  },
+  {
+   "group": "B05",
+   "name": "(b) destination snapshot is the COMPLETE NEW bytes",
+   "pass": true,
+   "observed": "05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31"
+  },
+  {
+   "group": "B05",
+   "name": "(b) report is still the OLD report",
+   "pass": true
+  },
+  {
+   "group": "B05",
+   "name": "(b) --verify detects UNVERIFIED (exit 2)",
+   "pass": true,
+   "observed": "UNVERIFIED: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-b/snapshot.json (sha256 05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31) — snapshot sha256 05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31 does not match the accepted report (fd51b72adb05ecd1676dbd746f9ddde9312aafbc7652d80ca3f64daaa414bacb, run 145b25d39a8d702bb010127db6e321c07f2ec53117682d4979370a92dc9ba482). Do not import it; re-run the batch on the source file."
+  },
+  {
+   "group": "B05",
+   "name": "(b) deterministic re-run repairs: same snapshot bytes, VERIFIED",
+   "pass": true,
+   "observed": "VERIFIED CURRENT: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-b/snapshot.json (sha256 05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31) — snapshot matches accepted report of run ca0e16bf6a90e37a19b5a7cb7787456c336f60a7f61521781409e5306eace45c."
+  },
+  {
+   "group": "B-T5",
+   "name": "rejected run exits 2",
+   "pass": true,
+   "observed": 2
+  },
+  {
+   "group": "B-T5",
+   "name": "previous snapshot byte-unchanged",
+   "pass": true
+  },
+  {
+   "group": "B-T5",
+   "name": "new report: status rejected, snapshot.published false, new runId",
+   "pass": true,
+   "observed": "205e09d1171e253e9c4a48fa1a01a8a88fb677d2a6661377fe9346d24b135031"
+  },
+  {
+   "group": "B-T5",
+   "name": "CLI states the old file is NOT the result of this run",
+   "pass": true,
+   "observed": "Rejected — no snapshot was produced. 1 of 2 records need correction (1 problems). Nothing in the shop or in any earlier export was changed. Partial acceptance is not available: correct the listed records and validate the whole file again.\n  Record 2 · spreadsheet row 3 · SKU TOTE\n    PRICE_VND: value \"12O000\" — Expected a positive bounded decimal integer. Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators.\n/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/bt5/snapshot.json was not changed and still holds sha256 fd51b72adb05ecd1676dbd746f9ddde9312aafbc7652d80ca3f64daaa414bacb from an earlier run; it is NOT the result of this run.\nCounts: dataRecords 2, acceptedRecords 0, recordsWithIssues 1, issues 1\nRun 205e09d1171e253e9c4a48fa1a01a8a88fb677d2a6661377fe9346d24b135031 · input 70 bytes sha256 a61222af288eb7181f3239c9bdcf0545d6b1a7006ffdf4130a4045a69c0bc313\nReport: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/bt5/snapshot.json.report.json\n"
+  },
+  {
+   "group": "B-T5",
+   "name": "--verify: UNVERIFIED (latest report rejected)",
+   "pass": true,
+   "observed": "UNVERIFIED: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/bt5/snapshot.json (sha256 fd51b72adb05ecd1676dbd746f9ddde9312aafbc7652d80ca3f64daaa414bacb) — latest report status is rejected (run 205e09d1171e253e9c4a48fa1a01a8a88fb677d2a6661377fe9346d24b135031). Do not import it; re-run the batch on the source file."
+  },
+  {
+   "group": "B05",
+   "name": "1048576 bytes accepted (exit 0)",
+   "pass": true,
+   "observed": "Accepted — 9000 records ready. This snapshot (run b216fb28b1c6) can replace the supplier stock in the shop."
+  },
+  {
+   "group": "B05",
+   "name": "1048577 bytes rejected FileTooLarge (exit 2), snapshot untouched",
+   "pass": true,
+   "observed": "Rejected — the file could not be read as the declared CSV (FileTooLarge). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "group": "B05",
+   "name": "64 MiB file: FileTooLarge, hashed by streaming, report written",
+   "pass": true,
+   "observed": {
+    "ms": 493,
+    "runId": "35bb23099a9383324899f57dd5b6f67e9cb5958d0074c90cd79ed4318c6ead22"
+   }
+  },
+  {
+   "group": "B05",
+   "name": "oversize: zero decodes, only batch.file_error called",
+   "pass": true,
+   "observed": {
+    "decodes": 0,
+    "calls": [
+     "batch.file_error"
+    ]
+   }
+  },
+  {
+   "group": "B05",
+   "name": "10000 records accepted; 10001 → TooManyRows exit 2",
+   "pass": true,
+   "observed": [
+    "Accepted — 10000 records ready. This snapshot (run 0e0134729726) can replace the supplier stock in the shop.",
+    "Rejected — the file could not be read as the declared CSV (TooManyRows). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed."
+   ]
+  },
+  {
+   "group": "R0.2",
+   "name": "relocated copy runs (relative ../kit path)",
+   "pass": true,
+   "observed": "Accepted — 1 records ready. This snapshot (run ca0e16bf6a90) can replace the supplier stock in the shop."
+  },
+  {
+   "group": "R0.2",
+   "name": "tampered kit copy: REFUSED, exit 1, nothing written",
+   "pass": true,
+   "observed": "REFUSED: AdmissionDenied: Kit verification failed: AdmissionDenied AdmissionDenied: changed roots/supplier.node. Nothing was run and nothing was written."
+  },
+  {
+   "group": "R0.2",
+   "name": "different trust key: REFUSED, exit 1, nothing written",
+   "pass": true,
+   "observed": "REFUSED: AdmissionDenied: Kit verification failed: AdmissionDenied AdmissionDenied: signature. Nothing was run and nothing was written."
+  }
+ ],
+ "detail": {
+  "a": {
+   "files": [
+    "batch-runs.log",
+    "snapshot.json",
+    "snapshot.json.3938.tmp",
+    "snapshot.json.report.json"
+   ],
+   "kill": {
+    "status": null,
+    "signal": "SIGKILL",
+    "stdout": "",
+    "stderr": "FAULT HOOK after-temp-write: killing process 3938\n"
+   },
+   "verify": "VERIFIED CURRENT: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-a/snapshot.json (sha256 fd51b72adb05ecd1676dbd746f9ddde9312aafbc7652d80ca3f64daaa414bacb) — snapshot matches accepted report of run 145b25d39a8d702bb010127db6e321c07f2ec53117682d4979370a92dc9ba482.",
+   "rerun": "Note: leftover temp file(s) from an interrupted earlier run: snapshot.json.3938.tmp (never imported; safe to delete).\nAccepted — 1 records ready. This snapshot (run ca0e16bf6a90) can replace the supplier stock in the shop.\nSnapshot: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-a/snapshot.json sha256 05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31\nCounts: dataRecords 1, acceptedRecords 1, recordsWithIssues 0, issues 0\nRun ca0e16bf6a90e37a19b5a7cb7787456c336f60a7f61521781409e5306eace45c · input 59 bytes sha256 258ee2ab2777f3cb88e10f112a0b4c604e8d9b53e53fc7feee205866dce56af3\nReport: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-a/snapshot.json.report.json\n",
+   "verifyAfter": "VERIFIED CURRENT: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-a/snapshot.json (sha256 05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31) — snapshot matches accepted report of run ca0e16bf6a90e37a19b5a7cb7787456c336f60a7f61521781409e5306eace45c."
+  },
+  "b": {
+   "kill": {
+    "status": null,
+    "signal": "SIGKILL",
+    "stdout": "",
+    "stderr": "FAULT HOOK between-renames: killing process 3985\n"
+   },
+   "verify": "UNVERIFIED: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-b/snapshot.json (sha256 05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31) — snapshot sha256 05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31 does not match the accepted report (fd51b72adb05ecd1676dbd746f9ddde9312aafbc7652d80ca3f64daaa414bacb, run 145b25d39a8d702bb010127db6e321c07f2ec53117682d4979370a92dc9ba482). Do not import it; re-run the batch on the source file.",
+   "verifyAfter": "VERIFIED CURRENT: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-b/snapshot.json (sha256 05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31) — snapshot matches accepted report of run ca0e16bf6a90e37a19b5a7cb7787456c336f60a7f61521781409e5306eace45c."
+  },
+  "bt5": {
+   "stdout": "Rejected — no snapshot was produced. 1 of 2 records need correction (1 problems). Nothing in the shop or in any earlier export was changed. Partial acceptance is not available: correct the listed records and validate the whole file again.\n  Record 2 · spreadsheet row 3 · SKU TOTE\n    PRICE_VND: value \"12O000\" — Expected a positive bounded decimal integer. Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators.\n/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/bt5/snapshot.json was not changed and still holds sha256 fd51b72adb05ecd1676dbd746f9ddde9312aafbc7652d80ca3f64daaa414bacb from an earlier run; it is NOT the result of this run.\nCounts: dataRecords 2, acceptedRecords 0, recordsWithIssues 1, issues 1\nRun 205e09d1171e253e9c4a48fa1a01a8a88fb677d2a6661377fe9346d24b135031 · input 70 bytes sha256 a61222af288eb7181f3239c9bdcf0545d6b1a7006ffdf4130a4045a69c0bc313\nReport: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/bt5/snapshot.json.report.json\n",
+   "verify": "UNVERIFIED: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/bt5/snapshot.json (sha256 fd51b72adb05ecd1676dbd746f9ddde9312aafbc7652d80ca3f64daaa414bacb) — latest report status is rejected (run 205e09d1171e253e9c4a48fa1a01a8a88fb677d2a6661377fe9346d24b135031). Do not import it; re-run the batch on the source file."
+  },
+  "size": {
+   "at1048576": "Accepted — 9000 records ready. This snapshot (run b216fb28b1c6) can replace the supplier stock in the shop.\nSnapshot: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-size/snapshot.json sha256 3be21a51fd20489af4e7a70b6dbcbbd0ab8970be4786b3ee354c4ce3caa64a78\nCounts: dataRecords 9000, acceptedRecords 9000, recordsWithIssues 0, issues 0\nRun b216fb28b1c66c3c90ebcb39406e2f081d5db8b2850d35d0c6cbd4db753e149d · input 1048576 bytes sha256 296bbfe2625226ebbb10e29b686fc4282fdcfeb1e68fbd9443de02514dd3c919\nReport: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-size/snapshot.json.report.json\n",
+   "at1048577": "Rejected — the file could not be read as the declared CSV (FileTooLarge). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed.\n  The file is larger than 1 MiB (1048576 bytes), so it was not read. No records were checked. Do not split one stock list into several files: each accepted file replaces the whole snapshot.\n/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-size/snapshot.json was not changed and still holds sha256 3be21a51fd20489af4e7a70b6dbcbbd0ab8970be4786b3ee354c4ce3caa64a78 from an earlier run; it is NOT the result of this run.\nRun 49057fbb502511bb65054308c6474acdeb7eefed2c854655a70fcd95058e4110 · input 1048577 bytes sha256 b04781f1f619a3fe33b127aafd35a0797026285062b5560ec73772f294455aec\nReport: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-size/snapshot.json.report.json\n",
+   "sparse64MiB": {
+    "ms": 493,
+    "stdout": "Rejected — the file could not be read as the declared CSV (FileTooLarge). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed.\n  The file is larger than 1 MiB (1048576 bytes), so it was not read. No records were checked. Do not split one stock list into several files: each accepted file replaces the whole snapshot.\nNo snapshot exists at /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-big/snapshot.json; this run did not produce one.\nRun 35bb23099a9383324899f57dd5b6f67e9cb5958d0074c90cd79ed4318c6ead22 · input 67108864 bytes sha256 3b6a07d0d404fab4e23b6d34bc6696a6a312dd92821332385e5af7c01c421351\nReport: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-big/snapshot.json.report.json\n"
+   },
+   "spy": {
+    "decodes": 0,
+    "calls": [
+     "batch.file_error"
+    ]
+   },
+   "rows10000": "Accepted — 10000 records ready. This snapshot (run 0e0134729726) can replace the supplier stock in the shop.",
+   "rows10001": "Rejected — the file could not be read as the declared CSV (TooManyRows). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed.\n  The file has more than 10000 product records, so it was not checked. Do not split one stock list into several files: each accepted file replaces the whole snapshot.\n/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-rows/snapshot.json was not changed and still holds sha256 d3108481427c42041886e6cc571fc5ed4327b662e30c80ab6b75ab3d2f290b6f from an earlier run; it is NOT the result of this run.\nRun 819d4e342376e7ccdb1a11f5ecca8040374c707a460a877bac512d222a78d902 · input 160047 bytes sha256 87a88058c50577e79fe3a1533438259751088830bb13c8be185137f88d86d0ba\nReport: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b05-rows/snapshot.json.report.json\n"
+  },
+  "admission": {
+   "tampered": "REFUSED: AdmissionDenied: Kit verification failed: AdmissionDenied AdmissionDenied: changed roots/supplier.node. Nothing was run and nothing was written.",
+   "wrongKey": "REFUSED: AdmissionDenied: Kit verification failed: AdmissionDenied AdmissionDenied: signature. Nothing was run and nothing was written."
+  }
+ }
+}

@@ -1,0 +1,57 @@
+{
+  "attestation": {
+    "kind": "experimental-root-test-attestation",
+    "root": "prelude",
+    "rootIdentity": "8e199f2776bb9c4ec44b3a435b4c70744748c42b784c646f77d2847c41e99dde",
+    "runtimeIdentity": "fd854bcb708f3031824b14819fe126b0be96b241ced19416035b6f49d4d7c55e",
+    "publicEntries": [
+      "bounded.clamp",
+      "bounded.within",
+      "sequence.sum_exact",
+      "text.parse_decimal_nat",
+      "sequence.unique_text"
+    ],
+    "evidence": "a831ff3f24e8554119484f126bea81b21adf50cc2bf923954a3d5cba84dafcc2",
+    "generated": {
+      "bounded.clamp": {
+        "distinctInputs": 160,
+        "successfulReturns": 160,
+        "ownRefusals": 0,
+        "propagatedRefusals": 0,
+        "faults": 0
+      },
+      "bounded.within": {
+        "distinctInputs": 160,
+        "successfulReturns": 160,
+        "ownRefusals": 0,
+        "propagatedRefusals": 0,
+        "faults": 0
+      },
+      "sequence.sum_exact": {
+        "distinctInputs": 160,
+        "successfulReturns": 160,
+        "ownRefusals": 0,
+        "propagatedRefusals": 0,
+        "faults": 0
+      },
+      "text.parse_decimal_nat": {
+        "distinctInputs": 160,
+        "successfulReturns": 160,
+        "ownRefusals": 0,
+        "propagatedRefusals": 0,
+        "faults": 0
+      },
+      "sequence.unique_text": {
+        "distinctInputs": 320,
+        "successfulReturns": 320,
+        "ownRefusals": 0,
+        "propagatedRefusals": 0,
+        "faults": 0
+      }
+    },
+    "policy": "761b2188f2f2068915487e125436a94dc5a2256bf6be3a6084b3a7a751b88acc",
+    "scope": "Required E1 suite passed; finite evidence, not universal proof; helpers not individually certified",
+    "trustKeyFingerprint": "4c7716c7b528dfcdba2190c27516a09e057334309f1fb0b9a8785991cfca0244"
+  },
+  "signature": "h91FfnCM5Ceu0pAfQGXT5GgCL7AO+emQWLK9BChh9ilBRxBbR/oJgAU/GkIo0NLx1m68kMmU5M5McMnFivDP4w=="
+}

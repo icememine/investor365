@@ -1,0 +1,577 @@
+{
+ "summary": {
+  "profile": "batch-e1",
+  "runtime": "fd854bcb708f3031824b14819fe126b0be96b241ced19416035b6f49d4d7c55e",
+  "app": "6f29074338f27a37c5ba1a48c007bdd07f7bfa8a661e41af30e60adb17793471",
+  "nodes": 17,
+  "nodesWithExamples": 10,
+  "examples": 27,
+  "passed": 27,
+  "failed": 0,
+  "scope": "structural compile under batch profile + inline examples; not certification"
+ },
+ "nodes": [
+  {
+   "name": "batch.numeric_hint",
+   "examples": 6,
+   "dependencies": []
+  },
+  {
+   "name": "batch.sku_hint",
+   "examples": 3,
+   "dependencies": []
+  },
+  {
+   "name": "batch.duplicate_hint",
+   "examples": 1,
+   "dependencies": []
+  },
+  {
+   "name": "batch.name_hint",
+   "examples": 1,
+   "dependencies": []
+  },
+  {
+   "name": "batch.row_hint",
+   "examples": 3,
+   "dependencies": []
+  },
+  {
+   "name": "batch.header_hint",
+   "examples": 3,
+   "dependencies": [
+    "batch.first_cell"
+   ]
+  },
+  {
+   "name": "batch.first_cell",
+   "examples": 0,
+   "dependencies": []
+  },
+  {
+   "name": "batch.join_cell",
+   "examples": 0,
+   "dependencies": []
+  },
+  {
+   "name": "batch.joined",
+   "examples": 2,
+   "dependencies": [
+    "batch.join_cell"
+   ]
+  },
+  {
+   "name": "batch.issue_value",
+   "examples": 0,
+   "dependencies": [
+    "batch.joined"
+   ]
+  },
+  {
+   "name": "batch.hint_text",
+   "examples": 0,
+   "dependencies": [
+    "batch.duplicate_hint",
+    "batch.header_hint",
+    "batch.name_hint",
+    "batch.numeric_hint",
+    "batch.row_hint",
+    "batch.sku_hint"
+   ]
+  },
+  {
+   "name": "batch.hint",
+   "examples": 3,
+   "dependencies": [
+    "batch.first_cell",
+    "batch.hint_text",
+    "batch.issue_value"
+   ]
+  },
+  {
+   "name": "batch.is_record_issue",
+   "examples": 0,
+   "dependencies": []
+  },
+  {
+   "name": "batch.issue_record",
+   "examples": 0,
+   "dependencies": []
+  },
+  {
+   "name": "batch.counts",
+   "examples": 0,
+   "dependencies": [
+    "batch.is_record_issue",
+    "batch.issue_record"
+   ]
+  },
+  {
+   "name": "batch.file_error",
+   "examples": 2,
+   "dependencies": []
+  },
+  {
+   "name": "batch.run",
+   "examples": 3,
+   "dependencies": [
+    "batch.counts",
+    "batch.hint",
+    "supplier.from_csv"
+   ]
+  }
+ ],
+ "results": [
+  {
+   "node": "batch.numeric_hint",
+   "example": 0,
+   "pass": true,
+   "expected": {
+    "args": [
+     "PRICE_VND",
+     ""
+    ],
+    "out": "Value is missing. Enter digits 0–9."
+   }
+  },
+  {
+   "node": "batch.numeric_hint",
+   "example": 1,
+   "pass": true,
+   "expected": {
+    "args": [
+     "PRICE_VND",
+     " 20000"
+    ],
+    "out": "Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators."
+   }
+  },
+  {
+   "node": "batch.numeric_hint",
+   "example": 2,
+   "pass": true,
+   "expected": {
+    "args": [
+     "QTY_ON_HAND",
+     "-2"
+    ],
+    "out": "Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators."
+   }
+  },
+  {
+   "node": "batch.numeric_hint",
+   "example": 3,
+   "pass": true,
+   "expected": {
+    "args": [
+     "PRICE_VND",
+     "9007199254740992"
+    ],
+    "out": "Number is larger than 9007199254740991, the largest supported value."
+   }
+  },
+  {
+   "node": "batch.numeric_hint",
+   "example": 4,
+   "pass": true,
+   "expected": {
+    "args": [
+     "PRICE_VND",
+     "000"
+    ],
+    "out": "Price must be at least 1."
+   }
+  },
+  {
+   "node": "batch.numeric_hint",
+   "example": 5,
+   "pass": true,
+   "expected": {
+    "args": [
+     "QTY_ON_HAND",
+     "１"
+    ],
+    "out": "Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators."
+   }
+  },
+  {
+   "node": "batch.sku_hint",
+   "example": 0,
+   "pass": true,
+   "expected": {
+    "args": [
+     "notebook"
+    ],
+    "out": "SKU must be 1–32 characters from A–Z, 0–9, \"-\" and \"_\". Lowercase is not converted automatically."
+   }
+  },
+  {
+   "node": "batch.sku_hint",
+   "example": 1,
+   "pass": true,
+   "expected": {
+    "args": [
+     ""
+    ],
+    "out": "SKU is missing. Enter 1–32 characters from A–Z, 0–9, \"-\" and \"_\"."
+   }
+  },
+  {
+   "node": "batch.sku_hint",
+   "example": 2,
+   "pass": true,
+   "expected": {
+    "args": [
+     "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456"
+    ],
+    "out": "SKU has 33 characters; the maximum is 32."
+   }
+  },
+  {
+   "node": "batch.duplicate_hint",
+   "example": 0,
+   "pass": true,
+   "expected": {
+    "args": [
+     "PEN"
+    ],
+    "out": "SKU PEN appears in more than one record. Keep exactly one record per SKU; identical records are not merged automatically."
+   }
+  },
+  {
+   "node": "batch.name_hint",
+   "example": 0,
+   "pass": true,
+   "expected": {
+    "args": [
+     ""
+    ],
+    "out": "Name is empty. Enter the product name."
+   }
+  },
+  {
+   "node": "batch.row_hint",
+   "example": 0,
+   "pass": true,
+   "expected": {
+    "args": [
+     [
+      ""
+     ]
+    ],
+    "out": "This record is an empty line. Delete the blank line."
+   }
+  },
+  {
+   "node": "batch.row_hint",
+   "example": 1,
+   "pass": true,
+   "expected": {
+    "args": [
+     [
+      "PEN",
+      "Pen",
+      "1"
+     ]
+    ],
+    "out": "This record has 3 fields; expected 4. Check for a missing comma or a missing value."
+   }
+  },
+  {
+   "node": "batch.row_hint",
+   "example": 2,
+   "pass": true,
+   "expected": {
+    "args": [
+     [
+      "PEN",
+      "Pen",
+      "1",
+      "2",
+      "3"
+     ]
+    ],
+    "out": "This record has 5 fields; expected 4. Check for an extra comma, or a comma inside NAME without quotes."
+   }
+  },
+  {
+   "node": "batch.header_hint",
+   "example": 0,
+   "pass": true,
+   "expected": {
+    "args": [
+     "Missing CSV header",
+     []
+    ],
+    "out": "The file is empty. The first line must be exactly SKU,NAME,PRICE_VND,QTY_ON_HAND."
+   }
+  },
+  {
+   "node": "batch.header_hint",
+   "example": 1,
+   "pass": true,
+   "expected": {
+    "args": [
+     "Expected SKU,NAME,PRICE_VND,QTY_ON_HAND",
+     [
+      [
+       "sku",
+       "name",
+       "price_vnd",
+       "qty_on_hand"
+      ]
+     ]
+    ],
+    "out": "The first line must be exactly SKU,NAME,PRICE_VND,QTY_ON_HAND (uppercase, no spaces, separated by commas)."
+   }
+  },
+  {
+   "node": "batch.header_hint",
+   "example": 2,
+   "pass": true,
+   "expected": {
+    "args": [
+     "Expected SKU,NAME,PRICE_VND,QTY_ON_HAND",
+     [
+      [
+       "﻿SKU",
+       "NAME",
+       "PRICE_VND",
+       "QTY_ON_HAND"
+      ]
+     ]
+    ],
+    "out": "The file starts with an extra byte-order mark (an invisible character) before SKU. Save it again as UTF-8 so it has at most one."
+   }
+  },
+  {
+   "node": "batch.joined",
+   "example": 0,
+   "pass": true,
+   "expected": {
+    "args": [
+     [
+      "PEN",
+      "Pen",
+      "1"
+     ]
+    ],
+    "out": "PEN,Pen,1"
+   }
+  },
+  {
+   "node": "batch.joined",
+   "example": 1,
+   "pass": true,
+   "expected": {
+    "args": [
+     [
+      ""
+     ]
+    ],
+    "out": ""
+   }
+  },
+  {
+   "node": "batch.hint",
+   "example": 0,
+   "pass": true,
+   "expected": {
+    "args": [
+     {
+      "record": 1,
+      "field": "PRICE_VND",
+      "message": "Expected a positive bounded decimal integer"
+     },
+     [
+      [
+       "SKU",
+       "NAME",
+       "PRICE_VND",
+       "QTY_ON_HAND"
+      ],
+      [
+       "PEN",
+       "Pen",
+       " 20000",
+       "3"
+      ]
+     ]
+    ],
+    "out": {
+     "record": 1,
+     "field": "PRICE_VND",
+     "message": "Expected a positive bounded decimal integer",
+     "hint": "Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators.",
+     "value": " 20000",
+     "sku": "PEN"
+    }
+   }
+  },
+  {
+   "node": "batch.hint",
+   "example": 1,
+   "pass": true,
+   "expected": {
+    "args": [
+     {
+      "record": 2,
+      "field": "row",
+      "message": "Expected exactly four fields"
+     },
+     [
+      [
+       "SKU",
+       "NAME",
+       "PRICE_VND",
+       "QTY_ON_HAND"
+      ],
+      [
+       "PEN",
+       "Pen",
+       "1",
+       "1"
+      ],
+      [
+       ""
+      ]
+     ]
+    ],
+    "out": {
+     "record": 2,
+     "field": "row",
+     "message": "Expected exactly four fields",
+     "hint": "This record is an empty line. Delete the blank line.",
+     "value": "",
+     "sku": ""
+    }
+   }
+  },
+  {
+   "node": "batch.hint",
+   "example": 2,
+   "pass": true,
+   "expected": {
+    "args": [
+     {
+      "record": 0,
+      "field": "file",
+      "message": "An empty snapshot cannot replace stock"
+     },
+     [
+      [
+       "SKU",
+       "NAME",
+       "PRICE_VND",
+       "QTY_ON_HAND"
+      ]
+     ]
+    ],
+    "out": {
+     "record": 0,
+     "field": "file",
+     "message": "An empty snapshot cannot replace stock",
+     "hint": "The file has a header but no product records. An empty file is never treated as \"all stock is zero\".",
+     "value": "",
+     "sku": ""
+    }
+   }
+  },
+  {
+   "node": "batch.file_error",
+   "example": 0,
+   "pass": true,
+   "expected": {
+    "args": [
+     "TooManyRows"
+    ],
+    "out": {
+     "code": "TooManyRows",
+     "message": "The file has more than 10000 product records, so it was not checked. Do not split one stock list into several files: each accepted file replaces the whole snapshot."
+    }
+   }
+  },
+  {
+   "node": "batch.file_error",
+   "example": 1,
+   "pass": true,
+   "expected": {
+    "args": [
+     "Other"
+    ],
+    "refuse": "UnknownFileError"
+   }
+  },
+  {
+   "node": "batch.run",
+   "example": 0,
+   "pass": true,
+   "expected": {
+    "args": [
+     "SKU,NAME,PRICE_VND,QTY_ON_HAND\nPEN,\"Blue, fine\",020000,003\n"
+    ],
+    "out": {
+     "ok": true,
+     "rows": [
+      {
+       "sku": "PEN",
+       "name": "Blue, fine",
+       "price": 20000,
+       "stock": 3
+      }
+     ],
+     "issues": [],
+     "counts": {
+      "dataRecords": 1,
+      "acceptedRecords": 1,
+      "recordsWithIssues": 0,
+      "issues": 0
+     },
+     "snapshot": "[{\"name\":\"Blue, fine\",\"price\":20000,\"sku\":\"PEN\",\"stock\":3}]"
+    }
+   }
+  },
+  {
+   "node": "batch.run",
+   "example": 1,
+   "pass": true,
+   "expected": {
+    "args": [
+     "SKU,NAME,PRICE_VND,QTY_ON_HAND\n"
+    ],
+    "out": {
+     "ok": false,
+     "rows": [],
+     "issues": [
+      {
+       "record": 0,
+       "field": "file",
+       "message": "An empty snapshot cannot replace stock",
+       "hint": "The file has a header but no product records. An empty file is never treated as \"all stock is zero\".",
+       "value": "",
+       "sku": ""
+      }
+     ],
+     "counts": {
+      "dataRecords": 0,
+      "acceptedRecords": 0,
+      "recordsWithIssues": 0,
+      "issues": 1
+     },
+     "snapshot": ""
+    }
+   }
+  },
+  {
+   "node": "batch.run",
+   "example": 2,
+   "pass": true,
+   "expected": {
+    "args": [
+     "SKU,NAME,PRICE_VND,QTY_ON_HAND\nPEN,\"Pen,1,1\n"
+    ],
+    "refuse": "MalformedCSV"
+   }
+  }
+ ]
+}

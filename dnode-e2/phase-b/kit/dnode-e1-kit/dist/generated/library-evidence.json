@@ -1,0 +1,55 @@
+{
+  "generated": {
+    "bounded.clamp": {
+      "distinctInputs": 160,
+      "successfulReturns": 160,
+      "ownRefusals": 0,
+      "propagatedRefusals": 0,
+      "faults": 0
+    },
+    "bounded.within": {
+      "distinctInputs": 160,
+      "successfulReturns": 160,
+      "ownRefusals": 0,
+      "propagatedRefusals": 0,
+      "faults": 0
+    },
+    "sequence.sum_exact": {
+      "distinctInputs": 160,
+      "successfulReturns": 160,
+      "ownRefusals": 0,
+      "propagatedRefusals": 0,
+      "faults": 0
+    },
+    "text.parse_decimal_nat": {
+      "distinctInputs": 160,
+      "successfulReturns": 160,
+      "ownRefusals": 0,
+      "propagatedRefusals": 0,
+      "faults": 0
+    },
+    "sequence.unique_text": {
+      "distinctInputs": 320,
+      "successfulReturns": 320,
+      "ownRefusals": 0,
+      "propagatedRefusals": 0,
+      "faults": 0
+    },
+    "supplier.validate": {
+      "distinctInputs": 160,
+      "successfulReturns": 160,
+      "ownRefusals": 0,
+      "propagatedRefusals": 0,
+      "faults": 0
+    },
+    "supplier.from_csv": {
+      "distinctInputs": 160,
+      "successfulReturns": 160,
+      "ownRefusals": 0,
+      "propagatedRefusals": 0,
+      "faults": 0
+    }
+  },
+  "fullCheckReportSHA256": "a831ff3f24e8554119484f126bea81b21adf50cc2bf923954a3d5cba84dafcc2",
+  "fullReport": "Available with reference distribution; application solutions excluded from this kit"
+}

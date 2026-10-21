@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Supplier Snapshot Transformer</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <div>
+      <h1>Supplier snapshot transformer</h1>
+      <p class="sub">Turns a supplier CSV into a validated shop stock snapshot, or tells you exactly what to fix.</p>
+    </div>
+    <div id="kit" class="pill pending" role="status">Verifying the DNode kit…</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card step" aria-labelledby="s1">
+    <h2 id="s1"><span class="num" aria-hidden="true">1</span>Choose the supplier CSV</h2>
+    <div class="row">
+      <label class="btn secondary" for="file">Choose file…</label>
+      <input type="file" id="file" accept=".csv,text/csv" class="visually-hidden">
+      <div id="fileinfo" class="muted">No file chosen.</div>
+    </div>
+  </section>
+
+  <section class="card step" aria-labelledby="s2" id="meaning">
+    <h2 id="s2"><span class="num" aria-hidden="true">2</span>What the file means</h2>
+    <p class="meaning" id="meaning-text">Each record gives, for one SKU: NAME exactly as written; PRICE_VND as a positive whole number copied exactly (leading zeros removed, no currency conversion); QTY_ON_HAND as physical unsold units on hand, including units currently reserved by shop orders — not "available to sell" and not a change (+/−). An accepted file replaces the whole supplier snapshot.</p>
+    <ul class="rules">
+      <li>First line exactly <code>SKU,NAME,PRICE_VND,QTY_ON_HAND</code>. UTF-8 text; one byte-order mark at the start is allowed. LF or CRLF line endings.</li>
+      <li>At most 1 MiB (1048576 bytes) and 10000 product records.</li>
+      <li>SKU: 1–32 of <code>A–Z 0–9 - _</code> (no automatic upper-casing). NAME: 1–120 characters, kept exactly. PRICE_VND ≥ 1 and QTY_ON_HAND ≥ 0, digits only.</li>
+      <li>All or nothing: one problem anywhere means no snapshot is produced. Each SKU may appear only once.</li>
+    </ul>
+  </section>
+
+  <section class="card step" aria-labelledby="s3">
+    <h2 id="s3"><span class="num" aria-hidden="true">3</span>Validate</h2>
+    <div class="row">
+      <button id="validate" class="btn" disabled>Validate file</button>
+      <span id="validate-note" class="muted">Choose a file first.</span>
+    </div>
+    <div id="progress" class="progress" hidden>
+      <div class="bar" aria-hidden="true"><span id="bar"></span></div>
+      <div class="row">
+        <span id="progress-text" role="status" aria-live="polite">Starting…</span>
+        <span id="elapsed" class="muted"></span>
+        <button id="stop" class="btn small secondary">Stop</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="result" hidden aria-live="polite"></section>
+
+  <section class="card" id="history-card" hidden>
+    <h2>Runs in this tab</h2>
+    <ol id="history" class="history"></ol>
+  </section>
+
+  <details class="card boundaries">
+    <summary>Who decides what in this tool</summary>
+    <ul id="boundaries">
+      <li><b>Accept or reject, and every listed problem:</b> the shared supplier definition <code>supplier.from_csv</code> in the pinned DNode kit — the same definition the shop uses.</li>
+      <li><b>Explanations, counts and the snapshot bytes:</b> this tool's DNode root <code>batch.node</code>. It never changes the verdict or the problem list.</li>
+      <li><b>Reading CSV:</b> the kit's pinned CSV reader (a host-implemented native). It cannot say where a broken quote is.</li>
+      <li><b>This browser:</b> reads the file, checks the 1 MiB limit before reading any records, decodes UTF-8 strictly, computes SHA-256 run identities and offers new files to download. It never overwrites a file; each export has its run ID in its name.</li>
+    </ul>
+    <dl id="identity" class="ident"></dl>
+  </details>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

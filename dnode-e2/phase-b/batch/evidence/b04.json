@@ -1,0 +1,83 @@
+{
+ "checks": [
+  {
+   "group": "B04",
+   "name": "repeat run: exit 0 both",
+   "pass": true,
+   "observed": [
+    0,
+    0
+   ]
+  },
+  {
+   "group": "B04",
+   "name": "repeat run: snapshot bytes identical",
+   "pass": true,
+   "observed": [
+    "05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31",
+    "05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31"
+   ]
+  },
+  {
+   "group": "B04",
+   "name": "repeat run: report bytes identical",
+   "pass": true,
+   "observed": [
+    "df2eb4a49deb180f76c5511d585f078b51772d3aab51fb112c31706f3d4f4b87",
+    "df2eb4a49deb180f76c5511d585f078b51772d3aab51fb112c31706f3d4f4b87"
+   ]
+  },
+  {
+   "group": "B04",
+   "name": "LF vs CRLF: snapshot bytes identical",
+   "pass": true,
+   "observed": [
+    "05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31",
+    "05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31"
+   ]
+  },
+  {
+   "group": "B04",
+   "name": "LF vs CRLF: reports differ only in runId and input",
+   "pass": true,
+   "observed": {
+    "lf": "ca0e16bf6a90e37a19b5a7cb7787456c336f60a7f61521781409e5306eace45c",
+    "crlf": "f3e4583feca4f98a0d72edb1113bf0f07a5b5e46d669975e2f3668bcedc8bb56"
+   }
+  },
+  {
+   "group": "B04",
+   "name": "rejected repeat: exit 2 both, report bytes identical",
+   "pass": true,
+   "observed": [
+    2,
+    2,
+    "240d94eb0d6e6fd9b24037281eef5b95af38ebad779eded612538f78e5b19155"
+   ]
+  },
+  {
+   "group": "B04",
+   "name": "no timestamp in semantic report",
+   "pass": true,
+   "observed": 724
+  },
+  {
+   "group": "B04",
+   "name": "volatile time is in batch-runs.log only",
+   "pass": true,
+   "observed": "1 line(s)"
+  }
+ ],
+ "snapshotSha": "05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31",
+ "snapshotText": "[{\"name\":\"Blue, fine\",\"price\":20000,\"sku\":\"PEN\",\"stock\":3}]",
+ "reportSha": "df2eb4a49deb180f76c5511d585f078b51772d3aab51fb112c31706f3d4f4b87",
+ "crlfReportSha": "b96f852a24ec34452ecb556de028e599c47766ebddb8e1ac2207f8d8bf996299",
+ "runIds": {
+  "lf": "ca0e16bf6a90e37a19b5a7cb7787456c336f60a7f61521781409e5306eace45c",
+  "crlf": "f3e4583feca4f98a0d72edb1113bf0f07a5b5e46d669975e2f3668bcedc8bb56"
+ },
+ "stdout": {
+  "lf": "Accepted — 1 records ready. This snapshot (run ca0e16bf6a90) can replace the supplier stock in the shop.\nSnapshot: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b04-1/snapshot.json sha256 05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31\nCounts: dataRecords 1, acceptedRecords 1, recordsWithIssues 0, issues 0\nRun ca0e16bf6a90e37a19b5a7cb7787456c336f60a7f61521781409e5306eace45c · input 59 bytes sha256 258ee2ab2777f3cb88e10f112a0b4c604e8d9b53e53fc7feee205866dce56af3\nReport: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b04-1/snapshot.json.report.json\n",
+  "crlf": "Accepted — 1 records ready. This snapshot (run f3e4583feca4) can replace the supplier stock in the shop.\nSnapshot: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b04-crlf/snapshot.json sha256 05d9b1490221a3625fa3100d8f56a8c138b80565df0506744a9a56083607bd31\nCounts: dataRecords 1, acceptedRecords 1, recordsWithIssues 0, issues 0\nRun f3e4583feca4f98a0d72edb1113bf0f07a5b5e46d669975e2f3668bcedc8bb56 · input 61 bytes sha256 9b2d8c2e1b735467d16ea3ec33d40f312443483e5c8e392dae28d931827f3dab\nReport: /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-cli/b04-crlf/snapshot.json.report.json\n"
+ }
+}

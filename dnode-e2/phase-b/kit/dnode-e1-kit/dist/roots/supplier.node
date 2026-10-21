@@ -1,0 +1,81 @@
+root supplier
+use prelude
+type Rows {"list":{"list":"Text"}}
+type Product {"fields":{"sku":"Text","name":"Text","price":"Int","stock":"Int"}}
+type Products {"list":"Product"}
+type Issue {"fields":{"record":"Int","field":"Text","message":"Text"}}
+type Issues {"list":"Issue"}
+type Snapshot {"fields":{"ok":"Bool","rows":"Products","errors":"Issues"}}
+const HEADER ["SKU" "NAME" "PRICE_VND" "QTY_ON_HAND"]
+node supplier.issue (i field message)
+ in {"i":"Int","field":"Text","message":"Text"}
+ returns "Issues"
+ out [{record i field field message message}]
+node supplier.sku (row)
+ in {"row":{"list":"Text"}}
+ returns "Text"
+ raises IndexOutOfRange
+ out (if (> (len row) 0) (at row 0) "")
+node supplier.issues (i rows dupes)
+ in {"i":"Int","rows":"Rows","dupes":{"list":"Text"}}
+ returns "Issues"
+ raises IndexOutOfRange PatternNotAllowed
+ let row (at rows i)
+ out (if (== (len row) 4) (supplier.fields (+ i 1) row dupes) (supplier.issue (+ i 1) "row" "Expected exactly four fields"))
+node supplier.fields (index row dupes)
+ in {"index":"Int","row":{"list":"Text"},"dupes":{"list":"Text"}}
+ returns "Issues"
+ raises IndexOutOfRange PatternNotAllowed
+ pre (== (len row) 4) RowShape
+ let sku (at row 0)
+ let name (at row 1)
+ let price (at row 2)
+ let qty (at row 3)
+ let a (if (matches sku "^[A-Z0-9_-]{1,32}$") [] (supplier.issue index "SKU" "Use 1–32 uppercase letters, digits, hyphen or underscore"))
+ let b (if (and (> (len name) 0) (<= (len name) 120)) [] (supplier.issue index "NAME" "Use 1–120 Unicode characters"))
+ let c (if (if (nat_fits price) (> (decimal price) 0) false) [] (supplier.issue index "PRICE_VND" "Expected a positive bounded decimal integer"))
+ let d (if (nat_fits qty) [] (supplier.issue index "QTY_ON_HAND" "Expected a nonnegative bounded decimal integer"))
+ let e (if (contains sku dupes) (supplier.issue index "SKU" "Duplicate SKU: all occurrences reject the snapshot") [])
+ out (concat a (concat b (concat c (concat d e))))
+node supplier.normal (row)
+ in {"row":{"list":"Text"}}
+ returns "Product"
+ raises IndexOutOfRange InvalidInteger
+ pre (== (len row) 4) RowShape
+ pre (and (nat_fits (at row 2)) (nat_fits (at row 3))) NumericRange
+ out {sku (at row 0) name (at row 1) price (decimal (at row 2)) stock (decimal (at row 3))}
+node supplier.validate (rows)
+ in {"rows":"Rows"}
+ returns "Snapshot"
+ raises IndexOutOfRange PatternNotAllowed RowShape NumericRange InvalidInteger BadRange
+ let dupes (duplicates (map "supplier.sku" rows))
+ let issues (map "supplier.issues" (range (len rows)) rows dupes)
+ let errors (fold "supplier.join" issues [])
+ out (if (== (len rows) 0) {ok false rows [] errors [{record 0 field "file" message "An empty snapshot cannot replace stock"}]} (if (> (len errors) 0) {ok false rows [] errors errors} {ok true rows (sort_by (map "supplier.normal" rows) "sku") errors []}))
+ post (if out.ok (== (len out.rows) (len rows)) (== (len out.rows) 0))
+node supplier.join (acc xs)
+ in {"acc":"Issues","xs":"Issues"}
+ returns "Issues"
+ out (concat acc xs)
+node supplier.from_csv (text)
+ in {"text":"Text"}
+ returns "Snapshot"
+ raises MalformedCSV FileTooLarge TooManyRows IndexOutOfRange PatternNotAllowed RowShape NumericRange InvalidInteger BadRange
+ let parsed (csv text)
+ out (if (== (len parsed) 0) {ok false rows [] errors [{record 0 field "header" message "Missing CSV header"}]} (if (!= (at parsed 0) HEADER) {ok false rows [] errors [{record 0 field "header" message "Expected SKU,NAME,PRICE_VND,QTY_ON_HAND"}]} (supplier.validate (slice parsed 1 (len parsed)))))
+ ex {"args":["SKU,NAME,PRICE_VND,QTY_ON_HAND\nPEN,Pen,20000,8\n"],"out":{"ok":true,"rows":[{"sku":"PEN","name":"Pen","price":20000,"stock":8}],"errors":[]}}
+
+node supplier.product_key (p)
+ in {"p":"Product"}
+ returns "Text"
+ out p.sku
+node supplier.valid_product (p)
+ in {"p":"Product"}
+ returns "Bool"
+ raises PatternNotAllowed
+ out (and (matches p.sku "^[A-Z0-9_-]{1,32}$") (and (and (> (len p.name) 0) (<= (len p.name) 120)) (and (> p.price 0) (>= p.stock 0))))
+node supplier.valid_products (products)
+ in {"products":"Products"}
+ returns "Bool"
+ raises PatternNotAllowed
+ out (and (> (len products) 0) (and (sequence.unique_text (map "supplier.product_key" products)) (all (map "supplier.valid_product" products))))

@@ -1,0 +1,12 @@
+$ node tools/run.mjs verify
+VERIFIED DNode-E1-author-kit trust fingerprint 4c7716c7b528dfcdba2190c27516a09e057334309f1fb0b9a8785991cfca0244
+exit 0
+$ node tools/selftest.mjs
+Verified pinned package and 1280 independently expected public generated cases. This does not certify your application.
+exit 0
+$ node tools/run.mjs check ../../batch/batch.node
+STRUCTURAL PASS. Not a certificate; provide examples and independent evidence.
+exit 0
+$ node tools/run.mjs run-file ../../batch/batch.node batch.numeric_hint '["PRICE_VND","9007199254740992"]'
+{"effects":[],"out":"Number is larger than 9007199254740991, the largest supported value."}
+exit 0

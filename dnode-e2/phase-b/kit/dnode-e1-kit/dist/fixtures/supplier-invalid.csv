@@ -1,0 +1,5 @@
+SKU,NAME,PRICE_VND,QTY_ON_HAND
+PEN,Blue pen,20000,8
+PEN,Duplicate pen,25000,-2
+notebook,Notebook,50.5,5
+TOTE,Tote bag,9007199254740992,2

@@ -1,0 +1,38 @@
+root prelude
+numbers exact
+node bounded.clamp (x lo hi)
+ in {"x":"Int","lo":"Int","hi":"Int"}
+ returns "Int"
+ says "Hold an integer inside an explicitly valid interval."
+ pre (<= lo hi) InvalidBounds
+ out (min (max x lo) hi)
+ post (and (>= out lo) (<= out hi))
+ ex {"args":[12,0,10],"out":10}
+ ex {"args":[0,2,1],"refuse":"InvalidBounds"}
+node bounded.within (x lo hi)
+ in {"x":"Int","lo":"Int","hi":"Int"}
+ returns "Bool"
+ pre (<= lo hi) InvalidBounds
+ out (and (>= x lo) (<= x hi))
+ ex {"args":[2,0,3],"out":true}
+node sequence.sum_exact (xs)
+ in {"xs":{"list":"Int"}}
+ returns "Int"
+ out (sum xs)
+ ex {"args":[[1,2,3]],"out":6}
+ ex {"args":[[]],"out":0}
+ ex {"args":[[9007199254740991,2,-2]],"fault":"ArithmeticOverflow"}
+node text.parse_decimal_nat (s)
+ in {"s":"Text"}
+ returns "Int"
+ raises InvalidInteger PatternNotAllowed
+ pre (matches s "^[0-9]+$") InvalidInteger
+ out (decimal s)
+ ex {"args":["00042"],"out":42}
+ ex {"args":[" 2"],"refuse":"InvalidInteger"}
+node sequence.unique_text (xs)
+ in {"xs":{"list":"Text"}}
+ returns "Bool"
+ out (== (len (unique xs)) (len xs))
+ ex {"args":[["A","A"]],"out":false}
+ ex {"args":[[]],"out":true}

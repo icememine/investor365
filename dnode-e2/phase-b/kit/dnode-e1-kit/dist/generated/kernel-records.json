@@ -1,0 +1,98 @@
+[
+  {
+    "id": "K01",
+    "relationship": "v:T iff recursively in D(T); kinds do not coerce",
+    "domain": "Finite Bool, bounded Int, Unicode scalar Text, List and closed Record; explicit Any includes only these",
+    "failure": "InputShape, ResultShape, TypeDefinition, ResourceLimit",
+    "execution": "Validate inputs before pre; immutable evaluator operations; own fields only",
+    "evidence": "tests/run.mjs K01, K07, parser"
+  },
+  {
+    "id": "K02",
+    "relationship": "Expressions compose ordered transitions; if chooses exactly one branch",
+    "domain": "Resolved acyclic expressions with declared arities",
+    "failure": "Stop on first refusal/fault; malformed condition faults",
+    "execution": "Arguments and lets left-to-right; condition then selected branch",
+    "evidence": "tests/run.mjs K02"
+  },
+  {
+    "id": "K03",
+    "relationship": "Boolean conjunction, disjunction and complement",
+    "domain": "Bool only; binary and/or",
+    "failure": "Non-Bool InputShape; operand failure propagates",
+    "execution": "Eager left-to-right except after a failed operand",
+    "evidence": "tests/run.mjs K03"
+  },
+  {
+    "id": "K04",
+    "relationship": "I=[-9007199254740991,9007199254740991]; q=floor(a/b), r=a-bq",
+    "domain": "I operands; b=0 is shaped but refuses",
+    "failure": "DivideByZero refusal; ArithmeticOverflow fault",
+    "execution": "BigInt internal intermediates; bound result; sum bounds each sequential addition",
+    "evidence": "tests/run.mjs K04, independent Python oracle"
+  },
+  {
+    "id": "K05",
+    "relationship": "C(a)=C(b) iff structural equality; canonical JSON of tagged trees",
+    "domain": "Supported values; Unicode scalar strings preserved without normalization",
+    "failure": "Malformed or unsupported value faults",
+    "execution": "Tags b/i/s/l/r; integer decimal text; record keys scalar-sorted; -0 normalized; JSON UTF-8",
+    "evidence": "tests/run.mjs K05; values.js tagged and canon are pinned"
+  },
+  {
+    "id": "K06",
+    "relationship": "Each reference resolves once; dependency graph acyclic",
+    "domain": "Flat roots with pinned closure; literal higher-order targets",
+    "failure": "MissingRoot, DuplicateDefinition, DependencyCycle, UnknownNative, Arity",
+    "execution": "Resolve and analyze bodies and contracts before calls; lock full root and implementation digests",
+    "evidence": "tests/run.mjs K06; release lock and verifier"
+  },
+  {
+    "id": "K07",
+    "relationship": "Body runs only on shaped inputs satisfying pre=true",
+    "domain": "Declared typed arguments",
+    "failure": "Shape faults precede own-pre refusals",
+    "execution": "Input validation, ordered preconditions, body",
+    "evidence": "tests/run.mjs K07"
+  },
+  {
+    "id": "K08",
+    "relationship": "Contract is a pure partial function into Bool",
+    "domain": "Pre inputs/constants; post/inv original inputs/constants/output",
+    "failure": "Static ContractEffect; runtime ContractEvaluationFault preserving cause",
+    "execution": "Transitive static purity and pure evaluation context; false differs from failure",
+    "evidence": "tests/run.mjs K08"
+  },
+  {
+    "id": "K09",
+    "relationship": "Return implies output shape and all post/inv obligations",
+    "domain": "Every call including nested calls",
+    "failure": "ResultShape or ContractViolation; contract evaluation failure classified separately",
+    "execution": "Strict checks at every return before exposing top-level effects; no optimized mode",
+    "evidence": "tests/run.mjs K09"
+  },
+  {
+    "id": "K10",
+    "relationship": "Refusal propagates iff explicitly declared by caller",
+    "domain": "Return, own refusal, declared propagated refusal, fault; admission separate",
+    "failure": "UndeclaredRefusal fault",
+    "execution": "Stop and unwind; top-level uncommitted queue discarded; no external rollback claim",
+    "evidence": "tests/run.mjs K10"
+  },
+  {
+    "id": "K11",
+    "relationship": "Dispatch requires static ceiling, current grant and shaped payload",
+    "domain": "Pinned capability names and profile payload schemas",
+    "failure": "EffectCeiling, CapabilityDenied, EffectPayload",
+    "execution": "Queue during evaluation; validate full batch before dispatch and grant again at use",
+    "evidence": "tests/run.mjs K11 and host transaction tests"
+  },
+  {
+    "id": "K12",
+    "relationship": "Admission requires matching digests, valid signature under explicitly selected trusted key and required policy",
+    "domain": "Complete attestation with full SHA-256 identities, checker/tests/policy binding",
+    "failure": "AdmissionDenied or missing artifact; unknown native denied before execution",
+    "execution": "Hash exact bytes and verify P-256/SHA-256 signature before loading graph; no unchecked evidence cache",
+    "evidence": "tests/run.mjs K12; tools/run.mjs verify; trust base remains external"
+  }
+]

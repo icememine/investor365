@@ -1,0 +1,40 @@
+{
+  "attestation": {
+    "distribution": "DNode-E1-author-kit",
+    "specification": "201020261730",
+    "algorithm": "SHA-256 + ECDSA P-256/SHA-256",
+    "files": {
+      "fixtures/supplier-invalid.csv": "ba1647db67719f3538ca04789974952187ac1ea62a519a19fdd2897ca54e013a",
+      "fixtures/supplier-valid.csv": "5a07ce59df8f503aa55e6bdfbd09205a9bd2e86e550dd57978aadb31ff050a89",
+      "generated/DICTIONARY.md": "da2b0835afa1902ad227758c4ea01fb32f9032604d2564abb7f7d1b72ceb902d",
+      "generated/KERNEL.md": "20d3082aa14cf40e026eb3f5e04eedc6c265f80358da0a402dfa5e70eacafedd",
+      "generated/SEMANTICS.md": "4d1120190273948d8233c647942bdd556f55409bc89ce280b8111fba4df2be39",
+      "generated/checking-policy.json": "761b2188f2f2068915487e125436a94dc5a2256bf6be3a6084b3a7a751b88acc",
+      "generated/kernel-records.json": "2a7e411c7d8bd1ea52d295c0878e992bfed7f0a09f2efc70532379535d2cd91e",
+      "generated/library-evidence.json": "9fd64d5536f93cc102ebba3a25bf8f8a22aebb3f20add1fbdb5684c8dabfafba",
+      "generated/lock.json": "e837cb9c17a4b826da95684ab2ffef17660582db691f9e5abbbe8a0eeddfbab0",
+      "generated/prelude.certificate.json": "3a5c304815bf5f4d271e4363d4a18adff8fc1dbee26723770703aea915c1ae3c",
+      "generated/public-generated-cases.json": "571ec4e10fe97fce096c07d899a14f31b452fa1e9cbe19dd152d1ad4206fcced",
+      "generated/supplier.certificate.json": "104524e35fb312b0a3e85b1428c2db369f827c5371ce0dba2d013005d8915647",
+      "index.html": "585c9bcc05b35feb1d564eb5cc8066886d0032b55e4a2f7f9aba16e25a817e77",
+      "profiles/batch.json": "edfedf5bcf1bc7cfe8c6b4d33ad4d78c647bb0d9bbf50dd743e3815078062a96",
+      "profiles/browser.json": "cda00518bb6155832ad8bbd82392f0230ca8b0c3f957ba8409cfcecd5dfd17f7",
+      "roots/prelude.node": "bf2a6cec6fb9d5ac3fca94ae35685e2d57e729d9bc95da607ea6db2c4c7eeb97",
+      "roots/supplier.node": "9e2d768197ea6459438d913f136b0dd1dc8715214b21ffad1f9995057d52784f",
+      "runtime/admission.js": "1573605a4458ac69cd234425c282e125e90b667869a34167a6721e868439a8b6",
+      "runtime/engine.js": "730191eae563678061a787b6c21104bb21ce795bb7b544e1adf445af52febfb7",
+      "runtime/host.js": "4ef32562035a64afc22c0882ccd54c5b8b210338f2b8f687bd91fb69980825cc",
+      "runtime/parser.js": "4af28852cadd131229f5e27353f9768e06ad1a922ee6c36d8ef16d12c9a234ed",
+      "runtime/values.js": "bb5f18d9144d92e527fee4e4c97da8bb202d753f88c99327394fc1418ee17625"
+    },
+    "rootHashes": {
+      "prelude": "8e199f2776bb9c4ec44b3a435b4c70744748c42b784c646f77d2847c41e99dde",
+      "supplier": "0c35544ed5e56d00479656114dd226712a416054bf23b4140c30466d27011bff"
+    },
+    "runtimeIdentity": "fd854bcb708f3031824b14819fe126b0be96b241ced19416035b6f49d4d7c55e",
+    "trustKeyFingerprint": "4c7716c7b528dfcdba2190c27516a09e057334309f1fb0b9a8785991cfca0244",
+    "admission": "finite conformance-tested experimental distribution",
+    "humanAcceptance": "pending"
+  },
+  "signature": "Ri/HzsY7Fb8bVx1GF5Z8fdVXJUjzB88sQ+A2P+dfWDy3SJ++mnhGUfLfWQSkrvS54RTO0HGaniQ5lgnedgBHXA=="
+}

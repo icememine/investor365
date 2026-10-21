@@ -1,0 +1,10 @@
+{
+  "name": "dnode-e1-author-kit",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node tools/selftest.mjs",
+    "serve": "node tools/serve.mjs",
+    "verify": "node tools/run.mjs verify"
+  }
+}

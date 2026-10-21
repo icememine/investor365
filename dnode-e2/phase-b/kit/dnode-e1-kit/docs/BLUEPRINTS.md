@@ -1,0 +1,209 @@
+# DNode — Experiment blueprints and shared-library contract
+
+**Specification baseline: 201020261730**  
+**Experiment package: E1, draft for implementation**  
+**Status: defined requirements, not a runnable or certified distribution**
+
+This document defines the common assignment before cross-model application authoring. It accompanies the Structure and Dictionary. It does not invent supported DNode syntax, issue certificates or supply missing runtime features. Function signatures below are semantic notation; their final source spelling must come from the pinned parser. The existing shops and reported Fable fixes are candidates, not an assumed conformant baseline.
+
+## 1. Purpose and experimental boundary
+
+Determine whether different models can build usable shop, game and batch applications using one DNode distribution without redefining it. Hold runtime, library, host interfaces, data meaning, obligations and test resources constant. Allow authors to design layouts, messages and application composition within those constraints.
+
+A blueprint specifies what the whole application should accomplish, how its parts must fit, how it should feel to use and what evidence permits release. A shared root implements behavior whose meaning is reused. A profile supplies authorized host capabilities. The three are related but not interchangeable.
+
+Computational gates and human acceptance are recorded separately. Passing tests cannot establish that the experience is good; an attractive experience cannot excuse invalid transactions.
+
+## 2. Common blueprint format
+
+Each application blueprint contains the following fields. These are required experiment records, not new language keywords.
+
+| Field | Required definition |
+|---|---|
+| Identity | Blueprint ID, revision and task-package identity. |
+| Purpose | User, situation, valuable outcome and explicit exclusions. |
+| Experience | Intended understanding, control, pace and emotional effect. |
+| Journey | Entry, actions, completion, failure and recovery. |
+| Domain | Types, units, meanings, ownership and authoritative sources. |
+| Behavior | Relationships, permitted inputs, failures and execution/state transitions. |
+| Composition | Required responsibilities and how they cooperate; implementation node IDs added by the author. |
+| Environment | Pinned profile, host assumptions, limits and authority. |
+| Obligations | Stable IDs, severity, acceptance method and expected outcome. |
+| Evidence | Bundle/profile identity, case/trace, observed outcome and reviewer. |
+| Release decision | Passed, failed or incomplete; list every unsatisfied mandatory obligation. |
+
+An obligation record must link intent → design responsibility → implementing artifact → acceptance evidence. “Feels good” alone is insufficient; observable interaction expectations accompany the human judgment. Human interpretation remains authoritative for experiential acceptance, with named reviewer and recorded reasons.
+
+## 3. BP-SHOP: a small stationery shop
+
+### Purpose and experience
+
+A customer buys a few familiar products and knows what they ordered, what it costs and whether payment completed. A shop operator imports a supplier stock snapshot. The interface should feel calm and trustworthy: the primary shopping journey stays separate from diagnostic controls. Internal hashes and certificate details belong in the test desk, not the customer checkout.
+
+Required journey: browse → cart → review → order → payment status → receipt or recovery. Operator journey: choose supplier file → inspect validation result → confirm whole snapshot → see changed available quantities.
+
+### Domain and policies
+
+- Currency: VND; all prices and totals are exact integer amounts. No tax, delivery charge, discount, account login, real bank or currency conversion in E1.
+- Seed catalogue: NOTEBOOK / Notebook / 50000 / 5 units; PEN / Pen / 20000 / 8 units; TOTE / Tote bag / 120000 / 2 units.
+- Cart lines have a known unique SKU and quantity 1–9. An order has 1–3 lines. Total = sum(unit_price × quantity), with exact bounded operations.
+- A supplier snapshot states **physical unsold units**, including units currently reserved. It is not a delta or an already-netted available quantity. This interpretation is displayed before import confirmation.
+- Let H be unsold on-hand units, R active reservations and A available units, per SKU: A = H − R, and 0 ≤ R ≤ H.
+- Order creation atomically reserves q only if q ≤ A. It captures prices and immutable intent. Reserve: (H,R) → (H,R+q). Confirmed purchase: (H,R) → (H−q,R−q). Release after definite decline or pre-payment cancellation: (H,R) → (H,R−q).
+- Reject a supplier snapshot with H_new < R. Snapshot import cannot delete reservations or rewrite captured order prices. Whole-file import is atomic.
+- Instruction identity is scoped to this shop. Same identity and canonical intent retrieves/continues the same order; changed intent refuses. A deliberate second identical purchase uses a new identity. Payload equality alone does not identify a business occurrence.
+- Payment states: ready, pending, confirmed, declined, unknown. Once submitted, pending/unknown retains its reservation. Do not release stock or create a new payment instruction solely because a response is late.
+- Reconciliation uses the same payment instruction. The simulator exposes outcomes for tests; the customer sees only the application status. Confirming an already confirmed order never consumes stock again.
+
+### Responsibilities and profile
+
+DNode owns cart validation, price calculation, intent comparison, reservations, order transitions and supplier-record interpretation. The supplied host owns rendering/input, atomic session-state persistence, file bytes and the payment simulator. A simulated transaction primitive must provide atomic read/check/write; language syntax alone cannot prevent a race.
+
+E1 session state survives page reload within the same test session. Clearing the session explicitly resets it. This is not a production durability guarantee. The host simulator supports normal acceptance, definite decline, acceptance with response lost and inquiry temporarily unavailable. Tests may inspect its charge ledger; application code may not use that inspection privilege.
+
+### Mandatory acceptance
+
+| ID | Acceptance |
+|---|---|
+| S01 | A first-time user completes a normal order without verbal coaching and correctly reads the final amount/status. |
+| S02 | Cart quantities, captured prices and totals match the defined relationships; malformed data fails before business logic/effects. |
+| S03 | Same instruction/same intent causes at most one simulator charge and one stock consumption; changed intent refuses. |
+| S04 | Two orders for the final available unit cannot both reserve it. Atomicity is tested at the state boundary. |
+| S05 | Acceptance with lost response displays uncertainty, preserves the order/reservation, and reconciles without a fresh charge. |
+| S06 | A definite decline releases the reservation once; invalid supplier stock below reserved quantity is rejected unchanged. |
+| S07 | Reload during uncertainty restores the same order/instruction and offers recovery. |
+| S08 | Human reviewer can distinguish paid, declined and unknown; totals and the next action are visible on a phone-sized viewport. |
+
+## 4. BP-GAME: familiar Breakout
+
+### Purpose and experience
+
+A player can understand and enjoy a short game immediately. A paddle keeps a ball in play and breaks a visible brick field. The experience should feel responsive, readable and fair. Avoid new rules, upgrade systems or complex controls in E1. Delight can come from motion, impact feedback, clear progress and a satisfying win.
+
+Journey: title/instructions → launch → play → lose life or clear bricks → win/lose → restart. Keyboard and touch both work; the player can pause. Gameplay is not a sequence of menu choices.
+
+### Domain and behavior
+
+- One paddle, one ball, 30 bricks in 5 rows of 6, three lives, one point per removed brick. Win when all bricks are removed; lose when lives reach zero. No randomness is required.
+- DNode state uses integer logical coordinates and integer velocities. A fixed simulation tick is supplied by the host; rendering scale is independent of logical coordinates. The distribution fixes tick scheduling and catch-up limits before authoring.
+- The author declares exact paddle/ball/brick dimensions and a deterministic collision policy, including ties and tunneling prevention, in application records before evaluation. Independently written traces test that declared policy and the common obligations. The experiment does not pretend all plausible collision policies are one universal rule.
+- Each brick transitions intact → removed once. Score equals removed-brick count. A life is lost once per ball exit; relaunch waits for explicit player action. Paddle remains inside the playfield.
+- Pause freezes simulation state; resume creates no catch-up jump from elapsed pause time. Restart creates exactly the initial state and clears queued input from the previous session.
+- Input state and ordered tick events are replayable. Identical initial state and event trace yield identical gameplay state, under the same application/runtime identities.
+
+DNode owns game state, movement, collision decisions, score/lives and phase transitions. Host owns event capture, fixed-tick scheduling, rendering and optional audio. The host must not calculate collisions or repair game state. The render interface exposes generic supported primitives, not a hidden Breakout engine.
+
+### Mandatory acceptance
+
+| ID | Acceptance |
+|---|---|
+| G01 | A first-time player starts, moves and launches without verbal coaching; controls are visible and familiar. |
+| G02 | Keyboard and touch can move the paddle across the playfield, without page scrolling disrupting play. |
+| G03 | Score, brick removal, life loss and win/lose follow the declared transitions; corner and high-speed traces do not silently miss required collisions. |
+| G04 | Pause/resume and restart behave as defined, including after a long host-frame delay. |
+| G05 | Replaying a recorded trace reproduces gameplay state; render/audio failures cannot silently rewrite that state. |
+| G06 | Human reviewer finds ball/paddle/bricks readable and control responsive; record frustration, confusion and perceived fairness, not only a pass label. |
+
+The evaluation environment fixes viewport, device and performance targets before timed measurements. Keep user-experience ratings separate from frame/tick measurements. Automated play cannot certify enjoyment.
+
+## 5. BP-BATCH: supplier snapshot transformer
+
+### Purpose and experience
+
+An operator turns a legacy supplier CSV into validated shop inventory records and understands exactly what was accepted or rejected. The interface should make mistakes explainable and correction easy. An operator should never wonder whether a failed run partially changed stock.
+
+Journey: choose CSV → see declared units/meaning → validate → inspect preview/errors → export normalized snapshot and report. There is no live stock mutation in this application; the shop separately imports the normalized snapshot.
+
+### Domain and behavior
+
+- Input: UTF-8 CSV, optional initial BOM, header exactly SKU,NAME,PRICE_VND,QTY_ON_HAND. LF and CRLF accepted. Quoted fields support commas, newlines and doubled quotes. Broken quote structure rejects the whole file.
+- Maximum file: 1 MiB and 10000 data rows; the byte limit applies before parsing, row limit after lexical parsing. Limits are identical for all authors.
+- SKU: 1–32 uppercase ASCII letters, digits, hyphen or underscore. No silent case folding. NAME: nonempty Unicode scalar string, at most 120 scalars. Preserve its content.
+- PRICE_VND: ASCII digits only, interpreted as an exact positive integer. QTY_ON_HAND: ASCII digits only, interpreted as an exact nonnegative integer. Leading zeroes accepted and normalized in numeric output. Reject signs, fractions, exponent notation, separators and surrounding whitespace in numeric fields.
+- Every value must fit the bounded integer domain. The supplier validator checks digit-string range before bounded conversion, so an out-of-range field becomes a located validation rejection rather than an uncaught arithmetic fault. This range check requires its own independently tested implementation. No inference of currency, units or snapshot/delta meaning. QTY_ON_HAND has the shop's physical-unsold interpretation.
+- Duplicate SKU rejects the snapshot, including byte-identical repeated rows. Report every involved data-record index; quoted newlines do not change record indices. A header-only file is an empty-snapshot refusal, not a valid replacement.
+- Whole-file acceptance: any invalid record prevents normalized snapshot publication. A diagnostic report may still be published, clearly marked rejected. Sort successful normalized records by SKU; preserve NAME contents and publish integers as numbers using the pinned export encoding.
+- A run ID binds canonical normalized input/interpretation and pinned transformer identity. Reprocessing can reproduce output; this ID does not authorize replaying inventory changes.
+- Output is staged and published atomically by the host. Interrupted publication must not expose a partially valid snapshot. The host profile defines the atomicity guarantee it actually supplies.
+
+DNode owns row/domain validation, mappings, duplicate policy and acceptance decisions. The pinned CSV lexer may be a contracted host native in E1; its implementation and evidence must be disclosed. File access, UTF-8 decoding and atomic export are host facilities. The UI displays these boundaries honestly in its diagnostics.
+
+### Mandatory acceptance
+
+| ID | Acceptance |
+|---|---|
+| B01 | A valid file produces the exact independently expected normalized records and counts. |
+| B02 | Quoted commas/newlines, escaped quotes and line-ending variants parse according to the declared dialect. |
+| B03 | Invalid shapes, integers, bounds, duplicates and empty input produce actionable record/field diagnostics; no accepted snapshot is published. |
+| B04 | Repeated input under the same pinned semantics yields identical normalized bytes and semantic report. Volatile run timestamps stay outside those bytes. |
+| B05 | Interruption leaves no partially published snapshot. Oversized input stops at the declared boundary. |
+| B06 | Operator can identify and correct a rejected record without verbal explanation and knows whether output is usable. |
+
+## 6. Shared library: deliberately small
+
+The library is a versioned set of DNode roots, not a new dictionary of promises. Each admitted definition needs full source identity, domain, relationship, failures, execution semantics, dependencies and evidence. Full hashes are produced from actual artifacts later; none are invented here. Root names below are proposed human labels, not execution identities.
+
+### 6.1 Universal prelude candidates
+
+| Candidate | Domain and relationship | Failure and execution | Intended use |
+|---|---|---|---|
+| bounded.clamp(x,lo,hi) | x,lo,hi ∈ I; lo≤hi; result=min(max(x,lo),hi). | Bad kinds shape-fault; lo>hi gives declared InvalidBounds refusal. Pure, deterministic. | Game paddle; general bounded values. Never use to hide unavailable stock. |
+| bounded.within(x,lo,hi) | x,lo,hi ∈ I; lo≤hi; result=(lo≤x≤hi). | Same shape/bounds handling. Pure Boolean output. | Validation across all apps. |
+| sequence.sum_exact(xs) | Finite list of I; s0=0, si=si−1+xi; empty sum=0. | Fault on first out-of-I intermediate; left-to-right. | Shop totals and batch counts/summaries. Reuse existing native implementation if pinned; do not create a second meaning. |
+| text.parse_decimal_nat(s) | String matching one or more ASCII digits; result is its base-10 value in I. | Malformed numeric text gives declared InvalidInteger refusal; accumulated out-of-range value gives ArithmeticOverflow fault. No implicit trim/coercion. | Batch numeric fields, shop quantity entry. |
+| sequence.unique_text(xs) | Finite list of strings; true iff all strings differ by scalar sequence. Empty list is true. | Wrong shapes fault. Pure; no case/Unicode normalization. | Duplicate SKU/instruction validation where applicable. |
+
+These are candidates, not a quota. If an operation is already a pinned native or kernel facility, import/re-export its identity where supported instead of duplicating its implementation. If fold, iteration or required type support is missing, record the gap. Authors cannot add hidden host functions to make the library appear implemented.
+
+Canonical encoding, structural equality, exact primitive arithmetic, hashing, contract enforcement and certificate admission belong to the substrate. They are dependencies of roots, not functions each application author independently invents.
+
+### 6.2 Shared domain root
+
+**supplier.snapshot** is the first concrete shared domain-root candidate. It owns the SKU/name/price/stock schema, the snapshot meaning, record validation, duplicate rejection and canonical ordering defined by BP-BATCH. Both batch output and shop import consume this one pinned definition.
+
+Suggested semantic entry points: validate_record(record), validate_snapshot(records), normalize_snapshot(records). Each result/error must have a declared shape; validation reports preserve record and field location. CSV lexical parsing is outside this domain root. Shop-specific reservation compatibility is checked by the shop after snapshot validation.
+
+Price calculations, reservation protocols and Breakout collision rules remain application roots until reuse justifies promotion. Shared meaning is not demonstrated merely because a helper is generic.
+
+### 6.3 Promotion and version policy
+
+Candidate → implemented → independently checked → certified under the fixed policy → admitted to this experiment. Experimental admission is not a universal standard-library endorsement. Record demonstrated reuse separately; promote to standard only with the required evidence and provenance.
+
+A changed definition receives a new full identity. A human version label records release lineage; it does not prove compatibility. Applications pin the identity. Replacing a root or native invalidates affected evidence and triggers all dependent application tests. Library/runtime files are read-only during model application-authoring trials.
+
+## 7. What else is required before cross-model execution?
+
+| Required package item | Why it is needed | Readiness gate |
+|---|---|---|
+| Pinned reference runtime and kernel | Every author must execute the same meanings. | Supported K01–K12 obligations implemented and independently exercised; exact build identities. |
+| Implemented shared roots | A proposed signature is not reusable executable behavior. | Source, dependencies, required certificates and regression cases present. |
+| Browser and batch profiles | Give models equal access to rendering, events, state, files and simulator effects. | Manifests enforced; unknown native/missing grant rejected. |
+| Host harness and launcher | Make the software directly testable and avoid comparing unrelated UI/framework setup. | Same generic renderer/event bridge, transaction simulator, file gateway and launch path for every author. No hidden application rules. |
+| Generated dictionary | Prevent each model interpreting a prose-only language differently. | Generated from the shipped records with known fixture output. |
+| Public fixture pack | Establish examples and enable local repair. | Seed data, CSV fixtures, payment scenarios and game traces with independently fixed expected outcomes. |
+| Independent evaluation pack | Detect overfitting and mistakes in author-written tests. | Held apart from author-editable files; every case tied to a declared obligation. |
+| Uniform task prompt and submission format | Hold author responsibilities and information constant. | Same task package, tool access/budget and allowed edit scope. |
+| Human acceptance session | Assess usability, fit and enjoyment. | Same tasks, environment and rubric; recorded reviewer observations. |
+
+Do not claim this Markdown document satisfies those readiness gates. It defines what to freeze. A design-only comparison can start now, but an application-portability claim requires the executable package.
+
+## 8. Cross-model handoff prompt
+
+> Build the assigned application against the attached frozen DNode distribution and its blueprint. Treat shipped runtime, native bindings, shared roots, profiles and evaluator files as read-only. Put application behavior in DNode; use only declared host capabilities for input, output and external effects. Do not invent source forms or silently repair the substrate. If a required capability is absent, report the smallest reproducible gap and the blocked blueprint obligations. You may continue independent supported work. Supply a directly runnable application, complete source, locked dependencies, implementation-to-obligation mapping, public checker output, known gaps and instructions for human testing. Preserve initial failures and subsequent repairs. Do not claim a human acceptance result you did not observe. Do not change the task or tests to obtain a pass.
+
+Give one application per fresh authoring session. Supply the same frozen bundle to all models. If comparing all three applications, rotate their order or use separate fresh sessions so earlier solutions do not silently advantage later trials. Record model identifier/date, context/tool limitations, attempts, costs where available and human interventions. The library designers can participate, but label prior exposure; do not present it as a blind trial.
+
+Submission record: application ID; model/session; distribution and blueprint identities; source/launch artifact; dependencies; DNode versus host responsibility inventory; test and repair log; outstanding gaps; human acceptance pending/passed/failed with evidence.
+
+## 9. Execution gates and interpretation
+
+1. Implement and validate the package, without asking application authors to choose language semantics.
+2. Smoke-test the host harness using tiny non-application fixtures; ensure it can launch, persist/reload, inject failures and export atomically as declared.
+3. Freeze artifacts, public examples, hidden evaluation obligations and model conditions.
+4. Run independent authoring sessions; preserve every submission and repair.
+5. Run independent checks against submitted artifacts, then human acceptance without model coaching.
+6. Report results by application and obligation, with correctness gates separate from experiential judgment.
+
+No single blended score may compensate for wrong arithmetic, double charging, invalid resource transitions or unauthorized effects. An application may pass computation and fail human acceptance. A missing runtime capability is a distribution gap; an author ignoring a supported rule is an authoring failure; an unclear obligation is a blueprint defect. Record the distinction rather than attributing every failure to model intelligence.
+
+The initial study compares authors using DNode. It does not by itself show DNode is better than conventional languages. That later comparison needs conventional-code and conventional-code-plus-equivalent-contracts conditions with matched tasks and tools.

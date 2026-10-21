@@ -1,0 +1,860 @@
+{
+ "summary": {
+  "total": 89,
+  "agree": 87,
+  "disagree": 1,
+  "skipped": 1,
+  "invariantHolds": 75,
+  "oracle": "fixtures/oracle.py (python3 -I)",
+  "transformer": {
+   "app": "6f29074338f27a37c5ba1a48c007bdd07f7bfa8a661e41af30e60adb17793471",
+   "profile": "edfedf5bcf1bc7cfe8c6b4d33ad4d78c647bb0d9bbf50dd743e3815078062a96",
+   "runtime": "fd854bcb708f3031824b14819fe126b0be96b241ced19416035b6f49d4d7c55e",
+   "supplier": "0c35544ed5e56d00479656114dd226712a416054bf23b4140c30466d27011bff"
+  }
+ },
+ "results": [
+  {
+   "name": "bt1-lf",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 4,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bt1-crlf",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 2,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bt2-space",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 3,
+   "operations": 310,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bt2-range",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 3,
+   "operations": 314,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bt2-max-ok",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 2,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bt3-identical",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 2,
+   "operations": 478,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bt4-quoted-newline-dupes",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 2,
+   "operations": 646,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bt4-valid-multiline",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 2,
+   "operations": 339,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bt5-previous-valid",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1,
+   "operations": 339,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bt5-new-invalid",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 2,
+   "operations": 394,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bom-single",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bom-double",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 209,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "bom-only",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 151,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "crlf-all",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 2,
+   "operations": 339,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "mixed-endings",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 2,
+   "operations": 339,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "no-final-newline",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 4,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "doubled-quotes",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 2,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "quoted-all-fields",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 3,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "quoted-cr-inside",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 2,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "malformed-unclosed",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "malformed-quote-inside",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "malformed-after-close",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 2,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "malformed-bare-cr",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "malformed-late",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "utf8-invalid-ff",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 0,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "utf8-truncated",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 0,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "utf8-surrogate",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 0,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "utf8-overlong",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "empty-file",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 151,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "header-only",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 165,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "header-only-no-newline",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 2,
+   "operations": 165,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "header-then-blank",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 3,
+   "operations": 245,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "blank-line-only",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 5,
+   "operations": 182,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "header-lowercase",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 209,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "header-space",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 209,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "header-extra-column",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 218,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "header-missing",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 209,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "sku-lowercase",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 300,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "sku-33",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 306,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "sku-32-ok",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "sku-empty",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 295,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "sku-inner-space",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 3,
+   "operations": 300,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "sku-non-ascii",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 2,
+   "operations": 300,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "name-empty",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 299,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "name-quoted-empty",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 299,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "name-121",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 305,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "name-120-astral",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "name-121-astral",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 305,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "name-preserved",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1,
+   "operations": 339,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "name-encoding",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-zero",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 326,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-zeros",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 326,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-negative",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 310,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-plus",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 310,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-fraction",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 310,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-exponent",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 3,
+   "operations": 310,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-separator",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 310,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-trailing-space",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 310,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-fullwidth",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 310,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-empty",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 305,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-huge",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 314,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "price-long-leading-zeros",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "qty-zero-ok",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1,
+   "operations": 227,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "qty-negative",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 321,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "qty-fraction",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 321,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "qty-empty",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 316,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "qty-range",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 5,
+   "operations": 325,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "all-fields-bad-dup",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 2,
+   "operations": 1397,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "row-three-fields",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 279,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "row-five-fields",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 292,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "row-trailing-comma",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 292,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "row-blank-middle",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 413,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "row-name-unquoted-comma",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 292,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "row-only-commas",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 633,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "dup-triple",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 746,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "dup-two-groups",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 2,
+   "operations": 930,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "dup-case-differs",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 384,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "dup-wrong-shape",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 463,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "dup-empty-sku-blank-line",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 1,
+   "operations": 530,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "sort-order",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 4,
+   "operations": 675,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "size-1048576",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1559,
+   "operations": 1008115,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "size-1048577",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 19,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "rows-10000",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1034,
+   "operations": 1120115,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "rows-10001",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 4,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "rows-10000-plus-blank",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 12,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": []
+  },
+  {
+   "name": "row-60000-fields",
+   "verdict": "disagree",
+   "status": "fault",
+   "ms": 3,
+   "operations": null,
+   "invariant": "n/a (no batch.run result)",
+   "diffs": [
+    {
+     "what": "status",
+     "observed": "fault",
+     "expected": "rejected"
+    },
+    {
+     "what": "counts",
+     "observed": null,
+     "expected": {
+      "dataRecords": 1,
+      "acceptedRecords": 0,
+      "recordsWithIssues": 1,
+      "issues": 1
+     }
+    },
+    {
+     "what": "issues",
+     "observed": [],
+     "expected": [
+      {
+       "record": 1,
+       "field": "row",
+       "message": "Expected exactly four fields",
+       "hint": "This record has 60001 fields; expected 4. Check for an extra comma, or a comma inside NAME without quotes."
+      }
+     ]
+    },
+    {
+     "what": "reportSha256",
+     "observed": "d1a85dca8f0fd509b0ff36d4f7a23d20437140d3084667cff2b321b4d0504466",
+     "expected": "3805b5f456beaf0b67f8b47d68bce2c4d1ea18c93345950b7297938dc9a28563"
+    },
+    {
+     "what": "reportText",
+     "observed": "{\"fault\":{\"code\":\"ResourceLimit\",\"detail\":\"batch.run: ResourceLimit: list length\"},\"input\":{\"bytes\":60032,\"sha256\":\"d4b0845b68c64d6685b0cfd32f12050988834da85be983c52b164587f4c51b94\"},\"issues\":[],\"runId\":\"aae2af44f3a5ddc62bbfd30e9edc30f34c3cf304781f05ed5b2d9e5dc3adb806\",\"snapshot\":{\"published\":false},\"status\":\"fault\",\"transformer\":{\"app\":\"6f29074338f27a37c5ba1a48c007bdd07f7bfa8a661e41af30e60adb1779",
+     "expected": "{\"counts\":{\"acceptedRecords\":0,\"dataRecords\":1,\"issues\":1,\"recordsWithIssues\":1},\"input\":{\"bytes\":60032,\"sha256\":\"d4b0845b68c64d6685b0cfd32f12050988834da85be983c52b164587f4c51b94\"},\"issues\":[{\"field\":\"row\",\"hint\":\"This record has 60001 fields; expected 4. Check for an extra comma, or a comma inside NAME without quotes.\",\"message\":\"Expected exactly four fields\",\"record\":1}],\"runId\":\"aae2af44f3a5ddc"
+    },
+    {
+     "what": "fault",
+     "observed": {
+      "code": "ResourceLimit",
+      "detail": "batch.run: ResourceLimit: list length"
+     }
+    }
+   ]
+  },
+  {
+   "name": "big-invalid-10000",
+   "verdict": "skipped",
+   "reason": "slow case (G-3); run with --slow"
+  },
+  {
+   "name": "kit-supplier-valid",
+   "verdict": "agree",
+   "status": "accepted",
+   "ms": 1,
+   "operations": 451,
+   "invariant": "holds",
+   "diffs": []
+  },
+  {
+   "name": "kit-supplier-invalid",
+   "verdict": "agree",
+   "status": "rejected",
+   "ms": 2,
+   "operations": 1115,
+   "invariant": "holds",
+   "diffs": []
+  }
+ ]
+}

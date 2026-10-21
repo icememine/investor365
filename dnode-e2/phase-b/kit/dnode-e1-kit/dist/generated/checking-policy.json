@@ -1,0 +1,10 @@
+{
+  "id": "E1-public-roots-generated-v1",
+  "generatedFloor": "independent expected cases, distinct canonical inputs, positive return required",
+  "counting": "zero-input singleton; no repetition inflation",
+  "runtimeChecks": "strict",
+  "statisticalTier": "unsupported",
+  "humanAcceptance": "separate, required for release",
+  "scope": "library public entry points; internal nodes are bound dependencies, not individually certified",
+  "trust": "explicitly selected release key plus platform verifier; no external accreditation"
+}

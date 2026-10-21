@@ -1,0 +1,70 @@
+{
+  "id": "browser-e1",
+  "version": "201020261730-E1",
+  "checking": "strict",
+  "maxOperations": 10000000,
+  "natives": [
+    "!=",
+    "*",
+    "+",
+    "-",
+    "<",
+    "<=",
+    "==",
+    ">",
+    ">=",
+    "abs",
+    "all",
+    "and",
+    "any",
+    "at",
+    "cat",
+    "concat",
+    "contains",
+    "csv",
+    "decimal",
+    "div",
+    "duplicates",
+    "emit",
+    "encode",
+    "len",
+    "matches",
+    "max",
+    "min",
+    "mod",
+    "nat_fits",
+    "neg",
+    "not",
+    "or",
+    "range",
+    "slice",
+    "sort_by",
+    "str",
+    "sum",
+    "unique"
+  ],
+  "grants": [
+    "payment.charge",
+    "payment.inquire"
+  ],
+  "capabilities": {
+    "payment.charge": {
+      "fields": {
+        "id": "Text",
+        "amount": "Int"
+      }
+    },
+    "payment.inquire": {
+      "fields": {
+        "id": "Text"
+      }
+    }
+  },
+  "host": {
+    "storage": "one origin, serialized Web Locks plus one localStorage transaction record; reload durable, no power-loss guarantee",
+    "tickHz": 60,
+    "maxCatchUpTicks": 5,
+    "render": "host presents DNode state; no collision or business decisions",
+    "payment": "deterministic local simulator; not a bank"
+  }
+}

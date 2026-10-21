@@ -1,0 +1,888 @@
+{
+ "cases": [
+  {
+   "name": "bt1-lf",
+   "file": "cases/bt1-lf.csv",
+   "description": "B-T1 quoted comma, leading zeros, final newline",
+   "obligations": [
+    "B01",
+    "B02"
+   ],
+   "challenge": "B-T1",
+   "slow": false
+  },
+  {
+   "name": "bt1-crlf",
+   "file": "cases/bt1-crlf.csv",
+   "description": "B-T1 with CRLF line endings",
+   "obligations": [
+    "B02",
+    "B04"
+   ],
+   "challenge": "B-T1",
+   "slow": false
+  },
+  {
+   "name": "bt2-space",
+   "file": "cases/bt2-space.csv",
+   "description": "B-T2 price with leading space (syntax)",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": "B-T2",
+   "slow": false
+  },
+  {
+   "name": "bt2-range",
+   "file": "cases/bt2-range.csv",
+   "description": "B-T2 price one above the bounded maximum (range)",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": "B-T2",
+   "slow": false
+  },
+  {
+   "name": "bt2-max-ok",
+   "file": "cases/bt2-max-ok.csv",
+   "description": "maximum bounded value accepted for price and qty",
+   "obligations": [
+    "B01"
+   ],
+   "challenge": "B-T2",
+   "slow": false
+  },
+  {
+   "name": "bt3-identical",
+   "file": "cases/bt3-identical.csv",
+   "description": "B-T3 byte-identical duplicate records",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": "B-T3",
+   "slow": false
+  },
+  {
+   "name": "bt4-quoted-newline-dupes",
+   "file": "cases/bt4-quoted-newline-dupes.csv",
+   "description": "B-T4 quoted LF and CRLF inside NAME; duplicate PEN at records 2 and 4 (physical lines 4 and 7)",
+   "obligations": [
+    "B02",
+    "B03"
+   ],
+   "challenge": "B-T4",
+   "slow": false
+  },
+  {
+   "name": "bt4-valid-multiline",
+   "file": "cases/bt4-valid-multiline.csv",
+   "description": "quoted newlines preserved in accepted NAME values",
+   "obligations": [
+    "B01",
+    "B02"
+   ],
+   "challenge": "B-T4",
+   "slow": false
+  },
+  {
+   "name": "bt5-previous-valid",
+   "file": "cases/bt5-previous-valid.csv",
+   "description": "B-T5 first (valid) export",
+   "obligations": [
+    "B05"
+   ],
+   "challenge": "B-T5",
+   "slow": false
+  },
+  {
+   "name": "bt5-new-invalid",
+   "file": "cases/bt5-new-invalid.csv",
+   "description": "B-T5 second file with one invalid record (letter O in price)",
+   "obligations": [
+    "B03",
+    "B05"
+   ],
+   "challenge": "B-T5",
+   "slow": false
+  },
+  {
+   "name": "bom-single",
+   "file": "cases/bom-single.csv",
+   "description": "one initial BOM is optional and removed",
+   "obligations": [
+    "B02"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "bom-double",
+   "file": "cases/bom-double.csv",
+   "description": "two BOMs: the second is data, so the header does not match",
+   "obligations": [
+    "B02",
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "bom-only",
+   "file": "cases/bom-only.csv",
+   "description": "BOM and nothing else: no header",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "crlf-all",
+   "file": "cases/crlf-all.csv",
+   "description": "CRLF everywhere",
+   "obligations": [
+    "B02"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "mixed-endings",
+   "file": "cases/mixed-endings.csv",
+   "description": "LF and CRLF mixed",
+   "obligations": [
+    "B02"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "no-final-newline",
+   "file": "cases/no-final-newline.csv",
+   "description": "last record without line terminator",
+   "obligations": [
+    "B02"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "doubled-quotes",
+   "file": "cases/doubled-quotes.csv",
+   "description": "escaped quotes and comma inside quotes",
+   "obligations": [
+    "B02"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "quoted-all-fields",
+   "file": "cases/quoted-all-fields.csv",
+   "description": "every field quoted including the header",
+   "obligations": [
+    "B02"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "quoted-cr-inside",
+   "file": "cases/quoted-cr-inside.csv",
+   "description": "bare CR inside a quoted field is data",
+   "obligations": [
+    "B02"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "malformed-unclosed",
+   "file": "cases/malformed-unclosed.csv",
+   "description": "unclosed quote",
+   "obligations": [
+    "B02",
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "malformed-quote-inside",
+   "file": "cases/malformed-quote-inside.csv",
+   "description": "quote inside an unquoted value",
+   "obligations": [
+    "B02",
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "malformed-after-close",
+   "file": "cases/malformed-after-close.csv",
+   "description": "text after a closing quote",
+   "obligations": [
+    "B02",
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "malformed-bare-cr",
+   "file": "cases/malformed-bare-cr.csv",
+   "description": "carriage return not followed by line feed",
+   "obligations": [
+    "B02",
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "malformed-late",
+   "file": "cases/malformed-late.csv",
+   "description": "broken quote after 199 good records (no partial result)",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "utf8-invalid-ff",
+   "file": "cases/utf8-invalid-ff.csv",
+   "description": "byte 0xFF",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "utf8-truncated",
+   "file": "cases/utf8-truncated.csv",
+   "description": "truncated multibyte sequence",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "utf8-surrogate",
+   "file": "cases/utf8-surrogate.csv",
+   "description": "UTF-8 encoded surrogate",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "utf8-overlong",
+   "file": "cases/utf8-overlong.csv",
+   "description": "overlong encoding",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "empty-file",
+   "file": "cases/empty-file.csv",
+   "description": "zero bytes",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "header-only",
+   "file": "cases/header-only.csv",
+   "description": "header only: empty snapshot refusal",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "header-only-no-newline",
+   "file": "cases/header-only-no-newline.csv",
+   "description": "header only without newline",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "header-then-blank",
+   "file": "cases/header-then-blank.csv",
+   "description": "header followed by one blank line (a one-field record)",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "blank-line-only",
+   "file": "cases/blank-line-only.csv",
+   "description": "a single blank line",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "header-lowercase",
+   "file": "cases/header-lowercase.csv",
+   "description": "lowercase header",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "header-space",
+   "file": "cases/header-space.csv",
+   "description": "space in header",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "header-extra-column",
+   "file": "cases/header-extra-column.csv",
+   "description": "extra header column",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "header-missing",
+   "file": "cases/header-missing.csv",
+   "description": "no header line",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "sku-lowercase",
+   "file": "cases/sku-lowercase.csv",
+   "description": "lowercase SKU is not folded",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "sku-33",
+   "file": "cases/sku-33.csv",
+   "description": "SKU of 33 characters",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "sku-32-ok",
+   "file": "cases/sku-32-ok.csv",
+   "description": "SKU of 32 characters incl. hyphen/underscore",
+   "obligations": [
+    "B01"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "sku-empty",
+   "file": "cases/sku-empty.csv",
+   "description": "empty SKU",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "sku-inner-space",
+   "file": "cases/sku-inner-space.csv",
+   "description": "space inside SKU",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "sku-non-ascii",
+   "file": "cases/sku-non-ascii.csv",
+   "description": "non-ASCII letter in SKU",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "name-empty",
+   "file": "cases/name-empty.csv",
+   "description": "empty NAME",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "name-quoted-empty",
+   "file": "cases/name-quoted-empty.csv",
+   "description": "quoted empty NAME",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "name-121",
+   "file": "cases/name-121.csv",
+   "description": "NAME of 121 scalars",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "name-120-astral",
+   "file": "cases/name-120-astral.csv",
+   "description": "NAME of 120 astral scalars (480 bytes)",
+   "obligations": [
+    "B01"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "name-121-astral",
+   "file": "cases/name-121-astral.csv",
+   "description": "NAME of 121 astral scalars",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "name-preserved",
+   "file": "cases/name-preserved.csv",
+   "description": "NAME whitespace preserved exactly",
+   "obligations": [
+    "B01"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "name-encoding",
+   "file": "cases/name-encoding.csv",
+   "description": "NAME with quote, backslash, slash, U+2028, e-acute, U+0001, U+0000 (pinned export encoding)",
+   "obligations": [
+    "B01",
+    "B04"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-zero",
+   "file": "cases/price-zero.csv",
+   "description": "price 0",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-zeros",
+   "file": "cases/price-zeros.csv",
+   "description": "price 000",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-negative",
+   "file": "cases/price-negative.csv",
+   "description": "price -1",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-plus",
+   "file": "cases/price-plus.csv",
+   "description": "price +1",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-fraction",
+   "file": "cases/price-fraction.csv",
+   "description": "price 1.0",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-exponent",
+   "file": "cases/price-exponent.csv",
+   "description": "price 1e3",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-separator",
+   "file": "cases/price-separator.csv",
+   "description": "price with thousands separator (quoted)",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-trailing-space",
+   "file": "cases/price-trailing-space.csv",
+   "description": "price with trailing space",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-fullwidth",
+   "file": "cases/price-fullwidth.csv",
+   "description": "full-width digit one",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-empty",
+   "file": "cases/price-empty.csv",
+   "description": "empty price",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-huge",
+   "file": "cases/price-huge.csv",
+   "description": "23-digit price",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "price-long-leading-zeros",
+   "file": "cases/price-long-leading-zeros.csv",
+   "description": "41-digit price with value 7; qty 30 zeros = 0",
+   "obligations": [
+    "B01"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "qty-zero-ok",
+   "file": "cases/qty-zero-ok.csv",
+   "description": "qty 0 accepted",
+   "obligations": [
+    "B01"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "qty-negative",
+   "file": "cases/qty-negative.csv",
+   "description": "qty -2",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "qty-fraction",
+   "file": "cases/qty-fraction.csv",
+   "description": "qty 1.5",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "qty-empty",
+   "file": "cases/qty-empty.csv",
+   "description": "empty qty",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "qty-range",
+   "file": "cases/qty-range.csv",
+   "description": "qty one above maximum",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "all-fields-bad-dup",
+   "file": "cases/all-fields-bad-dup.csv",
+   "description": "every field invalid plus duplicate: issue order within a record",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "row-three-fields",
+   "file": "cases/row-three-fields.csv",
+   "description": "three fields",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "row-five-fields",
+   "file": "cases/row-five-fields.csv",
+   "description": "five fields",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "row-trailing-comma",
+   "file": "cases/row-trailing-comma.csv",
+   "description": "trailing comma = five fields",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "row-blank-middle",
+   "file": "cases/row-blank-middle.csv",
+   "description": "blank line between records",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "row-name-unquoted-comma",
+   "file": "cases/row-name-unquoted-comma.csv",
+   "description": "comma inside NAME without quotes",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "row-only-commas",
+   "file": "cases/row-only-commas.csv",
+   "description": "four empty fields",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "dup-triple",
+   "file": "cases/dup-triple.csv",
+   "description": "SKU in three records (1, 3, 4)",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "dup-two-groups",
+   "file": "cases/dup-two-groups.csv",
+   "description": "two duplicate groups",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "dup-case-differs",
+   "file": "cases/dup-case-differs.csv",
+   "description": "PEN and pen are different SKUs (no folding)",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "dup-wrong-shape",
+   "file": "cases/dup-wrong-shape.csv",
+   "description": "U-4: a three-field row shares SKU with a valid row",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "dup-empty-sku-blank-line",
+   "file": "cases/dup-empty-sku-blank-line.csv",
+   "description": "blank line plus empty SKU (first cells both empty)",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "sort-order",
+   "file": "cases/sort-order.csv",
+   "description": "scalar order: - < digits < A-Z < _",
+   "obligations": [
+    "B01",
+    "B04"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "size-1048576",
+   "file": "cases/size-1048576.csv",
+   "description": "exactly 1 MiB, 9000 valid records: accepted",
+   "obligations": [
+    "B05",
+    "B01"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "size-1048577",
+   "file": "cases/size-1048577.csv",
+   "description": "1 MiB + 1 byte: FileTooLarge before parsing",
+   "obligations": [
+    "B05"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "rows-10000",
+   "file": "cases/rows-10000.csv",
+   "description": "10000 data records: accepted",
+   "obligations": [
+    "B05",
+    "B01"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "rows-10001",
+   "file": "cases/rows-10001.csv",
+   "description": "10001 data records: TooManyRows",
+   "obligations": [
+    "B05"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "rows-10000-plus-blank",
+   "file": "cases/rows-10000-plus-blank.csv",
+   "description": "10000 records plus a trailing blank line = 10001 records",
+   "obligations": [
+    "B05"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "row-60000-fields",
+   "file": "cases/row-60000-fields.csv",
+   "description": "one record with 60001 empty fields (wrong shape)",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": false
+  },
+  {
+   "name": "big-invalid-10000",
+   "file": "cases/big-invalid-10000.csv",
+   "description": "10000 invalid duplicate records (slow in the pinned root, G-3)",
+   "obligations": [
+    "B03"
+   ],
+   "challenge": null,
+   "slow": true
+  }
+ ]
+}

@@ -1,0 +1,154 @@
+root batch
+use supplier
+; BP-BATCH application root (E2.1 Phase B). The acceptance decision comes only from the pinned
+; supplier.from_csv. This root adds hints, raw-value display data, counts, file-level messages and
+; the snapshot bytes (pinned encode). It never changes ok, the issue set, or the published rows.
+type BatchHint {"fields":{"record":"Int","field":"Text","message":"Text","hint":"Text","value":"Text","sku":"Text"}}
+type BatchHints {"list":"BatchHint"}
+type BatchCounts {"fields":{"dataRecords":"Int","acceptedRecords":"Int","recordsWithIssues":"Int","issues":"Int"}}
+type BatchRun {"fields":{"ok":"Bool","rows":"Products","issues":"BatchHints","counts":"BatchCounts","snapshot":"Text"}}
+type BatchFileError {"fields":{"code":"Text","message":"Text"}}
+type BatchJoin {"fields":{"s":"Text","first":"Bool"}}
+const DUPLICATE_MESSAGE "Duplicate SKU: all occurrences reject the snapshot"
+const MISSING_HEADER_MESSAGE "Missing CSV header"
+const FILE_CODES ["FileTooLarge" "InvalidUTF8" "MalformedCSV" "TooManyRows"]
+
+node batch.numeric_hint (field s)
+ in {"field":"Text","s":"Text"}
+ returns "Text"
+ says "D-B5b numeric hint: first matching category wins (missing, syntax, range, price zero)."
+ raises InvalidInteger PatternNotAllowed
+ out (if (== (len s) 0) "Value is missing. Enter digits 0–9." (if (not (matches s "^[0-9]+$")) "Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators." (if (not (nat_fits s)) "Number is larger than 9007199254740991, the largest supported value." (if (== field "PRICE_VND") (if (== (decimal s) 0) "Price must be at least 1." "No further detail is available for this value.") "No further detail is available for this value."))))
+ ex {"args":["PRICE_VND",""],"out":"Value is missing. Enter digits 0–9."}
+ ex {"args":["PRICE_VND"," 20000"],"out":"Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators."}
+ ex {"args":["QTY_ON_HAND","-2"],"out":"Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators."}
+ ex {"args":["PRICE_VND","9007199254740992"],"out":"Number is larger than 9007199254740991, the largest supported value."}
+ ex {"args":["PRICE_VND","000"],"out":"Price must be at least 1."}
+ ex {"args":["QTY_ON_HAND","１"],"out":"Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators."}
+
+node batch.sku_hint (s)
+ in {"s":"Text"}
+ returns "Text"
+ out (if (== (len s) 0) "SKU is missing. Enter 1–32 characters from A–Z, 0–9, \"-\" and \"_\"." (if (> (len s) 32) (cat "SKU has " (cat (str (len s)) " characters; the maximum is 32.")) "SKU must be 1–32 characters from A–Z, 0–9, \"-\" and \"_\". Lowercase is not converted automatically."))
+ ex {"args":["notebook"],"out":"SKU must be 1–32 characters from A–Z, 0–9, \"-\" and \"_\". Lowercase is not converted automatically."}
+ ex {"args":[""],"out":"SKU is missing. Enter 1–32 characters from A–Z, 0–9, \"-\" and \"_\"."}
+ ex {"args":["ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456"],"out":"SKU has 33 characters; the maximum is 32."}
+
+node batch.duplicate_hint (s)
+ in {"s":"Text"}
+ returns "Text"
+ out (cat "SKU " (cat s " appears in more than one record. Keep exactly one record per SKU; identical records are not merged automatically."))
+ ex {"args":["PEN"],"out":"SKU PEN appears in more than one record. Keep exactly one record per SKU; identical records are not merged automatically."}
+
+node batch.name_hint (s)
+ in {"s":"Text"}
+ returns "Text"
+ out (if (== (len s) 0) "Name is empty. Enter the product name." (cat "Name has " (cat (str (len s)) " characters; the maximum is 120.")))
+ ex {"args":[""],"out":"Name is empty. Enter the product name."}
+
+node batch.row_hint (row)
+ in {"row":{"list":"Text"}}
+ returns "Text"
+ out (if (== row [""]) "This record is an empty line. Delete the blank line." (if (< (len row) 4) (cat "This record has " (cat (str (len row)) (if (== (len row) 1) " field; expected 4. Check for a missing comma or a missing value." " fields; expected 4. Check for a missing comma or a missing value."))) (cat "This record has " (cat (str (len row)) " fields; expected 4. Check for an extra comma, or a comma inside NAME without quotes."))))
+ ex {"args":[[""]],"out":"This record is an empty line. Delete the blank line."}
+ ex {"args":[["PEN","Pen","1"]],"out":"This record has 3 fields; expected 4. Check for a missing comma or a missing value."}
+ ex {"args":[["PEN","Pen","1","2","3"]],"out":"This record has 5 fields; expected 4. Check for an extra comma, or a comma inside NAME without quotes."}
+
+node batch.header_hint (message parsed)
+ in {"message":"Text","parsed":"Rows"}
+ returns "Text"
+ raises IndexOutOfRange
+ out (if (== message MISSING_HEADER_MESSAGE) "The file is empty. The first line must be exactly SKU,NAME,PRICE_VND,QTY_ON_HAND." (if (== (batch.first_cell (at parsed 0)) "﻿SKU") "The file starts with an extra byte-order mark (an invisible character) before SKU. Save it again as UTF-8 so it has at most one." "The first line must be exactly SKU,NAME,PRICE_VND,QTY_ON_HAND (uppercase, no spaces, separated by commas)."))
+ ex {"args":["Missing CSV header",[]],"out":"The file is empty. The first line must be exactly SKU,NAME,PRICE_VND,QTY_ON_HAND."}
+ ex {"args":["Expected SKU,NAME,PRICE_VND,QTY_ON_HAND",[["sku","name","price_vnd","qty_on_hand"]]],"out":"The first line must be exactly SKU,NAME,PRICE_VND,QTY_ON_HAND (uppercase, no spaces, separated by commas)."}
+ ex {"args":["Expected SKU,NAME,PRICE_VND,QTY_ON_HAND",[["﻿SKU","NAME","PRICE_VND","QTY_ON_HAND"]]],"out":"The file starts with an extra byte-order mark (an invisible character) before SKU. Save it again as UTF-8 so it has at most one."}
+
+node batch.first_cell (row)
+ in {"row":{"list":"Text"}}
+ returns "Text"
+ raises IndexOutOfRange
+ out (if (> (len row) 0) (at row 0) "")
+
+node batch.join_cell (acc cell)
+ in {"acc":"BatchJoin","cell":"Text"}
+ returns "BatchJoin"
+ out {s (if acc.first cell (cat acc.s (cat "," cell))) first false}
+
+node batch.joined (row)
+ in {"row":{"list":"Text"}}
+ returns "Text"
+ says "Display only: raw cells joined with commas (not re-quoted)."
+ let j (fold "batch.join_cell" row {s "" first true})
+ out j.s
+ ex {"args":[["PEN","Pen","1"]],"out":"PEN,Pen,1"}
+ ex {"args":[[""]],"out":""}
+
+node batch.issue_value (field row)
+ in {"field":"Text","row":{"list":"Text"}}
+ returns "Text"
+ raises IndexOutOfRange
+ out (if (== field "file") "" (if (== field "SKU") (at row 0) (if (== field "NAME") (at row 1) (if (== field "PRICE_VND") (at row 2) (if (== field "QTY_ON_HAND") (at row 3) (batch.joined row))))))
+
+node batch.hint_text (issue row parsed)
+ in {"issue":"Issue","row":{"list":"Text"},"parsed":"Rows"}
+ returns "Text"
+ raises IndexOutOfRange PatternNotAllowed InvalidInteger
+ out (if (== issue.field "header") (batch.header_hint issue.message parsed) (if (== issue.field "file") "The file has a header but no product records. An empty file is never treated as \"all stock is zero\"." (if (== issue.field "row") (batch.row_hint row) (if (== issue.field "SKU") (if (== issue.message DUPLICATE_MESSAGE) (batch.duplicate_hint (at row 0)) (batch.sku_hint (at row 0))) (if (== issue.field "NAME") (batch.name_hint (at row 1)) (if (== issue.field "PRICE_VND") (batch.numeric_hint "PRICE_VND" (at row 2)) (if (== issue.field "QTY_ON_HAND") (batch.numeric_hint "QTY_ON_HAND" (at row 3)) "No further detail is available.")))))))
+
+node batch.hint (issue parsed)
+ in {"issue":"Issue","parsed":"Rows"}
+ returns "BatchHint"
+ says "D-B5b: one explanation per shared issue; record, field and message are copied verbatim from supplier.from_csv."
+ raises IndexOutOfRange PatternNotAllowed InvalidInteger
+ let row (if (and (>= issue.record 0) (< issue.record (len parsed))) (at parsed issue.record) [])
+ out {record issue.record field issue.field message issue.message hint (batch.hint_text issue row parsed) value (batch.issue_value issue.field row) sku (if (>= issue.record 1) (batch.first_cell row) "")}
+ post (and (== out.record issue.record) (and (== out.field issue.field) (== out.message issue.message)))
+ ex {"args":[{"record":1,"field":"PRICE_VND","message":"Expected a positive bounded decimal integer"},[["SKU","NAME","PRICE_VND","QTY_ON_HAND"],["PEN","Pen"," 20000","3"]]],"out":{"record":1,"field":"PRICE_VND","message":"Expected a positive bounded decimal integer","hint":"Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators.","value":" 20000","sku":"PEN"}}
+ ex {"args":[{"record":2,"field":"row","message":"Expected exactly four fields"},[["SKU","NAME","PRICE_VND","QTY_ON_HAND"],["PEN","Pen","1","1"],[""]]],"out":{"record":2,"field":"row","message":"Expected exactly four fields","hint":"This record is an empty line. Delete the blank line.","value":"","sku":""}}
+ ex {"args":[{"record":0,"field":"file","message":"An empty snapshot cannot replace stock"},[["SKU","NAME","PRICE_VND","QTY_ON_HAND"]]],"out":{"record":0,"field":"file","message":"An empty snapshot cannot replace stock","hint":"The file has a header but no product records. An empty file is never treated as \"all stock is zero\".","value":"","sku":""}}
+
+node batch.is_record_issue (issue)
+ in {"issue":"Issue"}
+ returns "Bool"
+ out (>= issue.record 1)
+
+node batch.issue_record (issue)
+ in {"issue":"Issue"}
+ returns "Int"
+ out issue.record
+
+node batch.counts (snap parsed)
+ in {"snap":"Snapshot","parsed":"Rows"}
+ returns "BatchCounts"
+ says "D-B9 counts: logical records after the header; distinct records with issues; issue count."
+ let records (unique (map "batch.issue_record" (filter "batch.is_record_issue" snap.errors)))
+ out {dataRecords (if (> (len parsed) 0) (- (len parsed) 1) 0) acceptedRecords (len snap.rows) recordsWithIssues (len records) issues (len snap.errors)}
+ post (and (<= out.acceptedRecords out.dataRecords) (<= out.recordsWithIssues out.dataRecords))
+
+node batch.file_error (code)
+ in {"code":"Text"}
+ returns "BatchFileError"
+ says "D-B8 file-level messages for refusals detected before records are checked."
+ pre (contains code FILE_CODES) UnknownFileError
+ out {code code message (if (== code "MalformedCSV") "The file is not valid CSV for this format: a quote is unclosed, a quote appears inside an unquoted value, text follows a closing quote, or a carriage return is not followed by a line feed. This version of the reader cannot report where. No records were checked." (if (== code "InvalidUTF8") "The file is not valid UTF-8 text. Save it as \"CSV UTF-8\" and choose it again. No records were checked." (if (== code "FileTooLarge") "The file is larger than 1 MiB (1048576 bytes), so it was not read. No records were checked. Do not split one stock list into several files: each accepted file replaces the whole snapshot." "The file has more than 10000 product records, so it was not checked. Do not split one stock list into several files: each accepted file replaces the whole snapshot.")))}
+ ex {"args":["TooManyRows"],"out":{"code":"TooManyRows","message":"The file has more than 10000 product records, so it was not checked. Do not split one stock list into several files: each accepted file replaces the whole snapshot."}}
+ ex {"args":["Other"],"refuse":"UnknownFileError"}
+
+node batch.run (text)
+ in {"text":"Text"}
+ returns "BatchRun"
+ says "Whole-file transformation: verdict, issues and rows from supplier.from_csv; hints, counts and snapshot bytes added."
+ domain "Decoded UTF-8 text (host removed nothing; the pinned csv native strips one initial BOM)."
+ relation "ok = supplier.from_csv(text).ok; issues are that call's errors in order, each with one hint; snapshot = encode(rows) iff ok, else empty text."
+ failure "MalformedCSV, TooManyRows and FileTooLarge propagate from supplier.from_csv as refusals; any other failure is a fault."
+ execution "Strict checks; pure; no effects; the csv native runs twice on the same text (pinned and deterministic)."
+ raises MalformedCSV FileTooLarge TooManyRows IndexOutOfRange PatternNotAllowed RowShape NumericRange InvalidInteger BadRange
+ let snap (supplier.from_csv text)
+ let parsed (csv text)
+ let issues (map "batch.hint" snap.errors parsed)
+ out {ok snap.ok rows snap.rows issues issues counts (batch.counts snap parsed) snapshot (if snap.ok (encode snap.rows) "")}
+ post (== (len out.issues) out.counts.issues)
+ post (if out.ok (and (== (len out.issues) 0) (> (len out.rows) 0)) (and (> (len out.issues) 0) (== (len out.rows) 0)))
+ ex {"args":["SKU,NAME,PRICE_VND,QTY_ON_HAND\nPEN,\"Blue, fine\",020000,003\n"],"out":{"ok":true,"rows":[{"sku":"PEN","name":"Blue, fine","price":20000,"stock":3}],"issues":[],"counts":{"dataRecords":1,"acceptedRecords":1,"recordsWithIssues":0,"issues":0},"snapshot":"[{\"name\":\"Blue, fine\",\"price\":20000,\"sku\":\"PEN\",\"stock\":3}]"}}
+ ex {"args":["SKU,NAME,PRICE_VND,QTY_ON_HAND\n"],"out":{"ok":false,"rows":[],"issues":[{"record":0,"field":"file","message":"An empty snapshot cannot replace stock","hint":"The file has a header but no product records. An empty file is never treated as \"all stock is zero\".","value":"","sku":""}],"counts":{"dataRecords":0,"acceptedRecords":0,"recordsWithIssues":0,"issues":1},"snapshot":""}}
+ ex {"args":["SKU,NAME,PRICE_VND,QTY_ON_HAND\nPEN,\"Pen,1,1\n"],"refuse":"MalformedCSV"}

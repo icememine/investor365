@@ -1,0 +1,687 @@
+{
+ "environment": {
+  "browser": "chromium (Playwright 1.56.1)",
+  "version": "141.0.7390.37",
+  "headless": true
+ },
+ "scope": "automated observable checks; not human acceptance (B06 pending)",
+ "timings": [
+  {
+   "viewport": "390x844",
+   "case": "1500 invalid duplicate rows",
+   "wallMs": 8107,
+   "maxMainThreadTimerGapMs": 198
+  },
+  {
+   "viewport": "1280x800",
+   "case": "1500 invalid duplicate rows",
+   "wallMs": 8079,
+   "maxMainThreadTimerGapMs": 157
+  }
+ ],
+ "summary": {
+  "checks": 88,
+  "passed": 88,
+  "failed": 0
+ },
+ "checks": [
+  {
+   "viewport": "390x844",
+   "name": "kit verified before anything runs (pill ok)",
+   "pass": true,
+   "observed": "Kit verified · trust key 4c7716c7…0244 (bundled with the kit)"
+  },
+  {
+   "viewport": "390x844",
+   "name": "meaning panel visible before Validate",
+   "pass": true,
+   "observed": "Each record gives, for one SKU: NAME exactly as written; PRICE_VND as a positive whole number copied exactly (leading zeros removed, no currency conversion); QTY_ON_HAND as physical unsold units on hand, including units currently reserved by shop orders — not \"available to sell\" and not a change (+/−). An accepted file replaces the whole supplier snapshot."
+  },
+  {
+   "viewport": "390x844",
+   "name": "Validate disabled until a file is chosen",
+   "pass": true
+  },
+  {
+   "viewport": "390x844",
+   "name": "no horizontal page scroll (start)",
+   "pass": true,
+   "observed": {
+    "sw": 390,
+    "iw": 390
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "invalid kit fixture → Rejected (record level) banner",
+   "pass": true,
+   "observed": "Rejected — no snapshot was produced. 4 of 4 records need correction (6 problems). Nothing in the shop or in any earlier export was changed. Partial acceptance is not available: correct the listed records and validate the whole file again."
+  },
+  {
+   "viewport": "390x844",
+   "name": "banner says partial acceptance unavailable",
+   "pass": true
+  },
+  {
+   "viewport": "390x844",
+   "name": "browser old-vs-current line shown",
+   "pass": true
+  },
+  {
+   "viewport": "390x844",
+   "name": "one card per rejected record (4), in record order",
+   "pass": true,
+   "observed": [
+    "Record 1 · spreadsheet row 2 · SKU PEN",
+    "Record 2 · spreadsheet row 3 · SKU PEN",
+    "Record 3 · spreadsheet row 4 · SKU notebook",
+    "Record 4 · spreadsheet row 5 · SKU TOTE"
+   ]
+  },
+  {
+   "viewport": "390x844",
+   "name": "record 3 shows field, value, hint (PRICE_VND 50.5)",
+   "pass": true,
+   "observed": {
+    "head": "Record 3 · spreadsheet row 4 · SKU notebook",
+    "rows": [
+     [
+      "SKU",
+      "notebook",
+      "SKU must be 1–32 characters from A–Z, 0–9, \"-\" and \"_\". Lowercase is not converted automatically. Rule: Use 1–32 uppercase letters, digits, hyphen or underscore"
+     ],
+     [
+      "PRICE_VND",
+      "50.5",
+      "Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators. Rule: Expected a positive bounded decimal integer"
+     ]
+    ]
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "record 4 shows range hint for 9007199254740992",
+   "pass": true,
+   "observed": {
+    "head": "Record 4 · spreadsheet row 5 · SKU TOTE",
+    "rows": [
+     [
+      "PRICE_VND",
+      "9007199254740992",
+      "Number is larger than 9007199254740991, the largest supported value. Rule: Expected a positive bounded decimal integer"
+     ]
+    ]
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "duplicate group line shown",
+   "pass": true
+  },
+  {
+   "viewport": "390x844",
+   "name": "counts shown (4/0/4/6)",
+   "pass": true
+  },
+  {
+   "viewport": "390x844",
+   "name": "rejected run exports only report-<runId12>.json",
+   "pass": true,
+   "observed": [
+    "report-bcdf52fdd6a2.json"
+   ]
+  },
+  {
+   "viewport": "390x844",
+   "name": "no horizontal page scroll (rejected)",
+   "pass": true,
+   "observed": {
+    "sw": 390,
+    "iw": 390
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "choosing a new file clears the old result",
+   "pass": true
+  },
+  {
+   "viewport": "390x844",
+   "name": "corrected file → Accepted banner",
+   "pass": true,
+   "observed": "Accepted — 4 records ready. This snapshot (run bc52a96d8055) can replace the supplier stock in the shop."
+  },
+  {
+   "viewport": "390x844",
+   "name": "new run ID differs from the rejected run",
+   "pass": true,
+   "observed": [
+    "bcdf52fdd6a2",
+    "bc52a96d8055"
+   ]
+  },
+  {
+   "viewport": "390x844",
+   "name": "accepted exports are new run-ID-named files",
+   "pass": true,
+   "observed": [
+    "snapshot-bc52a96d8055.json",
+    "report-bc52a96d8055.json"
+   ]
+  },
+  {
+   "viewport": "390x844",
+   "name": "preview sorted by SKU",
+   "pass": true,
+   "observed": [
+    "NOTEBOOK",
+    "PEN",
+    "PEN-DUP",
+    "TOTE"
+   ]
+  },
+  {
+   "viewport": "390x844",
+   "name": "downloaded snapshot filename + bytes match the report sha256",
+   "pass": true,
+   "observed": {
+    "file": "snapshot-bc52a96d8055.json",
+    "sha": "b173ea06fe525176412451a0c704f452e35186426afd2fa39f7595da2736ee8c",
+    "snapLine": "sha256 b173ea06fe525176412451a0c704f452e35186426afd2fa39f7595da2736ee8c · 4 records"
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "Copy JSON puts the identical snapshot bytes on the clipboard",
+   "pass": true,
+   "observed": "[{\"name\":\"Notebook\",\"price\":50500,\"sku\":\"NOTEBOOK\",\"stock\":5},{\"name\":\"Blue pen\""
+  },
+  {
+   "viewport": "390x844",
+   "name": "history lists both runs",
+   "pass": true
+  },
+  {
+   "viewport": "390x844",
+   "name": "progress row hidden once the result is shown",
+   "pass": true
+  },
+  {
+   "viewport": "390x844",
+   "name": "preview numeric cells are plain cells (not step badges)",
+   "pass": true,
+   "observed": "0px"
+  },
+  {
+   "viewport": "390x844",
+   "name": "no horizontal page scroll (accepted)",
+   "pass": true,
+   "observed": {
+    "sw": 390,
+    "iw": 390
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "leading space shown as · (\" 20000\" → \"·20000\")",
+   "pass": true,
+   "observed": "·20000"
+  },
+  {
+   "viewport": "390x844",
+   "name": "B-T4: duplicates at records 2 and 4 despite quoted newlines",
+   "pass": true,
+   "observed": "SKU PEN appears in records 2, 4. Keep one record per SKU."
+  },
+  {
+   "viewport": "390x844",
+   "name": "MalformedCSV → file-level Rejected banner",
+   "pass": true,
+   "observed": "Rejected — the file could not be read as the declared CSV (MalformedCSV). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "viewport": "390x844",
+   "name": "no horizontal page scroll (file-level)",
+   "pass": true,
+   "observed": {
+    "sw": 390,
+    "iw": 390
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "invalid UTF-8 → InvalidUTF8 banner",
+   "pass": true,
+   "observed": "Rejected — the file could not be read as the declared CSV (InvalidUTF8). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "viewport": "390x844",
+   "name": "double BOM → header rejection with BOM hint",
+   "pass": true,
+   "observed": "Rejected — the file could not be read as the declared CSV (header). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "viewport": "390x844",
+   "name": "header-only → empty snapshot banner",
+   "pass": true,
+   "observed": "Rejected — the file contains no product records (empty snapshot). No snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "viewport": "390x844",
+   "name": "1048577 bytes → FileTooLarge banner",
+   "pass": true,
+   "observed": "Rejected — the file could not be read as the declared CSV (FileTooLarge). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "viewport": "390x844",
+   "name": "60001-field row → Tool fault banner (gap G-7)",
+   "pass": true,
+   "observed": "Tool fault (ResourceLimit) — this is a defect in the tool or distribution, not a judgement about your file. No snapshot was produced."
+  },
+  {
+   "viewport": "390x844",
+   "name": "no horizontal page scroll (fault)",
+   "pass": true,
+   "observed": {
+    "sw": 390,
+    "iw": 390
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "1048576 bytes → Accepted 9000 records",
+   "pass": true,
+   "observed": "Accepted — 9000 records ready. This snapshot (run b216fb28b1c6) can replace the supplier stock in the shop."
+  },
+  {
+   "viewport": "390x844",
+   "name": "no horizontal page scroll (large accepted)",
+   "pass": true,
+   "observed": {
+    "sw": 390,
+    "iw": 390
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "progress phases shown during slow run",
+   "pass": true,
+   "observed": [
+    "Reading the file…",
+    "Checking records: N of N",
+    "Collecting problems: N of N records",
+    "Writing explanations: N of N"
+   ]
+  },
+  {
+   "viewport": "390x844",
+   "name": "main thread responsive (max 50 ms-timer gap < 500 ms)",
+   "pass": true,
+   "observed": {
+    "maxGap": 198,
+    "slowMs": 8107
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "slow run result: Rejected 1500 of 1500 records",
+   "pass": true
+  },
+  {
+   "viewport": "390x844",
+   "name": "no horizontal page scroll (1500 issues)",
+   "pass": true,
+   "observed": {
+    "sw": 390,
+    "iw": 390
+   }
+  },
+  {
+   "viewport": "390x844",
+   "name": "Stop terminates the run, re-verifies the kit, no result shown",
+   "pass": true
+  },
+  {
+   "viewport": "390x844",
+   "name": "observation: re-validate after editing the chosen file on disk",
+   "pass": true,
+   "observed": "The file could not be read. If you edited and saved it after choosing it, choose it again with \"Choose file…\". Nothing was checked or exported.NotReadableError:",
+   "note": "recorded, not asserted"
+  },
+  {
+   "viewport": "390x844",
+   "name": "no console errors",
+   "pass": true,
+   "observed": []
+  },
+  {
+   "viewport": "1280x800",
+   "name": "kit verified before anything runs (pill ok)",
+   "pass": true,
+   "observed": "Kit verified · trust key 4c7716c7…0244 (bundled with the kit)"
+  },
+  {
+   "viewport": "1280x800",
+   "name": "meaning panel visible before Validate",
+   "pass": true,
+   "observed": "Each record gives, for one SKU: NAME exactly as written; PRICE_VND as a positive whole number copied exactly (leading zeros removed, no currency conversion); QTY_ON_HAND as physical unsold units on hand, including units currently reserved by shop orders — not \"available to sell\" and not a change (+/−). An accepted file replaces the whole supplier snapshot."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "Validate disabled until a file is chosen",
+   "pass": true
+  },
+  {
+   "viewport": "1280x800",
+   "name": "no horizontal page scroll (start)",
+   "pass": true,
+   "observed": {
+    "sw": 1280,
+    "iw": 1280
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "invalid kit fixture → Rejected (record level) banner",
+   "pass": true,
+   "observed": "Rejected — no snapshot was produced. 4 of 4 records need correction (6 problems). Nothing in the shop or in any earlier export was changed. Partial acceptance is not available: correct the listed records and validate the whole file again."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "banner says partial acceptance unavailable",
+   "pass": true
+  },
+  {
+   "viewport": "1280x800",
+   "name": "browser old-vs-current line shown",
+   "pass": true
+  },
+  {
+   "viewport": "1280x800",
+   "name": "one card per rejected record (4), in record order",
+   "pass": true,
+   "observed": [
+    "Record 1 · spreadsheet row 2 · SKU PEN",
+    "Record 2 · spreadsheet row 3 · SKU PEN",
+    "Record 3 · spreadsheet row 4 · SKU notebook",
+    "Record 4 · spreadsheet row 5 · SKU TOTE"
+   ]
+  },
+  {
+   "viewport": "1280x800",
+   "name": "record 3 shows field, value, hint (PRICE_VND 50.5)",
+   "pass": true,
+   "observed": {
+    "head": "Record 3 · spreadsheet row 4 · SKU notebook",
+    "rows": [
+     [
+      "SKU",
+      "notebook",
+      "SKU must be 1–32 characters from A–Z, 0–9, \"-\" and \"_\". Lowercase is not converted automatically. Rule: Use 1–32 uppercase letters, digits, hyphen or underscore"
+     ],
+     [
+      "PRICE_VND",
+      "50.5",
+      "Use digits 0–9 only: no spaces, signs, decimal points, exponents or thousands separators. Rule: Expected a positive bounded decimal integer"
+     ]
+    ]
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "record 4 shows range hint for 9007199254740992",
+   "pass": true,
+   "observed": {
+    "head": "Record 4 · spreadsheet row 5 · SKU TOTE",
+    "rows": [
+     [
+      "PRICE_VND",
+      "9007199254740992",
+      "Number is larger than 9007199254740991, the largest supported value. Rule: Expected a positive bounded decimal integer"
+     ]
+    ]
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "duplicate group line shown",
+   "pass": true
+  },
+  {
+   "viewport": "1280x800",
+   "name": "counts shown (4/0/4/6)",
+   "pass": true
+  },
+  {
+   "viewport": "1280x800",
+   "name": "rejected run exports only report-<runId12>.json",
+   "pass": true,
+   "observed": [
+    "report-bcdf52fdd6a2.json"
+   ]
+  },
+  {
+   "viewport": "1280x800",
+   "name": "no horizontal page scroll (rejected)",
+   "pass": true,
+   "observed": {
+    "sw": 1280,
+    "iw": 1280
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "choosing a new file clears the old result",
+   "pass": true
+  },
+  {
+   "viewport": "1280x800",
+   "name": "corrected file → Accepted banner",
+   "pass": true,
+   "observed": "Accepted — 4 records ready. This snapshot (run bc52a96d8055) can replace the supplier stock in the shop."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "new run ID differs from the rejected run",
+   "pass": true,
+   "observed": [
+    "bcdf52fdd6a2",
+    "bc52a96d8055"
+   ]
+  },
+  {
+   "viewport": "1280x800",
+   "name": "accepted exports are new run-ID-named files",
+   "pass": true,
+   "observed": [
+    "snapshot-bc52a96d8055.json",
+    "report-bc52a96d8055.json"
+   ]
+  },
+  {
+   "viewport": "1280x800",
+   "name": "preview sorted by SKU",
+   "pass": true,
+   "observed": [
+    "NOTEBOOK",
+    "PEN",
+    "PEN-DUP",
+    "TOTE"
+   ]
+  },
+  {
+   "viewport": "1280x800",
+   "name": "downloaded snapshot filename + bytes match the report sha256",
+   "pass": true,
+   "observed": {
+    "file": "snapshot-bc52a96d8055.json",
+    "sha": "b173ea06fe525176412451a0c704f452e35186426afd2fa39f7595da2736ee8c",
+    "snapLine": "sha256 b173ea06fe525176412451a0c704f452e35186426afd2fa39f7595da2736ee8c · 4 records"
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "Copy JSON puts the identical snapshot bytes on the clipboard",
+   "pass": true,
+   "observed": "[{\"name\":\"Notebook\",\"price\":50500,\"sku\":\"NOTEBOOK\",\"stock\":5},{\"name\":\"Blue pen\""
+  },
+  {
+   "viewport": "1280x800",
+   "name": "history lists both runs",
+   "pass": true
+  },
+  {
+   "viewport": "1280x800",
+   "name": "progress row hidden once the result is shown",
+   "pass": true
+  },
+  {
+   "viewport": "1280x800",
+   "name": "preview numeric cells are plain cells (not step badges)",
+   "pass": true,
+   "observed": "0px"
+  },
+  {
+   "viewport": "1280x800",
+   "name": "no horizontal page scroll (accepted)",
+   "pass": true,
+   "observed": {
+    "sw": 1280,
+    "iw": 1280
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "leading space shown as · (\" 20000\" → \"·20000\")",
+   "pass": true,
+   "observed": "·20000"
+  },
+  {
+   "viewport": "1280x800",
+   "name": "B-T4: duplicates at records 2 and 4 despite quoted newlines",
+   "pass": true,
+   "observed": "SKU PEN appears in records 2, 4. Keep one record per SKU."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "MalformedCSV → file-level Rejected banner",
+   "pass": true,
+   "observed": "Rejected — the file could not be read as the declared CSV (MalformedCSV). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "no horizontal page scroll (file-level)",
+   "pass": true,
+   "observed": {
+    "sw": 1280,
+    "iw": 1280
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "invalid UTF-8 → InvalidUTF8 banner",
+   "pass": true,
+   "observed": "Rejected — the file could not be read as the declared CSV (InvalidUTF8). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "double BOM → header rejection with BOM hint",
+   "pass": true,
+   "observed": "Rejected — the file could not be read as the declared CSV (header). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "header-only → empty snapshot banner",
+   "pass": true,
+   "observed": "Rejected — the file contains no product records (empty snapshot). No snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "1048577 bytes → FileTooLarge banner",
+   "pass": true,
+   "observed": "Rejected — the file could not be read as the declared CSV (FileTooLarge). No records were checked and no snapshot was produced. Nothing in the shop or in any earlier export was changed."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "60001-field row → Tool fault banner (gap G-7)",
+   "pass": true,
+   "observed": "Tool fault (ResourceLimit) — this is a defect in the tool or distribution, not a judgement about your file. No snapshot was produced."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "no horizontal page scroll (fault)",
+   "pass": true,
+   "observed": {
+    "sw": 1280,
+    "iw": 1280
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "1048576 bytes → Accepted 9000 records",
+   "pass": true,
+   "observed": "Accepted — 9000 records ready. This snapshot (run b216fb28b1c6) can replace the supplier stock in the shop."
+  },
+  {
+   "viewport": "1280x800",
+   "name": "no horizontal page scroll (large accepted)",
+   "pass": true,
+   "observed": {
+    "sw": 1280,
+    "iw": 1280
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "progress phases shown during slow run",
+   "pass": true,
+   "observed": [
+    "Reading CSV…",
+    "Checking records: N of N",
+    "Collecting problems: N of N records",
+    "Writing explanations: N of N"
+   ]
+  },
+  {
+   "viewport": "1280x800",
+   "name": "main thread responsive (max 50 ms-timer gap < 500 ms)",
+   "pass": true,
+   "observed": {
+    "maxGap": 157,
+    "slowMs": 8079
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "slow run result: Rejected 1500 of 1500 records",
+   "pass": true
+  },
+  {
+   "viewport": "1280x800",
+   "name": "no horizontal page scroll (1500 issues)",
+   "pass": true,
+   "observed": {
+    "sw": 1280,
+    "iw": 1280
+   }
+  },
+  {
+   "viewport": "1280x800",
+   "name": "Stop terminates the run, re-verifies the kit, no result shown",
+   "pass": true
+  },
+  {
+   "viewport": "1280x800",
+   "name": "observation: re-validate after editing the chosen file on disk",
+   "pass": true,
+   "observed": "The file could not be read. If you edited and saved it after choosing it, choose it again with \"Choose file…\". Nothing was checked or exported.NotReadableError:",
+   "note": "recorded, not asserted"
+  },
+  {
+   "viewport": "1280x800",
+   "name": "no console errors",
+   "pass": true,
+   "observed": []
+  }
+ ]
+}

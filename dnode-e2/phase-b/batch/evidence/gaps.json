@@ -1,0 +1,97 @@
+{
+ "G-1 MalformedCSV has no location": {
+  "input": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nPEN,\"Pen,1,1\n",
+  "observed": {
+   "refused": "MalformedCSV",
+   "message": "MalformedCSV",
+   "origin": "csv"
+  }
+ },
+ "G-2 kit CLI accepts a double BOM (its decoder strips one, csv strips another)": {
+  "kitCli": {
+   "status": 0,
+   "stdout": "Published 1 records to /tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/evidence/tmp-gaps/dbl-out.json",
+   "stderr": ""
+  },
+  "thisHost": "rejected with header issue + BOM hint (fixture bom-double, agree)"
+ },
+ "G-3 rejection time grows quadratically with issue count (supplier.join fold)": {
+  "timing": [
+   {
+    "invalidRows": 250,
+    "ms": 301,
+    "issues": 750,
+    "operations": 26301
+   },
+   {
+    "invalidRows": 500,
+    "ms": 1033,
+    "issues": 1500,
+    "operations": 52551
+   },
+   {
+    "invalidRows": 1000,
+    "ms": 3888,
+    "issues": 3000,
+    "operations": 105051
+   }
+  ]
+ },
+ "G-4 kit CLI writes no report on file-level failures; report lacks run/input/output identity": {
+  "malformed": {
+   "status": 1,
+   "stdout": "",
+   "stderr": "MalformedCSV MalformedCSV",
+   "reportWritten": false
+  },
+  "oversize": {
+   "status": 1,
+   "stdout": "",
+   "stderr": "Error FileTooLarge",
+   "reportWritten": false
+  }
+ },
+ "G-6 kit `check`/`run-file` compile application roots under the BROWSER profile": {
+  "source": "new Runtime(g,JSON.parse(texts['profiles/browser.json']))",
+  "thisBuild": "tests/check-node.mjs runs batch.node examples under profiles/batch.json"
+ },
+ "G-7 a record with more than 50000 fields faults (runtime list-length limit) instead of a located row rejection": {
+  "at50000fields": [
+   {
+    "record": 1,
+    "field": "row",
+    "message": "Expected exactly four fields"
+   }
+  ],
+  "at50001fields": {
+   "fault": "ResourceLimit",
+   "message": "ResourceLimit: list length"
+  },
+  "kitCli": {
+   "status": 1,
+   "stdout": "",
+   "stderr": "ResourceLimit ResourceLimit: list length"
+  }
+ },
+ "U-4 wrong-shape rows count toward duplicate detection but are not flagged as duplicates": {
+  "input": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nPEN,Pen,1\nPEN,Pen,1,1\n",
+  "observed": [
+   {
+    "record": 1,
+    "field": "row",
+    "message": "Expected exactly four fields"
+   },
+   {
+    "record": 2,
+    "field": "SKU",
+    "message": "Duplicate SKU: all occurrences reject the snapshot"
+   }
+  ]
+ },
+ "P-1 prelude text.parse_decimal_nat faults on out-of-range digits (not used as a validator here)": {
+  "observed": {
+   "fault": "ArithmeticOverflow",
+   "message": "ArithmeticOverflow"
+  }
+ }
+}

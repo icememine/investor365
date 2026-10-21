@@ -1,0 +1,85 @@
+PASS 390x844 kit verified before anything runs (pill ok)
+PASS 390x844 meaning panel visible before Validate
+PASS 390x844 Validate disabled until a file is chosen
+PASS 390x844 no horizontal page scroll (start)
+PASS 390x844 invalid kit fixture → Rejected (record level) banner
+PASS 390x844 banner says partial acceptance unavailable
+PASS 390x844 browser old-vs-current line shown
+PASS 390x844 one card per rejected record (4), in record order
+PASS 390x844 record 3 shows field, value, hint (PRICE_VND 50.5)
+PASS 390x844 record 4 shows range hint for 9007199254740992
+PASS 390x844 duplicate group line shown
+PASS 390x844 counts shown (4/0/4/6)
+PASS 390x844 rejected run exports only report-<runId12>.json
+PASS 390x844 no horizontal page scroll (rejected)
+PASS 390x844 choosing a new file clears the old result
+PASS 390x844 corrected file → Accepted banner
+PASS 390x844 new run ID differs from the rejected run
+PASS 390x844 accepted exports are new run-ID-named files
+PASS 390x844 preview sorted by SKU
+PASS 390x844 downloaded snapshot filename + bytes match the report sha256
+PASS 390x844 Copy JSON puts the identical snapshot bytes on the clipboard
+PASS 390x844 history lists both runs
+PASS 390x844 no horizontal page scroll (accepted)
+FAIL 390x844 leading space shown as · (" 20000" → "·20000") :: "PEN"
+PASS 390x844 B-T4: duplicates at records 2 and 4 despite quoted newlines
+PASS 390x844 MalformedCSV → file-level Rejected banner
+PASS 390x844 no horizontal page scroll (file-level)
+PASS 390x844 invalid UTF-8 → InvalidUTF8 banner
+PASS 390x844 double BOM → header rejection with BOM hint
+PASS 390x844 header-only → empty snapshot banner
+PASS 390x844 1048577 bytes → FileTooLarge banner
+PASS 390x844 60001-field row → Tool fault banner (gap G-7)
+PASS 390x844 no horizontal page scroll (fault)
+PASS 390x844 1048576 bytes → Accepted 9000 records
+PASS 390x844 no horizontal page scroll (large accepted)
+PASS 390x844 progress phases shown during slow run
+PASS 390x844 main thread responsive (max 50 ms-timer gap < 500 ms)
+PASS 390x844 slow run result: Rejected 1500 of 1500 records
+PASS 390x844 no horizontal page scroll (1500 issues)
+PASS 390x844 Stop terminates the run, re-verifies the kit, no result shown
+OBS  390x844 re-validate after edit: The file could not be read. If you edited and saved it after choosing it, choose it again with "Choose file…". Nothing w
+PASS 390x844 no console errors
+PASS 1280x800 kit verified before anything runs (pill ok)
+PASS 1280x800 meaning panel visible before Validate
+PASS 1280x800 Validate disabled until a file is chosen
+PASS 1280x800 no horizontal page scroll (start)
+PASS 1280x800 invalid kit fixture → Rejected (record level) banner
+PASS 1280x800 banner says partial acceptance unavailable
+PASS 1280x800 browser old-vs-current line shown
+PASS 1280x800 one card per rejected record (4), in record order
+PASS 1280x800 record 3 shows field, value, hint (PRICE_VND 50.5)
+PASS 1280x800 record 4 shows range hint for 9007199254740992
+PASS 1280x800 duplicate group line shown
+PASS 1280x800 counts shown (4/0/4/6)
+PASS 1280x800 rejected run exports only report-<runId12>.json
+PASS 1280x800 no horizontal page scroll (rejected)
+PASS 1280x800 choosing a new file clears the old result
+PASS 1280x800 corrected file → Accepted banner
+PASS 1280x800 new run ID differs from the rejected run
+PASS 1280x800 accepted exports are new run-ID-named files
+PASS 1280x800 preview sorted by SKU
+PASS 1280x800 downloaded snapshot filename + bytes match the report sha256
+PASS 1280x800 Copy JSON puts the identical snapshot bytes on the clipboard
+PASS 1280x800 history lists both runs
+PASS 1280x800 no horizontal page scroll (accepted)
+FAIL 1280x800 leading space shown as · (" 20000" → "·20000") :: "PEN"
+PASS 1280x800 B-T4: duplicates at records 2 and 4 despite quoted newlines
+PASS 1280x800 MalformedCSV → file-level Rejected banner
+PASS 1280x800 no horizontal page scroll (file-level)
+PASS 1280x800 invalid UTF-8 → InvalidUTF8 banner
+PASS 1280x800 double BOM → header rejection with BOM hint
+PASS 1280x800 header-only → empty snapshot banner
+PASS 1280x800 1048577 bytes → FileTooLarge banner
+PASS 1280x800 60001-field row → Tool fault banner (gap G-7)
+PASS 1280x800 no horizontal page scroll (fault)
+PASS 1280x800 1048576 bytes → Accepted 9000 records
+PASS 1280x800 no horizontal page scroll (large accepted)
+PASS 1280x800 progress phases shown during slow run
+PASS 1280x800 main thread responsive (max 50 ms-timer gap < 500 ms)
+PASS 1280x800 slow run result: Rejected 1500 of 1500 records
+PASS 1280x800 no horizontal page scroll (1500 issues)
+PASS 1280x800 Stop terminates the run, re-verifies the kit, no result shown
+OBS  1280x800 re-validate after edit: The file could not be read. If you edited and saved it after choosing it, choose it again with "Choose file…". Nothing w
+PASS 1280x800 no console errors
+{"checks":84,"passed":82,"failed":2,"env":{"browser":"chromium (Playwright 1.56.1)","version":"141.0.7390.37","headless":true}}

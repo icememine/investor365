@@ -1,0 +1,304 @@
+{
+ "at": "2026-10-20T13:18:57.825Z",
+ "checker": "checker#bdaf0d20",
+ "agree": 8,
+ "disagree": 0,
+ "report": {
+  "straight_rally": {
+   "same": true,
+   "got": {
+    "phase": "serve",
+    "score": 1,
+    "lives": 2,
+    "ticks": 400,
+    "ball": {
+     "x": 16000,
+     "y": 43400,
+     "vx": -100,
+     "vy": -450
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 29,
+    "refused": 0
+   },
+   "expected": {
+    "phase": "serve",
+    "score": 1,
+    "lives": 2,
+    "ticks": 400,
+    "ball": {
+     "x": 16000,
+     "y": 43400,
+     "vx": -100,
+     "vy": -450
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 29,
+    "refused": 0
+   }
+  },
+  "corner_left": {
+   "same": true,
+   "got": {
+    "phase": "serve",
+    "score": 1,
+    "lives": 2,
+    "ticks": 660,
+    "ball": {
+     "x": 3000,
+     "y": 43400,
+     "vx": -100,
+     "vy": -450
+    },
+    "paddle": {
+     "x": 0
+    },
+    "intact": 29,
+    "refused": 0
+   },
+   "expected": {
+    "phase": "serve",
+    "score": 1,
+    "lives": 2,
+    "ticks": 660,
+    "ball": {
+     "x": 3000,
+     "y": 43400,
+     "vx": -100,
+     "vy": -450
+    },
+    "paddle": {
+     "x": 0
+    },
+    "intact": 29,
+    "refused": 0
+   }
+  },
+  "high_speed_side": {
+   "same": true,
+   "got": {
+    "phase": "play",
+    "score": 6,
+    "lives": 3,
+    "ticks": 200,
+    "ball": {
+     "x": 13900,
+     "y": 5300,
+     "vx": 700,
+     "vy": -100
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 24,
+    "refused": 0
+   },
+   "expected": {
+    "phase": "play",
+    "score": 6,
+    "lives": 3,
+    "ticks": 200,
+    "ball": {
+     "x": 13900,
+     "y": 5300,
+     "vx": 700,
+     "vy": -100
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 24,
+    "refused": 0
+   }
+  },
+  "gap_pass": {
+   "same": true,
+   "got": {
+    "phase": "serve",
+    "score": 0,
+    "lives": 2,
+    "ticks": 120,
+    "ball": {
+     "x": 16000,
+     "y": 43400,
+     "vx": -100,
+     "vy": -450
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 30,
+    "refused": 0
+   },
+   "expected": {
+    "phase": "serve",
+    "score": 0,
+    "lives": 2,
+    "ticks": 120,
+    "ball": {
+     "x": 16000,
+     "y": 43400,
+     "vx": -100,
+     "vy": -450
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 30,
+    "refused": 0
+   }
+  },
+  "pause_resume": {
+   "same": true,
+   "got": {
+    "phase": "play",
+    "score": 1,
+    "lives": 3,
+    "ticks": 100,
+    "ball": {
+     "x": 5000,
+     "y": 40700,
+     "vx": 200,
+     "vy": 450
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 29,
+    "refused": 0
+   },
+   "expected": {
+    "phase": "play",
+    "score": 1,
+    "lives": 3,
+    "ticks": 100,
+    "ball": {
+     "x": 5000,
+     "y": 40700,
+     "vx": 200,
+     "vy": 450
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 29,
+    "refused": 0
+   }
+  },
+  "three_lives": {
+   "same": true,
+   "got": {
+    "phase": "play",
+    "score": 5,
+    "lives": 1,
+    "ticks": 1200,
+    "ball": {
+     "x": 29000,
+     "y": 18440,
+     "vx": 0,
+     "vy": -480
+    },
+    "paddle": {
+     "x": 26000
+    },
+    "intact": 25,
+    "refused": 0
+   },
+   "expected": {
+    "phase": "play",
+    "score": 5,
+    "lives": 1,
+    "ticks": 1200,
+    "ball": {
+     "x": 29000,
+     "y": 18440,
+     "vx": 0,
+     "vy": -480
+    },
+    "paddle": {
+     "x": 26000
+    },
+    "intact": 25,
+    "refused": 0
+   }
+  },
+  "restart": {
+   "same": true,
+   "got": {
+    "phase": "title",
+    "score": 0,
+    "lives": 3,
+    "ticks": 0,
+    "ball": {
+     "x": 16000,
+     "y": 43400,
+     "vx": -200,
+     "vy": -450
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 30,
+    "refused": 0
+   },
+   "expected": {
+    "phase": "title",
+    "score": 0,
+    "lives": 3,
+    "ticks": 0,
+    "ball": {
+     "x": 16000,
+     "y": 43400,
+     "vx": -200,
+     "vy": -450
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 30,
+    "refused": 0
+   }
+  },
+  "brick_corner_tie": {
+   "same": true,
+   "got": {
+    "phase": "play",
+    "score": 1,
+    "lives": 3,
+    "ticks": 3,
+    "ball": {
+     "x": 15750,
+     "y": 20500,
+     "vx": 0,
+     "vy": 450
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 29,
+    "refused": 0
+   },
+   "expected": {
+    "phase": "play",
+    "score": 1,
+    "lives": 3,
+    "ticks": 3,
+    "ball": {
+     "x": 15750,
+     "y": 20500,
+     "vx": 0,
+     "vy": 450
+    },
+    "paddle": {
+     "x": 13000
+    },
+    "intact": 29,
+    "refused": 0
+   }
+  }
+ }
+}

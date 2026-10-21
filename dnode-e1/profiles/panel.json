@@ -1,0 +1,101 @@
+{
+  "schema": "dnode-profile/0.4",
+  "name": "panel",
+  "version": "0.4",
+  "says": "A panel of buttons, inputs, tables and text rendered by the host; events come back as records. Session state is kept by the host and survives reload within a test session.",
+  "entry": [
+    {
+      "node": "initial",
+      "in": []
+    },
+    {
+      "node": "frame",
+      "in": [
+        "state",
+        "event"
+      ]
+    }
+  ],
+  "grants": [
+    "panel.show",
+    "file.export"
+  ],
+  "natives": [
+    "!=",
+    "*",
+    "+",
+    "-",
+    "<",
+    "<=",
+    "==",
+    ">",
+    ">=",
+    "abs",
+    "and",
+    "at",
+    "cat",
+    "clamp",
+    "concat",
+    "csv_fields",
+    "csv_records",
+    "div",
+    "filter",
+    "has",
+    "in",
+    "is_digits",
+    "is_int",
+    "is_sku_text",
+    "len",
+    "map",
+    "max",
+    "min",
+    "mod",
+    "neg",
+    "not",
+    "or",
+    "pairs",
+    "range",
+    "scalars",
+    "sign",
+    "split",
+    "str",
+    "strip_zeros",
+    "sum",
+    "text_cmp",
+    "text_len",
+    "to_int",
+    "trim",
+    "panel.show",
+    "file.export",
+    "encode"
+  ],
+  "host": {
+    "events": "the host sends {kind ...} records named by event directives; inputs are echoed into the event",
+    "state": "the host keeps the last returned state; a refusal keeps the previous state",
+    "simulator": {
+      "field": "request",
+      "kinds": [
+        "none",
+        "charge",
+        "inquire"
+      ],
+      "charge": "payment_result with result confirmed|declined|lost",
+      "inquire": "inquiry_result with result confirmed|declined|none|unavailable",
+      "modes": [
+        "accept",
+        "decline",
+        "accept-lost",
+        "inquiry-unavailable"
+      ],
+      "ledger": "readable by tests (window.__dnode.sim.ledger), never by the graph"
+    },
+    "session": "the host keeps the whole state in browser storage under the main root identity; reload restores it; Clear session resets to initial()",
+    "items": "notice errors steps hero section text warn status card line row total button order table file log — rendered generically; area places an item under shop, orders or desk",
+    "money": "amounts are shown exactly as the graph formats them; the host never computes a price"
+  },
+  "limits": {
+    "range": 10000,
+    "generated": 2000,
+    "maxEventBytes": 1048576
+  }
+}

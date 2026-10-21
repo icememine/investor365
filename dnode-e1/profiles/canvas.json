@@ -1,0 +1,85 @@
+{
+  "schema": "dnode-profile/0.4",
+  "name": "canvas",
+  "version": "0.4",
+  "says": "A fixed-tick game: the host delivers events in order (tick with the sampled input, launch, pause, resume, restart) and draws the returned list. The graph owns every rule; the host owns capture, scheduling, rendering and sound.",
+  "entry": [
+    {
+      "node": "initial",
+      "in": []
+    },
+    {
+      "node": "frame",
+      "in": [
+        "state",
+        "event"
+      ]
+    }
+  ],
+  "grants": [
+    "screen.draw",
+    "audio.play"
+  ],
+  "natives": [
+    "!=",
+    "*",
+    "+",
+    "-",
+    "<",
+    "<=",
+    "==",
+    ">",
+    ">=",
+    "abs",
+    "and",
+    "at",
+    "cat",
+    "clamp",
+    "concat",
+    "csv_fields",
+    "csv_records",
+    "div",
+    "filter",
+    "has",
+    "in",
+    "is_digits",
+    "is_int",
+    "is_sku_text",
+    "len",
+    "map",
+    "max",
+    "min",
+    "mod",
+    "neg",
+    "not",
+    "or",
+    "pairs",
+    "range",
+    "scalars",
+    "sign",
+    "split",
+    "str",
+    "strip_zeros",
+    "sum",
+    "text_cmp",
+    "text_len",
+    "to_int",
+    "trim",
+    "screen.draw",
+    "audio.play"
+  ],
+  "host": {
+    "tick": "60 ticks per second; each tick is one frame(state, {kind:\"tick\", move, target}) call; move is the sampled keyboard intent −1|0|1, target the touch x in field units or −1",
+    "catchUp": "after a host delay at most 3 ticks are run per animation frame and the remainder is discarded; the game never jumps",
+    "pause": "no tick is delivered while the game reports phase paused; pause/resume are events; resume never replays elapsed time",
+    "restart": "restart is an event; the host clears its sampled input and its queued events before delivering it",
+    "input": "keyboard: arrows or A/D move, space launches or resumes, P pauses, R restarts; touch: drag sets target, tap launches or resumes; the canvas has touch-action none so the page does not scroll",
+    "trace": "the host records every delivered event in order and can replay them from initial() to compare the final state identity",
+    "render": "primitives rect, circle, ring, text with named colours; the host scales the 32000 × 48000 field to the viewport and never computes a collision or repairs state",
+    "audio": "optional short synthesized sounds for wall, paddle, brick, lost, win, launch; failure to play never touches state"
+  },
+  "limits": {
+    "range": 10000,
+    "generated": 2000
+  }
+}

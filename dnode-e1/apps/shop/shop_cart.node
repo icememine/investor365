@@ -1,0 +1,164 @@
+; shop_cart — BP-SHOP cart: lines {sku qty} with a known unique SKU and quantity 1–9, at most 3 lines, each within availability.
+; Priced lines capture name, unit price and subtotal = price × qty at the moment of pricing; the total is the exact sum.
+root shop_cart
+numbers exact
+use shop_stock
+
+node line_ok (p)
+  says "1 when the line in a is a valid cart line against the stock in b: quantity 1–9, known SKU, within availability; 0 against invalid stock"
+  fx none
+  post (in out [0 1])
+  out (if (and (stock_ok p.b) (>= p.a.qty 1) (<= p.a.qty QTY_MAX)) (line_fits p) 0)
+  ex {p {a {sku "A" qty 2} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> 1
+  ex {p {a {sku "A" qty 0} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> 0
+  ex {p {a {sku "A" qty 10} b [{sku "A" name "a" price 10 on_hand 50 reserved 3}]}} -> 0
+  ex {p {a {sku "A" qty 3} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> 0
+  ex {p {a {sku "A" qty 1} b [{sku "A" name "a" price 10 on_hand 5 reserved 6}]}} -> 0
+
+node cart_ok (items lines)
+  says "true when the stock is valid and the cart has at most 3 lines, with distinct SKUs, each valid against the stock"
+  fx none
+  post (in out [true false])
+  out (and (stock_ok items) (<= (len lines) LINES_MAX) (unique_text (map "sku_of" lines)) (== (sum (map "line_ok" (pairs lines [items]))) (len lines)))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3} {sku "B" name "b" price 1 on_hand 1 reserved 0}] lines [{sku "A" qty 2} {sku "B" qty 1}]} -> true
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] lines [{sku "A" qty 1} {sku "A" qty 1}]} -> false
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] lines [{sku "A" qty 3}]} -> false
+  ex {items [{sku "A" name "a" price 10 on_hand 9 reserved 0} {sku "B" name "b" price 1 on_hand 1 reserved 0} {sku "C" name "c" price 1 on_hand 1 reserved 0} {sku "D" name "d" price 1 on_hand 1 reserved 0}] lines [{sku "A" qty 1} {sku "B" qty 1} {sku "C" qty 1} {sku "D" qty 1}]} -> false
+  ex {items [] lines []} -> true
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 6}] lines [{sku "A" qty 1}]} -> false
+
+node set_qty_if (p)
+  says "the line in a with the quantity of the line in b when their SKUs match, else unchanged"
+  fx none
+  post (== out.sku p.a.sku)
+  out (if (== p.a.sku p.b.sku) (with p.a qty p.b.qty) p.a)
+  ex {p {a {sku "A" qty 1} b {sku "A" qty 3}}} -> {sku "A" qty 3}
+  ex {p {a {sku "A" qty 1} b {sku "B" qty 3}}} -> {sku "A" qty 1}
+
+node other_sku (p)
+  says "true when the line in a does not carry the SKU in b"
+  fx none
+  post (in out [true false])
+  out (!= p.a.sku p.b)
+  ex {p {a {sku "A" qty 1} b "B"}} -> true
+  ex {p {a {sku "A" qty 1} b "A"}} -> false
+
+node remove_line (lines sku)
+  says "the lines without the one carrying the SKU"
+  fx none
+  post (<= (len out) (len lines))
+  post (== (needed out sku) 0)
+  pre (lines_ok lines) BadQty
+  out (map "a_of" (filter "other_sku" (pairs lines [sku])))
+  ex {lines [{sku "A" qty 1} {sku "B" qty 2}] sku "A"} -> [{sku "B" qty 2}]
+  ex {lines [{sku "B" qty 2}] sku "A"} -> [{sku "B" qty 2}]
+  ex {lines [{sku "B" qty -2}] sku "A"} refuse BadQty
+
+node set_line (items lines sku qty)
+  says "the cart with a product's quantity set; 0 removes the line; a new SKU adds a line"
+  fx none
+  pre (cart_ok items lines) BadCart
+  pre (known items sku) UnknownProduct
+  pre (and (>= qty 0) (<= qty QTY_MAX)) BadQty
+  pre (<= qty (available (find_item items sku))) ExceedsStock
+  pre (or (== qty 0) (> (needed lines sku) 0) (< (len lines) LINES_MAX)) TooManyLines
+  post (cart_ok items out)
+  post (== (needed out sku) qty)
+  let present (> (needed lines sku) 0)
+  out (if (== qty 0) (remove_line lines sku) (if present (map "set_qty_if" (pairs lines [{sku sku qty qty}])) (concat lines [{sku sku qty qty}])))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [] sku "A" qty 2} -> [{sku "A" qty 2}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [{sku "A" qty 2}] sku "A" qty 3} -> [{sku "A" qty 3}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [{sku "A" qty 2}] sku "A" qty 0} -> []
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [] sku "Z" qty 1} refuse UnknownProduct
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [] sku "A" qty 10} refuse BadQty
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] lines [] sku "A" qty 3} refuse ExceedsStock
+  ex {items [{sku "A" name "a" price 10 on_hand 9 reserved 0} {sku "B" name "b" price 1 on_hand 1 reserved 0} {sku "C" name "c" price 1 on_hand 1 reserved 0} {sku "D" name "d" price 1 on_hand 1 reserved 0}] lines [{sku "A" qty 1} {sku "B" qty 1} {sku "C" qty 1}] sku "D" qty 1} refuse TooManyLines
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [{sku "A" qty 1} {sku "A" qty 1}] sku "A" qty 1} refuse BadCart
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 6}] lines [] sku "A" qty 1} refuse BadCart
+
+node add_one (items lines sku)
+  says "the cart with one more of a product"
+  fx none
+  raises BadCart UnknownProduct BadQty ExceedsStock TooManyLines
+  post (cart_ok items out)
+  out (set_line items lines sku (+ (needed lines sku) 1))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [] sku "A"} -> [{sku "A" qty 1}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [{sku "A" qty 1}] sku "A"} -> [{sku "A" qty 2}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [] sku "Z"} refuse UnknownProduct
+  ex {items [{sku "A" name "a" price 10 on_hand 50 reserved 0}] lines [{sku "A" qty 9}] sku "A"} refuse BadQty
+  ex {items [{sku "A" name "a" price 10 on_hand 1 reserved 0}] lines [{sku "A" qty 1}] sku "A"} refuse ExceedsStock
+  ex {items [{sku "A" name "a" price 10 on_hand 9 reserved 0} {sku "B" name "b" price 1 on_hand 1 reserved 0} {sku "C" name "c" price 1 on_hand 1 reserved 0} {sku "D" name "d" price 1 on_hand 1 reserved 0}] lines [{sku "A" qty 1} {sku "B" qty 1} {sku "C" qty 1}] sku "D"} refuse TooManyLines
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [{sku "A" qty 1} {sku "A" qty 1}] sku "A"} refuse BadCart
+
+node priced_line (p)
+  says "the cart line in a priced from the stock in b: name and unit price captured, subtotal = price × qty"
+  fx none
+  raises UnknownProduct
+  pre (stock_ok p.b) BadStock
+  pre (>= p.a.qty 0) BadQty
+  post (== out.subtotal (* out.price out.qty))
+  post (== out.sku p.a.sku)
+  let it (find_item p.b p.a.sku)
+  out {sku p.a.sku name it.name price it.price qty p.a.qty subtotal (* it.price p.a.qty)}
+  ex {p {a {sku "A" qty 2} b [{sku "A" name "a" price 10 on_hand 5 reserved 0}]}} -> {sku "A" name "a" price 10 qty 2 subtotal 20}
+  ex {p {a {sku "Z" qty 2} b [{sku "A" name "a" price 10 on_hand 5 reserved 0}]}} refuse UnknownProduct
+  ex {p {a {sku "A" qty -2} b [{sku "A" name "a" price 10 on_hand 5 reserved 0}]}} refuse BadQty
+  ex {p {a {sku "A" qty 2} b [{sku "A" name "a" price 10 on_hand 5 reserved 6}]}} refuse BadStock
+
+node priced (items lines)
+  says "every cart line priced from the stock"
+  fx none
+  pre (cart_ok items lines) BadCart
+  post (== (len out) (len lines))
+  out (map "priced_line" (pairs lines [items]))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0} {sku "B" name "b" price 3 on_hand 5 reserved 0}] lines [{sku "A" qty 2} {sku "B" qty 1}]} -> [{sku "A" name "a" price 10 qty 2 subtotal 20} {sku "B" name "b" price 3 qty 1 subtotal 3}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] lines [{sku "Z" qty 2}]} refuse BadCart
+
+node subtotal_of (l)
+  says "the subtotal of a priced line"
+  fx none
+  pre (== l.subtotal (* l.price l.qty)) BadLine
+  post (== out l.subtotal)
+  out l.subtotal
+  ex {l {sku "A" name "a" price 10 qty 2 subtotal 20}} -> 20
+  ex {l {sku "A" name "a" price 10 qty 2 subtotal 21}} refuse BadLine
+
+node total_of (plines)
+  says "the exact total of priced lines: the sum of their subtotals"
+  fx none
+  raises BadLine
+  post (>= out 0)
+  pre (lines_ok plines) BadQty
+  pre (== (sum (map "price_pos" plines)) (len plines)) BadPrice
+  out (sum (map "subtotal_of" plines))
+  ex {plines [{sku "A" name "a" price 10 qty 2 subtotal 20} {sku "B" name "b" price 3 qty 1 subtotal 3}]} -> 23
+  ex {plines []} -> 0
+  ex {plines [{sku "A" name "a" price 10 qty 2 subtotal 21}]} refuse BadLine
+  ex {plines [{sku "A" name "a" price 10 qty -2 subtotal -20}]} refuse BadQty
+  ex {plines [{sku "A" name "a" price -10 qty 2 subtotal -20}]} refuse BadPrice
+
+node price_pos (l)
+  says "1 when a line's unit price is positive"
+  fx none
+  post (in out [0 1])
+  out (if (> l.price 0) 1 0)
+  ex {l {price 10}} -> 1
+  ex {l {price 0}} -> 0
+
+node bare (l)
+  says "a line reduced to its intent: SKU and quantity"
+  fx none
+  post (== out.sku l.sku)
+  out {sku l.sku qty l.qty}
+  ex {l {sku "A" name "a" price 10 qty 2 subtotal 20}} -> {sku "A" qty 2}
+
+node canonical_intent (lines)
+  says "the lines as intent: SKU and quantity only, sorted by SKU, so the same purchase written in any order compares equal"
+  fx none
+  pre (unique_text (map "sku_of" lines)) DuplicateSku
+  post (== (len out) (len lines))
+  let bares (map "bare" lines)
+  out (map "at_position" (pairs (range (len bares)) [bares]))
+  ex {lines [{sku "B" qty 1} {sku "A" name "a" price 10 qty 2 subtotal 20}]} -> [{sku "A" qty 2} {sku "B" qty 1}]
+  ex {lines []} -> []
+  ex {lines [{sku "A" qty 1} {sku "A" qty 2}]} refuse DuplicateSku

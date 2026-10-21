@@ -1,0 +1,9990 @@
+{
+ "roots": {
+  "batch_transform": {
+   "name": "batch_transform",
+   "uses": [
+    "supplier_snapshot"
+   ],
+   "numbers": "exact",
+   "effects": {
+    "Export": [
+     "file.export"
+    ],
+    "Panel": [
+     "panel.show"
+    ]
+   },
+   "consts": {},
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "not_empty_record": {
+     "says": "true when a raw record has any field with content; a blank line is not a record",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "not",
+      [
+       "or",
+       [
+        "==",
+        "r.fields",
+        [
+         "list"
+        ]
+       ],
+       [
+        "==",
+        "r.fields",
+        [
+         "list",
+         [
+          "lit",
+          ""
+         ]
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "index": 1,
+         "fields": [
+          "A",
+          "a",
+          "1",
+          "1"
+         ]
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "r": {
+         "index": 2,
+         "fields": [
+          ""
+         ]
+        }
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "r": {
+         "index": 3,
+         "fields": []
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 9
+    },
+    "with_index": {
+     "says": "a raw record with its 1-based data-record index; the index counts records after the header, blank lines included, so quoted newlines never shift it",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "p.a",
+        0
+       ],
+       "err": "BadPosition"
+      },
+      {
+       "expr": [
+        "<",
+        "p.a",
+        [
+         "len",
+         "p.b"
+        ]
+       ],
+       "err": "BadPosition"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.index",
+       [
+        "+",
+        "p.a",
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadPosition"
+     ],
+     "body": [],
+     "out": [
+      "rec",
+      "index",
+      [
+       "+",
+       "p.a",
+       1
+      ],
+      "fields",
+      [
+       "at",
+       "p.b",
+       "p.a"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": 0,
+         "b": [
+          [
+           "A",
+           "a",
+           "1",
+           "1"
+          ]
+         ]
+        }
+       },
+       "out": {
+        "index": 1,
+        "fields": [
+         "A",
+         "a",
+         "1",
+         "1"
+        ]
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": 1,
+         "b": [
+          [
+           "A",
+           "a",
+           "1",
+           "1"
+          ]
+         ]
+        }
+       },
+       "refuse": "BadPosition"
+      }
+     ],
+     "line": 18
+    },
+    "data_records": {
+     "says": "the data records of a parsed file with indices, blank lines dropped",
+     "in": [
+      "recs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">",
+        [
+         "len",
+         "recs"
+        ],
+        0
+       ],
+       "err": "NoHeader"
+      }
+     ],
+     "post": [
+      [
+       "<=",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "-",
+        [
+         "len",
+         "recs"
+        ],
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "NoHeader"
+     ],
+     "body": [
+      {
+       "let": "body",
+       "expr": [
+        "map",
+        [
+         "lit",
+         "drop_first_item"
+        ],
+        [
+         "list",
+         "recs"
+        ]
+       ]
+      },
+      {
+       "let": "rows",
+       "expr": [
+        "at",
+        "body",
+        0
+       ]
+      }
+     ],
+     "out": [
+      "filter",
+      [
+       "lit",
+       "not_empty_record"
+      ],
+      [
+       "map",
+       [
+        "lit",
+        "with_index"
+       ],
+       [
+        "pairs",
+        [
+         "range",
+         [
+          "len",
+          "rows"
+         ]
+        ],
+        [
+         "list",
+         "rows"
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "recs": [
+         [
+          "SKU",
+          "NAME",
+          "PRICE_VND",
+          "QTY_ON_HAND"
+         ],
+         [
+          "A",
+          "a",
+          "1",
+          "1"
+         ],
+         [
+          ""
+         ],
+         [
+          "B",
+          "b",
+          "2",
+          "2"
+         ]
+        ]
+       },
+       "out": [
+        {
+         "index": 1,
+         "fields": [
+          "A",
+          "a",
+          "1",
+          "1"
+         ]
+        },
+        {
+         "index": 3,
+         "fields": [
+          "B",
+          "b",
+          "2",
+          "2"
+         ]
+        }
+       ]
+      },
+      {
+       "args": {
+        "recs": []
+       },
+       "refuse": "NoHeader"
+      }
+     ],
+     "line": 28
+    },
+    "drop_first_item": {
+     "says": "the list without its first item",
+     "in": [
+      "xs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">",
+        [
+         "len",
+         "xs"
+        ],
+        0
+       ],
+       "err": "Empty"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "-",
+        [
+         "len",
+         "xs"
+        ],
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "Empty"
+     ],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "item_after"
+      ],
+      [
+       "pairs",
+       [
+        "range",
+        [
+         "-",
+         [
+          "len",
+          "xs"
+         ],
+         1
+        ]
+       ],
+       [
+        "list",
+        "xs"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "xs": [
+         1,
+         2,
+         3
+        ]
+       },
+       "out": [
+        2,
+        3
+       ]
+      },
+      {
+       "args": {
+        "xs": [
+         1
+        ]
+       },
+       "out": []
+      },
+      {
+       "args": {
+        "xs": []
+       },
+       "refuse": "Empty"
+      }
+     ],
+     "line": 39
+    },
+    "item_after": {
+     "says": "the item one position after the index in a",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "p.a",
+        0
+       ],
+       "err": "BadPosition"
+      },
+      {
+       "expr": [
+        "<",
+        [
+         "+",
+         "p.a",
+         1
+        ],
+        [
+         "len",
+         "p.b"
+        ]
+       ],
+       "err": "BadPosition"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "at",
+        "p.b",
+        [
+         "+",
+         "p.a",
+         1
+        ]
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadPosition"
+     ],
+     "body": [],
+     "out": [
+      "at",
+      "p.b",
+      [
+       "+",
+       "p.a",
+       1
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": 0,
+         "b": [
+          1,
+          2,
+          3
+         ]
+        }
+       },
+       "out": 2
+      },
+      {
+       "args": {
+        "p": {
+         "a": 2,
+         "b": [
+          1,
+          2,
+          3
+         ]
+        }
+       },
+       "refuse": "BadPosition"
+      }
+     ],
+     "line": 49
+    },
+    "transform": {
+     "says": "the whole batch result for a supplier file: lexical outcome, header check, validation report, and the normalised snapshot when accepted",
+     "in": [
+      "text"
+     ],
+     "fx": [],
+     "raises": [
+      "BrokenQuote"
+     ],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out.outcome",
+       [
+        "list",
+        [
+         "lit",
+         "BrokenQuote"
+        ],
+        [
+         "lit",
+         "BadHeader"
+        ],
+        [
+         "lit",
+         "Rejected"
+        ],
+        [
+         "lit",
+         "Accepted"
+        ]
+       ]
+      ],
+      [
+       "==",
+       [
+        "==",
+        "out.outcome",
+        [
+         "lit",
+         "Accepted"
+        ]
+       ],
+       [
+        ">",
+        [
+         "len",
+         "out.records"
+        ],
+        0
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [
+      {
+       "let": "recs",
+       "expr": [
+        "csv_records",
+        "text"
+       ]
+      },
+      {
+       "let": "hasHeader",
+       "expr": [
+        "and",
+        [
+         ">",
+         [
+          "len",
+          "recs"
+         ],
+         0
+        ],
+        [
+         "header_ok",
+         [
+          "at",
+          [
+           "if",
+           [
+            ">",
+            [
+             "len",
+             "recs"
+            ],
+            0
+           ],
+           "recs",
+           [
+            "list",
+            [
+             "list"
+            ]
+           ]
+          ],
+          0
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "data",
+       "expr": [
+        "if",
+        "hasHeader",
+        [
+         "data_records",
+         "recs"
+        ],
+        [
+         "list"
+        ]
+       ]
+      },
+      {
+       "let": "v",
+       "expr": [
+        "validate_snapshot",
+        "data"
+       ]
+      },
+      {
+       "let": "accepted",
+       "expr": [
+        "and",
+        "hasHeader",
+        "v.accepted"
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "outcome",
+      [
+       "if",
+       [
+        "not",
+        "hasHeader"
+       ],
+       [
+        "lit",
+        "BadHeader"
+       ],
+       [
+        "if",
+        "accepted",
+        [
+         "lit",
+         "Accepted"
+        ],
+        [
+         "lit",
+         "Rejected"
+        ]
+       ]
+      ],
+      "problems",
+      "v.problems",
+      "duplicates",
+      "v.duplicates",
+      "records",
+      [
+       "if",
+       "accepted",
+       [
+        "normalize_snapshot",
+        "data"
+       ],
+       [
+        "list"
+       ]
+      ],
+      "count",
+      [
+       "len",
+       "data"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nB,b,2,2\nA,a,1,1\n"
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "Accepted"
+         ]
+        ],
+        [
+         "==",
+         "out.records",
+         [
+          "list",
+          [
+           "rec",
+           "sku",
+           [
+            "lit",
+            "A"
+           ],
+           "name",
+           [
+            "lit",
+            "a"
+           ],
+           "price",
+           1,
+           "qty",
+           1
+          ],
+          [
+           "rec",
+           "sku",
+           [
+            "lit",
+            "B"
+           ],
+           "name",
+           [
+            "lit",
+            "b"
+           ],
+           "price",
+           2,
+           "qty",
+           2
+          ]
+         ]
+        ],
+        [
+         "==",
+         "out.count",
+         2
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,1,1\nA,b,1,1\n"
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "Rejected"
+         ]
+        ],
+        [
+         "==",
+         "out.duplicates",
+         [
+          "list",
+          1,
+          2
+         ]
+        ],
+        [
+         "==",
+         "out.records",
+         [
+          "list"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\n"
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "Rejected"
+         ]
+        ],
+        [
+         "==",
+         "out.count",
+         0
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": "sku,name\nA,a,1,1\n"
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "BadHeader"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": ""
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "BadHeader"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,\"unclosed,1,1\n"
+       },
+       "refuse": "BrokenQuote"
+      }
+     ],
+     "line": 59
+    },
+    "run": {
+     "says": "the batch entry point: transform, show the report on the panel, and export the snapshot only when accepted",
+     "in": [
+      "text"
+     ],
+     "fx": [
+      "Export",
+      "Panel"
+     ],
+     "raises": [
+      "BrokenQuote"
+     ],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out.outcome",
+       [
+        "list",
+        [
+         "lit",
+         "BrokenQuote"
+        ],
+        [
+         "lit",
+         "BadHeader"
+        ],
+        [
+         "lit",
+         "Rejected"
+        ],
+        [
+         "lit",
+         "Accepted"
+        ]
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [
+      {
+       "let": "r",
+       "expr": [
+        "transform",
+        "text"
+       ]
+      },
+      {
+       "let": "shown",
+       "expr": [
+        "panel.show",
+        [
+         "list",
+         [
+          "rec",
+          "k",
+          [
+           "lit",
+           "section"
+          ],
+          "text",
+          [
+           "cat",
+           [
+            "lit",
+            "Result: "
+           ],
+           "r.outcome"
+          ]
+         ],
+         [
+          "rec",
+          "k",
+          [
+           "lit",
+           "text"
+          ],
+          "text",
+          [
+           "cat",
+           [
+            "str",
+            [
+             "len",
+             "r.problems"
+            ]
+           ],
+           [
+            "lit",
+            " field problems"
+           ]
+          ]
+         ],
+         [
+          "rec",
+          "k",
+          [
+           "lit",
+           "text"
+          ],
+          "text",
+          [
+           "cat",
+           [
+            "str",
+            [
+             "len",
+             "r.duplicates"
+            ]
+           ],
+           [
+            "lit",
+            " records in duplicate SKUs"
+           ]
+          ]
+         ],
+         [
+          "rec",
+          "k",
+          [
+           "lit",
+           "text"
+          ],
+          "text",
+          [
+           "cat",
+           [
+            "str",
+            [
+             "len",
+             "r.records"
+            ]
+           ],
+           [
+            "lit",
+            " records normalised"
+           ]
+          ]
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "exported",
+       "expr": [
+        "if",
+        [
+         "==",
+         "r.outcome",
+         [
+          "lit",
+          "Accepted"
+         ]
+        ],
+        [
+         "file.export",
+         [
+          "lit",
+          "snapshot.normalized.json"
+         ],
+         [
+          "str",
+          [
+           "len",
+           "r.records"
+          ]
+         ]
+        ],
+        true
+       ]
+      }
+     ],
+     "out": "r",
+     "ex": [
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,1,1\n"
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "Accepted"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,\"x,1,1\n"
+       },
+       "refuse": "BrokenQuote"
+      }
+     ],
+     "line": 78
+    }
+   }
+  },
+  "lib_bounded": {
+   "name": "lib_bounded",
+   "uses": [],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {},
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "clamp_to": {
+     "says": "x held between lo and hi inclusive; never use it to hide an unavailable quantity",
+     "in": [
+      "x",
+      "lo",
+      "hi"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "<=",
+        "lo",
+        "hi"
+       ],
+       "err": "InvalidBounds"
+      }
+     ],
+     "post": [
+      [
+       ">=",
+       "out",
+       "lo"
+      ],
+      [
+       "<=",
+       "out",
+       "hi"
+      ],
+      [
+       "or",
+       [
+        "==",
+        "out",
+        "x"
+       ],
+       [
+        "==",
+        "out",
+        "lo"
+       ],
+       [
+        "==",
+        "out",
+        "hi"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "InvalidBounds"
+     ],
+     "body": [],
+     "out": [
+      "min",
+      "hi",
+      [
+       "max",
+       "lo",
+       "x"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "x": 5,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": 3
+      },
+      {
+       "args": {
+        "x": -1,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "x": 2,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": 2
+      },
+      {
+       "args": {
+        "x": 2,
+        "lo": 2,
+        "hi": 2
+       },
+       "out": 2
+      },
+      {
+       "args": {
+        "x": 2,
+        "lo": 3,
+        "hi": 1
+       },
+       "refuse": "InvalidBounds"
+      }
+     ],
+     "line": 5
+    },
+    "within": {
+     "says": "true when lo ≤ x ≤ hi",
+     "in": [
+      "x",
+      "lo",
+      "hi"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "<=",
+        "lo",
+        "hi"
+       ],
+       "err": "InvalidBounds"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "and",
+        [
+         ">=",
+         "x",
+         "lo"
+        ],
+        [
+         "<=",
+         "x",
+         "hi"
+        ]
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "InvalidBounds"
+     ],
+     "body": [],
+     "out": [
+      "and",
+      [
+       ">=",
+       "x",
+       "lo"
+      ],
+      [
+       "<=",
+       "x",
+       "hi"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "x": 2,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "x": 3,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "x": 4,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "x": 2,
+        "lo": 3,
+        "hi": 1
+       },
+       "refuse": "InvalidBounds"
+      }
+     ],
+     "line": 19
+    }
+   }
+  },
+  "lib_sequence": {
+   "name": "lib_sequence",
+   "uses": [],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {},
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "same_text": {
+     "says": "1 when the two texts in a pair are the same scalar sequence, else 0",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "==",
+       [
+        "text_cmp",
+        "p.a",
+        "p.b"
+       ],
+       0
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": "A",
+         "b": "A"
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "p": {
+         "a": "A",
+         "b": "a"
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 6
+    },
+    "unique_text": {
+     "says": "true when no two texts in the list are the same scalar sequence; the empty list is unique",
+     "in": [
+      "xs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      [
+       "sum",
+       [
+        "map",
+        [
+         "lit",
+         "same_text"
+        ],
+        [
+         "pairs",
+         "xs",
+         "xs"
+        ]
+       ]
+      ],
+      [
+       "len",
+       "xs"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "xs": [
+         "A",
+         "B"
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "xs": [
+         "A",
+         "A"
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "xs": [
+         "a",
+         "A"
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "xs": []
+       },
+       "out": true
+      }
+     ],
+     "line": 14
+    },
+    "is_sorted_pair": {
+     "says": "1 when the text in a is not after the text in b",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "<=",
+       [
+        "text_cmp",
+        "p.a",
+        "p.b"
+       ],
+       0
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": "A",
+         "b": "B"
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "p": {
+         "a": "B",
+         "b": "A"
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 26
+    },
+    "min_text": {
+     "says": "the smallest text in a non-empty list by scalar sequence",
+     "in": [
+      "xs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">",
+        [
+         "len",
+         "xs"
+        ],
+        0
+       ],
+       "err": "Empty"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out",
+       "xs"
+      ],
+      [
+       "==",
+       [
+        "sum",
+        [
+         "map",
+         [
+          "lit",
+          "is_sorted_pair"
+         ],
+         [
+          "pairs",
+          [
+           "list",
+           "out"
+          ],
+          "xs"
+         ]
+        ]
+       ],
+       [
+        "len",
+        "xs"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "Empty"
+     ],
+     "body": [
+      {
+       "let": "firsts",
+       "expr": [
+        "filter",
+        [
+         "lit",
+         "is_min_of"
+        ],
+        [
+         "pairs",
+         "xs",
+         [
+          "list",
+          "xs"
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "hit",
+       "expr": [
+        "at",
+        "firsts",
+        0
+       ]
+      }
+     ],
+     "out": "hit.a",
+     "ex": [
+      {
+       "args": {
+        "xs": [
+         "B",
+         "A",
+         "C"
+        ]
+       },
+       "out": "A"
+      },
+      {
+       "args": {
+        "xs": [
+         "A"
+        ]
+       },
+       "out": "A"
+      },
+      {
+       "args": {
+        "xs": []
+       },
+       "refuse": "Empty"
+      }
+     ],
+     "line": 34
+    },
+    "is_min_of": {
+     "says": "true when the text in a is not after any text in the list in b",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      [
+       "sum",
+       [
+        "map",
+        [
+         "lit",
+         "is_sorted_pair"
+        ],
+        [
+         "pairs",
+         [
+          "list",
+          "p.a"
+         ],
+         "p.b"
+        ]
+       ]
+      ],
+      [
+       "len",
+       "p.b"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": "A",
+         "b": [
+          "B",
+          "A"
+         ]
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "a": "B",
+         "b": [
+          "B",
+          "A"
+         ]
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 47
+    }
+   }
+  },
+  "lib_test": {
+   "name": "lib_test",
+   "uses": [
+    "lib_bounded",
+    "lib_text",
+    "lib_sequence",
+    "supplier_snapshot"
+   ],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {},
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {}
+  },
+  "lib_text": {
+   "name": "lib_text",
+   "uses": [],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {
+    "MAX_DIGITS": 16
+   },
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "digits_fit": {
+     "says": "true when a digit string, without its leading zeros, denotes a number no larger than the exact maximum; decided by length and then by text comparison, never by converting",
+     "in": [
+      "s"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "is_digits",
+        "s"
+       ],
+       "err": "NotDigits"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "NotDigits"
+     ],
+     "body": [
+      {
+       "let": "d",
+       "expr": [
+        "strip_zeros",
+        "s"
+       ]
+      },
+      {
+       "let": "n",
+       "expr": [
+        "scalars",
+        "d"
+       ]
+      }
+     ],
+     "out": [
+      "or",
+      [
+       "<",
+       "n",
+       "MAX_DIGITS"
+      ],
+      [
+       "and",
+       [
+        "==",
+        "n",
+        "MAX_DIGITS"
+       ],
+       [
+        "<=",
+        [
+         "text_cmp",
+         "d",
+         [
+          "lit",
+          "9007199254740991"
+         ]
+        ],
+        0
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "s": "0"
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "s": "12"
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "s": "0009007199254740991"
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "s": "9007199254740991"
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "s": "9007199254740992"
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "s": "10000000000000000"
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "s": "99999999999999999999"
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "s": "12a"
+       },
+       "refuse": "NotDigits"
+      },
+      {
+       "args": {
+        "s": ""
+       },
+       "refuse": "NotDigits"
+      }
+     ],
+     "line": 7
+    },
+    "parse_decimal_nat": {
+     "says": "the value of a string of ASCII digits; refuses anything else and refuses a value that would leave the exact range, before converting",
+     "in": [
+      "s"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "is_digits",
+        "s"
+       ],
+       "err": "InvalidInteger"
+      },
+      {
+       "expr": [
+        "digits_fit",
+        "s"
+       ],
+       "err": "OutOfRange"
+      }
+     ],
+     "post": [
+      [
+       ">=",
+       "out",
+       0
+      ],
+      [
+       "==",
+       [
+        "str",
+        "out"
+       ],
+       [
+        "strip_zeros",
+        "s"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "InvalidInteger",
+      "OutOfRange"
+     ],
+     "body": [],
+     "out": [
+      "to_int",
+      [
+       "strip_zeros",
+       "s"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "s": "12"
+       },
+       "out": 12
+      },
+      {
+       "args": {
+        "s": "0012"
+       },
+       "out": 12
+      },
+      {
+       "args": {
+        "s": "0"
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "s": "9007199254740991"
+       },
+       "out": 9007199254740991
+      },
+      {
+       "args": {
+        "s": "9007199254740992"
+       },
+       "refuse": "OutOfRange"
+      },
+      {
+       "args": {
+        "s": " 12"
+       },
+       "refuse": "InvalidInteger"
+      },
+      {
+       "args": {
+        "s": "-1"
+       },
+       "refuse": "InvalidInteger"
+      },
+      {
+       "args": {
+        "s": "1.0"
+       },
+       "refuse": "InvalidInteger"
+      },
+      {
+       "args": {
+        "s": ""
+       },
+       "refuse": "InvalidInteger"
+      }
+     ],
+     "line": 25
+    }
+   }
+  },
+  "supplier_snapshot": {
+   "name": "supplier_snapshot",
+   "uses": [
+    "lib_text",
+    "lib_sequence"
+   ],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {
+    "NAME_MAX": 120,
+    "FIELDS": 4,
+    "F_SKU": 0,
+    "F_NAME": 1,
+    "F_PRICE": 2,
+    "F_QTY": 3
+   },
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "header_ok": {
+     "says": "true when the header is exactly SKU,NAME,PRICE_VND,QTY_ON_HAND",
+     "in": [
+      "fields"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      "fields",
+      [
+       "list",
+       [
+        "lit",
+        "SKU"
+       ],
+       [
+        "lit",
+        "NAME"
+       ],
+       [
+        "lit",
+        "PRICE_VND"
+       ],
+       [
+        "lit",
+        "QTY_ON_HAND"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "fields": [
+         "SKU",
+         "NAME",
+         "PRICE_VND",
+         "QTY_ON_HAND"
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "fields": [
+         "sku",
+         "name",
+         "price",
+         "qty"
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "fields": [
+         "SKU",
+         "NAME",
+         "PRICE_VND"
+        ]
+       },
+       "out": false
+      }
+     ],
+     "line": 17
+    },
+    "field_problem": {
+     "says": "the first problem with a raw record, as a located diagnostic {index field problem}, or none",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "r.index",
+        1
+       ],
+       "err": "BadIndex"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out.problem",
+       [
+        "list",
+        [
+         "lit",
+         "none"
+        ],
+        [
+         "lit",
+         "FieldCount"
+        ],
+        [
+         "lit",
+         "BadSku"
+        ],
+        [
+         "lit",
+         "EmptyName"
+        ],
+        [
+         "lit",
+         "NameTooLong"
+        ],
+        [
+         "lit",
+         "BadPrice"
+        ],
+        [
+         "lit",
+         "PriceOutOfRange"
+        ],
+        [
+         "lit",
+         "ZeroPrice"
+        ],
+        [
+         "lit",
+         "BadQty"
+        ],
+        [
+         "lit",
+         "QtyOutOfRange"
+        ]
+       ]
+      ],
+      [
+       "==",
+       "out.index",
+       "r.index"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadIndex"
+     ],
+     "body": [
+      {
+       "let": "n",
+       "expr": [
+        "len",
+        "r.fields"
+       ]
+      },
+      {
+       "let": "four",
+       "expr": [
+        "==",
+        "n",
+        "FIELDS"
+       ]
+      },
+      {
+       "let": "f",
+       "expr": [
+        "if",
+        "four",
+        "r.fields",
+        [
+         "list",
+         [
+          "lit",
+          ""
+         ],
+         [
+          "lit",
+          ""
+         ],
+         [
+          "lit",
+          ""
+         ],
+         [
+          "lit",
+          ""
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "sku",
+       "expr": [
+        "at",
+        "f",
+        "F_SKU"
+       ]
+      },
+      {
+       "let": "name",
+       "expr": [
+        "at",
+        "f",
+        "F_NAME"
+       ]
+      },
+      {
+       "let": "price",
+       "expr": [
+        "at",
+        "f",
+        "F_PRICE"
+       ]
+      },
+      {
+       "let": "qty",
+       "expr": [
+        "at",
+        "f",
+        "F_QTY"
+       ]
+      },
+      {
+       "let": "p",
+       "expr": [
+        "if",
+        [
+         "not",
+         "four"
+        ],
+        [
+         "lit",
+         "FieldCount"
+        ],
+        [
+         "if",
+         [
+          "not",
+          [
+           "is_sku_text",
+           "sku"
+          ]
+         ],
+         [
+          "lit",
+          "BadSku"
+         ],
+         [
+          "if",
+          [
+           "==",
+           [
+            "scalars",
+            "name"
+           ],
+           0
+          ],
+          [
+           "lit",
+           "EmptyName"
+          ],
+          [
+           "if",
+           [
+            ">",
+            [
+             "scalars",
+             "name"
+            ],
+            "NAME_MAX"
+           ],
+           [
+            "lit",
+            "NameTooLong"
+           ],
+           [
+            "if",
+            [
+             "not",
+             [
+              "is_digits",
+              "price"
+             ]
+            ],
+            [
+             "lit",
+             "BadPrice"
+            ],
+            [
+             "if",
+             [
+              "not",
+              [
+               "digits_fit",
+               "price"
+              ]
+             ],
+             [
+              "lit",
+              "PriceOutOfRange"
+             ],
+             [
+              "if",
+              [
+               "==",
+               [
+                "strip_zeros",
+                "price"
+               ],
+               [
+                "lit",
+                "0"
+               ]
+              ],
+              [
+               "lit",
+               "ZeroPrice"
+              ],
+              [
+               "if",
+               [
+                "not",
+                [
+                 "is_digits",
+                 "qty"
+                ]
+               ],
+               [
+                "lit",
+                "BadQty"
+               ],
+               [
+                "if",
+                [
+                 "not",
+                 [
+                  "digits_fit",
+                  "qty"
+                 ]
+                ],
+                [
+                 "lit",
+                 "QtyOutOfRange"
+                ],
+                [
+                 "lit",
+                 "none"
+                ]
+               ]
+              ]
+             ]
+            ]
+           ]
+          ]
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "fld",
+       "expr": [
+        "if",
+        [
+         "==",
+         "p",
+         [
+          "lit",
+          "FieldCount"
+         ]
+        ],
+        [
+         "lit",
+         "record"
+        ],
+        [
+         "if",
+         [
+          "==",
+          "p",
+          [
+           "lit",
+           "BadSku"
+          ]
+         ],
+         [
+          "lit",
+          "SKU"
+         ],
+         [
+          "if",
+          [
+           "in",
+           "p",
+           [
+            "list",
+            [
+             "lit",
+             "EmptyName"
+            ],
+            [
+             "lit",
+             "NameTooLong"
+            ]
+           ]
+          ],
+          [
+           "lit",
+           "NAME"
+          ],
+          [
+           "if",
+           [
+            "in",
+            "p",
+            [
+             "list",
+             [
+              "lit",
+              "BadPrice"
+             ],
+             [
+              "lit",
+              "PriceOutOfRange"
+             ],
+             [
+              "lit",
+              "ZeroPrice"
+             ]
+            ]
+           ],
+           [
+            "lit",
+            "PRICE_VND"
+           ],
+           [
+            "if",
+            [
+             "==",
+             "p",
+             [
+              "lit",
+              "none"
+             ]
+            ],
+            [
+             "lit",
+             ""
+            ],
+            [
+             "lit",
+             "QTY_ON_HAND"
+            ]
+           ]
+          ]
+         ]
+        ]
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "index",
+      "r.index",
+      "field",
+      "fld",
+      "problem",
+      "p"
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "index": 1,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 1,
+        "field": "",
+        "problem": "none"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 2,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000"
+         ]
+        }
+       },
+       "out": {
+        "index": 2,
+        "field": "record",
+        "problem": "FieldCount"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 3,
+         "fields": [
+          "nb-01",
+          "Notebook",
+          "45000",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 3,
+        "field": "SKU",
+        "problem": "BadSku"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 4,
+         "fields": [
+          "NB-01",
+          "",
+          "45000",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 4,
+        "field": "NAME",
+        "problem": "EmptyName"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 5,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45,000",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 5,
+        "field": "PRICE_VND",
+        "problem": "BadPrice"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 6,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "9007199254740992",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 6,
+        "field": "PRICE_VND",
+        "problem": "PriceOutOfRange"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 7,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "000",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 7,
+        "field": "PRICE_VND",
+        "problem": "ZeroPrice"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 8,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000",
+          " 12"
+         ]
+        }
+       },
+       "out": {
+        "index": 8,
+        "field": "QTY_ON_HAND",
+        "problem": "BadQty"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 9,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000",
+          "99999999999999999"
+         ]
+        }
+       },
+       "out": {
+        "index": 9,
+        "field": "QTY_ON_HAND",
+        "problem": "QtyOutOfRange"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 0,
+         "fields": []
+        }
+       },
+       "refuse": "BadIndex"
+      }
+     ],
+     "line": 26
+    },
+    "problem_count": {
+     "says": "1 when a diagnostic names a problem, else 0",
+     "in": [
+      "d"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "==",
+       "d.problem",
+       [
+        "lit",
+        "none"
+       ]
+      ],
+      0,
+      1
+     ],
+     "ex": [
+      {
+       "args": {
+        "d": {
+         "index": 1,
+         "field": "",
+         "problem": "none"
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "d": {
+         "index": 1,
+         "field": "SKU",
+         "problem": "BadSku"
+        }
+       },
+       "out": 1
+      }
+     ],
+     "line": 53
+    },
+    "has_problem": {
+     "says": "true when a diagnostic names a problem",
+     "in": [
+      "d"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "!=",
+      "d.problem",
+      [
+       "lit",
+       "none"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "d": {
+         "index": 1,
+         "field": "",
+         "problem": "none"
+        }
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "d": {
+         "index": 1,
+         "field": "SKU",
+         "problem": "BadSku"
+        }
+       },
+       "out": true
+      }
+     ],
+     "line": 61
+    },
+    "normalize_record": {
+     "says": "a validated raw record as a product: SKU kept, NAME preserved, PRICE_VND and QTY_ON_HAND as exact numbers; the validation guarantees the conversions cannot refuse",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "r.index",
+        1
+       ],
+       "err": "BadIndex"
+      },
+      {
+       "expr": [
+        "not",
+        [
+         "has_problem",
+         [
+          "field_problem",
+          "r"
+         ]
+        ]
+       ],
+       "err": "InvalidRecord"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.sku",
+       [
+        "at",
+        "r.fields",
+        "F_SKU"
+       ]
+      ],
+      [
+       "==",
+       "out.name",
+       [
+        "at",
+        "r.fields",
+        "F_NAME"
+       ]
+      ],
+      [
+       ">",
+       "out.price",
+       0
+      ],
+      [
+       ">=",
+       "out.qty",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadIndex",
+      "InvalidRecord"
+     ],
+     "body": [
+      {
+       "let": "f",
+       "expr": "r.fields"
+      }
+     ],
+     "out": [
+      "rec",
+      "sku",
+      [
+       "at",
+       "f",
+       "F_SKU"
+      ],
+      "name",
+      [
+       "at",
+       "f",
+       "F_NAME"
+      ],
+      "price",
+      [
+       "parse_decimal_nat",
+       [
+        "at",
+        "f",
+        "F_PRICE"
+       ]
+      ],
+      "qty",
+      [
+       "parse_decimal_nat",
+       [
+        "at",
+        "f",
+        "F_QTY"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "index": 1,
+         "fields": [
+          "NB-01",
+          "Notebook, blue",
+          "045000",
+          "0012"
+         ]
+        }
+       },
+       "out": {
+        "sku": "NB-01",
+        "name": "Notebook, blue",
+        "price": 45000,
+        "qty": 12
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 2,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000"
+         ]
+        }
+       },
+       "refuse": "InvalidRecord"
+      },
+      {
+       "args": {
+        "r": {
+         "index": 0,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000",
+          "1"
+         ]
+        }
+       },
+       "refuse": "BadIndex"
+      }
+     ],
+     "line": 69
+    },
+    "sku_of": {
+     "says": "the SKU of a product",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "p.sku"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "p.sku",
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "sku": "A",
+         "name": "a",
+         "price": 1,
+         "qty": 0
+        }
+       },
+       "out": "A"
+      }
+     ],
+     "line": 84
+    },
+    "index_of": {
+     "says": "the data-record index of a raw record",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "r.index"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "r.index",
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "index": 3,
+         "fields": []
+        }
+       },
+       "out": 3
+      }
+     ],
+     "line": 91
+    },
+    "sku_dup": {
+     "says": "1 when the two raw records in a pair carry the same SKU text and are different records, else 0",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [
+      {
+       "let": "same",
+       "expr": [
+        "and",
+        [
+         "==",
+         [
+          "len",
+          "p.a.fields"
+         ],
+         "FIELDS"
+        ],
+        [
+         "==",
+         [
+          "len",
+          "p.b.fields"
+         ],
+         "FIELDS"
+        ]
+       ]
+      },
+      {
+       "let": "a",
+       "expr": [
+        "if",
+        "same",
+        [
+         "at",
+         "p.a.fields",
+         "F_SKU"
+        ],
+        [
+         "lit",
+         ""
+        ]
+       ]
+      },
+      {
+       "let": "b",
+       "expr": [
+        "if",
+        "same",
+        [
+         "at",
+         "p.b.fields",
+         "F_SKU"
+        ],
+        [
+         "lit",
+         ""
+        ]
+       ]
+      }
+     ],
+     "out": [
+      "if",
+      [
+       "and",
+       "same",
+       [
+        "!=",
+        "p.a.index",
+        "p.b.index"
+       ],
+       [
+        "==",
+        [
+         "text_cmp",
+         "a",
+         "b"
+        ],
+        0
+       ]
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         "b": {
+          "index": 2,
+          "fields": [
+           "A",
+           "y",
+           "1",
+           "1"
+          ]
+         }
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         "b": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         }
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         "b": {
+          "index": 2,
+          "fields": [
+           "B",
+           "y",
+           "1",
+           "1"
+          ]
+         }
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 98
+    },
+    "involved_in_dup": {
+     "says": "true when the raw record in a shares its SKU with another record in the list in b",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      ">",
+      [
+       "sum",
+       [
+        "map",
+        [
+         "lit",
+         "sku_dup"
+        ],
+        [
+         "pairs",
+         [
+          "list",
+          "p.a"
+         ],
+         "p.b"
+        ]
+       ]
+      ],
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         "b": [
+          {
+           "index": 1,
+           "fields": [
+            "A",
+            "x",
+            "1",
+            "1"
+           ]
+          },
+          {
+           "index": 2,
+           "fields": [
+            "A",
+            "y",
+            "1",
+            "1"
+           ]
+          }
+         ]
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         "b": [
+          {
+           "index": 1,
+           "fields": [
+            "A",
+            "x",
+            "1",
+            "1"
+           ]
+          }
+         ]
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 110
+    },
+    "raw_of": {
+     "says": "the raw record of a pair",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "p.a"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "p.a",
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": []
+         },
+         "b": []
+        }
+       },
+       "out": {
+        "index": 1,
+        "fields": []
+       }
+      }
+     ],
+     "line": 118
+    },
+    "duplicate_indices": {
+     "says": "the data-record indices of every record whose SKU appears more than once, in file order",
+     "in": [
+      "records"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "<=",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "records"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "index_of"
+      ],
+      [
+       "map",
+       [
+        "lit",
+        "raw_of"
+       ],
+       [
+        "filter",
+        [
+         "lit",
+         "involved_in_dup"
+        ],
+        [
+         "pairs",
+         "records",
+         [
+          "list",
+          "records"
+         ]
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         {
+          "index": 2,
+          "fields": [
+           "B",
+           "y",
+           "1",
+           "1"
+          ]
+         },
+         {
+          "index": 3,
+          "fields": [
+           "A",
+           "z",
+           "1",
+           "1"
+          ]
+         }
+        ]
+       },
+       "out": [
+        1,
+        3
+       ]
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         }
+        ]
+       },
+       "out": []
+      },
+      {
+       "args": {
+        "records": []
+       },
+       "out": []
+      }
+     ],
+     "line": 125
+    },
+    "validate_snapshot": {
+     "says": "every located field diagnostic, the duplicate-SKU indices, and whether the snapshot is accepted: accepted only when there are records, no field problems and no duplicates",
+     "in": [
+      "records"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        [
+         "sum",
+         [
+          "map",
+          [
+           "lit",
+           "index_ok"
+          ],
+          "records"
+         ]
+        ],
+        [
+         "len",
+         "records"
+        ]
+       ],
+       "err": "BadIndex"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out.accepted",
+       [
+        "list",
+        true,
+        false
+       ]
+      ],
+      [
+       "==",
+       "out.accepted",
+       [
+        "and",
+        [
+         ">",
+         [
+          "len",
+          "records"
+         ],
+         0
+        ],
+        [
+         "==",
+         [
+          "len",
+          "out.problems"
+         ],
+         0
+        ],
+        [
+         "==",
+         [
+          "len",
+          "out.duplicates"
+         ],
+         0
+        ]
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadIndex"
+     ],
+     "body": [
+      {
+       "let": "diags",
+       "expr": [
+        "map",
+        [
+         "lit",
+         "field_problem"
+        ],
+        "records"
+       ]
+      },
+      {
+       "let": "problems",
+       "expr": [
+        "filter",
+        [
+         "lit",
+         "has_problem"
+        ],
+        "diags"
+       ]
+      },
+      {
+       "let": "dups",
+       "expr": [
+        "duplicate_indices",
+        "records"
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "problems",
+      "problems",
+      "duplicates",
+      "dups",
+      "accepted",
+      [
+       "and",
+       [
+        ">",
+        [
+         "len",
+         "records"
+        ],
+        0
+       ],
+       [
+        "==",
+        [
+         "len",
+         "problems"
+        ],
+        0
+       ],
+       [
+        "==",
+        [
+         "len",
+         "dups"
+        ],
+        0
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "NB-01",
+           "Notebook",
+           "45000",
+           "12"
+          ]
+         },
+         {
+          "index": 2,
+          "fields": [
+           "PN-02",
+           "Pen",
+           "12000",
+           "30"
+          ]
+         }
+        ]
+       },
+       "check": [
+        [
+         "==",
+         "out.accepted",
+         true
+        ],
+        [
+         "==",
+         [
+          "len",
+          "out.problems"
+         ],
+         0
+        ]
+       ]
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "NB-01",
+           "Notebook",
+           "45000",
+           "12"
+          ]
+         },
+         {
+          "index": 2,
+          "fields": [
+           "NB-01",
+           "Notebook",
+           "45000",
+           "12"
+          ]
+         }
+        ]
+       },
+       "check": [
+        [
+         "==",
+         "out.accepted",
+         false
+        ],
+        [
+         "==",
+         "out.duplicates",
+         [
+          "list",
+          1,
+          2
+         ]
+        ]
+       ]
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "nb-01",
+           "Notebook",
+           "45000",
+           "12"
+          ]
+         }
+        ]
+       },
+       "check": [
+        [
+         "==",
+         "out.accepted",
+         false
+        ],
+        [
+         "==",
+         [
+          "len",
+          "out.problems"
+         ],
+         1
+        ]
+       ]
+      },
+      {
+       "args": {
+        "records": []
+       },
+       "check": [
+        [
+         "==",
+         "out.accepted",
+         false
+        ]
+       ]
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 0,
+          "fields": [
+           "A",
+           "a",
+           "1",
+           "1"
+          ]
+         }
+        ]
+       },
+       "refuse": "BadIndex"
+      }
+     ],
+     "line": 134
+    },
+    "index_ok": {
+     "says": "1 when a raw record's index is at least 1",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       ">=",
+       "r.index",
+       1
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "index": 1,
+         "fields": []
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "r": {
+         "index": 0,
+         "fields": []
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 150
+    },
+    "accepted_of": {
+     "says": "the accepted flag of a validation result",
+     "in": [
+      "v"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "v.accepted"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "v.accepted",
+     "ex": [
+      {
+       "args": {
+        "v": {
+         "problems": [],
+         "duplicates": [],
+         "accepted": true
+        }
+       },
+       "out": true
+      }
+     ],
+     "line": 158
+    },
+    "sku_before": {
+     "says": "true when the product in a sorts strictly before the product in b by SKU",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "<",
+      [
+       "text_cmp",
+       "p.a.sku",
+       "p.b.sku"
+      ],
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 1,
+          "qty": 0
+         },
+         "b": {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "qty": 0
+         }
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "B",
+          "name": "a",
+          "price": 1,
+          "qty": 0
+         },
+         "b": {
+          "sku": "A",
+          "name": "b",
+          "price": 1,
+          "qty": 0
+         }
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 165
+    },
+    "count_before": {
+     "says": "how many products in the list in b sort before the product in a; with unique SKUs this is its position",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       ">=",
+       "out",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "len",
+      [
+       "filter",
+       [
+        "lit",
+        "sku_before"
+       ],
+       [
+        "map",
+        [
+         "lit",
+         "swap"
+        ],
+        [
+         "pairs",
+         [
+          "list",
+          "p.a"
+         ],
+         "p.b"
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "qty": 0
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 1,
+           "qty": 0
+          },
+          {
+           "sku": "B",
+           "name": "b",
+           "price": 1,
+           "qty": 0
+          },
+          {
+           "sku": "C",
+           "name": "c",
+           "price": 1,
+           "qty": 0
+          }
+         ]
+        }
+       },
+       "out": 1
+      }
+     ],
+     "line": 173
+    },
+    "swap": {
+     "says": "the pair with a and b exchanged",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out.a",
+       "p.b"
+      ],
+      [
+       "==",
+       "out.b",
+       "p.a"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "rec",
+      "a",
+      "p.b",
+      "b",
+      "p.a"
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": 1,
+         "b": 2
+        }
+       },
+       "out": {
+        "a": 2,
+        "b": 1
+       }
+      }
+     ],
+     "line": 180
+    },
+    "at_position": {
+     "says": "the product in the list in b whose position by SKU order is the index in a; the SKUs must be unique for positions to be unique",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "p.a",
+        0
+       ],
+       "err": "BadPosition"
+      },
+      {
+       "expr": [
+        "<",
+        "p.a",
+        [
+         "len",
+         "p.b"
+        ]
+       ],
+       "err": "BadPosition"
+      },
+      {
+       "expr": [
+        "unique_text",
+        [
+         "map",
+         [
+          "lit",
+          "sku_of"
+         ],
+         "p.b"
+        ]
+       ],
+       "err": "NotUnique"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out",
+       "p.b"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadPosition",
+      "NotUnique"
+     ],
+     "body": [
+      {
+       "let": "hits",
+       "expr": [
+        "filter",
+        [
+         "lit",
+         "position_is"
+        ],
+        [
+         "pairs",
+         "p.b",
+         [
+          "list",
+          [
+           "rec",
+           "list",
+           "p.b",
+           "want",
+           "p.a"
+          ]
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "hit",
+       "expr": [
+        "at",
+        "hits",
+        0
+       ]
+      }
+     ],
+     "out": "hit.a",
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": 0,
+         "b": [
+          {
+           "sku": "B",
+           "name": "b",
+           "price": 1,
+           "qty": 0
+          },
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 1,
+           "qty": 0
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "name": "a",
+        "price": 1,
+        "qty": 0
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": 5,
+         "b": []
+        }
+       },
+       "refuse": "BadPosition"
+      },
+      {
+       "args": {
+        "p": {
+         "a": 0,
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 1,
+           "qty": 0
+          },
+          {
+           "sku": "A",
+           "name": "b",
+           "price": 1,
+           "qty": 0
+          }
+         ]
+        }
+       },
+       "refuse": "NotUnique"
+      }
+     ],
+     "line": 188
+    },
+    "position_is": {
+     "says": "true when the product in a has the wanted position within the list carried in b",
+     "in": [
+      "q"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      [
+       "count_before",
+       [
+        "rec",
+        "a",
+        "q.a",
+        "b",
+        "q.b.list"
+       ]
+      ],
+      "q.b.want"
+     ],
+     "ex": [
+      {
+       "args": {
+        "q": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 1,
+          "qty": 0
+         },
+         "b": {
+          "list": [
+           {
+            "sku": "B",
+            "name": "b",
+            "price": 1,
+            "qty": 0
+           },
+           {
+            "sku": "A",
+            "name": "a",
+            "price": 1,
+            "qty": 0
+           }
+          ],
+          "want": 0
+         }
+        }
+       },
+       "out": true
+      }
+     ],
+     "line": 202
+    },
+    "normalize_snapshot": {
+     "says": "the accepted snapshot as products sorted by SKU; refuses a snapshot that validate_snapshot does not accept",
+     "in": [
+      "records"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        [
+         "sum",
+         [
+          "map",
+          [
+           "lit",
+           "index_ok"
+          ],
+          "records"
+         ]
+        ],
+        [
+         "len",
+         "records"
+        ]
+       ],
+       "err": "BadIndex"
+      },
+      {
+       "expr": [
+        "accepted_of",
+        [
+         "validate_snapshot",
+         "records"
+        ]
+       ],
+       "err": "NotAccepted"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "records"
+       ]
+      ],
+      [
+       "unique_text",
+       [
+        "map",
+        [
+         "lit",
+         "sku_of"
+        ],
+        "out"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadIndex",
+      "NotAccepted"
+     ],
+     "body": [
+      {
+       "let": "products",
+       "expr": [
+        "map",
+        [
+         "lit",
+         "normalize_record"
+        ],
+        "records"
+       ]
+      }
+     ],
+     "out": [
+      "map",
+      [
+       "lit",
+       "at_position"
+      ],
+      [
+       "pairs",
+       [
+        "range",
+        [
+         "len",
+         "products"
+        ]
+       ],
+       [
+        "list",
+        "products"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "PN-02",
+           "Pen",
+           "12000",
+           "30"
+          ]
+         },
+         {
+          "index": 2,
+          "fields": [
+           "NB-01",
+           "Notebook",
+           "045000",
+           "0012"
+          ]
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "NB-01",
+         "name": "Notebook",
+         "price": 45000,
+         "qty": 12
+        },
+        {
+         "sku": "PN-02",
+         "name": "Pen",
+         "price": 12000,
+         "qty": 30
+        }
+       ]
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "A",
+           "a",
+           "1",
+           "1"
+          ]
+         },
+         {
+          "index": 2,
+          "fields": [
+           "A",
+           "b",
+           "1",
+           "1"
+          ]
+         }
+        ]
+       },
+       "refuse": "NotAccepted"
+      },
+      {
+       "args": {
+        "records": []
+       },
+       "refuse": "NotAccepted"
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 0,
+          "fields": [
+           "A",
+           "a",
+           "1",
+           "1"
+          ]
+         }
+        ]
+       },
+       "refuse": "BadIndex"
+      }
+     ],
+     "line": 209
+    }
+   }
+  },
+  "shop_cart": {
+   "name": "shop_cart",
+   "uses": [
+    "shop_stock"
+   ],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {},
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "line_ok": {
+     "says": "1 when the line in a is a valid cart line against the stock in b: quantity 1–9, known SKU, within availability; 0 against invalid stock",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "and",
+       [
+        "stock_ok",
+        "p.b"
+       ],
+       [
+        ">=",
+        "p.a.qty",
+        1
+       ],
+       [
+        "<=",
+        "p.a.qty",
+        "QTY_MAX"
+       ]
+      ],
+      [
+       "line_fits",
+       "p"
+      ],
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 2
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 3
+          }
+         ]
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 0
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 3
+          }
+         ]
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 10
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 50,
+           "reserved": 3
+          }
+         ]
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 3
+          }
+         ]
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 1
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 6
+          }
+         ]
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 7
+    },
+    "cart_ok": {
+     "says": "true when the stock is valid and the cart has at most 3 lines, with distinct SKUs, each valid against the stock",
+     "in": [
+      "items",
+      "lines"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "and",
+      [
+       "stock_ok",
+       "items"
+      ],
+      [
+       "<=",
+       [
+        "len",
+        "lines"
+       ],
+       "LINES_MAX"
+      ],
+      [
+       "unique_text",
+       [
+        "map",
+        [
+         "lit",
+         "sku_of"
+        ],
+        "lines"
+       ]
+      ],
+      [
+       "==",
+       [
+        "sum",
+        [
+         "map",
+         [
+          "lit",
+          "line_ok"
+         ],
+         [
+          "pairs",
+          "lines",
+          [
+           "list",
+           "items"
+          ]
+         ]
+        ]
+       ],
+       [
+        "len",
+        "lines"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         },
+         {
+          "sku": "B",
+          "qty": 1
+         }
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         },
+         {
+          "sku": "A",
+          "qty": 1
+         }
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 3
+         }
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 9,
+          "reserved": 0
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         },
+         {
+          "sku": "C",
+          "name": "c",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         },
+         {
+          "sku": "D",
+          "name": "d",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         },
+         {
+          "sku": "B",
+          "qty": 1
+         },
+         {
+          "sku": "C",
+          "qty": 1
+         },
+         {
+          "sku": "D",
+          "qty": 1
+         }
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "items": [],
+        "lines": []
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 6
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         }
+        ]
+       },
+       "out": false
+      }
+     ],
+     "line": 18
+    },
+    "set_qty_if": {
+     "says": "the line in a with the quantity of the line in b when their SKUs match, else unchanged",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out.sku",
+       "p.a.sku"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "==",
+       "p.a.sku",
+       "p.b.sku"
+      ],
+      [
+       "with",
+       "p.a",
+       "qty",
+       "p.b.qty"
+      ],
+      "p.a"
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 1
+         },
+         "b": {
+          "sku": "A",
+          "qty": 3
+         }
+        }
+       },
+       "out": {
+        "sku": "A",
+        "qty": 3
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 1
+         },
+         "b": {
+          "sku": "B",
+          "qty": 3
+         }
+        }
+       },
+       "out": {
+        "sku": "A",
+        "qty": 1
+       }
+      }
+     ],
+     "line": 30
+    },
+    "other_sku": {
+     "says": "true when the line in a does not carry the SKU in b",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "!=",
+      "p.a.sku",
+      "p.b"
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 1
+         },
+         "b": "B"
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 1
+         },
+         "b": "A"
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 38
+    },
+    "remove_line": {
+     "says": "the lines without the one carrying the SKU",
+     "in": [
+      "lines",
+      "sku"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "lines_ok",
+        "lines"
+       ],
+       "err": "BadQty"
+      }
+     ],
+     "post": [
+      [
+       "<=",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "lines"
+       ]
+      ],
+      [
+       "==",
+       [
+        "needed",
+        "out",
+        "sku"
+       ],
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadQty"
+     ],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "a_of"
+      ],
+      [
+       "filter",
+       [
+        "lit",
+        "other_sku"
+       ],
+       [
+        "pairs",
+        "lines",
+        [
+         "list",
+         "sku"
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         },
+         {
+          "sku": "B",
+          "qty": 2
+         }
+        ],
+        "sku": "A"
+       },
+       "out": [
+        {
+         "sku": "B",
+         "qty": 2
+        }
+       ]
+      },
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "B",
+          "qty": 2
+         }
+        ],
+        "sku": "A"
+       },
+       "out": [
+        {
+         "sku": "B",
+         "qty": 2
+        }
+       ]
+      },
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "B",
+          "qty": -2
+         }
+        ],
+        "sku": "A"
+       },
+       "refuse": "BadQty"
+      }
+     ],
+     "line": 46
+    },
+    "set_line": {
+     "says": "the cart with a product's quantity set; 0 removes the line; a new SKU adds a line",
+     "in": [
+      "items",
+      "lines",
+      "sku",
+      "qty"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "cart_ok",
+        "items",
+        "lines"
+       ],
+       "err": "BadCart"
+      },
+      {
+       "expr": [
+        "known",
+        "items",
+        "sku"
+       ],
+       "err": "UnknownProduct"
+      },
+      {
+       "expr": [
+        "and",
+        [
+         ">=",
+         "qty",
+         0
+        ],
+        [
+         "<=",
+         "qty",
+         "QTY_MAX"
+        ]
+       ],
+       "err": "BadQty"
+      },
+      {
+       "expr": [
+        "<=",
+        "qty",
+        [
+         "available",
+         [
+          "find_item",
+          "items",
+          "sku"
+         ]
+        ]
+       ],
+       "err": "ExceedsStock"
+      },
+      {
+       "expr": [
+        "or",
+        [
+         "==",
+         "qty",
+         0
+        ],
+        [
+         ">",
+         [
+          "needed",
+          "lines",
+          "sku"
+         ],
+         0
+        ],
+        [
+         "<",
+         [
+          "len",
+          "lines"
+         ],
+         "LINES_MAX"
+        ]
+       ],
+       "err": "TooManyLines"
+      }
+     ],
+     "post": [
+      [
+       "cart_ok",
+       "items",
+       "out"
+      ],
+      [
+       "==",
+       [
+        "needed",
+        "out",
+        "sku"
+       ],
+       "qty"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadCart",
+      "UnknownProduct",
+      "BadQty",
+      "ExceedsStock",
+      "TooManyLines"
+     ],
+     "body": [
+      {
+       "let": "present",
+       "expr": [
+        ">",
+        [
+         "needed",
+         "lines",
+         "sku"
+        ],
+        0
+       ]
+      }
+     ],
+     "out": [
+      "if",
+      [
+       "==",
+       "qty",
+       0
+      ],
+      [
+       "remove_line",
+       "lines",
+       "sku"
+      ],
+      [
+       "if",
+       "present",
+       [
+        "map",
+        [
+         "lit",
+         "set_qty_if"
+        ],
+        [
+         "pairs",
+         "lines",
+         [
+          "list",
+          [
+           "rec",
+           "sku",
+           "sku",
+           "qty",
+           "qty"
+          ]
+         ]
+        ]
+       ],
+       [
+        "concat",
+        "lines",
+        [
+         "list",
+         [
+          "rec",
+          "sku",
+          "sku",
+          "qty",
+          "qty"
+         ]
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [],
+        "sku": "A",
+        "qty": 2
+       },
+       "out": [
+        {
+         "sku": "A",
+         "qty": 2
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         }
+        ],
+        "sku": "A",
+        "qty": 3
+       },
+       "out": [
+        {
+         "sku": "A",
+         "qty": 3
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         }
+        ],
+        "sku": "A",
+        "qty": 0
+       },
+       "out": []
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [],
+        "sku": "Z",
+        "qty": 1
+       },
+       "refuse": "UnknownProduct"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [],
+        "sku": "A",
+        "qty": 10
+       },
+       "refuse": "BadQty"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "lines": [],
+        "sku": "A",
+        "qty": 3
+       },
+       "refuse": "ExceedsStock"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 9,
+          "reserved": 0
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         },
+         {
+          "sku": "C",
+          "name": "c",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         },
+         {
+          "sku": "D",
+          "name": "d",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         },
+         {
+          "sku": "B",
+          "qty": 1
+         },
+         {
+          "sku": "C",
+          "qty": 1
+         }
+        ],
+        "sku": "D",
+        "qty": 1
+       },
+       "refuse": "TooManyLines"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         },
+         {
+          "sku": "A",
+          "qty": 1
+         }
+        ],
+        "sku": "A",
+        "qty": 1
+       },
+       "refuse": "BadCart"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 6
+         }
+        ],
+        "lines": [],
+        "sku": "A",
+        "qty": 1
+       },
+       "refuse": "BadCart"
+      }
+     ],
+     "line": 57
+    },
+    "add_one": {
+     "says": "the cart with one more of a product",
+     "in": [
+      "items",
+      "lines",
+      "sku"
+     ],
+     "fx": [],
+     "raises": [
+      "BadCart",
+      "UnknownProduct",
+      "BadQty",
+      "ExceedsStock",
+      "TooManyLines"
+     ],
+     "pre": [],
+     "post": [
+      [
+       "cart_ok",
+       "items",
+       "out"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "set_line",
+      "items",
+      "lines",
+      "sku",
+      [
+       "+",
+       [
+        "needed",
+        "lines",
+        "sku"
+       ],
+       1
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [],
+        "sku": "A"
+       },
+       "out": [
+        {
+         "sku": "A",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         }
+        ],
+        "sku": "A"
+       },
+       "out": [
+        {
+         "sku": "A",
+         "qty": 2
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [],
+        "sku": "Z"
+       },
+       "refuse": "UnknownProduct"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 50,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 9
+         }
+        ],
+        "sku": "A"
+       },
+       "refuse": "BadQty"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 1,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         }
+        ],
+        "sku": "A"
+       },
+       "refuse": "ExceedsStock"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 9,
+          "reserved": 0
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         },
+         {
+          "sku": "C",
+          "name": "c",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         },
+         {
+          "sku": "D",
+          "name": "d",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         },
+         {
+          "sku": "B",
+          "qty": 1
+         },
+         {
+          "sku": "C",
+          "qty": 1
+         }
+        ],
+        "sku": "D"
+       },
+       "refuse": "TooManyLines"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         },
+         {
+          "sku": "A",
+          "qty": 1
+         }
+        ],
+        "sku": "A"
+       },
+       "refuse": "BadCart"
+      }
+     ],
+     "line": 79
+    },
+    "priced_line": {
+     "says": "the cart line in a priced from the stock in b: name and unit price captured, subtotal = price × qty",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [
+      "UnknownProduct"
+     ],
+     "pre": [
+      {
+       "expr": [
+        "stock_ok",
+        "p.b"
+       ],
+       "err": "BadStock"
+      },
+      {
+       "expr": [
+        ">=",
+        "p.a.qty",
+        0
+       ],
+       "err": "BadQty"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.subtotal",
+       [
+        "*",
+        "out.price",
+        "out.qty"
+       ]
+      ],
+      [
+       "==",
+       "out.sku",
+       "p.a.sku"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadStock",
+      "BadQty"
+     ],
+     "body": [
+      {
+       "let": "it",
+       "expr": [
+        "find_item",
+        "p.b",
+        "p.a.sku"
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "sku",
+      "p.a.sku",
+      "name",
+      "it.name",
+      "price",
+      "it.price",
+      "qty",
+      "p.a.qty",
+      "subtotal",
+      [
+       "*",
+       "it.price",
+       "p.a.qty"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 2
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 0
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "name": "a",
+        "price": 10,
+        "qty": 2,
+        "subtotal": 20
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "Z",
+          "qty": 2
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 0
+          }
+         ]
+        }
+       },
+       "refuse": "UnknownProduct"
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": -2
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 0
+          }
+         ]
+        }
+       },
+       "refuse": "BadQty"
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 2
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 6
+          }
+         ]
+        }
+       },
+       "refuse": "BadStock"
+      }
+     ],
+     "line": 93
+    },
+    "priced": {
+     "says": "every cart line priced from the stock",
+     "in": [
+      "items",
+      "lines"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "cart_ok",
+        "items",
+        "lines"
+       ],
+       "err": "BadCart"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "lines"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadCart"
+     ],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "priced_line"
+      ],
+      [
+       "pairs",
+       "lines",
+       [
+        "list",
+        "items"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 3,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         },
+         {
+          "sku": "B",
+          "qty": 1
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "qty": 2,
+         "subtotal": 20
+        },
+        {
+         "sku": "B",
+         "name": "b",
+         "price": 3,
+         "qty": 1,
+         "subtotal": 3
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "Z",
+          "qty": 2
+         }
+        ]
+       },
+       "refuse": "BadCart"
+      }
+     ],
+     "line": 108
+    },
+    "subtotal_of": {
+     "says": "the subtotal of a priced line",
+     "in": [
+      "l"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        "l.subtotal",
+        [
+         "*",
+         "l.price",
+         "l.qty"
+        ]
+       ],
+       "err": "BadLine"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       "l.subtotal"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadLine"
+     ],
+     "body": [],
+     "out": "l.subtotal",
+     "ex": [
+      {
+       "args": {
+        "l": {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "qty": 2,
+         "subtotal": 20
+        }
+       },
+       "out": 20
+      },
+      {
+       "args": {
+        "l": {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "qty": 2,
+         "subtotal": 21
+        }
+       },
+       "refuse": "BadLine"
+      }
+     ],
+     "line": 117
+    },
+    "total_of": {
+     "says": "the exact total of priced lines: the sum of their subtotals",
+     "in": [
+      "plines"
+     ],
+     "fx": [],
+     "raises": [
+      "BadLine"
+     ],
+     "pre": [
+      {
+       "expr": [
+        "lines_ok",
+        "plines"
+       ],
+       "err": "BadQty"
+      },
+      {
+       "expr": [
+        "==",
+        [
+         "sum",
+         [
+          "map",
+          [
+           "lit",
+           "price_pos"
+          ],
+          "plines"
+         ]
+        ],
+        [
+         "len",
+         "plines"
+        ]
+       ],
+       "err": "BadPrice"
+      }
+     ],
+     "post": [
+      [
+       ">=",
+       "out",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadQty",
+      "BadPrice"
+     ],
+     "body": [],
+     "out": [
+      "sum",
+      [
+       "map",
+       [
+        "lit",
+        "subtotal_of"
+       ],
+       "plines"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "plines": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": 2,
+          "subtotal": 20
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 3,
+          "qty": 1,
+          "subtotal": 3
+         }
+        ]
+       },
+       "out": 23
+      },
+      {
+       "args": {
+        "plines": []
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "plines": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": 2,
+          "subtotal": 21
+         }
+        ]
+       },
+       "refuse": "BadLine"
+      },
+      {
+       "args": {
+        "plines": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": -2,
+          "subtotal": -20
+         }
+        ]
+       },
+       "refuse": "BadQty"
+      },
+      {
+       "args": {
+        "plines": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": -10,
+          "qty": 2,
+          "subtotal": -20
+         }
+        ]
+       },
+       "refuse": "BadPrice"
+      }
+     ],
+     "line": 126
+    },
+    "price_pos": {
+     "says": "1 when a line's unit price is positive",
+     "in": [
+      "l"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       ">",
+       "l.price",
+       0
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "l": {
+         "price": 10
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "l": {
+         "price": 0
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 140
+    },
+    "bare": {
+     "says": "a line reduced to its intent: SKU and quantity",
+     "in": [
+      "l"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out.sku",
+       "l.sku"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "rec",
+      "sku",
+      "l.sku",
+      "qty",
+      "l.qty"
+     ],
+     "ex": [
+      {
+       "args": {
+        "l": {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "qty": 2,
+         "subtotal": 20
+        }
+       },
+       "out": {
+        "sku": "A",
+        "qty": 2
+       }
+      }
+     ],
+     "line": 148
+    },
+    "canonical_intent": {
+     "says": "the lines as intent: SKU and quantity only, sorted by SKU, so the same purchase written in any order compares equal",
+     "in": [
+      "lines"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "unique_text",
+        [
+         "map",
+         [
+          "lit",
+          "sku_of"
+         ],
+         "lines"
+        ]
+       ],
+       "err": "DuplicateSku"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "lines"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "DuplicateSku"
+     ],
+     "body": [
+      {
+       "let": "bares",
+       "expr": [
+        "map",
+        [
+         "lit",
+         "bare"
+        ],
+        "lines"
+       ]
+      }
+     ],
+     "out": [
+      "map",
+      [
+       "lit",
+       "at_position"
+      ],
+      [
+       "pairs",
+       [
+        "range",
+        [
+         "len",
+         "bares"
+        ]
+       ],
+       [
+        "list",
+        "bares"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "B",
+          "qty": 1
+         },
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": 2,
+          "subtotal": 20
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "A",
+         "qty": 2
+        },
+        {
+         "sku": "B",
+         "qty": 1
+        }
+       ]
+      },
+      {
+       "args": {
+        "lines": []
+       },
+       "out": []
+      },
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         },
+         {
+          "sku": "A",
+          "qty": 2
+         }
+        ]
+       },
+       "refuse": "DuplicateSku"
+      }
+     ],
+     "line": 155
+    }
+   }
+  },
+  "shop_stock": {
+   "name": "shop_stock",
+   "uses": [
+    "supplier_snapshot"
+   ],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {
+    "QTY_MAX": 9,
+    "LINES_MAX": 3
+   },
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "available": {
+     "says": "the units of a stock item a customer may still reserve: on hand minus reserved",
+     "in": [
+      "s"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        [
+         "stock_item_ok",
+         "s"
+        ],
+        1
+       ],
+       "err": "BadItem"
+      }
+     ],
+     "post": [
+      [
+       "<=",
+       "out",
+       "s.on_hand"
+      ],
+      [
+       ">=",
+       "out",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadItem"
+     ],
+     "body": [],
+     "out": [
+      "-",
+      "s.on_hand",
+      "s.reserved"
+     ],
+     "ex": [
+      {
+       "args": {
+        "s": {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "on_hand": 5,
+         "reserved": 2
+        }
+       },
+       "out": 3
+      },
+      {
+       "args": {
+        "s": {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "on_hand": 5,
+         "reserved": 5
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "s": {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "on_hand": 5,
+         "reserved": 6
+        }
+       },
+       "refuse": "BadItem"
+      }
+     ],
+     "line": 10
+    },
+    "stock_item_ok": {
+     "says": "1 when a stock item is well formed: SKU text, nonempty name, positive price, 0 ≤ reserved ≤ on hand",
+     "in": [
+      "s"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "and",
+       [
+        "is_sku_text",
+        "s.sku"
+       ],
+       [
+        ">",
+        [
+         "scalars",
+         "s.name"
+        ],
+        0
+       ],
+       [
+        ">",
+        "s.price",
+        0
+       ],
+       [
+        ">=",
+        "s.on_hand",
+        0
+       ],
+       [
+        ">=",
+        "s.reserved",
+        0
+       ],
+       [
+        "<=",
+        "s.reserved",
+        "s.on_hand"
+       ]
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "s": {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "on_hand": 5,
+         "reserved": 2
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "s": {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "on_hand": 5,
+         "reserved": 6
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "s": {
+         "sku": "a",
+         "name": "a",
+         "price": 10,
+         "on_hand": 5,
+         "reserved": 0
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "s": {
+         "sku": "A",
+         "name": "a",
+         "price": 0,
+         "on_hand": 5,
+         "reserved": 0
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 21
+    },
+    "stock_ok": {
+     "says": "true when every stock item is well formed and SKUs are unique",
+     "in": [
+      "items"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "and",
+      [
+       "==",
+       [
+        "sum",
+        [
+         "map",
+         [
+          "lit",
+          "stock_item_ok"
+         ],
+         "items"
+        ]
+       ],
+       [
+        "len",
+        "items"
+       ]
+      ],
+      [
+       "unique_text",
+       [
+        "map",
+        [
+         "lit",
+         "sku_of"
+        ],
+        "items"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 2
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "on_hand": 0,
+          "reserved": 0
+         }
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 2
+         },
+         {
+          "sku": "A",
+          "name": "b",
+          "price": 1,
+          "on_hand": 0,
+          "reserved": 0
+         }
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "items": []
+       },
+       "out": true
+      }
+     ],
+     "line": 31
+    },
+    "sku_matches": {
+     "says": "true when the item in a carries the SKU text in b",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      "p.a.sku",
+      "p.b"
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A"
+         },
+         "b": "A"
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A"
+         },
+         "b": "B"
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 40
+    },
+    "a_of": {
+     "says": "the a of a pair",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "p.a"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "p.a",
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": 1,
+         "b": 2
+        }
+       },
+       "out": 1
+      }
+     ],
+     "line": 48
+    },
+    "hits": {
+     "says": "the items carrying a SKU, in list order",
+     "in": [
+      "items",
+      "sku"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "<=",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "items"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "a_of"
+      ],
+      [
+       "filter",
+       [
+        "lit",
+        "sku_matches"
+       ],
+       [
+        "pairs",
+        "items",
+        [
+         "list",
+         "sku"
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 2
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "on_hand": 0,
+          "reserved": 0
+         }
+        ],
+        "sku": "B"
+       },
+       "out": [
+        {
+         "sku": "B",
+         "name": "b",
+         "price": 1,
+         "on_hand": 0,
+         "reserved": 0
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 2
+         }
+        ],
+        "sku": "Z"
+       },
+       "out": []
+      }
+     ],
+     "line": 55
+    },
+    "known": {
+     "says": "true when exactly one item carries the SKU",
+     "in": [
+      "items",
+      "sku"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      [
+       "len",
+       [
+        "hits",
+        "items",
+        "sku"
+       ]
+      ],
+      1
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 2
+         }
+        ],
+        "sku": "A"
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 2
+         }
+        ],
+        "sku": "Z"
+       },
+       "out": false
+      }
+     ],
+     "line": 63
+    },
+    "find_item": {
+     "says": "the one item carrying the SKU",
+     "in": [
+      "items",
+      "sku"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "known",
+        "items",
+        "sku"
+       ],
+       "err": "UnknownProduct"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.sku",
+       "sku"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "UnknownProduct"
+     ],
+     "body": [],
+     "out": [
+      "at",
+      [
+       "hits",
+       "items",
+       "sku"
+      ],
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 2
+         }
+        ],
+        "sku": "A"
+       },
+       "out": {
+        "sku": "A",
+        "name": "a",
+        "price": 10,
+        "on_hand": 5,
+        "reserved": 2
+       }
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 2
+         }
+        ],
+        "sku": "Z"
+       },
+       "refuse": "UnknownProduct"
+      }
+     ],
+     "line": 71
+    },
+    "qty_if_sku": {
+     "says": "the quantity of the line in a when it carries the SKU in b, else 0",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "p.a.qty",
+        0
+       ],
+       "err": "BadQty"
+      }
+     ],
+     "post": [
+      [
+       ">=",
+       "out",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadQty"
+     ],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "==",
+       "p.a.sku",
+       "p.b"
+      ],
+      "p.a.qty",
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 2
+         },
+         "b": "A"
+        }
+       },
+       "out": 2
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 2
+         },
+         "b": "B"
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": -1
+         },
+         "b": "A"
+        }
+       },
+       "refuse": "BadQty"
+      }
+     ],
+     "line": 80
+    },
+    "needed": {
+     "says": "how many units of a SKU a list of lines asks for",
+     "in": [
+      "lines",
+      "sku"
+     ],
+     "fx": [],
+     "raises": [
+      "BadQty"
+     ],
+     "pre": [],
+     "post": [
+      [
+       ">=",
+       "out",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "sum",
+      [
+       "map",
+       [
+        "lit",
+        "qty_if_sku"
+       ],
+       [
+        "pairs",
+        "lines",
+        [
+         "list",
+         "sku"
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         },
+         {
+          "sku": "B",
+          "qty": 1
+         }
+        ],
+        "sku": "A"
+       },
+       "out": 2
+      },
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         },
+         {
+          "sku": "B",
+          "qty": 1
+         }
+        ],
+        "sku": "C"
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "lines": [],
+        "sku": "A"
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": -2
+         }
+        ],
+        "sku": "A"
+       },
+       "refuse": "BadQty"
+      }
+     ],
+     "line": 90
+    },
+    "qty_nonneg": {
+     "says": "1 when a line asks for zero or more units",
+     "in": [
+      "l"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       ">=",
+       "l.qty",
+       0
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "l": {
+         "sku": "A",
+         "qty": 2
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "l": {
+         "sku": "A",
+         "qty": -1
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 101
+    },
+    "lines_ok": {
+     "says": "true when no line asks for a negative quantity",
+     "in": [
+      "lines"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      [
+       "sum",
+       [
+        "map",
+        [
+         "lit",
+         "qty_nonneg"
+        ],
+        "lines"
+       ]
+      ],
+      [
+       "len",
+       "lines"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         },
+         {
+          "sku": "B",
+          "qty": 0
+         }
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": -1
+         }
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "lines": []
+       },
+       "out": true
+      }
+     ],
+     "line": 109
+    },
+    "line_fits": {
+     "says": "1 when the line in a names a known SKU in the stock in b and asks for no more than is available",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "p.a.qty",
+        0
+       ],
+       "err": "BadQty"
+      },
+      {
+       "expr": [
+        "stock_ok",
+        "p.b"
+       ],
+       "err": "BadStock"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadQty",
+      "BadStock"
+     ],
+     "body": [
+      {
+       "let": "k",
+       "expr": [
+        "known",
+        "p.b",
+        "p.a.sku"
+       ]
+      },
+      {
+       "let": "it",
+       "expr": [
+        "if",
+        "k",
+        [
+         "find_item",
+         "p.b",
+         "p.a.sku"
+        ],
+        [
+         "rec",
+         "sku",
+         [
+          "lit",
+          "NONE"
+         ],
+         "name",
+         [
+          "lit",
+          "-"
+         ],
+         "price",
+         1,
+         "on_hand",
+         0,
+         "reserved",
+         0
+        ]
+       ]
+      }
+     ],
+     "out": [
+      "if",
+      [
+       "and",
+       "k",
+       [
+        "<=",
+        "p.a.qty",
+        [
+         "available",
+         "it"
+        ]
+       ]
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 2
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 3
+          }
+         ]
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 3
+          }
+         ]
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "Z",
+          "qty": 1
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 3
+          }
+         ]
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": -1
+         },
+         "b": []
+        }
+       },
+       "refuse": "BadQty"
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "qty": 1
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 6
+          }
+         ]
+        }
+       },
+       "refuse": "BadStock"
+      }
+     ],
+     "line": 118
+    },
+    "lines_fit": {
+     "says": "true when every line fits the stock on its own; lines with distinct SKUs then fit together",
+     "in": [
+      "lines",
+      "items"
+     ],
+     "fx": [],
+     "raises": [
+      "BadQty",
+      "BadStock"
+     ],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      [
+       "sum",
+       [
+        "map",
+        [
+         "lit",
+         "line_fits"
+        ],
+        [
+         "pairs",
+         "lines",
+         [
+          "list",
+          "items"
+         ]
+        ]
+       ]
+      ],
+      [
+       "len",
+       "lines"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         }
+        ],
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 3
+         }
+        ],
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "lines": [],
+        "items": []
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": -1
+         }
+        ],
+        "items": []
+       },
+       "refuse": "BadQty"
+      },
+      {
+       "args": {
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         }
+        ],
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 6
+         }
+        ]
+       },
+       "refuse": "BadStock"
+      }
+     ],
+     "line": 133
+    },
+    "reserve_by_lines": {
+     "says": "the item in a with the units the lines in b need added to its reservation",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "lines_ok",
+        "p.b"
+       ],
+       "err": "BadQty"
+      },
+      {
+       "expr": [
+        "<=",
+        [
+         "+",
+         "p.a.reserved",
+         [
+          "needed",
+          "p.b",
+          "p.a.sku"
+         ]
+        ],
+        "p.a.on_hand"
+       ],
+       "err": "InsufficientStock"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.on_hand",
+       "p.a.on_hand"
+      ],
+      [
+       "<=",
+       "out.reserved",
+       "out.on_hand"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadQty",
+      "InsufficientStock"
+     ],
+     "body": [],
+     "out": [
+      "with",
+      "p.a",
+      "reserved",
+      [
+       "+",
+       "p.a.reserved",
+       [
+        "needed",
+        "p.b",
+        "p.a.sku"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "qty": 2
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "name": "a",
+        "price": 10,
+        "on_hand": 5,
+        "reserved": 5
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "B",
+           "qty": 2
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "name": "a",
+        "price": 10,
+        "on_hand": 5,
+        "reserved": 3
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "qty": 3
+          }
+         ]
+        }
+       },
+       "refuse": "InsufficientStock"
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "qty": -1
+          }
+         ]
+        }
+       },
+       "refuse": "BadQty"
+      }
+     ],
+     "line": 145
+    },
+    "reserve_all": {
+     "says": "the stock with every line reserved, as one step: all lines fit or nothing changes",
+     "in": [
+      "items",
+      "lines"
+     ],
+     "fx": [],
+     "raises": [
+      "InsufficientStock"
+     ],
+     "pre": [
+      {
+       "expr": [
+        "lines_ok",
+        "lines"
+       ],
+       "err": "BadQty"
+      },
+      {
+       "expr": [
+        "unique_text",
+        [
+         "map",
+         [
+          "lit",
+          "sku_of"
+         ],
+         "lines"
+        ]
+       ],
+       "err": "DuplicateSku"
+      },
+      {
+       "expr": [
+        "stock_ok",
+        "items"
+       ],
+       "err": "BadStock"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "items"
+       ]
+      ],
+      [
+       "stock_ok",
+       "out"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadQty",
+      "DuplicateSku",
+      "BadStock"
+     ],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "reserve_by_lines"
+      ],
+      [
+       "pairs",
+       "items",
+       [
+        "list",
+        "lines"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 0
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         },
+         {
+          "sku": "B",
+          "qty": 1
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "on_hand": 5,
+         "reserved": 5
+        },
+        {
+         "sku": "B",
+         "name": "b",
+         "price": 1,
+         "on_hand": 1,
+         "reserved": 1
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 3
+         }
+        ]
+       },
+       "refuse": "InsufficientStock"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 1
+         },
+         {
+          "sku": "A",
+          "qty": 1
+         }
+        ]
+       },
+       "refuse": "DuplicateSku"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": -1
+         }
+        ]
+       },
+       "refuse": "BadQty"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 6
+         }
+        ],
+        "lines": []
+       },
+       "refuse": "BadStock"
+      }
+     ],
+     "line": 158
+    },
+    "release_by_lines": {
+     "says": "the item in a with the units the lines in b need taken off its reservation",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "lines_ok",
+        "p.b"
+       ],
+       "err": "BadQty"
+      },
+      {
+       "expr": [
+        ">=",
+        "p.a.reserved",
+        [
+         "needed",
+         "p.b",
+         "p.a.sku"
+        ]
+       ],
+       "err": "NotHeld"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.on_hand",
+       "p.a.on_hand"
+      ],
+      [
+       ">=",
+       "out.reserved",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadQty",
+      "NotHeld"
+     ],
+     "body": [],
+     "out": [
+      "with",
+      "p.a",
+      "reserved",
+      [
+       "-",
+       "p.a.reserved",
+       [
+        "needed",
+        "p.b",
+        "p.a.sku"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "qty": 2
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "name": "a",
+        "price": 10,
+        "on_hand": 5,
+        "reserved": 1
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 1
+         },
+         "b": [
+          {
+           "sku": "A",
+           "qty": 2
+          }
+         ]
+        }
+       },
+       "refuse": "NotHeld"
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 1
+         },
+         "b": [
+          {
+           "sku": "A",
+           "qty": -2
+          }
+         ]
+        }
+       },
+       "refuse": "BadQty"
+      }
+     ],
+     "line": 174
+    },
+    "release_all": {
+     "says": "the stock with every line's reservation released",
+     "in": [
+      "items",
+      "lines"
+     ],
+     "fx": [],
+     "raises": [
+      "NotHeld"
+     ],
+     "pre": [
+      {
+       "expr": [
+        "lines_ok",
+        "lines"
+       ],
+       "err": "BadQty"
+      },
+      {
+       "expr": [
+        "stock_ok",
+        "items"
+       ],
+       "err": "BadStock"
+      }
+     ],
+     "post": [
+      [
+       "stock_ok",
+       "out"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadQty",
+      "BadStock"
+     ],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "release_by_lines"
+      ],
+      [
+       "pairs",
+       "items",
+       [
+        "list",
+        "lines"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "on_hand": 5,
+         "reserved": 1
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 1
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         }
+        ]
+       },
+       "refuse": "NotHeld"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 1
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": -2
+         }
+        ]
+       },
+       "refuse": "BadQty"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 6
+         }
+        ],
+        "lines": []
+       },
+       "refuse": "BadStock"
+      }
+     ],
+     "line": 186
+    },
+    "consume_by_lines": {
+     "says": "the item in a after the units the lines in b need are sold: off the shelf and off the reservation",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "lines_ok",
+        "p.b"
+       ],
+       "err": "BadQty"
+      },
+      {
+       "expr": [
+        ">=",
+        "p.a.reserved",
+        [
+         "needed",
+         "p.b",
+         "p.a.sku"
+        ]
+       ],
+       "err": "NotHeld"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       [
+        "-",
+        "p.a.on_hand",
+        "out.on_hand"
+       ],
+       [
+        "-",
+        "p.a.reserved",
+        "out.reserved"
+       ]
+      ],
+      [
+       ">=",
+       "out.reserved",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadQty",
+      "NotHeld"
+     ],
+     "body": [
+      {
+       "let": "n",
+       "expr": [
+        "needed",
+        "p.b",
+        "p.a.sku"
+       ]
+      }
+     ],
+     "out": [
+      "with",
+      "p.a",
+      "on_hand",
+      [
+       "-",
+       "p.a.on_hand",
+       "n"
+      ],
+      "reserved",
+      [
+       "-",
+       "p.a.reserved",
+       "n"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "qty": 2
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "name": "a",
+        "price": 10,
+        "on_hand": 3,
+        "reserved": 1
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 1
+         },
+         "b": [
+          {
+           "sku": "A",
+           "qty": 2
+          }
+         ]
+        }
+       },
+       "refuse": "NotHeld"
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 1
+         },
+         "b": [
+          {
+           "sku": "A",
+           "qty": -2
+          }
+         ]
+        }
+       },
+       "refuse": "BadQty"
+      }
+     ],
+     "line": 199
+    },
+    "consume_all": {
+     "says": "the stock after every line is sold",
+     "in": [
+      "items",
+      "lines"
+     ],
+     "fx": [],
+     "raises": [
+      "NotHeld"
+     ],
+     "pre": [
+      {
+       "expr": [
+        "lines_ok",
+        "lines"
+       ],
+       "err": "BadQty"
+      },
+      {
+       "expr": [
+        "stock_ok",
+        "items"
+       ],
+       "err": "BadStock"
+      }
+     ],
+     "post": [
+      [
+       "stock_ok",
+       "out"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadQty",
+      "BadStock"
+     ],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "consume_by_lines"
+      ],
+      [
+       "pairs",
+       "items",
+       [
+        "list",
+        "lines"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "on_hand": 3,
+         "reserved": 1
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 1
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": 2
+         }
+        ]
+       },
+       "refuse": "NotHeld"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 1
+         }
+        ],
+        "lines": [
+         {
+          "sku": "A",
+          "qty": -2
+         }
+        ]
+       },
+       "refuse": "BadQty"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 6
+         }
+        ],
+        "lines": []
+       },
+       "refuse": "BadStock"
+      }
+     ],
+     "line": 212
+    },
+    "refresh_item": {
+     "says": "the item in a updated from the snapshot records in b when listed: name and price follow the supplier, on hand becomes the supplier's unsold count; reservations are kept",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out.sku",
+       "p.a.sku"
+      ],
+      [
+       "==",
+       "out.reserved",
+       "p.a.reserved"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [
+      {
+       "let": "hs",
+       "expr": [
+        "hits",
+        "p.b",
+        "p.a.sku"
+       ]
+      },
+      {
+       "let": "listed",
+       "expr": [
+        "==",
+        [
+         "len",
+         "hs"
+        ],
+        1
+       ]
+      },
+      {
+       "let": "r",
+       "expr": [
+        "at",
+        [
+         "if",
+         "listed",
+         "hs",
+         [
+          "list",
+          "p.a"
+         ]
+        ],
+        0
+       ]
+      }
+     ],
+     "out": [
+      "if",
+      "listed",
+      [
+       "with",
+       "p.a",
+       "name",
+       "r.name",
+       "price",
+       "r.price",
+       "on_hand",
+       "r.qty"
+      ],
+      "p.a"
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "A new",
+           "price": 12,
+           "qty": 4
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "name": "A new",
+        "price": 12,
+        "on_hand": 4,
+        "reserved": 3
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "B",
+           "name": "b",
+           "price": 12,
+           "qty": 4
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "name": "a",
+        "price": 10,
+        "on_hand": 5,
+        "reserved": 3
+       }
+      }
+     ],
+     "line": 227
+    },
+    "not_listed": {
+     "says": "true when the record in a names a SKU absent from the items in b",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "not",
+      [
+       "known",
+       "p.b",
+       "p.a.sku"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "C",
+          "name": "c",
+          "price": 1,
+          "qty": 1
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 3
+          }
+         ]
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "c",
+          "price": 1,
+          "qty": 1
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 3
+          }
+         ]
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 239
+    },
+    "new_item": {
+     "says": "a stock item for a snapshot record new to the shop: nothing reserved yet",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out.reserved",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "rec",
+      "sku",
+      "r.sku",
+      "name",
+      "r.name",
+      "price",
+      "r.price",
+      "on_hand",
+      "r.qty",
+      "reserved",
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "sku": "C",
+         "name": "c",
+         "price": 1,
+         "qty": 7
+        }
+       },
+       "out": {
+        "sku": "C",
+        "name": "c",
+        "price": 1,
+        "on_hand": 7,
+        "reserved": 0
+       }
+      }
+     ],
+     "line": 247
+    },
+    "new_items": {
+     "says": "stock items for the snapshot records the shop does not carry yet, in record order",
+     "in": [
+      "items",
+      "records"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "<=",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "records"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "new_item"
+      ],
+      [
+       "map",
+       [
+        "lit",
+        "a_of"
+       ],
+       [
+        "filter",
+        [
+         "lit",
+         "not_listed"
+        ],
+        [
+         "pairs",
+         "records",
+         [
+          "list",
+          "items"
+         ]
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "records": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": 4
+         },
+         {
+          "sku": "C",
+          "name": "c",
+          "price": 1,
+          "qty": 7
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "C",
+         "name": "c",
+         "price": 1,
+         "on_hand": 7,
+         "reserved": 0
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [],
+        "records": []
+       },
+       "out": []
+      }
+     ],
+     "line": 254
+    },
+    "is_conflict": {
+     "says": "true when the snapshot records in b list the item in a with fewer units than it has reserved",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [
+      {
+       "let": "hs",
+       "expr": [
+        "hits",
+        "p.b",
+        "p.a.sku"
+       ]
+      },
+      {
+       "let": "listed",
+       "expr": [
+        "==",
+        [
+         "len",
+         "hs"
+        ],
+        1
+       ]
+      },
+      {
+       "let": "r",
+       "expr": [
+        "at",
+        [
+         "if",
+         "listed",
+         "hs",
+         [
+          "list",
+          "p.a"
+         ]
+        ],
+        0
+       ]
+      }
+     ],
+     "out": [
+      "if",
+      "listed",
+      [
+       "<",
+       "r.qty",
+       "p.a.reserved"
+      ],
+      false
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "qty": 2
+          }
+         ]
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "qty": 3
+          }
+         ]
+        }
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": []
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 262
+    },
+    "conflict_view": {
+     "says": "a conflict as the operator sees it: SKU, units reserved, units the supplier reports",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "is_conflict",
+        "p"
+       ],
+       "err": "NotAConflict"
+      }
+     ],
+     "post": [
+      [
+       "<",
+       "out.supplier",
+       "out.reserved"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "NotAConflict"
+     ],
+     "body": [
+      {
+       "let": "r",
+       "expr": [
+        "at",
+        [
+         "hits",
+         "p.b",
+         "p.a.sku"
+        ],
+        0
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "sku",
+      "p.a.sku",
+      "reserved",
+      "p.a.reserved",
+      "supplier",
+      "r.qty"
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "qty": 2
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "reserved": 3,
+        "supplier": 2
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         "b": []
+        }
+       },
+       "refuse": "NotAConflict"
+      }
+     ],
+     "line": 274
+    },
+    "conflicts": {
+     "says": "every SKU whose reported units are below its reservation; a snapshot with any is rejected whole",
+     "in": [
+      "items",
+      "records"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "<=",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "items"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "conflict_view"
+      ],
+      [
+       "filter",
+       [
+        "lit",
+        "is_conflict"
+       ],
+       [
+        "pairs",
+        "items",
+        [
+         "list",
+         "records"
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 1
+         }
+        ],
+        "records": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": 2
+         },
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "qty": 1
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "A",
+         "reserved": 3,
+         "supplier": 2
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [],
+        "records": []
+       },
+       "out": []
+      }
+     ],
+     "line": 284
+    },
+    "record_ok": {
+     "says": "1 when a snapshot record is a well-formed product: SKU text, nonempty name, positive price, nonnegative units",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "and",
+       [
+        "is_sku_text",
+        "r.sku"
+       ],
+       [
+        ">",
+        [
+         "scalars",
+         "r.name"
+        ],
+        0
+       ],
+       [
+        ">",
+        "r.price",
+        0
+       ],
+       [
+        ">=",
+        "r.qty",
+        0
+       ]
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "qty": 4
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "r": {
+         "sku": "A new",
+         "name": "a",
+         "price": 10,
+         "qty": 4
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "r": {
+         "sku": "A",
+         "name": "a",
+         "price": 10,
+         "qty": -1
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 292
+    },
+    "records_ok": {
+     "says": "true when every snapshot record is well formed",
+     "in": [
+      "records"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      [
+       "sum",
+       [
+        "map",
+        [
+         "lit",
+         "record_ok"
+        ],
+        "records"
+       ]
+      ],
+      [
+       "len",
+       "records"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "records": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": 4
+         }
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "sku": "A",
+          "name": "",
+          "price": 10,
+          "qty": 4
+         }
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "records": []
+       },
+       "out": true
+      }
+     ],
+     "line": 301
+    },
+    "apply_snapshot": {
+     "says": "the stock after a whole supplier snapshot: listed SKUs take the supplier's counts, names and prices; unlisted SKUs are kept; new SKUs are added; reservations never change",
+     "in": [
+      "items",
+      "records"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "stock_ok",
+        "items"
+       ],
+       "err": "BadStock"
+      },
+      {
+       "expr": [
+        "records_ok",
+        "records"
+       ],
+       "err": "BadRecord"
+      },
+      {
+       "expr": [
+        "unique_text",
+        [
+         "map",
+         [
+          "lit",
+          "sku_of"
+         ],
+         "records"
+        ]
+       ],
+       "err": "DuplicateSku"
+      },
+      {
+       "expr": [
+        "==",
+        [
+         "len",
+         [
+          "conflicts",
+          "items",
+          "records"
+         ]
+        ],
+        0
+       ],
+       "err": "StockBelowReserved"
+      }
+     ],
+     "post": [
+      [
+       "stock_ok",
+       "out"
+      ],
+      [
+       ">=",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "items"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadStock",
+      "BadRecord",
+      "DuplicateSku",
+      "StockBelowReserved"
+     ],
+     "body": [],
+     "out": [
+      "concat",
+      [
+       "map",
+       [
+        "lit",
+        "refresh_item"
+       ],
+       [
+        "pairs",
+        "items",
+        [
+         "list",
+         "records"
+        ]
+       ]
+      ],
+      [
+       "new_items",
+       "items",
+       "records"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "on_hand": 1,
+          "reserved": 1
+         },
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "records": [
+         {
+          "sku": "A",
+          "name": "A new",
+          "price": 12,
+          "qty": 4
+         },
+         {
+          "sku": "C",
+          "name": "c",
+          "price": 1,
+          "qty": 7
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "B",
+         "name": "b",
+         "price": 1,
+         "on_hand": 1,
+         "reserved": 1
+        },
+        {
+         "sku": "A",
+         "name": "A new",
+         "price": 12,
+         "on_hand": 4,
+         "reserved": 3
+        },
+        {
+         "sku": "C",
+         "name": "c",
+         "price": 1,
+         "on_hand": 7,
+         "reserved": 0
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "records": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": 2
+         }
+        ]
+       },
+       "refuse": "StockBelowReserved"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "records": [
+         {
+          "sku": "C",
+          "name": "c",
+          "price": 1,
+          "qty": 2
+         },
+         {
+          "sku": "C",
+          "name": "c",
+          "price": 1,
+          "qty": 2
+         }
+        ]
+       },
+       "refuse": "DuplicateSku"
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 6
+         }
+        ],
+        "records": []
+       },
+       "refuse": "BadStock"
+      },
+      {
+       "args": {
+        "items": [],
+        "records": [
+         {
+          "sku": "A",
+          "name": "",
+          "price": 10,
+          "qty": 4
+         }
+        ]
+       },
+       "refuse": "BadRecord"
+      }
+     ],
+     "line": 310
+    },
+    "change_of": {
+     "says": "what a snapshot record in a does to availability given the stock in b: available before and after",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "stock_ok",
+        "p.b"
+       ],
+       "err": "BadStock"
+      },
+      {
+       "expr": [
+        "==",
+        [
+         "record_ok",
+         "p.a"
+        ],
+        1
+       ],
+       "err": "BadRecord"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.sku",
+       "p.a.sku"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadStock",
+      "BadRecord"
+     ],
+     "body": [
+      {
+       "let": "k",
+       "expr": [
+        "known",
+        "p.b",
+        "p.a.sku"
+       ]
+      },
+      {
+       "let": "it",
+       "expr": [
+        "if",
+        "k",
+        [
+         "find_item",
+         "p.b",
+         "p.a.sku"
+        ],
+        [
+         "rec",
+         "sku",
+         "p.a.sku",
+         "name",
+         [
+          "lit",
+          "-"
+         ],
+         "price",
+         1,
+         "on_hand",
+         0,
+         "reserved",
+         0
+        ]
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "sku",
+      "p.a.sku",
+      "name",
+      "p.a.name",
+      "before",
+      [
+       "available",
+       "it"
+      ],
+      "after",
+      [
+       "-",
+       "p.a.qty",
+       "it.reserved"
+      ],
+      "new",
+      [
+       "not",
+       "k"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": 4
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 3
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "name": "a",
+        "before": 2,
+        "after": 1,
+        "new": false
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "C",
+          "name": "c",
+          "price": 1,
+          "qty": 7
+         },
+         "b": []
+        }
+       },
+       "out": {
+        "sku": "C",
+        "name": "c",
+        "before": 0,
+        "after": 7,
+        "new": true
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "C",
+          "name": "c",
+          "price": 1,
+          "qty": 7
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 10,
+           "on_hand": 5,
+           "reserved": 6
+          }
+         ]
+        }
+       },
+       "refuse": "BadStock"
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "c",
+          "name": "c",
+          "price": 1,
+          "qty": 7
+         },
+         "b": []
+        }
+       },
+       "refuse": "BadRecord"
+      }
+     ],
+     "line": 326
+    },
+    "changes": {
+     "says": "the availability change for every snapshot record",
+     "in": [
+      "items",
+      "records"
+     ],
+     "fx": [],
+     "raises": [
+      "BadStock"
+     ],
+     "pre": [
+      {
+       "expr": [
+        "records_ok",
+        "records"
+       ],
+       "err": "BadRecord"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "records"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadRecord"
+     ],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "change_of"
+      ],
+      [
+       "pairs",
+       "records",
+       [
+        "list",
+        "items"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 3
+         }
+        ],
+        "records": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": 4
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "A",
+         "name": "a",
+         "before": 2,
+         "after": 1,
+         "new": false
+        }
+       ]
+      },
+      {
+       "args": {
+        "items": [],
+        "records": []
+       },
+       "out": []
+      },
+      {
+       "args": {
+        "items": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "on_hand": 5,
+          "reserved": 6
+         }
+        ],
+        "records": [
+         {
+          "sku": "A",
+          "name": "a",
+          "price": 10,
+          "qty": 4
+         }
+        ]
+       },
+       "refuse": "BadStock"
+      },
+      {
+       "args": {
+        "items": [],
+        "records": [
+         {
+          "sku": "a",
+          "name": "a",
+          "price": 10,
+          "qty": 4
+         }
+        ]
+       },
+       "refuse": "BadRecord"
+      }
+     ],
+     "line": 340
+    }
+   }
+  }
+ }
+}

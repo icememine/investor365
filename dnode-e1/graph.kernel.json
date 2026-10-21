@@ -1,0 +1,1350 @@
+{
+ "roots": {
+  "kernel": {
+   "name": "kernel",
+   "uses": [],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {
+    "M": 9007199254740991,
+    "HALF_M": 4503599627370495,
+    "NEG3": -3,
+    "ONE": 1,
+    "TWO": 2
+   },
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "k04_div": {
+     "says": "floor division: out is the unique q with a = b·q + r and r between 0 and b (exclusive of b), on the divisor's side of zero",
+     "in": [
+      "a",
+      "b"
+     ],
+     "fx": [],
+     "raises": [
+      "DivideByZero"
+     ],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       [
+        "sign",
+        [
+         "-",
+         "a",
+         [
+          "*",
+          "b",
+          "out"
+         ]
+        ]
+       ],
+       [
+        "if",
+        [
+         "==",
+         [
+          "-",
+          "a",
+          [
+           "*",
+           "b",
+           "out"
+          ]
+         ],
+         0
+        ],
+        0,
+        [
+         "sign",
+         "b"
+        ]
+       ]
+      ],
+      [
+       "<",
+       [
+        "abs",
+        [
+         "-",
+         "a",
+         [
+          "*",
+          "b",
+          "out"
+         ]
+        ]
+       ],
+       [
+        "abs",
+        "b"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "div",
+      "a",
+      "b"
+     ],
+     "ex": [
+      {
+       "args": {
+        "a": 7,
+        "b": 2
+       },
+       "out": 3
+      },
+      {
+       "args": {
+        "a": -7,
+        "b": 2
+       },
+       "out": -4
+      },
+      {
+       "args": {
+        "a": 0,
+        "b": 5
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "a": -1,
+        "b": 9007199254740991
+       },
+       "out": -1
+      },
+      {
+       "args": {
+        "a": 1,
+        "b": 0
+       },
+       "refuse": "DivideByZero"
+      }
+     ],
+     "line": 14
+    },
+    "k04_div_edge": {
+     "says": "floor division at the edge of the range, where b·q would overflow if the relation were checked by bounded multiplication; the expected values come from the oracle",
+     "in": [
+      "a",
+      "b"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "in",
+        "b",
+        [
+         "list",
+         -3,
+         3
+        ]
+       ],
+       "err": "OnlyEdgeCases"
+      },
+      {
+       "expr": [
+        "in",
+        "a",
+        [
+         "list",
+         9007199254740991,
+         -9007199254740991
+        ]
+       ],
+       "err": "OnlyEdgeCases"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "if",
+        [
+         ">",
+         "b",
+         0
+        ],
+        [
+         "if",
+         [
+          "<",
+          "a",
+          0
+         ],
+         -3002399751580331,
+         3002399751580330
+        ],
+        [
+         "if",
+         [
+          "<",
+          "a",
+          0
+         ],
+         3002399751580330,
+         -3002399751580331
+        ]
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "OnlyEdgeCases"
+     ],
+     "body": [],
+     "out": [
+      "div",
+      "a",
+      "b"
+     ],
+     "ex": [
+      {
+       "args": {
+        "a": 9007199254740991,
+        "b": -3
+       },
+       "out": -3002399751580331
+      },
+      {
+       "args": {
+        "a": -9007199254740991,
+        "b": 3
+       },
+       "out": -3002399751580331
+      },
+      {
+       "args": {
+        "a": 9007199254740991,
+        "b": 3
+       },
+       "out": 3002399751580330
+      },
+      {
+       "args": {
+        "a": -9007199254740991,
+        "b": -3
+       },
+       "out": 3002399751580330
+      },
+      {
+       "args": {
+        "a": 1,
+        "b": 0
+       },
+       "refuse": "OnlyEdgeCases"
+      }
+     ],
+     "line": 27
+    },
+    "k04_mod": {
+     "says": "remainder: out = a − b·div(a,b); zero or the divisor's sign; smaller than |b|",
+     "in": [
+      "a",
+      "b"
+     ],
+     "fx": [],
+     "raises": [
+      "DivideByZero"
+     ],
+     "pre": [],
+     "post": [
+      [
+       "or",
+       [
+        "==",
+        "out",
+        0
+       ],
+       [
+        "==",
+        [
+         "sign",
+         "out"
+        ],
+        [
+         "sign",
+         "b"
+        ]
+       ]
+      ],
+      [
+       "<",
+       [
+        "abs",
+        "out"
+       ],
+       [
+        "abs",
+        "b"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "mod",
+      "a",
+      "b"
+     ],
+     "ex": [
+      {
+       "args": {
+        "a": 7,
+        "b": 5
+       },
+       "out": 2
+      },
+      {
+       "args": {
+        "a": -1,
+        "b": 5
+       },
+       "out": 4
+      },
+      {
+       "args": {
+        "a": 7,
+        "b": -3
+       },
+       "out": -2
+      },
+      {
+       "args": {
+        "a": 9007199254740991,
+        "b": -3
+       },
+       "out": -2
+      },
+      {
+       "args": {
+        "a": -9007199254740991,
+        "b": 7
+       },
+       "out": 4
+      },
+      {
+       "args": {
+        "a": 6,
+        "b": 3
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "a": 6,
+        "b": -3
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "a": 1,
+        "b": 0
+       },
+       "refuse": "DivideByZero"
+      }
+     ],
+     "line": 40
+    },
+    "k04_sum_fits": {
+     "says": "a sum of at most two numbers within half the range cannot leave the range",
+     "in": [
+      "xs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "<=",
+        [
+         "len",
+         "xs"
+        ],
+        2
+       ],
+       "err": "TooMany"
+      },
+      {
+       "expr": [
+        "==",
+        [
+         "sum",
+         [
+          "map",
+          [
+           "lit",
+           "k04_small"
+          ],
+          "xs"
+         ]
+        ],
+        [
+         "len",
+         "xs"
+        ]
+       ],
+       "err": "TooBig"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "sum",
+        "xs"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "TooMany",
+      "TooBig"
+     ],
+     "body": [],
+     "out": [
+      "sum",
+      "xs"
+     ],
+     "ex": [
+      {
+       "args": {
+        "xs": [
+         1,
+         2
+        ]
+       },
+       "out": 3
+      },
+      {
+       "args": {
+        "xs": [
+         4503599627370495,
+         4503599627370495
+        ]
+       },
+       "out": 9007199254740990
+      },
+      {
+       "args": {
+        "xs": []
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "xs": [
+         1,
+         2,
+         3
+        ]
+       },
+       "refuse": "TooMany"
+      },
+      {
+       "args": {
+        "xs": [
+         9007199254740991,
+         0
+        ]
+       },
+       "refuse": "TooBig"
+      }
+     ],
+     "line": 56
+    },
+    "k04_small": {
+     "says": "1 when |x| is within half the range",
+     "in": [
+      "x"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "<=",
+       [
+        "abs",
+        "x"
+       ],
+       "HALF_M"
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "x": 5
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "x": 9007199254740991
+       },
+       "out": 0
+      }
+     ],
+     "line": 69
+    },
+    "k03_and_eager": {
+     "says": "and evaluates both operands: a false first operand does not spare a bad second one",
+     "in": [
+      "a",
+      "b"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "and",
+        "a",
+        "b"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "and",
+      "a",
+      "b"
+     ],
+     "ex": [
+      {
+       "args": {
+        "a": true,
+        "b": true
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "a": false,
+        "b": true
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "a": false,
+        "b": 0
+       },
+       "fault": "InputShape"
+      }
+     ],
+     "line": 79
+    },
+    "k03_if_bool": {
+     "says": "the condition of if must be a Bool",
+     "in": [
+      "c"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        1,
+        0
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      "c",
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "c": true
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "c": 0
+       },
+       "fault": "InputShape"
+      },
+      {
+       "args": {
+        "c": "true"
+       },
+       "fault": "InputShape"
+      }
+     ],
+     "line": 88
+    },
+    "k02_unselected_branch": {
+     "says": "only the selected branch of if is evaluated: the other branch may contain a fault and nothing happens",
+     "in": [
+      "c",
+      "x"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">",
+        "x",
+        0
+       ],
+       "err": "BadX"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "if",
+        "c",
+        "x",
+        0
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadX"
+     ],
+     "body": [],
+     "out": [
+      "if",
+      "c",
+      "x",
+      [
+       "div",
+       "x",
+       0
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "c": true,
+        "x": 5
+       },
+       "out": 5
+      },
+      {
+       "args": {
+        "c": false,
+        "x": 5
+       },
+       "fault": "UndeclaredRefusal"
+      },
+      {
+       "args": {
+        "c": true,
+        "x": 0
+       },
+       "refuse": "BadX"
+      }
+     ],
+     "line": 99,
+     "demo": true
+    },
+    "k02_left_to_right": {
+     "says": "arguments are evaluated left to right: the first failing argument is the one reported",
+     "in": [
+      "xs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        [
+         "len",
+         "xs"
+        ],
+        2
+       ],
+       "err": "TwoOnly"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "+",
+        [
+         "at",
+         "xs",
+         0
+        ],
+        [
+         "at",
+         "xs",
+         1
+        ]
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "TwoOnly"
+     ],
+     "body": [],
+     "out": [
+      "+",
+      [
+       "at",
+       "xs",
+       0
+      ],
+      [
+       "at",
+       "xs",
+       1
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "xs": [
+         1,
+         2
+        ]
+       },
+       "out": 3
+      },
+      {
+       "args": {
+        "xs": [
+         1,
+         2,
+         3
+        ]
+       },
+       "refuse": "TwoOnly"
+      }
+     ],
+     "line": 110
+    },
+    "k01_no_coercion": {
+     "says": "numeric text is not a number: adding it is a shape fault, not a silent conversion",
+     "in": [
+      "t"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "+",
+        "t",
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "+",
+      "t",
+      1
+     ],
+     "ex": [
+      {
+       "args": {
+        "t": 1
+       },
+       "out": 2
+      },
+      {
+       "args": {
+        "t": "1"
+       },
+       "fault": "InputShape"
+      }
+     ],
+     "line": 121
+    },
+    "k05_record_order": {
+     "says": "records are equal regardless of the order their fields were written in",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      "r",
+      [
+       "rec",
+       "b",
+       "TWO",
+       "a",
+       "ONE"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "a": 1,
+         "b": 2
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "r": {
+         "a": 1,
+         "b": 3
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 129
+    },
+    "k05_list_order": {
+     "says": "lists are equal only in order",
+     "in": [
+      "xs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      "xs",
+      [
+       "list",
+       "ONE",
+       "TWO"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "xs": [
+         1,
+         2
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "xs": [
+         2,
+         1
+        ]
+       },
+       "out": false
+      }
+     ],
+     "line": 137
+    },
+    "k05_own_field": {
+     "says": "a path reads own fields only; a field that is absent is a fault, never an inherited property",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "r.a"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "r.a",
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "a": 1
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "r": {
+         "b": 1
+        }
+       },
+       "fault": "UnboundReference"
+      }
+     ],
+     "line": 145
+    },
+    "k05_own_field_named": {
+     "says": "a field literally named constructor is an own field like any other; absence is still a fault",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "r.constructor"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "r.constructor",
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "constructor": 1
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "r": {
+         "a": 1
+        }
+       },
+       "fault": "UnboundReference"
+      }
+     ],
+     "line": 153
+    },
+    "k05_unicode": {
+     "says": "text is preserved scalar for scalar; length counts scalars, not UTF-16 units",
+     "in": [
+      "t"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "scalars",
+        "t"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "scalars",
+      "t"
+     ],
+     "ex": [
+      {
+       "args": {
+        "t": "é"
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "t": "😀"
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "t": "Việt"
+       },
+       "out": 4
+      }
+     ],
+     "line": 161
+    },
+    "k08_helper_refuses": {
+     "says": "a helper that refuses inside a precondition is a contract-evaluation fault, not a refusal",
+     "in": [
+      "x"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        [
+         "k04_div",
+         "x",
+         0
+        ],
+        0
+       ],
+       "err": "Never"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       "x"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "Never"
+     ],
+     "body": [],
+     "out": "x",
+     "ex": [
+      {
+       "args": {
+        "x": 1
+       },
+       "fault": "ContractEvaluationFault"
+      }
+     ],
+     "line": 172,
+     "demo": true
+    },
+    "k08_non_bool_pre": {
+     "says": "a precondition that is not a Bool is a contract-evaluation fault",
+     "in": [
+      "x"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": "x",
+       "err": "Never"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       "x"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "Never"
+     ],
+     "body": [],
+     "out": "x",
+     "ex": [
+      {
+       "args": {
+        "x": 1
+       },
+       "fault": "ContractEvaluationFault"
+      }
+     ],
+     "line": 181,
+     "demo": true
+    },
+    "k09_post_enforced": {
+     "says": "a false postcondition is a contract violation at run time, not a wrong answer",
+     "in": [
+      "x"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "x",
+     "ex": [
+      {
+       "args": {
+        "x": 0
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "x": 1
+       },
+       "fault": "ContractViolation"
+      }
+     ],
+     "line": 190,
+     "demo": true
+    },
+    "k10_refuses": {
+     "says": "a false precondition is this node's own refusal",
+     "in": [
+      "x"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">",
+        "x",
+        0
+       ],
+       "err": "NotPositive"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       "x"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "NotPositive"
+     ],
+     "body": [],
+     "out": "x",
+     "ex": [
+      {
+       "args": {
+        "x": 1
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "x": 0
+       },
+       "refuse": "NotPositive"
+      }
+     ],
+     "line": 199
+    },
+    "k10_propagates": {
+     "says": "a callee's refusal passes through only because it is declared",
+     "in": [
+      "x"
+     ],
+     "fx": [],
+     "raises": [
+      "NotPositive"
+     ],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "x"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "k10_refuses",
+      "x"
+     ],
+     "ex": [
+      {
+       "args": {
+        "x": 1
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "x": 0
+       },
+       "refuse": "NotPositive"
+      }
+     ],
+     "line": 208
+    },
+    "k10_undeclared": {
+     "says": "a callee's refusal that is not declared is a fault at the caller",
+     "in": [
+      "x"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "x"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "k10_refuses",
+      "x"
+     ],
+     "ex": [
+      {
+       "args": {
+        "x": 1
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "x": 0
+       },
+       "fault": "UndeclaredRefusal"
+      }
+     ],
+     "line": 217,
+     "demo": true
+    },
+    "k07_shape_in_pre": {
+     "says": "until typed inputs exist, a record's shape is checked with has in a precondition; a missing field is then a refusal rather than a fault",
+     "in": [
+      "e"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "has",
+        "e",
+        [
+         "lit",
+         "code"
+        ]
+       ],
+       "err": "BadEvent"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       "e.code"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadEvent"
+     ],
+     "body": [],
+     "out": "e.code",
+     "ex": [
+      {
+       "args": {
+        "e": {
+         "code": "A"
+        }
+       },
+       "out": "A"
+      },
+      {
+       "args": {
+        "e": {
+         "kind": "add"
+        }
+       },
+       "refuse": "BadEvent"
+      }
+     ],
+     "line": 226
+    }
+   }
+  }
+ }
+}

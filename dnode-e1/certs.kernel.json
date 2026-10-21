@@ -1,0 +1,1144 @@
+{
+  "schema": "dnode-cert/0.4",
+  "profile": null,
+  "nativesLock": "49216d6c0fe5a501",
+  "checker": "checker#bdaf0d20",
+  "at": "2026-10-20T13:17:26.747Z",
+  "publicKey": {
+    "key_ops": [
+      "verify"
+    ],
+    "ext": true,
+    "kty": "EC",
+    "x": "o7yg0bXmmE4YtBu677jQLpGIyKdPByoYmyhG9mu_Fd4",
+    "y": "0U1Xsu9wIvAS9S0Y4i2EWXj5sAOKBL4BlJt2f4H4YW4",
+    "crv": "P-256"
+  },
+  "main": "kernel",
+  "roots": {
+    "kernel": "e15b8db3f668d469"
+  },
+  "numbers": "exact",
+  "natives": {
+    "+": {
+      "hash": "04ee6755c57ad4a9",
+      "descriptionHash": "04ee6755c57ad4a9",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "gqiIAZMSg6RmBY/yvaSQd2eHgIfC/fUx6hI3uy7HbZc4jsz+E4/JzrAcl6/PlgcHhC5XOuVQS+LL+kKJE0sE1g=="
+    },
+    "-": {
+      "hash": "934cc4212d11ccc6",
+      "descriptionHash": "934cc4212d11ccc6",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "nWzwybYIKgtqwPWKqRzbQpZxIf+0VoToV5r6DCyaX7pay8fxSthifEuGqfb7IGznRPCDLAfpvEHHZNg7quH/uA=="
+    },
+    "*": {
+      "hash": "309c64ab3c37419a",
+      "descriptionHash": "309c64ab3c37419a",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "LUUhptCg6R+x8LvslV0gm2AiMozPR9mkz9PfKPRnFydL03p1TcOBhFrgkoD48Zi2+qZbwGPoHTe/5R7ZIpScaw=="
+    },
+    "/": {
+      "hash": "126cd85105575e81",
+      "descriptionHash": "126cd85105575e81",
+      "fx": [],
+      "examples": 1,
+      "status": "excluded",
+      "problems": [
+        "not allowed under numbers exact"
+      ],
+      "sig": null
+    },
+    "div": {
+      "hash": "7775975cf8fffdac",
+      "descriptionHash": "7775975cf8fffdac",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "+OD/wbUgmSOEyZexGH87E7vsWQiigEaGwn6CsJiTC+cWq0kwWCPcQ+0ma8xxbypltI/yVd7+OsrF8CzE5bDlyg=="
+    },
+    "mod": {
+      "hash": "f91010efff84116f",
+      "descriptionHash": "f91010efff84116f",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "3hxDWagRrqSfQXAYxbR+zQIbhTz3WbEOqFGKvZuZ/j0PjEH92NiSTASLdQaVdFhtlWQbVQTTgA18HdyGAikEdA=="
+    },
+    "neg": {
+      "hash": "7dca92aa6d10fe31",
+      "descriptionHash": "7dca92aa6d10fe31",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "azDzy6uszpGSCfMWFXU5fo1lB2sZvTOQLTGkLWi62W+pjKgh2XbjZyfXoC3dzJIKnwhXO5OdwyoHh5jGnwJINg=="
+    },
+    "abs": {
+      "hash": "080be550e3b503f3",
+      "descriptionHash": "080be550e3b503f3",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "0hGmu189QXtChIbK+DwaY38wgAAsffJhNGK7oVXd4E5Xh1hoFjrFriz6ozGpTfyEXKed8M+a6yTwnLiELbRVNQ=="
+    },
+    "sign": {
+      "hash": "a32a35aefeed186d",
+      "descriptionHash": "a32a35aefeed186d",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "MNflFELe5fBV7AL3pWYvy+TFWMbHGMMivweyTlKAyf7ovhAmbZPn3yGPfcad4NlrDIAdC9zfiibt4krs9uDzQg=="
+    },
+    "min": {
+      "hash": "a099efca63fb7d9d",
+      "descriptionHash": "a099efca63fb7d9d",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "NuxWB+AjY5EKrhLtDZW0m59kYSPsLSnZHdQwwTDw+KsaH2klqs37efBbTHgmdVUSnZ/ZEp5ML0P4juIvJtgkxA=="
+    },
+    "max": {
+      "hash": "adcb62320ed2da9f",
+      "descriptionHash": "adcb62320ed2da9f",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "STh6WcU+G/mD9p8qky9e4r63cxdekX0EZEAH9p2jpOK0qBfC3yHr13yJGcsQD+mbNh8vjRL2KPaEBmX+nILy8Q=="
+    },
+    "clamp": {
+      "hash": "e0ef69a2bb4c3c26",
+      "descriptionHash": "e0ef69a2bb4c3c26",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "1S23lZatpD+OoPEIGYA2991JoWzIjND5P9yXjsjz3GmVWG3Foj6CW0S/+geFPHWnyStzv8D/WyTVie2ggJBJdA=="
+    },
+    "<": {
+      "hash": "5f1100e40ae17f00",
+      "descriptionHash": "5f1100e40ae17f00",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "0AWNynrcWfe1nm6UpHxjjjivX5ikTJgCEXAifuIy020V8PtwISjWdzSBZ1CLe2Kv7lSpsTXMtczTIikEvXpq/w=="
+    },
+    "<=": {
+      "hash": "b5f065abcf4d8471",
+      "descriptionHash": "b5f065abcf4d8471",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "sYHg4xm5QrY6+kLWx7Zl8V+nH59RN+3B5MrCAHYqQ38s8PdMKvR3Ve7ji2NN0248/WKLOHl3HMErT6MritPLmA=="
+    },
+    ">": {
+      "hash": "09b22adeea354346",
+      "descriptionHash": "09b22adeea354346",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "FR8zpKLl9ZYsnylNBLzSZmpV30vFrBz+pY/XdPZ9lr4V4hXAEIeDM76oBd9z3sYiJ82djv3K9v0+lD8u8WjWjQ=="
+    },
+    ">=": {
+      "hash": "32f9c4cda2ae93d8",
+      "descriptionHash": "32f9c4cda2ae93d8",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "M1xW5MM+LynyixWL1kdnKU6PNhrDj1INpusKRnG7/ph5nNZbHMtyFN8RFXD5vNSbIesV+Icu2MHO/vFqvcpY5A=="
+    },
+    "==": {
+      "hash": "dc185b5d1231e5a2",
+      "descriptionHash": "dc185b5d1231e5a2",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "m8MvT3NYUytsfUBAVTBhVKg+6iPS/DEBMLt8xFAkMttCIdrIBDP8FHH5hfkhrsXjq8LZ+8SD6R2EGw5oySwVKQ=="
+    },
+    "!=": {
+      "hash": "6e1d3dcfbcba64e5",
+      "descriptionHash": "6e1d3dcfbcba64e5",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "GIJb+aq17iOET0LnaSj5DKox0wr6EVB6TiE63FysT2+j6Z8IjEYMYvGKI69Jns3Nb2ajYYa7tpmtjGGT1JynUg=="
+    },
+    "and": {
+      "hash": "eefbf8c8520218a6",
+      "descriptionHash": "eefbf8c8520218a6",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "ZrrPGcwRuaYfEDQ6LIWxb05dHoY6azmLLoQaqDtEdD3ZJ4otrDPCur5qdfg85DmUyMjx5IS/UN835Yty8t5ZPw=="
+    },
+    "or": {
+      "hash": "5681f711cad4d51d",
+      "descriptionHash": "5681f711cad4d51d",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "AGzjr3l6OFndqMwSQ0M04z4NORctWJgP4PO6i3MFBuw5OkNFDoo7P7EhWEqJtULgc45lt3hGoGpdxvTMa/YDCg=="
+    },
+    "not": {
+      "hash": "b3df3180de936a7e",
+      "descriptionHash": "b3df3180de936a7e",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "4+7g0nBvU7qy+M+j3V/f6hxG8xyxLQhiquGXoJDUFp9cnQc6+b48ViQysf9J1joKNifsZsZ6V1dOZZgYSDCcEQ=="
+    },
+    "in": {
+      "hash": "445de391b0b2501d",
+      "descriptionHash": "445de391b0b2501d",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "6Xga1hUNv0dW5krch3xteIiK7jgkZUPji7S7B4PSH4GGowzzOOqOCbPoX2CiD+s5CWLLWWzC6ULhDSsF68pAHw=="
+    },
+    "len": {
+      "hash": "91fb384146bacc50",
+      "descriptionHash": "91fb384146bacc50",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "4sCt/PIPRwh5pA03ytcQ5OuDc3YPd+LjAhZUHZrIRV8N6wN+5QC/hwfiEyaWRl+x+tkjs8gXJC6wi2+Hvn8y5w=="
+    },
+    "str": {
+      "hash": "1aed9d513185c308",
+      "descriptionHash": "1aed9d513185c308",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "QcbhsAuY7C1j+n+1wl2TCVt7eXq7IEr5le1H9FlX2v3Gw9xGSlDkwutgeYdtvEz9NWsHUQ9NR4F9hi5GTc4Z0g=="
+    },
+    "cat": {
+      "hash": "9803ced4c4ca74db",
+      "descriptionHash": "9803ced4c4ca74db",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "wVQhyGbs+gLBQQ/1Vg0V5ohBmhx/xtJtmP2khWtUE9Yx8TX6w6fqec5FizrX74D8tUKYgpSiIkDz1OtJKrM95w=="
+    },
+    "range": {
+      "hash": "c8b0cd8afced686a",
+      "descriptionHash": "c8b0cd8afced686a",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "xlshGcgL7nOtzqKhzIQS40T574hs79rYRHhb7UPQSTTlgjAU1brPnsrMpWMnsiUuf/czLqS4qYJXTTCJju90jA=="
+    },
+    "pairs": {
+      "hash": "f5e1f6fa15d1a2dd",
+      "descriptionHash": "f5e1f6fa15d1a2dd",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "1xCg1Cn1svDOCj4X9PV7bYZ802cXW2nswVtRVtpF0xorUNlPPQxhfvBBUqKy5IWGqoYN67CK6WeVx67HTmc9fA=="
+    },
+    "concat": {
+      "hash": "a5c07058c15403c8",
+      "descriptionHash": "a5c07058c15403c8",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "B4J5T0XzCdcR5ms3cI7yEhxxZ8+A+USsiWAFrHzK0bOECLP/44gIUHR9dwgvUR5jE7KSSwgxAYWQIC1N2s0DBA=="
+    },
+    "sum": {
+      "hash": "922549ff952b5533",
+      "descriptionHash": "922549ff952b5533",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "xSainJjVM/yiRbY+TUk3n8RHVq9MzSord0SU6TJ3yLWSVyJ3JfpddfAYdCUKSf1w7MCYaonitPOF4qgg7M3wBA=="
+    },
+    "split": {
+      "hash": "2c3e82f3f16da415",
+      "descriptionHash": "2c3e82f3f16da415",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "fgwlI6sXjPqV7WNUZP6ZudZcNj6bx4DNRfnG/5XUEdqG4guHHhTgxaLi0L1vgJaDwwtvyF0bk9bJYAC/DgXrYw=="
+    },
+    "csv_fields": {
+      "hash": "314acdfe83140b3b",
+      "descriptionHash": "314acdfe83140b3b",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "w0Dq5qWPQBAWtVjsKD222kPRkrDJ1lToDCH3yy92fZyt9q/kiaA5BmRB8yylKv+hpblclsk805S67oxi0xC7xw=="
+    },
+    "trim": {
+      "hash": "6c1e216b2266b629",
+      "descriptionHash": "6c1e216b2266b629",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "eAFSaVQAThSCHnqrSvbZJXA7XUEsqGO3LdHSGwkd+P7tuxhcmhmo+gVrO+j7tiRO5G1RnMCVVm4aAgCKtxu9AA=="
+    },
+    "to_int": {
+      "hash": "d07a011cd6cf3dbd",
+      "descriptionHash": "d07a011cd6cf3dbd",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "61ugF60tw1yZWoPrerU6BjbI1cy7uCAWq1dj5Su6w9b0Kpkd0HH/Pl/yT4k01tQSj6x9nk4A5uQmBQ0TaWEZtg=="
+    },
+    "is_int": {
+      "hash": "2ea5f9dc8ff2a268",
+      "descriptionHash": "2ea5f9dc8ff2a268",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "JIBvgnUXcCuQ+Hp+XVu53ONv7T48S/ONEE6IarwgSoUrWV3O2unGRuOuoQmEl2I8fNHy45HVcxTgAKT6BiZ8Gw=="
+    },
+    "has": {
+      "hash": "f8d36234da050f15",
+      "descriptionHash": "f8d36234da050f15",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "tijT7UTWSPmqBhgZE7e9i4kOG6fdKVSqMCYtMc/7WC/0lPm8xiYM6I7LtWWMYDvYuRlwgJgcWjN2rdo3CrWFaw=="
+    },
+    "text_len": {
+      "hash": "4a4a3d6436e9cb7a",
+      "descriptionHash": "4a4a3d6436e9cb7a",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "MGKD5MYAD76bHSvYvsz984opMuoOmoTIpL5uSAvXfba6MQM/o/Xjajl3QSCl2Z8R1p32x1aoYpADVRTGYdGN4A=="
+    },
+    "filter": {
+      "hash": "7393d722a0ea002a",
+      "descriptionHash": "7393d722a0ea002a",
+      "fx": [],
+      "examples": 0,
+      "status": "not_checked",
+      "problems": [],
+      "sig": "efHxKWOeERty8cIzsxGKA1MaRFTajWN1Y6eeYctPpEs3G1kYw5dVLHcJQMdIuhN/lpsVVmT4hCLaM76nfcTkZQ==",
+      "usedBy": []
+    },
+    "at": {
+      "hash": "a8cbbfe1c863db55",
+      "descriptionHash": "a8cbbfe1c863db55",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "GcnNEFseIe+eOb8KA2vfyx0Xk+0s7h6Efv6ah9LatYtJOqzddM9t2gNmywK9ml1cRiNAxqTGfQHAkv47mnMh+Q=="
+    },
+    "map": {
+      "hash": "a271f622dacf7803",
+      "descriptionHash": "a271f622dacf7803",
+      "fx": [],
+      "examples": 0,
+      "status": "certified-by-use",
+      "problems": [],
+      "sig": "86sHsftbhbxmcLTVsgqRIO3VzaakiZLjNArtMhvGTxmCvpRWGcx9SbMG4UenrvjAhRIA/3pJ9UNTZq4u10THyQ==",
+      "usedBy": [
+        "k04_sum_fits"
+      ]
+    },
+    "screen.draw": {
+      "hash": "a1a2c243be4b2b2c",
+      "descriptionHash": "a1a2c243be4b2b2c",
+      "fx": [
+        "screen.draw"
+      ],
+      "examples": 0,
+      "status": "not_checked",
+      "problems": [],
+      "sig": "LRiiLTZi3AXLzv4uRtwAMNzZ/aP04ypz+Ps6m+xv50Mtnn3m4QNoENfa9usQsUQ8+3UwWk8f9wSbrxlqJXkYjQ==",
+      "usedBy": []
+    },
+    "panel.show": {
+      "hash": "0760041a247770e1",
+      "descriptionHash": "0760041a247770e1",
+      "fx": [
+        "panel.show"
+      ],
+      "examples": 0,
+      "status": "not_checked",
+      "problems": [],
+      "sig": "8pKLIDcY1vtryKnSMe5VltyhRxQuSkk31Iq0uk+NC2f63ou31Ndr7GnnZsVBjLAbFE2lqXZDFDZE/Qbuy4l+/Q==",
+      "usedBy": []
+    },
+    "audio.play": {
+      "hash": "da024e91452edcc4",
+      "descriptionHash": "da024e91452edcc4",
+      "fx": [
+        "audio.play"
+      ],
+      "examples": 0,
+      "status": "not_checked",
+      "problems": [],
+      "sig": "Fs0sKIAoPIELBi2EBS35aP0JNs34vnzFpu0tKw/h0E+DqhZ5ok3iqCvnd4CThzPu/ftEHeYRtqervrLC4zZYwQ==",
+      "usedBy": []
+    },
+    "csv_records": {
+      "hash": "7b1de56ef43ce2dd",
+      "descriptionHash": "7b1de56ef43ce2dd",
+      "fx": [],
+      "examples": 7,
+      "status": "certified",
+      "problems": [],
+      "sig": "36GrGV+a1nolPx95qbS7BNQpHqUSxSjF0YdX38YFdGSLcXK55W0+K4by2UJND9GA7jmkh/dNreWNbqYbow6Fgw=="
+    },
+    "text_cmp": {
+      "hash": "f3087409724e1e6c",
+      "descriptionHash": "f3087409724e1e6c",
+      "fx": [],
+      "examples": 6,
+      "status": "certified",
+      "problems": [],
+      "sig": "2uDkVPw1fhtAP3wp8vrCWtMuYvuX2j1oUPKOdEp5bMBn6vjehEv5XD5Ar5Y7HtE2V8Vpqxzds2nyM65GWyWy1g=="
+    },
+    "is_digits": {
+      "hash": "a21310b7f7a13b95",
+      "descriptionHash": "a21310b7f7a13b95",
+      "fx": [],
+      "examples": 6,
+      "status": "certified",
+      "problems": [],
+      "sig": "DIGNtPI1GYn/86gnm4ECctkWoegebhmh7wmqbJ0q+GVCWGAYYRYA5SMBY2QN0ciGaI2YQ4N52u9lLVm4wvXcDg=="
+    },
+    "scalars": {
+      "hash": "03f8c0e9540fd482",
+      "descriptionHash": "03f8c0e9540fd482",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "GnFUN5kzVMHi05NaqILBR2BxrNaiL2tN/Yg/MCU8677ptvX42Jgr+NKVT/O3nlCf+VYlB1Zup1OAy+AyASs4Zg=="
+    },
+    "is_sku_text": {
+      "hash": "c6b1580929bb86ca",
+      "descriptionHash": "c6b1580929bb86ca",
+      "fx": [],
+      "examples": 6,
+      "status": "certified",
+      "problems": [],
+      "sig": "B8gxmXxatDTW26q5pou47ukqbBut+Fgp/xUWiWKWACRtMqJkAFqB+3MX0mIZz8JdGGeLucX7yqCWZLJxnQrPdw=="
+    },
+    "strip_zeros": {
+      "hash": "b4916767c477b984",
+      "descriptionHash": "b4916767c477b984",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "EuX9HFljE8WKDjkZU6d+6tES5x2rZSCuXVz4zSN8fys2AiJFkt7jIKg9FIKxSzBWL2sVOqIaaNrMuXm+VwgSPg=="
+    },
+    "file.export": {
+      "hash": "35c20f9eece85429",
+      "descriptionHash": "35c20f9eece85429",
+      "fx": [
+        "file.export"
+      ],
+      "examples": 0,
+      "status": "not_checked",
+      "problems": [],
+      "sig": "czmO44vHCKXAkuxymq6HEyeDHrALbV1AZkPjSGrOTUIYZqqhGant8WNpR9Yb2LdBcPJk/YIYDvY0G5oubXzj0w==",
+      "usedBy": []
+    }
+  },
+  "certified": {
+    "k04_div": {
+      "name": "k04_div",
+      "root": "kernel",
+      "hash": "42e1c6f09db0bf37",
+      "in": [
+        "a",
+        "b"
+      ],
+      "inv": [],
+      "examples": 5,
+      "descriptionHash": "57ee58931f6ee491",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "sign",
+        "-",
+        "*",
+        "<",
+        "abs",
+        "div"
+      ],
+      "passed": 5,
+      "raises": [
+        "DivideByZero"
+      ],
+      "generated": {
+        "attempted": 1207,
+        "distinct": 1207,
+        "returned": 1207,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "TJv2FVXWLn541MmnxDgsNn0JHBP1gkE6+4+i6pW7ulbnsEh4tsZe3LqDTumOJW+bNNF1emq9toAMqKbKbOB+jg=="
+    },
+    "k04_div_edge": {
+      "name": "k04_div_edge",
+      "root": "kernel",
+      "hash": "e471e813a51fc2bc",
+      "in": [
+        "a",
+        "b"
+      ],
+      "inv": [],
+      "examples": 5,
+      "descriptionHash": "d907f5df262ec5ee",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "==",
+        ">",
+        "<",
+        "div"
+      ],
+      "passed": 5,
+      "raises": [],
+      "generated": {
+        "attempted": 1003,
+        "distinct": 1003,
+        "returned": 4,
+        "preRejected": 999,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "Q1SKT8rURo20jFSri56NidSjJPZZ57Sp9Uh+QKslRO55rOAdm8lP0K5q1zbj0DyemAPcRGl5kc5jBX8uH9xHIw=="
+    },
+    "k04_mod": {
+      "name": "k04_mod",
+      "root": "kernel",
+      "hash": "208aea121352f9e3",
+      "in": [
+        "a",
+        "b"
+      ],
+      "inv": [],
+      "examples": 8,
+      "descriptionHash": "542154ee7cc6224a",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "or",
+        "==",
+        "sign",
+        "<",
+        "abs",
+        "mod"
+      ],
+      "passed": 8,
+      "raises": [
+        "DivideByZero"
+      ],
+      "generated": {
+        "attempted": 1197,
+        "distinct": 1197,
+        "returned": 1197,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "qMDvKhmOyZX6HPvlsZTvhm2W2dueG3yWeKanKOy3p9a5vg+PgcVdLjxvJSPX+wahd1FHY5nQRpSzUDppTs7NNw=="
+    },
+    "k04_small": {
+      "name": "k04_small",
+      "root": "kernel",
+      "hash": "c6134827274d5bde",
+      "in": [
+        "x"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "5bf7970a94369c76",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "<=",
+        "abs"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 552,
+        "distinct": 552,
+        "returned": 552,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "lrMYOySfXr0Omt+vuKkom3JkGubA9fm5d/FzzFmZbr3EqTWeKlmFtBuAPtwGNYxM1IEAFM6xxNsIvJf3XZx6Kw=="
+    },
+    "k04_sum_fits": {
+      "name": "k04_sum_fits",
+      "root": "kernel",
+      "hash": "2b76770ccf8c31ce",
+      "in": [
+        "xs"
+      ],
+      "inv": [],
+      "examples": 5,
+      "descriptionHash": "36dfb0546d66eece",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "<=",
+        "len",
+        "==",
+        "sum",
+        "map"
+      ],
+      "passed": 5,
+      "raises": [],
+      "generated": {
+        "attempted": 727,
+        "distinct": 727,
+        "returned": 513,
+        "preRejected": 214,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "EFIQ/jRjVzwf5V5qW53XYSScvQfePqlHlNPMrDpsDoKLBmLvYcWeLJ2fJBaMCv6Elk2nqgsEQMhNLMTroRRXXQ=="
+    },
+    "k03_and_eager": {
+      "name": "k03_and_eager",
+      "root": "kernel",
+      "hash": "2d927c1c40181d6b",
+      "in": [
+        "a",
+        "b"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "d06aeb30ffabcf3e",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "and"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 4,
+        "distinct": 4,
+        "returned": 4,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "MGoD0K6EZgQxu6hmvDbsy1s9AkUaUrth7vTikH5jzO2eSf0oYm979PtQkrz9rzmsvR88sWou3DXzEDot6PhpTQ=="
+    },
+    "k03_if_bool": {
+      "name": "k03_if_bool",
+      "root": "kernel",
+      "hash": "4ea3e569e849e15a",
+      "in": [
+        "c"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "fb8ba0cedead99f0",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 2,
+        "distinct": 2,
+        "returned": 2,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "u4Vc1ziUK5cB0V8FaOiuePLIcGBOSObgrW9vcKgLmB2iJbT6nHZIqyhtWV1rMJUdGRsaIO/9n6lxGj/Xunb6cw=="
+    },
+    "k02_left_to_right": {
+      "name": "k02_left_to_right",
+      "root": "kernel",
+      "hash": "67bc588b828530b8",
+      "in": [
+        "xs"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "0df5f4501df995f7",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "len",
+        "+",
+        "at"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1129,
+        "distinct": 1129,
+        "returned": 1129,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "8mnLjC1IIbQ11xQyaCWwWnivC/M5j/N1SyVyf9nGZckGrJlcIFVt4QbXL81OstC2D+xbfKFNKZeuYIHiV83Mcg=="
+    },
+    "k01_no_coercion": {
+      "name": "k01_no_coercion",
+      "root": "kernel",
+      "hash": "ddc6300efcb31be8",
+      "in": [
+        "t"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "d7d54a482ce61b7e",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "+"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 722,
+        "distinct": 722,
+        "returned": 722,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "x98+uYMcCIEtTp0MIuAork2KJHsGnyzBXk+P2BxJJxtsjq/oc2ETt0I0TchC0UdeeQyUBcfUeQA0evxqcGdIOg=="
+    },
+    "k05_record_order": {
+      "name": "k05_record_order",
+      "root": "kernel",
+      "hash": "342a66e3fda64ad3",
+      "in": [
+        "r"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "a667c452d351dee7",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1175,
+        "distinct": 1175,
+        "returned": 1175,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "56d1Y9wgwIc4gn5stHSzFG3/0YipmUmvrKfyDOLbblXzoSifYaaaS7JKrb8QnI26+a6qWepXeHZv9d44D/Lqeg=="
+    },
+    "k05_list_order": {
+      "name": "k05_list_order",
+      "root": "kernel",
+      "hash": "86b69fa13edc9474",
+      "in": [
+        "xs"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "3d1e92e04045e46e",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1158,
+        "distinct": 1158,
+        "returned": 1158,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "ZEiDrsnkjpz0heSAbvASECpEGXjSdml+Nmc47Dl7nKGrrW5Zy44M71dFevLkjzJRF9lgLh5Kz2uNyS46BQ/LyQ=="
+    },
+    "k05_own_field": {
+      "name": "k05_own_field",
+      "root": "kernel",
+      "hash": "c0990562f05509df",
+      "in": [
+        "r"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "f9982d33718b8de5",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 725,
+        "distinct": 725,
+        "returned": 725,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "5ksFasf6vz2sdwPSRm+U+DhzJKbnxpHRxdDvfXQKNKrUIUSgouLG6xZqm6h0WkjlxbAMDtiPIAA81up0MGlofg=="
+    },
+    "k05_own_field_named": {
+      "name": "k05_own_field_named",
+      "root": "kernel",
+      "hash": "27fa85dd61a434ea",
+      "in": [
+        "r"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "98e1862e975d2b4b",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 769,
+        "distinct": 769,
+        "returned": 769,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "kjHTjAM3ZJoowxjGuUsUTN4GV+0xW98EXqNIc4GsGSVSvbMZKsHUFz0AqPH3yutLApKikSUBSqBYV2SrpCgmDQ=="
+    },
+    "k05_unicode": {
+      "name": "k05_unicode",
+      "root": "kernel",
+      "hash": "f7412149ca0493f2",
+      "in": [
+        "t"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "6d7c84990a8e981a",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "scalars"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 3,
+        "distinct": 3,
+        "returned": 3,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "sIp76iJ94JoGX6z7r+bj39UQTq3Y7Jvu0ofROR4lWcZwqWrEHTP9CoD7GdjbivZ4+pbWJBDHKQ6B7dkM2mUcyg=="
+    },
+    "k10_refuses": {
+      "name": "k10_refuses",
+      "root": "kernel",
+      "hash": "015ee3b11157bc17",
+      "in": [
+        "x"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "049ce62f74c14cea",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">",
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 706,
+        "distinct": 706,
+        "returned": 353,
+        "preRejected": 353,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "umdbQ31ThqbaFMLkU5ZoYWKeieGlTXZs/LSBNe3SSXWw4FY8qIXp64uxL2q9DyuHA3nThKjc3pfZwDrfsV1UXA=="
+    },
+    "k10_propagates": {
+      "name": "k10_propagates",
+      "root": "kernel",
+      "hash": "95705f76faebda96",
+      "in": [
+        "x"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "3dc281d2f8c912ac",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 2,
+      "raises": [
+        "NotPositive"
+      ],
+      "generated": {
+        "attempted": 726,
+        "distinct": 726,
+        "returned": 366,
+        "preRejected": 0,
+        "propagated": 360
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "NNPtsmz7gdl2F3OKxj4zjTG2lyE1JlKn6w2lKKFWw4qkAvXC7HhSSJjC1o9S6f6jD+FR9/LVCROhcThZHvggPw=="
+    },
+    "k07_shape_in_pre": {
+      "name": "k07_shape_in_pre",
+      "root": "kernel",
+      "hash": "00b30c4b14ce9084",
+      "in": [
+        "e"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "4f832bdd56e097b8",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "has",
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1,
+        "distinct": 1,
+        "returned": 1,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z",
+      "sig": "w5UsVYXmN+0ZcI9HWf7M4MmONzFXgqSyeWHp+jzR3QsEnquJ3mG0wQBgYwCGmu9eONlugQ38YuErwD96hzDzPg=="
+    }
+  },
+  "refused": {},
+  "demonstrated": {
+    "k02_unselected_branch": {
+      "name": "k02_unselected_branch",
+      "root": "kernel",
+      "hash": "20101a2ef34a9750",
+      "in": [
+        "c",
+        "x"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "6225c961e2a0dea0",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">",
+        "==",
+        "div"
+      ],
+      "passed": 3,
+      "raises": [],
+      "demo": true,
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z"
+    },
+    "k08_helper_refuses": {
+      "name": "k08_helper_refuses",
+      "root": "kernel",
+      "hash": "27f67b4edf770712",
+      "in": [
+        "x"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "98eece37cf7bd67b",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "demo": true,
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z"
+    },
+    "k08_non_bool_pre": {
+      "name": "k08_non_bool_pre",
+      "root": "kernel",
+      "hash": "8e484bf69cf58776",
+      "in": [
+        "x"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "6d1cfa7dd2229267",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "demo": true,
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z"
+    },
+    "k09_post_enforced": {
+      "name": "k09_post_enforced",
+      "root": "kernel",
+      "hash": "b935d104a983de41",
+      "in": [
+        "x"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "ce9c0f4c2febfc6e",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "demo": true,
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z"
+    },
+    "k10_undeclared": {
+      "name": "k10_undeclared",
+      "root": "kernel",
+      "hash": "4c53c0c3052c05cd",
+      "in": [
+        "x"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "df8020ae1f0dc94f",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "demo": true,
+      "gaps": [],
+      "checker": "checker#bdaf0d20",
+      "at": "2026-10-20T13:17:26.747Z"
+    }
+  },
+  "metrics": {
+    "freshNodes": 22,
+    "preludeNodes": 0,
+    "callsToPrelude": 0,
+    "callsToFresh": 3,
+    "callsToNatives": 80,
+    "reusedCertificates": 0
+  },
+  "meaning": "Under this checker and runtime, each certified node passed its written examples and the generated inputs recorded here, kept its contracts and listed invariants on every returned case, and requested no effect beyond its declared set. This is tested evidence with signatures, not a proof over all inputs."
+}

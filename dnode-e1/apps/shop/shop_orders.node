@@ -1,0 +1,207 @@
+; shop_orders — BP-SHOP orders. An order {id lines total status} captures priced lines and an exact total at creation; they never change.
+; Status: ready (reserved, not yet submitted), pending (submitted, answer awaited), confirmed, declined, unknown (answer lost), cancelled.
+; Open orders (ready, pending, unknown) hold their reservation; every reserved unit in stock belongs to exactly one open order.
+; The instruction identity is the order id, scoped to this shop: same id and same intent continues the order; changed intent refuses.
+root shop_orders
+numbers exact
+use shop_cart
+
+node order_ok (o)
+  says "1 when an order is well formed: positive id, 1–3 priced lines with distinct SKUs, total equal to the sum of subtotals, known status"
+  fx none
+  post (in out [0 1])
+  let n (len o.lines)
+  let shape (and (>= o.id 1) (>= n 1) (<= n LINES_MAX) (unique_text (map "sku_of" o.lines)) (lines_ok o.lines) (== (sum (map "price_pos" o.lines)) n) (in o.status ["ready" "pending" "confirmed" "declined" "unknown" "cancelled"]))
+  let sums (if shape (== (sum (map "subtotal_if" o.lines)) o.total) false)
+  out (if (and shape sums) 1 0)
+  ex {o {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"}} -> 1
+  ex {o {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 21 status "ready"}} -> 0
+  ex {o {id 0 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"}} -> 0
+  ex {o {id 1 lines [] total 0 status "ready"}} -> 0
+  ex {o {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "paid"}} -> 0
+  ex {o {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 21}] total 21 status "ready"}} -> 0
+
+node subtotal_if (l)
+  says "a line's subtotal when it equals price × qty, else −1 so the order total cannot match"
+  fx none
+  post (>= out -1)
+  out (if (and (== l.subtotal (* l.price l.qty)) (>= l.subtotal 0)) l.subtotal -1)
+  ex {l {sku "A" name "a" price 10 qty 2 subtotal 20}} -> 20
+  ex {l {sku "A" name "a" price 10 qty 2 subtotal 21}} -> -1
+
+node id_text (o)
+  says "an order's id as text, for uniqueness checks"
+  fx none
+  post (== out (str o.id))
+  out (str o.id)
+  ex {o {id 7}} -> "7"
+
+node orders_ok (orders)
+  says "true when every order is well formed and ids are unique"
+  fx none
+  post (in out [true false])
+  out (and (== (sum (map "order_ok" orders)) (len orders)) (unique_text (map "id_text" orders)))
+  ex {orders [{id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"} {id 2 lines [{sku "A" name "a" price 10 qty 1 subtotal 10}] total 10 status "confirmed"}]} -> true
+  ex {orders [{id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"} {id 1 lines [{sku "A" name "a" price 10 qty 1 subtotal 10}] total 10 status "confirmed"}]} -> false
+  ex {orders []} -> true
+
+node is_open (o)
+  says "true when an order still holds its reservation: ready, pending or unknown"
+  fx none
+  post (in out [true false])
+  out (in o.status ["ready" "pending" "unknown"])
+  ex {o {status "ready"}} -> true
+  ex {o {status "unknown"}} -> true
+  ex {o {status "confirmed"}} -> false
+
+node held_by (p)
+  says "the units of the SKU in b held by the order in a: its line quantity while open, else 0"
+  fx none
+  raises BadQty
+  post (>= out 0)
+  out (if (is_open p.a) (needed p.a.lines p.b) 0)
+  ex {p {a {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"} b "A"}} -> 2
+  ex {p {a {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "confirmed"} b "A"}} -> 0
+  ex {p {a {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"} b "B"}} -> 0
+  ex {p {a {id 1 lines [{sku "A" name "a" price 10 qty -2 subtotal 20}] total 20 status "ready"} b "A"}} refuse BadQty
+
+node held (orders sku)
+  says "the units of a SKU held by all open orders"
+  fx none
+  raises BadQty
+  post (>= out 0)
+  out (sum (map "held_by" (pairs orders [sku])))
+  ex {orders [{id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"} {id 2 lines [{sku "A" name "a" price 10 qty 1 subtotal 10}] total 10 status "unknown"} {id 3 lines [{sku "A" name "a" price 10 qty 1 subtotal 10}] total 10 status "declined"}] sku "A"} -> 3
+  ex {orders [] sku "A"} -> 0
+  ex {orders [{id 1 lines [{sku "A" name "a" price 10 qty -2 subtotal 20}] total 20 status "ready"}] sku "A"} refuse BadQty
+
+node item_held_ok (p)
+  says "1 when the reservation of the item in a equals the units held by the open orders in b"
+  fx none
+  raises BadQty
+  post (in out [0 1])
+  out (if (== p.a.reserved (held p.b p.a.sku)) 1 0)
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 2} b [{id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"}]}} -> 1
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"}]}} -> 0
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{id 1 lines [{sku "A" name "a" price 10 qty -2 subtotal 20}] total 20 status "ready"}]}} refuse BadQty
+
+node reservations_consistent (items orders)
+  says "true when every item's reservation is exactly what the open orders hold, and open orders name only stocked SKUs"
+  fx none
+  raises BadQty
+  post (in out [true false])
+  out (and (== (sum (map "item_held_ok" (pairs items [orders]))) (len items)) (== (sum (map "open_lines_known" (pairs orders [items]))) (len orders)))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 2} {sku "B" name "b" price 1 on_hand 1 reserved 0}] orders [{id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"}]} -> true
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 1}] orders [{id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"}]} -> false
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 0}] orders [{id 1 lines [{sku "Z" name "z" price 10 qty 2 subtotal 20}] total 20 status "ready"}]} -> false
+  ex {items [] orders []} -> true
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 1}] orders [{id 1 lines [{sku "A" name "a" price 10 qty -2 subtotal 20}] total 20 status "ready"}]} refuse BadQty
+
+node line_known (p)
+  says "1 when the line in a names a SKU carried by the stock in b"
+  fx none
+  post (in out [0 1])
+  out (if (known p.b p.a.sku) 1 0)
+  ex {p {a {sku "A" qty 1} b [{sku "A" name "a" price 10 on_hand 5 reserved 0}]}} -> 1
+  ex {p {a {sku "Z" qty 1} b [{sku "A" name "a" price 10 on_hand 5 reserved 0}]}} -> 0
+
+node open_lines_known (p)
+  says "1 when the order in a is closed, or every line of it names a SKU in the stock in b"
+  fx none
+  post (in out [0 1])
+  out (if (is_open p.a) (if (== (sum (map "line_known" (pairs p.a.lines [p.b]))) (len p.a.lines)) 1 0) 1)
+  ex {p {a {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"} b [{sku "A" name "a" price 10 on_hand 5 reserved 2}]}} -> 1
+  ex {p {a {id 1 lines [{sku "Z" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"} b [{sku "A" name "a" price 10 on_hand 5 reserved 2}]}} -> 0
+  ex {p {a {id 1 lines [{sku "Z" name "a" price 10 qty 2 subtotal 20}] total 20 status "declined"} b []}} -> 1
+
+node id_matches (p)
+  says "true when the order in a has the id in b"
+  fx none
+  post (in out [true false])
+  out (== p.a.id p.b)
+  ex {p {a {id 1} b 1}} -> true
+  ex {p {a {id 1} b 2}} -> false
+
+node order_hits (orders id)
+  says "the orders with an id"
+  fx none
+  post (<= (len out) (len orders))
+  out (map "a_of" (filter "id_matches" (pairs orders [id])))
+  ex {orders [{id 1 status "ready"} {id 2 status "ready"}] id 2} -> [{id 2 status "ready"}]
+  ex {orders [{id 1 status "ready"}] id 3} -> []
+
+node has_order (orders id)
+  says "true when exactly one order has the id"
+  fx none
+  post (in out [true false])
+  out (== (len (order_hits orders id)) 1)
+  ex {orders [{id 1 status "ready"}] id 1} -> true
+  ex {orders [{id 1 status "ready"}] id 3} -> false
+
+node find_order (orders id)
+  says "the order with an id"
+  fx none
+  pre (has_order orders id) UnknownOrder
+  post (== out.id id)
+  out (at (order_hits orders id) 0)
+  ex {orders [{id 1 status "ready"} {id 2 status "pending"}] id 2} -> {id 2 status "pending"}
+  ex {orders [{id 1 status "ready"}] id 3} refuse UnknownOrder
+
+node status_of (orders id)
+  says "the status of the order with an id"
+  fx none
+  raises UnknownOrder
+  post (in out ["ready" "pending" "confirmed" "declined" "unknown" "cancelled" "other"])
+  let o (find_order orders id)
+  out (if (in o.status ["ready" "pending" "confirmed" "declined" "unknown" "cancelled"]) o.status "other")
+  ex {orders [{id 1 status "ready"}] id 1} -> "ready"
+  ex {orders [{id 1 status "paid"}] id 1} -> "other"
+  ex {orders [{id 1 status "ready"}] id 3} refuse UnknownOrder
+
+node set_status_if (p)
+  says "the order in a with the status in b when the ids match, else unchanged"
+  fx none
+  post (== out.id p.a.id)
+  out (if (== p.a.id p.b.id) (with p.a status p.b.status) p.a)
+  ex {p {a {id 1 status "ready"} b {id 1 status "pending"}}} -> {id 1 status "pending"}
+  ex {p {a {id 1 status "ready"} b {id 2 status "pending"}}} -> {id 1 status "ready"}
+
+node with_status (orders id status)
+  says "the orders with one order's status replaced; lines and total untouched"
+  fx none
+  pre (has_order orders id) UnknownOrder
+  pre (in status ["ready" "pending" "confirmed" "declined" "unknown" "cancelled"]) BadStatus
+  post (== (len out) (len orders))
+  post (== (status_of out id) status)
+  out (map "set_status_if" (pairs orders [{id id status status}]))
+  ex {orders [{id 1 status "ready"} {id 2 status "ready"}] id 2 status "pending"} -> [{id 1 status "ready"} {id 2 status "pending"}]
+  ex {orders [{id 1 status "ready"}] id 3 status "pending"} refuse UnknownOrder
+  ex {orders [{id 1 status "ready"}] id 1 status "paid"} refuse BadStatus
+
+node same_intent (o lines)
+  says "true when the cart lines mean the same purchase as the order's captured lines: same SKUs with the same quantities, in any order"
+  fx none
+  raises DuplicateSku
+  post (in out [true false])
+  out (== (canonical_intent o.lines) (canonical_intent lines))
+  ex {o {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20} {sku "B" name "b" price 1 qty 1 subtotal 1}] total 21 status "ready"} lines [{sku "B" qty 1} {sku "A" qty 2}]} -> true
+  ex {o {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"} lines [{sku "A" qty 3}]} -> false
+  ex {o {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"} lines [{sku "A" qty 1} {sku "A" qty 1}]} refuse DuplicateSku
+
+node new_order (id plines)
+  says "an order created from priced lines: captured prices, exact total, status ready"
+  fx none
+  raises BadLine BadQty BadPrice
+  pre (>= id 1) BadId
+  pre (and (>= (len plines) 1) (<= (len plines) LINES_MAX)) BadCart
+  pre (unique_text (map "sku_of" plines)) DuplicateSku
+  post (== (order_ok out) 1)
+  post (== out.status "ready")
+  out {id id lines plines total (total_of plines) status "ready"}
+  ex {id 1 plines [{sku "A" name "a" price 10 qty 2 subtotal 20}]} -> {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"}
+  ex {id 0 plines [{sku "A" name "a" price 10 qty 2 subtotal 20}]} refuse BadId
+  ex {id 1 plines []} refuse BadCart
+  ex {id 1 plines [{sku "A" name "a" price 10 qty 1 subtotal 10} {sku "A" name "a" price 10 qty 1 subtotal 10}]} refuse DuplicateSku
+  ex {id 1 plines [{sku "A" name "a" price 10 qty 2 subtotal 21}]} refuse BadLine
+  ex {id 1 plines [{sku "A" name "a" price 10 qty -2 subtotal -20}]} refuse BadQty
+  ex {id 1 plines [{sku "A" name "a" price 0 qty 2 subtotal 0}]} refuse BadPrice

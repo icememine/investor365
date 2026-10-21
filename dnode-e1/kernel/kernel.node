@@ -1,0 +1,233 @@
+; kernel — paired conformance cases for the kernel records K01–K12 (KERNEL.md).
+; Every expected value for arithmetic is also in oracle.json, computed in Python; compare_oracle.js checks they agree.
+; Posts here are relations over inputs and out that do not name the operation they define.
+root kernel
+numbers exact
+const M 9007199254740991
+const HALF_M 4503599627370495
+const NEG3 -3
+const ONE 1
+const TWO 2
+
+; ---------- K04 exact integers ----------
+
+node k04_div (a b)
+  says "floor division: out is the unique q with a = b·q + r and r between 0 and b (exclusive of b), on the divisor's side of zero"
+  fx none
+  raises DivideByZero
+  post (== (sign (- a (* b out))) (if (== (- a (* b out)) 0) 0 (sign b)))
+  post (< (abs (- a (* b out))) (abs b))
+  out (div a b)
+  ex {a 7 b 2} -> 3
+  ex {a -7 b 2} -> -4
+  ex {a 0 b 5} -> 0
+  ex {a -1 b 9007199254740991} -> -1
+  ex {a 1 b 0} refuse DivideByZero
+
+node k04_div_edge (a b)
+  says "floor division at the edge of the range, where b·q would overflow if the relation were checked by bounded multiplication; the expected values come from the oracle"
+  fx none
+  pre (in b [-3 3]) OnlyEdgeCases
+  pre (in a [9007199254740991 -9007199254740991]) OnlyEdgeCases
+  post (== out (if (> b 0) (if (< a 0) -3002399751580331 3002399751580330) (if (< a 0) 3002399751580330 -3002399751580331)))
+  out (div a b)
+  ex {a 9007199254740991 b -3} -> -3002399751580331
+  ex {a -9007199254740991 b 3} -> -3002399751580331
+  ex {a 9007199254740991 b 3} -> 3002399751580330
+  ex {a -9007199254740991 b -3} -> 3002399751580330
+  ex {a 1 b 0} refuse OnlyEdgeCases
+
+node k04_mod (a b)
+  says "remainder: out = a − b·div(a,b); zero or the divisor's sign; smaller than |b|"
+  fx none
+  raises DivideByZero
+  post (or (== out 0) (== (sign out) (sign b)))
+  post (< (abs out) (abs b))
+  out (mod a b)
+  ex {a 7 b 5} -> 2
+  ex {a -1 b 5} -> 4
+  ex {a 7 b -3} -> -2
+  ex {a 9007199254740991 b -3} -> -2
+  ex {a -9007199254740991 b 7} -> 4
+  ex {a 6 b 3} -> 0
+  ex {a 6 b -3} -> 0
+  ex {a 1 b 0} refuse DivideByZero
+
+node k04_sum_fits (xs)
+  says "a sum of at most two numbers within half the range cannot leave the range"
+  fx none
+  pre (<= (len xs) 2) TooMany
+  pre (== (sum (map "k04_small" xs)) (len xs)) TooBig
+  post (== out (sum xs))
+  out (sum xs)
+  ex {xs [1 2]} -> 3
+  ex {xs [4503599627370495 4503599627370495]} -> 9007199254740990
+  ex {xs []} -> 0
+  ex {xs [1 2 3]} refuse TooMany
+  ex {xs [9007199254740991 0]} refuse TooBig
+
+node k04_small (x)
+  says "1 when |x| is within half the range"
+  fx none
+  post (in out [0 1])
+  out (if (<= (abs x) HALF_M) 1 0)
+  ex {x 5} -> 1
+  ex {x 9007199254740991} -> 0
+
+; ---------- K03 strict Booleans, eager and/or ----------
+
+node k03_and_eager (a b)
+  says "and evaluates both operands: a false first operand does not spare a bad second one"
+  fx none
+  post (== out (and a b))
+  out (and a b)
+  ex {a true b true} -> true
+  ex {a false b true} -> false
+  ex {a false b 0} fault InputShape
+
+node k03_if_bool (c)
+  says "the condition of if must be a Bool"
+  fx none
+  post (in out [1 0])
+  out (if c 1 0)
+  ex {c true} -> 1
+  ex {c 0} fault InputShape
+  ex {c "true"} fault InputShape
+
+; ---------- K02 evaluation order and branch selection ----------
+
+node k02_unselected_branch (c x)
+  says "only the selected branch of if is evaluated: the other branch may contain a fault and nothing happens"
+  demo
+  fx none
+  pre (> x 0) BadX
+  post (== out (if c x 0))
+  out (if c x (div x 0))
+  ex {c true x 5} -> 5
+  ex {c false x 5} fault UndeclaredRefusal
+  ex {c true x 0} refuse BadX
+
+node k02_left_to_right (xs)
+  says "arguments are evaluated left to right: the first failing argument is the one reported"
+  fx none
+  pre (== (len xs) 2) TwoOnly
+  post (== out (+ (at xs 0) (at xs 1)))
+  out (+ (at xs 0) (at xs 1))
+  ex {xs [1 2]} -> 3
+  ex {xs [1 2 3]} refuse TwoOnly
+
+; ---------- K01 / K05 values and canonical equality ----------
+
+node k01_no_coercion (t)
+  says "numeric text is not a number: adding it is a shape fault, not a silent conversion"
+  fx none
+  post (== out (+ t 1))
+  out (+ t 1)
+  ex {t 1} -> 2
+  ex {t "1"} fault InputShape
+
+node k05_record_order (r)
+  says "records are equal regardless of the order their fields were written in"
+  fx none
+  post (in out [true false])
+  out (== r {b TWO a ONE})
+  ex {r {a 1 b 2}} -> true
+  ex {r {a 1 b 3}} -> false
+
+node k05_list_order (xs)
+  says "lists are equal only in order"
+  fx none
+  post (in out [true false])
+  out (== xs [ONE TWO])
+  ex {xs [1 2]} -> true
+  ex {xs [2 1]} -> false
+
+node k05_own_field (r)
+  says "a path reads own fields only; a field that is absent is a fault, never an inherited property"
+  fx none
+  post (== out r.a)
+  out r.a
+  ex {r {a 1}} -> 1
+  ex {r {b 1}} fault UnboundReference
+
+node k05_own_field_named (r)
+  says "a field literally named constructor is an own field like any other; absence is still a fault"
+  fx none
+  post (== out r.constructor)
+  out r.constructor
+  ex {r {constructor 1}} -> 1
+  ex {r {a 1}} fault UnboundReference
+
+node k05_unicode (t)
+  says "text is preserved scalar for scalar; length counts scalars, not UTF-16 units"
+  fx none
+  post (== out (scalars t))
+  out (scalars t)
+  ex {t "é"} -> 1
+  ex {t "😀"} -> 1
+  ex {t "Việt"} -> 4
+
+; ---------- K07 / K08 / K09 / K10 contracts and outcomes ----------
+
+node k08_helper_refuses (x)
+  says "a helper that refuses inside a precondition is a contract-evaluation fault, not a refusal"
+  demo
+  fx none
+  pre (== (k04_div x 0) 0) Never
+  post (== out x)
+  out x
+  ex {x 1} fault ContractEvaluationFault
+
+node k08_non_bool_pre (x)
+  says "a precondition that is not a Bool is a contract-evaluation fault"
+  demo
+  fx none
+  pre x Never
+  post (== out x)
+  out x
+  ex {x 1} fault ContractEvaluationFault
+
+node k09_post_enforced (x)
+  says "a false postcondition is a contract violation at run time, not a wrong answer"
+  demo
+  fx none
+  post (== out 0)
+  out x
+  ex {x 0} -> 0
+  ex {x 1} fault ContractViolation
+
+node k10_refuses (x)
+  says "a false precondition is this node's own refusal"
+  fx none
+  pre (> x 0) NotPositive
+  post (== out x)
+  out x
+  ex {x 1} -> 1
+  ex {x 0} refuse NotPositive
+
+node k10_propagates (x)
+  says "a callee's refusal passes through only because it is declared"
+  fx none
+  raises NotPositive
+  post (== out x)
+  out (k10_refuses x)
+  ex {x 1} -> 1
+  ex {x 0} refuse NotPositive
+
+node k10_undeclared (x)
+  says "a callee's refusal that is not declared is a fault at the caller"
+  demo
+  fx none
+  post (== out x)
+  out (k10_refuses x)
+  ex {x 1} -> 1
+  ex {x 0} fault UndeclaredRefusal
+
+node k07_shape_in_pre (e)
+  says "until typed inputs exist, a record's shape is checked with has in a precondition; a missing field is then a refusal rather than a fault"
+  fx none
+  pre (has e "code") BadEvent
+  post (== out e.code)
+  out e.code
+  ex {e {code "A"}} -> "A"
+  ex {e {kind "add"}} refuse BadEvent

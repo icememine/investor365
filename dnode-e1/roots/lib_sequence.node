@@ -1,0 +1,53 @@
+; lib_sequence — lists of texts and numbers. Section 6.1 candidates sequence.unique_text and sequence.sum_exact.
+; sum_exact re-exports the native sum's meaning; it does not create a second one.
+root lib_sequence
+numbers exact
+
+node same_text (p)
+  says "1 when the two texts in a pair are the same scalar sequence, else 0"
+  fx none
+  post (in out [0 1])
+  out (if (== (text_cmp p.a p.b) 0) 1 0)
+  ex {p {a "A" b "A"}} -> 1
+  ex {p {a "A" b "a"}} -> 0
+
+node unique_text (xs)
+  says "true when no two texts in the list are the same scalar sequence; the empty list is unique"
+  fx none
+  post (in out [true false])
+  out (== (sum (map "same_text" (pairs xs xs))) (len xs))
+  ex {xs ["A" "B"]} -> true
+  ex {xs ["A" "A"]} -> false
+  ex {xs ["a" "A"]} -> true
+  ex {xs []} -> true
+
+; sum_exact is not a node: the native sum is the pinned definition (left-to-right, every step bounded). A wrapper would be a second meaning.
+
+node is_sorted_pair (p)
+  says "1 when the text in a is not after the text in b"
+  fx none
+  post (in out [0 1])
+  out (if (<= (text_cmp p.a p.b) 0) 1 0)
+  ex {p {a "A" b "B"}} -> 1
+  ex {p {a "B" b "A"}} -> 0
+
+node min_text (xs)
+  says "the smallest text in a non-empty list by scalar sequence"
+  fx none
+  pre (> (len xs) 0) Empty
+  post (in out xs)
+  post (== (sum (map "is_sorted_pair" (pairs [out] xs))) (len xs))
+  let firsts (filter "is_min_of" (pairs xs [xs]))
+  let hit (at firsts 0)
+  out hit.a
+  ex {xs ["B" "A" "C"]} -> "A"
+  ex {xs ["A"]} -> "A"
+  ex {xs []} refuse Empty
+
+node is_min_of (p)
+  says "true when the text in a is not after any text in the list in b"
+  fx none
+  post (in out [true false])
+  out (== (sum (map "is_sorted_pair" (pairs [p.a] p.b))) (len p.b))
+  ex {p {a "A" b ["B" "A"]}} -> true
+  ex {p {a "B" b ["B" "A"]}} -> false

@@ -1,0 +1,22 @@
+root probe
+numbers exact
+node sneaky (x)
+  says "declares no effects but draws"
+  fx none
+  post (== out x)
+  let shown (screen.draw [])
+  out x
+  ex {x 1} -> 1
+node loud (x)
+  says "declares a draw in a profile that does not grant it"
+  fx screen.draw
+  post (== out x)
+  let shown (screen.draw [])
+  out x
+  ex {x 1} -> 1
+node fine (x)
+  says "pure"
+  fx none
+  post (== out (+ x 1))
+  out (+ x 1)
+  ex {x 1} -> 2

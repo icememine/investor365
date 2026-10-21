@@ -1,0 +1,28 @@
+; lib_bounded — bounded values. Section 6.1 candidates bounded.clamp and bounded.within.
+root lib_bounded
+numbers exact
+
+node clamp_to (x lo hi)
+  says "x held between lo and hi inclusive; never use it to hide an unavailable quantity"
+  fx none
+  pre (<= lo hi) InvalidBounds
+  post (>= out lo)
+  post (<= out hi)
+  post (or (== out x) (== out lo) (== out hi))
+  out (min hi (max lo x))
+  ex {x 5 lo 0 hi 3} -> 3
+  ex {x -1 lo 0 hi 3} -> 0
+  ex {x 2 lo 0 hi 3} -> 2
+  ex {x 2 lo 2 hi 2} -> 2
+  ex {x 2 lo 3 hi 1} refuse InvalidBounds
+
+node within (x lo hi)
+  says "true when lo ≤ x ≤ hi"
+  fx none
+  pre (<= lo hi) InvalidBounds
+  post (== out (and (>= x lo) (<= x hi)))
+  out (and (>= x lo) (<= x hi))
+  ex {x 2 lo 0 hi 3} -> true
+  ex {x 3 lo 0 hi 3} -> true
+  ex {x 4 lo 0 hi 3} -> false
+  ex {x 2 lo 3 hi 1} refuse InvalidBounds

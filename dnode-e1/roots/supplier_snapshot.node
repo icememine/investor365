@@ -1,0 +1,221 @@
+; supplier_snapshot — the shared domain root (section 6.2). Owns the schema, the snapshot meaning, record validation,
+; duplicate rejection and canonical ordering. CSV lexing is not here (csv_records native, used by the batch app).
+; Meaning: QTY_ON_HAND is physical unsold units, reservations included. Not a delta. Not an already-netted available quantity.
+root supplier_snapshot
+numbers exact
+use lib_text
+use lib_sequence
+const NAME_MAX 120
+const FIELDS 4
+const F_SKU 0
+const F_NAME 1
+const F_PRICE 2
+const F_QTY 3
+
+; ---- a raw record is a list of four texts, with its 1-based data-record index attached by the caller ----
+
+node header_ok (fields)
+  says "true when the header is exactly SKU,NAME,PRICE_VND,QTY_ON_HAND"
+  fx none
+  post (in out [true false])
+  out (== fields ["SKU" "NAME" "PRICE_VND" "QTY_ON_HAND"])
+  ex {fields ["SKU" "NAME" "PRICE_VND" "QTY_ON_HAND"]} -> true
+  ex {fields ["sku" "name" "price" "qty"]} -> false
+  ex {fields ["SKU" "NAME" "PRICE_VND"]} -> false
+
+node field_problem (r)
+  says "the first problem with a raw record, as a located diagnostic {index field problem}, or none"
+  fx none
+  pre (>= r.index 1) BadIndex
+  post (in out.problem ["none" "FieldCount" "BadSku" "EmptyName" "NameTooLong" "BadPrice" "PriceOutOfRange" "ZeroPrice" "BadQty" "QtyOutOfRange"])
+  post (== out.index r.index)
+  let n (len r.fields)
+  let four (== n FIELDS)
+  let f (if four r.fields ["" "" "" ""])
+  let sku (at f F_SKU)
+  let name (at f F_NAME)
+  let price (at f F_PRICE)
+  let qty (at f F_QTY)
+  let p (if (not four) "FieldCount" (if (not (is_sku_text sku)) "BadSku" (if (== (scalars name) 0) "EmptyName" (if (> (scalars name) NAME_MAX) "NameTooLong" (if (not (is_digits price)) "BadPrice" (if (not (digits_fit price)) "PriceOutOfRange" (if (== (strip_zeros price) "0") "ZeroPrice" (if (not (is_digits qty)) "BadQty" (if (not (digits_fit qty)) "QtyOutOfRange" "none")))))))))
+  let fld (if (== p "FieldCount") "record" (if (== p "BadSku") "SKU" (if (in p ["EmptyName" "NameTooLong"]) "NAME" (if (in p ["BadPrice" "PriceOutOfRange" "ZeroPrice"]) "PRICE_VND" (if (== p "none") "" "QTY_ON_HAND")))))
+  out {index r.index field fld problem p}
+  ex {r {index 1 fields ["NB-01" "Notebook" "45000" "12"]}} -> {index 1 field "" problem "none"}
+  ex {r {index 2 fields ["NB-01" "Notebook" "45000"]}} -> {index 2 field "record" problem "FieldCount"}
+  ex {r {index 3 fields ["nb-01" "Notebook" "45000" "12"]}} -> {index 3 field "SKU" problem "BadSku"}
+  ex {r {index 4 fields ["NB-01" "" "45000" "12"]}} -> {index 4 field "NAME" problem "EmptyName"}
+  ex {r {index 5 fields ["NB-01" "Notebook" "45,000" "12"]}} -> {index 5 field "PRICE_VND" problem "BadPrice"}
+  ex {r {index 6 fields ["NB-01" "Notebook" "9007199254740992" "12"]}} -> {index 6 field "PRICE_VND" problem "PriceOutOfRange"}
+  ex {r {index 7 fields ["NB-01" "Notebook" "000" "12"]}} -> {index 7 field "PRICE_VND" problem "ZeroPrice"}
+  ex {r {index 8 fields ["NB-01" "Notebook" "45000" " 12"]}} -> {index 8 field "QTY_ON_HAND" problem "BadQty"}
+  ex {r {index 9 fields ["NB-01" "Notebook" "45000" "99999999999999999"]}} -> {index 9 field "QTY_ON_HAND" problem "QtyOutOfRange"}
+  ex {r {index 0 fields []}} refuse BadIndex
+
+node problem_count (d)
+  says "1 when a diagnostic names a problem, else 0"
+  fx none
+  post (in out [0 1])
+  out (if (== d.problem "none") 0 1)
+  ex {d {index 1 field "" problem "none"}} -> 0
+  ex {d {index 1 field "SKU" problem "BadSku"}} -> 1
+
+node has_problem (d)
+  says "true when a diagnostic names a problem"
+  fx none
+  post (in out [true false])
+  out (!= d.problem "none")
+  ex {d {index 1 field "" problem "none"}} -> false
+  ex {d {index 1 field "SKU" problem "BadSku"}} -> true
+
+node normalize_record (r)
+  says "a validated raw record as a product: SKU kept, NAME preserved, PRICE_VND and QTY_ON_HAND as exact numbers; the validation guarantees the conversions cannot refuse"
+  fx none
+  pre (>= r.index 1) BadIndex
+  pre (not (has_problem (field_problem r))) InvalidRecord
+  post (== out.sku (at r.fields F_SKU))
+  post (== out.name (at r.fields F_NAME))
+  post (> out.price 0)
+  post (>= out.qty 0)
+  let f r.fields
+  out {sku (at f F_SKU) name (at f F_NAME) price (parse_decimal_nat (at f F_PRICE)) qty (parse_decimal_nat (at f F_QTY))}
+  ex {r {index 1 fields ["NB-01" "Notebook, blue" "045000" "0012"]}} -> {sku "NB-01" name "Notebook, blue" price 45000 qty 12}
+  ex {r {index 2 fields ["NB-01" "Notebook" "45000"]}} refuse InvalidRecord
+  ex {r {index 0 fields ["NB-01" "Notebook" "45000" "1"]}} refuse BadIndex
+
+node sku_of (p)
+  says "the SKU of a product"
+  fx none
+  post (== out p.sku)
+  out p.sku
+  ex {p {sku "A" name "a" price 1 qty 0}} -> "A"
+
+node index_of (r)
+  says "the data-record index of a raw record"
+  fx none
+  post (== out r.index)
+  out r.index
+  ex {r {index 3 fields []}} -> 3
+
+node sku_dup (p)
+  says "1 when the two raw records in a pair carry the same SKU text and are different records, else 0"
+  fx none
+  post (in out [0 1])
+  let same (and (== (len p.a.fields) FIELDS) (== (len p.b.fields) FIELDS))
+  let a (if same (at p.a.fields F_SKU) "")
+  let b (if same (at p.b.fields F_SKU) "")
+  out (if (and same (!= p.a.index p.b.index) (== (text_cmp a b) 0)) 1 0)
+  ex {p {a {index 1 fields ["A" "x" "1" "1"]} b {index 2 fields ["A" "y" "1" "1"]}}} -> 1
+  ex {p {a {index 1 fields ["A" "x" "1" "1"]} b {index 1 fields ["A" "x" "1" "1"]}}} -> 0
+  ex {p {a {index 1 fields ["A" "x" "1" "1"]} b {index 2 fields ["B" "y" "1" "1"]}}} -> 0
+
+node involved_in_dup (p)
+  says "true when the raw record in a shares its SKU with another record in the list in b"
+  fx none
+  post (in out [true false])
+  out (> (sum (map "sku_dup" (pairs [p.a] p.b))) 0)
+  ex {p {a {index 1 fields ["A" "x" "1" "1"]} b [{index 1 fields ["A" "x" "1" "1"]} {index 2 fields ["A" "y" "1" "1"]}]}} -> true
+  ex {p {a {index 1 fields ["A" "x" "1" "1"]} b [{index 1 fields ["A" "x" "1" "1"]}]}} -> false
+
+node raw_of (p)
+  says "the raw record of a pair"
+  fx none
+  post (== out p.a)
+  out p.a
+  ex {p {a {index 1 fields []} b []}} -> {index 1 fields []}
+
+node duplicate_indices (records)
+  says "the data-record indices of every record whose SKU appears more than once, in file order"
+  fx none
+  post (<= (len out) (len records))
+  out (map "index_of" (map "raw_of" (filter "involved_in_dup" (pairs records [records]))))
+  ex {records [{index 1 fields ["A" "x" "1" "1"]} {index 2 fields ["B" "y" "1" "1"]} {index 3 fields ["A" "z" "1" "1"]}]} -> [1 3]
+  ex {records [{index 1 fields ["A" "x" "1" "1"]}]} -> []
+  ex {records []} -> []
+
+node validate_snapshot (records)
+  says "every located field diagnostic, the duplicate-SKU indices, and whether the snapshot is accepted: accepted only when there are records, no field problems and no duplicates"
+  fx none
+  pre (== (sum (map "index_ok" records)) (len records)) BadIndex
+  post (in out.accepted [true false])
+  post (== out.accepted (and (> (len records) 0) (== (len out.problems) 0) (== (len out.duplicates) 0)))
+  let diags (map "field_problem" records)
+  let problems (filter "has_problem" diags)
+  let dups (duplicate_indices records)
+  out {problems problems duplicates dups accepted (and (> (len records) 0) (== (len problems) 0) (== (len dups) 0))}
+  ex {records [{index 1 fields ["NB-01" "Notebook" "45000" "12"]} {index 2 fields ["PN-02" "Pen" "12000" "30"]}]} check (== out.accepted true) (== (len out.problems) 0)
+  ex {records [{index 1 fields ["NB-01" "Notebook" "45000" "12"]} {index 2 fields ["NB-01" "Notebook" "45000" "12"]}]} check (== out.accepted false) (== out.duplicates [1 2])
+  ex {records [{index 1 fields ["nb-01" "Notebook" "45000" "12"]}]} check (== out.accepted false) (== (len out.problems) 1)
+  ex {records []} check (== out.accepted false)
+  ex {records [{index 0 fields ["A" "a" "1" "1"]}]} refuse BadIndex
+
+node index_ok (r)
+  says "1 when a raw record's index is at least 1"
+  fx none
+  post (in out [0 1])
+  out (if (>= r.index 1) 1 0)
+  ex {r {index 1 fields []}} -> 1
+  ex {r {index 0 fields []}} -> 0
+
+node accepted_of (v)
+  says "the accepted flag of a validation result"
+  fx none
+  post (== out v.accepted)
+  out v.accepted
+  ex {v {problems [] duplicates [] accepted true}} -> true
+
+node sku_before (p)
+  says "true when the product in a sorts strictly before the product in b by SKU"
+  fx none
+  post (in out [true false])
+  out (< (text_cmp p.a.sku p.b.sku) 0)
+  ex {p {a {sku "A" name "a" price 1 qty 0} b {sku "B" name "b" price 1 qty 0}}} -> true
+  ex {p {a {sku "B" name "a" price 1 qty 0} b {sku "A" name "b" price 1 qty 0}}} -> false
+
+node count_before (p)
+  says "how many products in the list in b sort before the product in a; with unique SKUs this is its position"
+  fx none
+  post (>= out 0)
+  out (len (filter "sku_before" (map "swap" (pairs [p.a] p.b))))
+  ex {p {a {sku "B" name "b" price 1 qty 0} b [{sku "A" name "a" price 1 qty 0} {sku "B" name "b" price 1 qty 0} {sku "C" name "c" price 1 qty 0}]}} -> 1
+
+node swap (p)
+  says "the pair with a and b exchanged"
+  fx none
+  post (== out.a p.b)
+  post (== out.b p.a)
+  out {a p.b b p.a}
+  ex {p {a 1 b 2}} -> {a 2 b 1}
+
+node at_position (p)
+  says "the product in the list in b whose position by SKU order is the index in a; the SKUs must be unique for positions to be unique"
+  fx none
+  pre (>= p.a 0) BadPosition
+  pre (< p.a (len p.b)) BadPosition
+  pre (unique_text (map "sku_of" p.b)) NotUnique
+  post (in out p.b)
+  let hits (filter "position_is" (pairs p.b [{list p.b want p.a}]))
+  let hit (at hits 0)
+  out hit.a
+  ex {p {a 0 b [{sku "B" name "b" price 1 qty 0} {sku "A" name "a" price 1 qty 0}]}} -> {sku "A" name "a" price 1 qty 0}
+  ex {p {a 5 b []}} refuse BadPosition
+  ex {p {a 0 b [{sku "A" name "a" price 1 qty 0} {sku "A" name "b" price 1 qty 0}]}} refuse NotUnique
+
+node position_is (q)
+  says "true when the product in a has the wanted position within the list carried in b"
+  fx none
+  post (in out [true false])
+  out (== (count_before {a q.a b q.b.list}) q.b.want)
+  ex {q {a {sku "A" name "a" price 1 qty 0} b {list [{sku "B" name "b" price 1 qty 0} {sku "A" name "a" price 1 qty 0}] want 0}}} -> true
+
+node normalize_snapshot (records)
+  says "the accepted snapshot as products sorted by SKU; refuses a snapshot that validate_snapshot does not accept"
+  fx none
+  pre (== (sum (map "index_ok" records)) (len records)) BadIndex
+  pre (accepted_of (validate_snapshot records)) NotAccepted
+  post (== (len out) (len records))
+  post (unique_text (map "sku_of" out))
+  let products (map "normalize_record" records)
+  out (map "at_position" (pairs (range (len products)) [products]))
+  ex {records [{index 1 fields ["PN-02" "Pen" "12000" "30"]} {index 2 fields ["NB-01" "Notebook" "045000" "0012"]}]} -> [{sku "NB-01" name "Notebook" price 45000 qty 12} {sku "PN-02" name "Pen" price 12000 qty 30}]
+  ex {records [{index 1 fields ["A" "a" "1" "1"]} {index 2 fields ["A" "b" "1" "1"]}]} refuse NotAccepted
+  ex {records []} refuse NotAccepted
+  ex {records [{index 0 fields ["A" "a" "1" "1"]}]} refuse BadIndex

@@ -1,0 +1,76 @@
+{
+  "schema": "dnode-profile/0.4",
+  "name": "batch",
+  "version": "0.4",
+  "says": "A file in, a report and a normalised file out. The host reads bytes as UTF-8, enforces the 1 MiB limit before parsing, and publishes exports atomically.",
+  "entry": [
+    {
+      "node": "run",
+      "in": [
+        "text"
+      ]
+    }
+  ],
+  "grants": [
+    "file.export",
+    "panel.show"
+  ],
+  "natives": [
+    "!=",
+    "*",
+    "+",
+    "-",
+    "<",
+    "<=",
+    "==",
+    ">",
+    ">=",
+    "abs",
+    "and",
+    "at",
+    "cat",
+    "clamp",
+    "concat",
+    "csv_fields",
+    "csv_records",
+    "div",
+    "filter",
+    "has",
+    "in",
+    "is_digits",
+    "is_int",
+    "is_sku_text",
+    "len",
+    "map",
+    "max",
+    "min",
+    "mod",
+    "neg",
+    "not",
+    "or",
+    "pairs",
+    "range",
+    "scalars",
+    "sign",
+    "split",
+    "str",
+    "strip_zeros",
+    "sum",
+    "text_cmp",
+    "text_len",
+    "to_int",
+    "trim",
+    "file.export",
+    "panel.show",
+    "encode"
+  ],
+  "host": {
+    "maxBytes": 1048576,
+    "maxRows": 10000,
+    "export": "staged then published atomically; an interrupted publish exposes nothing"
+  },
+  "limits": {
+    "range": 10000,
+    "generated": 2000
+  }
+}

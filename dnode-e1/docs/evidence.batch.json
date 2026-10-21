@@ -1,0 +1,71 @@
+{
+ "page": "host/batch_transform.html",
+ "at": "2026-10-20T13:25:08.405Z",
+ "results": [
+  {
+   "id": "A0",
+   "pass": true,
+   "note": "page admitted"
+  },
+  {
+   "id": "B01",
+   "pass": true,
+   "note": "f01: 3 records equal the Python expectation; export 165 bytes"
+  },
+  {
+   "id": "B02",
+   "pass": true,
+   "note": "quoted commas/newlines/doubled quotes, CRLF+BOM, leading zeros all accepted as expected"
+  },
+  {
+   "id": "B03a",
+   "pass": true,
+   "note": "bad numbers: 5 located problems with advice, 2 tables, no snapshot export"
+  },
+  {
+   "id": "B03b",
+   "pass": true,
+   "note": "duplicates at records 1,3,4; no snapshot"
+  },
+  {
+   "id": "B03c",
+   "pass": true,
+   "note": "header-only file is an empty-snapshot refusal"
+  },
+  {
+   "id": "B03d",
+   "pass": true,
+   "note": "broken quote refuses the whole file with a readable reason"
+  },
+  {
+   "id": "B04",
+   "pass": true,
+   "note": "two runs of the same input: run id identical (c16f8d99ae46c0531b9ca070b7107a80); snapshot.report.json 21e29b613cef, snapshot.normalized.json b2cf614b57f4 → identical bytes"
+  },
+  {
+   "id": "B05a",
+   "pass": true,
+   "note": "interrupted publish: nothing published, previous exports unchanged"
+  },
+  {
+   "id": "B05b",
+   "pass": true,
+   "note": "stopped at the byte limit before parsing: The file is 1,153,477 bytes; the limit is 1,048,576 bytes. Nothing was parsed."
+  },
+  {
+   "id": "B05c",
+   "pass": true,
+   "note": "10001 rows → TooManyRows"
+  },
+  {
+   "id": "B06",
+   "pass": true,
+   "note": "the rejected record is named with its text and the fix; corrected in place, the file is accepted"
+  },
+  {
+   "id": "ERR",
+   "pass": true,
+   "note": "no page errors (font fetch excluded)"
+  }
+ ]
+}

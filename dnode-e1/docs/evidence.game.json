@@ -1,0 +1,86 @@
+{
+ "page": "host/breakout.html",
+ "at": "2026-10-20T13:19:14.800Z",
+ "results": [
+  {
+   "id": "A0",
+   "pass": true,
+   "note": "page admitted"
+  },
+  {
+   "id": "G01a",
+   "pass": true,
+   "note": "title screen with a visible Launch control"
+  },
+  {
+   "id": "G01b",
+   "pass": true,
+   "note": "launched into play; 23 ticks ran"
+  },
+  {
+   "id": "G02a",
+   "pass": true,
+   "note": "arrow key moved the paddle 13000 → 22000"
+  },
+  {
+   "id": "G02b",
+   "pass": true,
+   "note": "touch target moved the paddle to 0; page scroll unchanged (0)"
+  },
+  {
+   "id": "G04a",
+   "pass": true,
+   "note": "paused at tick 91; no ticks during pause"
+  },
+  {
+   "id": "G04b",
+   "pass": true,
+   "note": "resume continued from tick 91 (now 94); no catch-up jump"
+  },
+  {
+   "id": "G04c",
+   "pass": true,
+   "note": "after a 1200 ms host freeze only 8 ticks ran; 68 discarded"
+  },
+  {
+   "id": "G05a",
+   "pass": true,
+   "note": "replayed 107 events in 199 ms: final state IDENTICAL to the live state (ticks 103, score 1, lives 3, refused 0)"
+  },
+  {
+   "id": "G05b",
+   "pass": true,
+   "note": "render fault injected: \"render threw: injected render fault — state unchanged by it (ticks 109)\"; game went on"
+  },
+  {
+   "id": "G04d",
+   "pass": true,
+   "note": "restart: title, 0 ticks, 3 lives, paddle centred"
+  },
+  {
+   "id": "G03a",
+   "pass": true,
+   "note": "first ball lost: lives 2, waiting on the paddle (y 43400)"
+  },
+  {
+   "id": "G03b",
+   "pass": true,
+   "note": "relaunch waits for the player; no life lost while waiting"
+  },
+  {
+   "id": "G03c",
+   "pass": true,
+   "note": "game over at 394 ticks, score 3; control offers Play again"
+  },
+  {
+   "id": "G05c",
+   "pass": true,
+   "note": "whole session replays identically: replayed 517 events in 1196 ms: final state IDENTICAL to the live state (ticks 394, score 3, lives 0, refused 0)"
+  },
+  {
+   "id": "ERR",
+   "pass": true,
+   "note": "no page errors (font fetch excluded)"
+  }
+ ]
+}

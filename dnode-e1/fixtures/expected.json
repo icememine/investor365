@@ -1,0 +1,227 @@
+{
+ "f01_valid.csv": {
+  "accepted": true,
+  "problems": [],
+  "duplicates": [],
+  "records": [
+   {
+    "sku": "NOTEBOOK",
+    "name": "Notebook",
+    "price": 50000,
+    "qty": 5
+   },
+   {
+    "sku": "PEN",
+    "name": "Pen",
+    "price": 20000,
+    "qty": 8
+   },
+   {
+    "sku": "TOTE",
+    "name": "Tote bag",
+    "price": 120000,
+    "qty": 2
+   }
+  ]
+ },
+ "f02_quoted.csv": {
+  "accepted": true,
+  "problems": [],
+  "duplicates": [],
+  "records": [
+   {
+    "sku": "NB-01",
+    "name": "Notebook, blue",
+    "price": 45000,
+    "qty": 12
+   },
+   {
+    "sku": "PN-02",
+    "name": "Pen \"fine\"",
+    "price": 12000,
+    "qty": 30
+   },
+   {
+    "sku": "X-1",
+    "name": "two\nlines",
+    "price": 1,
+    "qty": 0
+   }
+  ]
+ },
+ "f03_crlf_bom.csv": {
+  "accepted": true,
+  "problems": [],
+  "duplicates": [],
+  "records": [
+   {
+    "sku": "A",
+    "name": "a",
+    "price": 1,
+    "qty": 1
+   },
+   {
+    "sku": "B",
+    "name": "b",
+    "price": 2,
+    "qty": 2
+   }
+  ]
+ },
+ "f04_leading_zeros.csv": {
+  "accepted": true,
+  "problems": [],
+  "duplicates": [],
+  "records": [
+   {
+    "sku": "A",
+    "name": "a",
+    "price": 450,
+    "qty": 12
+   }
+  ]
+ },
+ "f05_duplicate.csv": {
+  "accepted": false,
+  "problems": [],
+  "duplicates": [
+   1,
+   3,
+   4
+  ],
+  "records": []
+ },
+ "f06_bad_sku.csv": {
+  "accepted": false,
+  "problems": [
+   {
+    "index": 1,
+    "field": "SKU",
+    "problem": "BadSku"
+   }
+  ],
+  "duplicates": [],
+  "records": []
+ },
+ "f07_bad_numbers.csv": {
+  "accepted": false,
+  "problems": [
+   {
+    "index": 1,
+    "field": "PRICE_VND",
+    "problem": "BadPrice"
+   },
+   {
+    "index": 2,
+    "field": "QTY_ON_HAND",
+    "problem": "BadQty"
+   },
+   {
+    "index": 3,
+    "field": "PRICE_VND",
+    "problem": "BadPrice"
+   },
+   {
+    "index": 4,
+    "field": "PRICE_VND",
+    "problem": "BadPrice"
+   },
+   {
+    "index": 5,
+    "field": "PRICE_VND",
+    "problem": "BadPrice"
+   }
+  ],
+  "duplicates": [],
+  "records": []
+ },
+ "f08_out_of_range.csv": {
+  "accepted": false,
+  "problems": [
+   {
+    "index": 1,
+    "field": "PRICE_VND",
+    "problem": "PriceOutOfRange"
+   },
+   {
+    "index": 2,
+    "field": "QTY_ON_HAND",
+    "problem": "QtyOutOfRange"
+   }
+  ],
+  "duplicates": [],
+  "records": []
+ },
+ "f09_field_count.csv": {
+  "accepted": false,
+  "problems": [
+   {
+    "index": 1,
+    "field": "record",
+    "problem": "FieldCount"
+   },
+   {
+    "index": 2,
+    "field": "record",
+    "problem": "FieldCount"
+   }
+  ],
+  "duplicates": [],
+  "records": []
+ },
+ "f10_empty_name.csv": {
+  "accepted": false,
+  "problems": [
+   {
+    "index": 1,
+    "field": "NAME",
+    "problem": "EmptyName"
+   }
+  ],
+  "duplicates": [],
+  "records": []
+ },
+ "f11_header_only.csv": {
+  "accepted": false,
+  "problems": [],
+  "duplicates": [],
+  "records": []
+ },
+ "f12_broken_quote.csv": {
+  "accepted": false,
+  "lexical": "BrokenQuote"
+ },
+ "f13_zero_price.csv": {
+  "accepted": false,
+  "problems": [
+   {
+    "index": 1,
+    "field": "PRICE_VND",
+    "problem": "ZeroPrice"
+   },
+   {
+    "index": 2,
+    "field": "PRICE_VND",
+    "problem": "ZeroPrice"
+   }
+  ],
+  "duplicates": [],
+  "records": []
+ },
+ "f14_bad_header.csv": {
+  "accepted": false,
+  "lexical": "BadHeader"
+ },
+ "f15_long_name.csv": {
+  "accepted": false,
+  "problems": [
+   {
+    "index": 1,
+    "field": "NAME",
+    "problem": "NameTooLong"
+   }
+  ],
+  "duplicates": [],
+  "records": []
+ }
+}

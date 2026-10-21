@@ -1,0 +1,830 @@
+# gen_shop.py — writes shop.node. The examples carry whole shop states, so they are assembled here from one set of
+# fixtures to keep them consistent; the generated shop.node is the source the checker reads.
+import json, copy
+
+def lit(v):
+    if isinstance(v, bool): return 'true' if v else 'false'
+    if isinstance(v, (int,)): return str(v)
+    if isinstance(v, str): return json.dumps(v, ensure_ascii=False)
+    if isinstance(v, list): return '[' + ' '.join(lit(x) for x in v) + ']'
+    if isinstance(v, dict): return '{' + ' '.join(k + ' ' + lit(x) for k, x in v.items()) + '}'
+    raise TypeError(v)
+
+NONE_REQ = {'kind': 'none', 'id': 0, 'amount': 0}
+NONE_PEND = {'outcome': 'none', 'problems': [], 'duplicates': [], 'records': [], 'conflicts': [], 'changes': [], 'count': 0}
+def item(sku, name, price, h, r=0): return {'sku': sku, 'name': name, 'price': price, 'on_hand': h, 'reserved': r}
+def state(stock, cart=None, orders=None, next_id=1, phase='shop', current=0, request=None, pending=None, notice=''):
+    return {'stock': stock, 'cart': cart or [], 'orders': orders or [], 'next_id': next_id, 'phase': phase, 'current': current,
+            'request': request or NONE_REQ, 'pending': pending or NONE_PEND, 'notice': notice, 'log': []}
+A5 = item('A', 'a', 10, 5)
+B1 = item('B', 'b', 3, 1)
+def pl(sku, name, price, qty): return {'sku': sku, 'name': name, 'price': price, 'qty': qty, 'subtotal': price * qty}
+def order(id, lines, status): return {'id': id, 'lines': lines, 'total': sum(l['subtotal'] for l in lines), 'status': status}
+
+S0 = state([A5, B1])
+S_cart = state([A5, B1], cart=[{'sku': 'A', 'qty': 2}])
+S_review = state([A5, B1], cart=[{'sku': 'A', 'qty': 2}], phase='review')
+O1 = order(1, [pl('A', 'a', 10, 2)], 'ready')
+S_ready = state([item('A', 'a', 10, 5, 2), B1], orders=[O1], next_id=2, phase='order', current=1)
+S_pending = state([item('A', 'a', 10, 5, 2), B1], orders=[order(1, [pl('A', 'a', 10, 2)], 'pending')], next_id=2, phase='order', current=1, request={'kind': 'charge', 'id': 1, 'amount': 20})
+S_unknown = state([item('A', 'a', 10, 5, 2), B1], orders=[order(1, [pl('A', 'a', 10, 2)], 'unknown')], next_id=2, phase='order', current=1)
+S_confirmed = state([item('A', 'a', 10, 3, 0), B1], orders=[order(1, [pl('A', 'a', 10, 2)], 'confirmed')], next_id=2, phase='order', current=1)
+S_declined = state([A5, B1], orders=[order(1, [pl('A', 'a', 10, 2)], 'declined')], next_id=2, phase='order', current=1)
+S_bad = state([item('A', 'a', 10, 5, 6)])
+S_badres = state([item('A', 'a', 10, 5, 1), B1], orders=[O1], next_id=2, phase='order', current=1)  # reservation does not match held
+PEND_OK = {'outcome': 'Accepted', 'problems': [], 'duplicates': [], 'records': [{'sku': 'A', 'name': 'a', 'price': 10, 'qty': 4}, {'sku': 'C', 'name': 'c', 'price': 1, 'qty': 7}], 'conflicts': [], 'changes': [{'sku': 'A', 'name': 'a', 'before': 5, 'after': 4, 'new': False}, {'sku': 'C', 'name': 'c', 'before': 0, 'after': 7, 'new': True}], 'count': 2}
+S_pend = state([A5, B1], pending=PEND_OK)
+S_pend_conflict = state([item('A', 'a', 10, 5, 2), B1], orders=[O1], next_id=2, phase='order', current=1, pending={'outcome': 'Accepted', 'problems': [], 'duplicates': [], 'records': [{'sku': 'A', 'name': 'a', 'price': 10, 'qty': 1}], 'conflicts': [], 'changes': [], 'count': 1})
+S_pend_dup = state([A5], pending={'outcome': 'Accepted', 'problems': [], 'duplicates': [], 'records': [{'sku': 'C', 'name': 'c', 'price': 1, 'qty': 1}, {'sku': 'C', 'name': 'c', 'price': 1, 'qty': 1}], 'conflicts': [], 'changes': [], 'count': 2})
+S_pend_badrec = state([A5], pending={'outcome': 'Accepted', 'problems': [], 'duplicates': [], 'records': [{'sku': 'c', 'name': 'c', 'price': 1, 'qty': 1}], 'conflicts': [], 'changes': [], 'count': 1})
+
+SEED = [item('NOTEBOOK', 'Notebook', 50000, 5), item('PEN', 'Pen', 20000, 8), item('TOTE', 'Tote bag', 120000, 2)]
+S_seed = state(SEED, notice='Welcome')
+
+def ex(args, result):
+    return '  ex ' + lit(args) + ' ' + result
+
+CSV_OK = "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,10,4\nC,c,1,7\n"
+CSV_BROKEN = "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,\"unclosed,1,1\n"
+
+src = f'''; shop — BP-SHOP, the whole application: one state, one event step, one view. The only root with an effect.
+; State: stock (H, R per SKU), cart, orders (captured lines and totals), next_id (the next instruction identity),
+; phase shop|review|order, current (the order on screen or 0), request (what the host must ask the payment simulator:
+; none, charge or inquire; the host answers with payment_result / inquiry_result events), pending (a supplier-file preview), notice, log.
+; Generated from gen_shop.py so every example carries a consistent whole state.
+root shop
+numbers exact
+use shop_orders
+use shop_import
+effect Panel panel.show
+
+event add sku
+event set sku qty
+event remove sku
+event review
+event back
+event place id
+event pay id
+event payment_result id result
+event check id
+event inquiry_result id result
+event cancel id
+event new
+event import_check text
+event import_confirm
+event import_cancel
+event noop
+
+inv I1 "stock is valid: unique SKUs, 0 ≤ reserved ≤ on hand" (stock_ok out.stock)
+inv I2 "the cart is valid against the stock" (cart_ok out.stock out.cart)
+inv I3 "orders are well formed with unique ids below next_id" (and (orders_ok out.orders) (ids_below out.orders out.next_id))
+inv I4 "every reserved unit belongs to exactly one open order" (reservations_consistent out.stock out.orders)
+inv I5 "a captured order never changes: same ids, lines and totals as before" (orders_kept state.orders out.orders)
+
+node id_below (p)
+  says "1 when the order in a has an id below the number in b"
+  fx none
+  post (in out [0 1])
+  out (if (< p.a.id p.b) 1 0)
+  ex {{p {{a {{id 1}} b 2}}}} -> 1
+  ex {{p {{a {{id 2}} b 2}}}} -> 0
+
+node ids_below (orders next_id)
+  says "true when every order id is below the next instruction identity"
+  fx none
+  post (in out [true false])
+  out (== (sum (map "id_below" (pairs orders [next_id]))) (len orders))
+  ex {{orders [{{id 1}}] next_id 2}} -> true
+  ex {{orders [{{id 2}}] next_id 2}} -> false
+  ex {{orders [] next_id 1}} -> true
+
+node captured (o)
+  says "the immutable part of an order: id, lines, total"
+  fx none
+  post (== out.id o.id)
+  out {{id o.id lines o.lines total o.total}}
+  ex {{o {lit(O1)}}} -> {lit({'id': 1, 'lines': O1['lines'], 'total': 20})}
+
+node kept_in (p)
+  says "1 when the earlier order in a appears unchanged in id, lines and total among the later orders in b"
+  fx none
+  post (in out [0 1])
+  let hs (order_hits p.b p.a.id)
+  out (if (== (len hs) 1) (if (== (captured (at hs 0)) (captured p.a)) 1 0) 0)
+  ex {{p {{a {lit(O1)} b [{lit(order(1, [pl('A', 'a', 10, 2)], 'pending'))}]}}}} -> 1
+  ex {{p {{a {lit(O1)} b [{lit(order(1, [pl('A', 'a', 10, 3)], 'pending'))}]}}}} -> 0
+  ex {{p {{a {lit(O1)} b []}}}} -> 0
+
+node orders_kept (before after)
+  says "true when every earlier order is still there with the same id, lines and total"
+  fx none
+  post (in out [true false])
+  out (== (sum (map "kept_in" (pairs before [after]))) (len before))
+  ex {{before [{lit(O1)}] after [{lit(order(1, [pl('A', 'a', 10, 2)], 'confirmed'))} {lit(order(2, [pl('B', 'b', 3, 1)], 'ready'))}]}} -> true
+  ex {{before [{lit(O1)}] after []}} -> false
+  ex {{before [] after []}} -> true
+
+node state_ok (state)
+  says "true when every part of the shop state is well formed and consistent; total, so it can stand in a contract"
+  fx none
+  post (in out [true false])
+  let shapes (and (stock_ok state.stock) (cart_ok state.stock state.cart) (orders_ok state.orders))
+  out (if shapes (and (ids_below state.orders state.next_id) (reservations_consistent state.stock state.orders) (>= state.next_id 1) (in state.phase ["shop" "review" "order"]) (or (== state.current 0) (has_order state.orders state.current)) (in state.request.kind ["none" "charge" "inquire"]) (in state.pending.outcome ["none" "BadHeader" "Rejected" "Conflict" "Accepted"])) false)
+{ex({'state': S0}, '-> true')}
+{ex({'state': S_ready}, '-> true')}
+{ex({'state': S_bad}, '-> false')}
+{ex({'state': S_badres}, '-> false')}
+{ex({'state': state([A5], phase='paying')}, '-> false')}
+{ex({'state': state([A5], orders=[order(1, [pl('A', 'a', 10, -2)], 'ready')], next_id=2)}, '-> false')}
+
+node initial ()
+  says "the shop as the customer first sees it: the seed catalogue, nothing reserved, an empty bag, no orders"
+  fx none
+  post (state_ok out)
+  post (== (len out.stock) 3)
+  out {{stock [{{sku "NOTEBOOK" name "Notebook" price NB_PRICE on_hand NB_QTY reserved 0}} {{sku "PEN" name "Pen" price PEN_PRICE on_hand PEN_QTY reserved 0}} {{sku "TOTE" name "Tote bag" price TOTE_PRICE on_hand TOTE_QTY reserved 0}}] cart [] orders [] next_id 1 phase "shop" current 0 request {lit(NONE_REQ)} pending {lit(NONE_PEND)} notice "Welcome" log []}}
+  ex {{}} check (== (len out.stock) 3) (== out.phase "shop")
+
+node log_add (log text)
+  says "the log with one more line"
+  fx none
+  post (== (len out) (+ (len log) 1))
+  out (concat log [text])
+  ex {{log ["a"] text "b"}} -> ["a" "b"]
+
+; ---- customer events: each returns the whole next state; a refusal leaves the state untouched because the host keeps the old one ----
+
+node on_add (state sku)
+  says "one more of a product in the bag"
+  fx none
+  inv I1 I2 I3 I4 I5
+  raises UnknownProduct BadQty ExceedsStock TooManyLines
+  pre (state_ok state) BadState
+  pre (in state.phase ["shop" "review"]) WrongPhase
+  post (state_ok out)
+  post (== out.stock state.stock)
+  let it (find_item state.stock sku)
+  out (with state cart (add_one state.stock state.cart sku) phase "shop" request {lit(NONE_REQ)} notice (cat "Added " it.name) log (log_add state.log (cat "add " sku)))
+{ex({'state': S0, 'sku': 'A'}, 'check (== out.cart [{sku "A" qty 1}])')}
+{ex({'state': S_cart, 'sku': 'A'}, 'check (== out.cart [{sku "A" qty 3}])')}
+{ex({'state': S0, 'sku': 'Z'}, 'refuse UnknownProduct')}
+{ex({'state': state([item('A', 'a', 10, 50)], cart=[{'sku': 'A', 'qty': 9}]), 'sku': 'A'}, 'refuse BadQty')}
+{ex({'state': state([item('A', 'a', 10, 2, 0)], cart=[{'sku': 'A', 'qty': 2}]), 'sku': 'A'}, 'refuse ExceedsStock')}
+{ex({'state': state([A5, B1, item('C', 'c', 1, 1), item('D', 'd', 1, 1)], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'B', 'qty': 1}, {'sku': 'C', 'qty': 1}]), 'sku': 'D'}, 'refuse TooManyLines')}
+{ex({'state': S_ready, 'sku': 'A'}, 'refuse WrongPhase')}
+{ex({'state': S_bad, 'sku': 'A'}, 'refuse BadState')}
+{ex({'state': state([A5], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'A', 'qty': 1}]), 'sku': 'A'}, 'refuse BadState')}
+
+node on_set (state sku qty)
+  says "a product's quantity in the bag set; 0 removes it"
+  fx none
+  inv I1 I2 I3 I4 I5
+  raises UnknownProduct BadQty ExceedsStock TooManyLines
+  pre (state_ok state) BadState
+  pre (in state.phase ["shop" "review"]) WrongPhase
+  post (state_ok out)
+  post (== out.stock state.stock)
+  out (with state cart (set_line state.stock state.cart sku qty) phase "shop" request {lit(NONE_REQ)} notice (cat (cat "Set " sku) (cat " to " (str qty))) log (log_add state.log (cat "set " sku)))
+{ex({'state': S_cart, 'sku': 'A', 'qty': 3}, 'check (== out.cart [{sku "A" qty 3}])')}
+{ex({'state': S_cart, 'sku': 'A', 'qty': 0}, 'check (== out.cart [])')}
+{ex({'state': S_review, 'sku': 'A', 'qty': 1}, 'check (== out.cart [{sku "A" qty 1}]) (== out.phase "shop")')}
+{ex({'state': S0, 'sku': 'Z', 'qty': 1}, 'refuse UnknownProduct')}
+{ex({'state': S0, 'sku': 'A', 'qty': 10}, 'refuse BadQty')}
+{ex({'state': S0, 'sku': 'A', 'qty': 6}, 'refuse ExceedsStock')}
+{ex({'state': state([A5, B1, item('C', 'c', 1, 1), item('D', 'd', 1, 1)], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'B', 'qty': 1}, {'sku': 'C', 'qty': 1}]), 'sku': 'D', 'qty': 1}, 'refuse TooManyLines')}
+{ex({'state': S_ready, 'sku': 'A', 'qty': 1}, 'refuse WrongPhase')}
+{ex({'state': S_bad, 'sku': 'A', 'qty': 1}, 'refuse BadState')}
+{ex({'state': state([A5], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'A', 'qty': 1}]), 'sku': 'A', 'qty': 1}, 'refuse BadState')}
+
+node on_remove (state sku)
+  says "a product taken out of the bag"
+  fx none
+  inv I1 I2 I3 I4 I5
+  raises UnknownProduct WrongPhase BadState
+  post (state_ok out)
+  post (== (needed out.cart sku) 0)
+  out (on_set state sku 0)
+{ex({'state': S_cart, 'sku': 'A'}, 'check (== out.cart [])')}
+{ex({'state': S0, 'sku': 'Z'}, 'refuse UnknownProduct')}
+{ex({'state': S_ready, 'sku': 'A'}, 'refuse WrongPhase')}
+{ex({'state': S_bad, 'sku': 'A'}, 'refuse BadState')}
+{ex({'state': state([A5], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'A', 'qty': 1}]), 'sku': 'A'}, 'refuse BadState')}
+{ex({'state': state([item('A', 'a', 10, 50)], cart=[{'sku': 'A', 'qty': 9}]), 'sku': 'A'}, 'check (== out.cart [])')}
+{ex({'state': state([A5, B1, item('C', 'c', 1, 1), item('D', 'd', 1, 1)], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'B', 'qty': 1}, {'sku': 'C', 'qty': 1}]), 'sku': 'D'}, 'check (== (len out.cart) 3)')}
+
+node on_review (state)
+  says "to the review page: the bag, its total, and the place-order button"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (== state.phase "shop") WrongPhase
+  pre (> (len state.cart) 0) EmptyCart
+  post (state_ok out)
+  post (== out.phase "review")
+  out (with state phase "review" request {lit(NONE_REQ)} notice "Review your order" log (log_add state.log "review"))
+{ex({'state': S_cart}, 'check (== out.phase "review") (== out.cart state.cart)')}
+{ex({'state': S0}, 'refuse EmptyCart')}
+{ex({'state': S_review}, 'refuse WrongPhase')}
+{ex({'state': S_bad}, 'refuse BadState')}
+
+node on_back (state)
+  says "back to the shop from review"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (== state.phase "review") WrongPhase
+  post (state_ok out)
+  post (== out.phase "shop")
+  out (with state phase "shop" request {lit(NONE_REQ)} notice "" log (log_add state.log "back"))
+{ex({'state': S_review}, 'check (== out.phase "shop")')}
+{ex({'state': S0}, 'refuse WrongPhase')}
+{ex({'state': S_bad}, 'refuse BadState')}
+
+node intent_matches (orders id lines)
+  says "true when no order has the id yet, or the order with it means the same purchase as the lines"
+  fx none
+  raises DuplicateSku
+  post (in out [true false])
+  out (if (has_order orders id) (same_intent (find_order orders id) lines) true)
+{ex({'orders': [O1], 'id': 1, 'lines': [{'sku': 'A', 'qty': 2}]}, '-> true')}
+{ex({'orders': [O1], 'id': 1, 'lines': [{'sku': 'A', 'qty': 3}]}, '-> false')}
+{ex({'orders': [O1], 'id': 2, 'lines': [{'sku': 'A', 'qty': 3}]}, '-> true')}
+{ex({'orders': [O1], 'id': 1, 'lines': [{'sku': 'A', 'qty': 1}, {'sku': 'A', 'qty': 1}]}, 'refuse DuplicateSku')}
+
+node create_order (state id)
+  says "a new order from the bag: prices captured, stock reserved in the same step, the bag emptied, the order on screen; the bag is always within availability, so the reservation cannot fail"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (== id state.next_id) BadInstruction
+  pre (> (len state.cart) 0) EmptyCart
+  post (state_ok out)
+  post (== out.current id)
+  post (== (status_of out.orders id) "ready")
+  post (== (len out.orders) (+ (len state.orders) 1))
+  let plines (priced state.stock state.cart)
+  let o (new_order id plines)
+  out (with state stock (reserve_all state.stock state.cart) orders (concat state.orders [o]) next_id (+ id 1) cart [] phase "order" current id request {lit(NONE_REQ)} notice "Order placed; your items are held" log (log_add state.log (cat "place " (str id))))
+{ex({'state': S_review, 'id': 1}, 'check (== out.orders [' + lit(O1) + ']) (== out.stock [' + lit(item('A', 'a', 10, 5, 2)) + ' ' + lit(B1) + ']) (== out.cart []) (== out.next_id 2)')}
+{ex({'state': S_review, 'id': 2}, 'refuse BadInstruction')}
+{ex({'state': state([A5, B1], phase='review'), 'id': 1}, 'refuse EmptyCart')}
+{ex({'state': S_bad, 'id': 1}, 'refuse BadState')}
+{ex({'state': state([item('A', 'a', 10, 5, 4), B1], cart=[{'sku': 'A', 'qty': 1}], orders=[order(1, [pl('A', 'a', 10, 4)], 'ready'), ], next_id=2, phase='review'), 'id': 2}, 'check (== (len out.orders) 2)')}
+
+node on_place (state id)
+  says "the place-order instruction: a new identity creates the order and reserves its stock; the same identity with the same intent continues that order; the same identity with a different intent refuses"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (in state.phase ["review" "order"]) WrongPhase
+  pre (or (has_order state.orders id) (== id state.next_id)) UnknownInstruction
+  pre (or (has_order state.orders id) (> (len state.cart) 0)) EmptyCart
+  pre (intent_matches state.orders id state.cart) ChangedIntent
+  post (state_ok out)
+  post (== out.current id)
+  post (== out.phase "order")
+  let existing (has_order state.orders id)
+  out (if existing (with state phase "order" current id request {lit(NONE_REQ)} notice "This order already exists; continuing it" log (log_add state.log (cat "place again " (str id)))) (create_order state id))
+{ex({'state': S_review, 'id': 1}, 'check (== (len out.orders) 1) (== out.current 1) (== out.next_id 2)')}
+{ex({'state': state([item('A', 'a', 10, 5, 2), B1], cart=[{'sku': 'A', 'qty': 2}], orders=[O1], next_id=2, phase='review', current=1), 'id': 1}, 'check (== (len out.orders) 1) (== out.stock state.stock) (== out.current 1)')}
+{ex({'state': state([item('A', 'a', 10, 5, 2), B1], cart=[{'sku': 'A', 'qty': 3}], orders=[O1], next_id=2, phase='review', current=1), 'id': 1}, 'refuse ChangedIntent')}
+{ex({'state': S_review, 'id': 5}, 'refuse UnknownInstruction')}
+{ex({'state': state([A5, B1], phase='review'), 'id': 1}, 'refuse EmptyCart')}
+{ex({'state': S_cart, 'id': 1}, 'refuse WrongPhase')}
+{ex({'state': S_bad, 'id': 1}, 'refuse BadState')}
+{ex({'state': state([item('A', 'a', 10, 5, 4), B1], cart=[{'sku': 'A', 'qty': 1}], orders=[order(1, [pl('A', 'a', 10, 4)], 'ready')], next_id=2, phase='review'), 'id': 2}, 'check (== (len out.orders) 2)')}
+{ex({'state': state([item('A', 'a', 10, 5, 2), B1], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'A', 'qty': 1}], orders=[O1], next_id=2, phase='review', current=1), 'id': 1}, 'refuse BadState')}
+
+node on_pay (state id)
+  says "the pay instruction for a ready order: the order becomes pending and the host is asked for exactly one charge of the captured total; a second delivery refuses, so one instruction never charges twice"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (has_order state.orders id) UnknownOrder
+  pre (not (in (status_of state.orders id) ["pending" "confirmed" "unknown"])) AlreadySubmitted
+  pre (== (status_of state.orders id) "ready") NotPayable
+  post (state_ok out)
+  post (== (status_of out.orders id) "pending")
+  post (== out.request.kind "charge")
+  post (== out.request.id id)
+  let o (find_order state.orders id)
+  out (with state orders (with_status state.orders id "pending") phase "order" current id request {{kind "charge" id id amount o.total}} notice "Sending your payment" log (log_add state.log (cat "pay " (str id))))
+{ex({'state': S_ready, 'id': 1}, 'check (== out.request {kind "charge" id 1 amount 20}) (== (status_of out.orders 1) "pending")')}
+{ex({'state': S_pending, 'id': 1}, 'refuse AlreadySubmitted')}
+{ex({'state': S_confirmed, 'id': 1}, 'refuse AlreadySubmitted')}
+{ex({'state': S_unknown, 'id': 1}, 'refuse AlreadySubmitted')}
+{ex({'state': S_declined, 'id': 1}, 'refuse NotPayable')}
+{ex({'state': S_ready, 'id': 7}, 'refuse UnknownOrder')}
+{ex({'state': S_bad, 'id': 1}, 'refuse BadState')}
+
+node settle_confirmed (state id)
+  says "an order confirmed: its units leave the shelf and the reservation together; a confirmed order stays confirmed"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (has_order state.orders id) UnknownOrder
+  pre (in (status_of state.orders id) ["pending" "unknown"]) NotSettling
+  post (state_ok out)
+  post (== (status_of out.orders id) "confirmed")
+  let o (find_order state.orders id)
+  out (with state stock (consume_all state.stock (map "bare" o.lines)) orders (with_status state.orders id "confirmed") phase "order" current id request {lit(NONE_REQ)} notice "Paid. Thank you" log (log_add state.log (cat "confirmed " (str id))))
+{ex({'state': S_pending, 'id': 1}, 'check (== out.stock [' + lit(item('A', 'a', 10, 3, 0)) + ' ' + lit(B1) + ']) (== (status_of out.orders 1) "confirmed")')}
+{ex({'state': S_unknown, 'id': 1}, 'check (== (status_of out.orders 1) "confirmed")')}
+{ex({'state': S_confirmed, 'id': 1}, 'refuse NotSettling')}
+{ex({'state': S_ready, 'id': 7}, 'refuse UnknownOrder')}
+{ex({'state': S_bad, 'id': 1}, 'refuse BadState')}
+
+node settle_declined (state id)
+  says "an order declined: its reservation is released once, nothing leaves the shelf"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (has_order state.orders id) UnknownOrder
+  pre (in (status_of state.orders id) ["pending" "unknown"]) NotSettling
+  post (state_ok out)
+  post (== (status_of out.orders id) "declined")
+  let o (find_order state.orders id)
+  out (with state stock (release_all state.stock (map "bare" o.lines)) orders (with_status state.orders id "declined") phase "order" current id request {lit(NONE_REQ)} notice "Payment declined. Nothing was charged; your items were released" log (log_add state.log (cat "declined " (str id))))
+{ex({'state': S_pending, 'id': 1}, 'check (== out.stock [' + lit(A5) + ' ' + lit(B1) + ']) (== (status_of out.orders 1) "declined")')}
+{ex({'state': S_declined, 'id': 1}, 'refuse NotSettling')}
+{ex({'state': S_ready, 'id': 7}, 'refuse UnknownOrder')}
+{ex({'state': S_bad, 'id': 1}, 'refuse BadState')}
+
+node on_payment_result (state id result)
+  says "the host's answer to a charge request: confirmed settles, declined releases, lost leaves the order unknown with its reservation kept"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (has_order state.orders id) UnknownOrder
+  pre (== (status_of state.orders id) "pending") NotPending
+  pre (in result ["confirmed" "declined" "lost"]) BadResult
+  post (state_ok out)
+  post (== out.request.kind "none")
+  post (in (status_of out.orders id) ["confirmed" "declined" "unknown"])
+  out (if (== result "confirmed") (settle_confirmed state id) (if (== result "declined") (settle_declined state id) (with state orders (with_status state.orders id "unknown") phase "order" current id request {lit(NONE_REQ)} notice "We could not confirm your payment. Your items are still held" log (log_add state.log (cat "lost " (str id))))))
+{ex({'state': S_pending, 'id': 1, 'result': 'confirmed'}, 'check (== (status_of out.orders 1) "confirmed") (== out.stock [' + lit(item('A', 'a', 10, 3, 0)) + ' ' + lit(B1) + '])')}
+{ex({'state': S_pending, 'id': 1, 'result': 'declined'}, 'check (== (status_of out.orders 1) "declined") (== out.stock [' + lit(A5) + ' ' + lit(B1) + '])')}
+{ex({'state': S_pending, 'id': 1, 'result': 'lost'}, 'check (== (status_of out.orders 1) "unknown") (== out.stock state.stock)')}
+{ex({'state': S_pending, 'id': 1, 'result': 'paid'}, 'refuse BadResult')}
+{ex({'state': S_ready, 'id': 1, 'result': 'confirmed'}, 'refuse NotPending')}
+{ex({'state': S_pending, 'id': 7, 'result': 'confirmed'}, 'refuse UnknownOrder')}
+{ex({'state': S_bad, 'id': 1, 'result': 'confirmed'}, 'refuse BadState')}
+
+node on_check (state id)
+  says "ask the host to look the payment up by the same instruction; only for an order whose answer was lost"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (has_order state.orders id) UnknownOrder
+  pre (== (status_of state.orders id) "unknown") NotUncertain
+  post (state_ok out)
+  post (== out.request {{kind "inquire" id id amount 0}})
+  out (with state phase "order" current id request {{kind "inquire" id id amount 0}} notice "Checking with the bank" log (log_add state.log (cat "check " (str id))))
+{ex({'state': S_unknown, 'id': 1}, 'check (== out.request {kind "inquire" id 1 amount 0})')}
+{ex({'state': S_ready, 'id': 1}, 'refuse NotUncertain')}
+{ex({'state': S_unknown, 'id': 7}, 'refuse UnknownOrder')}
+{ex({'state': S_bad, 'id': 1}, 'refuse BadState')}
+
+node on_inquiry_result (state id result)
+  says "the host's answer to an inquiry: confirmed settles without a new charge, declined releases, none means no charge ever happened so the order is ready to pay again, unavailable changes nothing"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (has_order state.orders id) UnknownOrder
+  pre (== (status_of state.orders id) "unknown") NotUncertain
+  pre (in result ["confirmed" "declined" "none" "unavailable"]) BadResult
+  post (state_ok out)
+  post (== out.request.kind "none")
+  out (if (== result "confirmed") (settle_confirmed state id) (if (== result "declined") (settle_declined state id) (if (== result "none") (with state orders (with_status state.orders id "ready") phase "order" current id request {lit(NONE_REQ)} notice "The bank has no record of this payment. You can pay now" log (log_add state.log (cat "none " (str id)))) (with state phase "order" current id request {lit(NONE_REQ)} notice "The bank is not answering. Your items stay held; try again" log (log_add state.log (cat "unavailable " (str id)))))))
+{ex({'state': S_unknown, 'id': 1, 'result': 'confirmed'}, 'check (== (status_of out.orders 1) "confirmed") (== out.stock [' + lit(item('A', 'a', 10, 3, 0)) + ' ' + lit(B1) + '])')}
+{ex({'state': S_unknown, 'id': 1, 'result': 'declined'}, 'check (== (status_of out.orders 1) "declined") (== out.stock [' + lit(A5) + ' ' + lit(B1) + '])')}
+{ex({'state': S_unknown, 'id': 1, 'result': 'none'}, 'check (== (status_of out.orders 1) "ready") (== out.stock state.stock)')}
+{ex({'state': S_unknown, 'id': 1, 'result': 'unavailable'}, 'check (== (status_of out.orders 1) "unknown") (== out.stock state.stock)')}
+{ex({'state': S_unknown, 'id': 1, 'result': 'paid'}, 'refuse BadResult')}
+{ex({'state': S_ready, 'id': 1, 'result': 'confirmed'}, 'refuse NotUncertain')}
+{ex({'state': S_unknown, 'id': 7, 'result': 'confirmed'}, 'refuse UnknownOrder')}
+{ex({'state': S_bad, 'id': 1, 'result': 'confirmed'}, 'refuse BadState')}
+
+node on_cancel (state id)
+  says "a ready order cancelled before payment: its reservation is released and the customer is back in the shop"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (has_order state.orders id) UnknownOrder
+  pre (== (status_of state.orders id) "ready") NotCancellable
+  post (state_ok out)
+  post (== (status_of out.orders id) "cancelled")
+  post (== out.phase "shop")
+  let o (find_order state.orders id)
+  out (with state stock (release_all state.stock (map "bare" o.lines)) orders (with_status state.orders id "cancelled") phase "shop" current 0 request {lit(NONE_REQ)} notice "Order cancelled; nothing was charged" log (log_add state.log (cat "cancel " (str id))))
+{ex({'state': S_ready, 'id': 1}, 'check (== out.stock [' + lit(A5) + ' ' + lit(B1) + ']) (== (status_of out.orders 1) "cancelled")')}
+{ex({'state': S_pending, 'id': 1}, 'refuse NotCancellable')}
+{ex({'state': S_ready, 'id': 7}, 'refuse UnknownOrder')}
+{ex({'state': S_bad, 'id': 1}, 'refuse BadState')}
+
+node on_new (state)
+  says "back to the shop; orders are kept and an unknown payment stays visible under Orders"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  post (state_ok out)
+  post (== out.phase "shop")
+  out (with state phase "shop" current 0 request {lit(NONE_REQ)} notice "" log (log_add state.log "new"))
+{ex({'state': S_confirmed}, 'check (== out.phase "shop") (== out.current 0) (== (len out.orders) 1)')}
+{ex({'state': S_bad}, 'refuse BadState')}
+
+node on_show (state id)
+  says "an earlier order brought back on screen, from the orders list"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (has_order state.orders id) UnknownOrder
+  post (state_ok out)
+  post (== out.current id)
+  out (with state phase "order" current id request {lit(NONE_REQ)} notice "" log (log_add state.log (cat "show " (str id))))
+{ex({'state': state([item('A', 'a', 10, 5, 2), B1], orders=[order(1, [pl('A', 'a', 10, 2)], 'unknown')], next_id=2), 'id': 1}, 'check (== out.phase "order") (== out.current 1)')}
+{ex({'state': S0, 'id': 1}, 'refuse UnknownOrder')}
+{ex({'state': S_bad, 'id': 1}, 'refuse BadState')}
+
+; ---- operator events ----
+
+node on_import_check (state text)
+  says "a supplier file previewed: nothing changes but the preview"
+  fx none
+  inv I1 I2 I3 I4 I5
+  raises BrokenQuote
+  pre (state_ok state) BadState
+  post (state_ok out)
+  post (== out.stock state.stock)
+  post (== out.orders state.orders)
+  out (with state pending (preview state.stock text) request {lit(NONE_REQ)} log (log_add state.log "import check"))
+{ex({'state': S0, 'text': CSV_OK}, 'check (== out.pending.outcome "Accepted") (== out.stock state.stock)')}
+{ex({'state': S_ready, 'text': "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,10,1\n"}, 'check (== out.pending.outcome "Conflict") (== out.pending.conflicts [{sku "A" reserved 2 supplier 1}])')}
+{ex({'state': S0, 'text': CSV_BROKEN}, 'refuse BrokenQuote')}
+{ex({'state': S_bad, 'text': ""}, 'refuse BadState')}
+
+node on_import_confirm (state)
+  says "the previewed snapshot applied whole: listed SKUs take the supplier's counts, reservations and captured orders are untouched, bag lines that no longer fit are dropped"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  pre (== state.pending.outcome "Accepted") NothingToImport
+  pre (records_ok state.pending.records) BadRecord
+  pre (unique_text (map "sku_of" state.pending.records)) DuplicateSku
+  pre (== (len (conflicts state.stock state.pending.records)) 0) StockBelowReserved
+  post (state_ok out)
+  post (== out.orders state.orders)
+  post (== out.pending.outcome "none")
+  let stock (apply_snapshot state.stock state.pending.records)
+  out (with state stock stock cart (fit_cart stock state.cart) pending {lit(NONE_PEND)} request {lit(NONE_REQ)} notice "Snapshot imported" log (log_add state.log "import confirm"))
+{ex({'state': S_pend}, 'check (== out.stock [' + lit(item('A', 'a', 10, 4)) + ' ' + lit(B1) + ' ' + lit(item('C', 'c', 1, 7)) + ']) (== out.pending.outcome "none")')}
+{ex({'state': S0}, 'refuse NothingToImport')}
+{ex({'state': S_pend_conflict}, 'refuse StockBelowReserved')}
+{ex({'state': S_pend_dup}, 'refuse DuplicateSku')}
+{ex({'state': S_pend_badrec}, 'refuse BadRecord')}
+{ex({'state': S_bad}, 'refuse BadState')}
+
+node on_import_cancel (state)
+  says "the preview discarded"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  post (state_ok out)
+  post (== out.pending.outcome "none")
+  out (with state pending {lit(NONE_PEND)} request {lit(NONE_REQ)} log (log_add state.log "import cancel"))
+{ex({'state': S_pend}, 'check (== out.pending.outcome "none") (== out.stock state.stock)')}
+{ex({'state': S_bad}, 'refuse BadState')}
+
+node on_noop (state)
+  says "nothing happens; a stale request is cleared"
+  fx none
+  inv I1 I2 I3 I4 I5
+  pre (state_ok state) BadState
+  post (state_ok out)
+  post (== out.request.kind "none")
+  out (with state request {lit(NONE_REQ)})
+{ex({'state': S_pending}, 'check (== out.request.kind "none")')}
+{ex({'state': S_bad}, 'refuse BadState')}
+
+node event_ok (event)
+  says "true when an event carries the fields its kind needs"
+  fx none
+  post (in out [true false])
+  let k event.kind
+  out (if (in k ["add" "remove"]) (has event "sku") (if (== k "set") (and (has event "sku") (has event "qty")) (if (in k ["place" "pay" "check" "cancel" "show"]) (has event "id") (if (in k ["payment_result" "inquiry_result"]) (and (has event "id") (has event "result")) (if (== k "import_check") (has event "text") (in k ["review" "back" "new" "import_confirm" "import_cancel" "noop"]))))))
+  ex {{event {{kind "add" sku "A"}}}} -> true
+  ex {{event {{kind "add"}}}} -> false
+  ex {{event {{kind "set" sku "A" qty 1}}}} -> true
+  ex {{event {{kind "set" sku "A"}}}} -> false
+  ex {{event {{kind "pay" id 1}}}} -> true
+  ex {{event {{kind "pay"}}}} -> false
+  ex {{event {{kind "payment_result" id 1 result "confirmed"}}}} -> true
+  ex {{event {{kind "payment_result" id 1}}}} -> false
+  ex {{event {{kind "import_check" text ""}}}} -> true
+  ex {{event {{kind "import_check"}}}} -> false
+  ex {{event {{kind "noop"}}}} -> true
+  ex {{event {{kind "fly"}}}} -> false
+
+node step (state event)
+  says "one event applied to the shop: the next whole state"
+  fx none
+  inv I1 I2 I3 I4 I5
+  raises BadState WrongPhase UnknownProduct BadQty ExceedsStock TooManyLines EmptyCart UnknownInstruction ChangedIntent DuplicateSku UnknownOrder AlreadySubmitted NotPayable NotPending BadResult NotUncertain NotCancellable BrokenQuote NothingToImport BadRecord StockBelowReserved
+  pre (in event.kind ["add" "set" "remove" "review" "back" "place" "pay" "payment_result" "check" "inquiry_result" "cancel" "new" "show" "import_check" "import_confirm" "import_cancel" "noop"]) UnknownEvent
+  pre (event_ok event) BadEvent
+  post (state_ok out)
+  let k event.kind
+  out (if (== k "add") (on_add state event.sku) (if (== k "set") (on_set state event.sku event.qty) (if (== k "remove") (on_remove state event.sku) (if (== k "review") (on_review state) (if (== k "back") (on_back state) (if (== k "place") (on_place state event.id) (if (== k "pay") (on_pay state event.id) (if (== k "payment_result") (on_payment_result state event.id event.result) (if (== k "check") (on_check state event.id) (if (== k "inquiry_result") (on_inquiry_result state event.id event.result) (if (== k "cancel") (on_cancel state event.id) (if (== k "new") (on_new state) (if (== k "show") (on_show state event.id) (if (== k "import_check") (on_import_check state event.text) (if (== k "import_confirm") (on_import_confirm state) (if (== k "import_cancel") (on_import_cancel state) (on_noop state)))))))))))))))))
+{ex({'state': S0, 'event': {'kind': 'add', 'sku': 'A'}}, 'check (== out.cart [{sku "A" qty 1}])')}
+{ex({'state': S_cart, 'event': {'kind': 'set', 'sku': 'A', 'qty': 3}}, 'check (== out.cart [{sku "A" qty 3}])')}
+{ex({'state': S_cart, 'event': {'kind': 'remove', 'sku': 'A'}}, 'check (== out.cart [])')}
+{ex({'state': S_cart, 'event': {'kind': 'review'}}, 'check (== out.phase "review")')}
+{ex({'state': S_review, 'event': {'kind': 'back'}}, 'check (== out.phase "shop")')}
+{ex({'state': S_review, 'event': {'kind': 'place', 'id': 1}}, 'check (== out.current 1) (== (len out.orders) 1)')}
+{ex({'state': S_ready, 'event': {'kind': 'pay', 'id': 1}}, 'check (== out.request.kind "charge")')}
+{ex({'state': S_pending, 'event': {'kind': 'payment_result', 'id': 1, 'result': 'confirmed'}}, 'check (== (status_of out.orders 1) "confirmed")')}
+{ex({'state': S_unknown, 'event': {'kind': 'check', 'id': 1}}, 'check (== out.request.kind "inquire")')}
+{ex({'state': S_unknown, 'event': {'kind': 'inquiry_result', 'id': 1, 'result': 'confirmed'}}, 'check (== (status_of out.orders 1) "confirmed")')}
+{ex({'state': S_ready, 'event': {'kind': 'cancel', 'id': 1}}, 'check (== (status_of out.orders 1) "cancelled")')}
+{ex({'state': S_confirmed, 'event': {'kind': 'new'}}, 'check (== out.phase "shop")')}
+{ex({'state': state([item('A', 'a', 10, 5, 2), B1], orders=[order(1, [pl('A', 'a', 10, 2)], 'unknown')], next_id=2), 'event': {'kind': 'show', 'id': 1}}, 'check (== out.current 1)')}
+{ex({'state': S0, 'event': {'kind': 'import_check', 'text': CSV_OK}}, 'check (== out.pending.outcome "Accepted")')}
+{ex({'state': S_pend, 'event': {'kind': 'import_confirm'}}, 'check (== (len out.stock) 3)')}
+{ex({'state': S_pend, 'event': {'kind': 'import_cancel'}}, 'check (== out.pending.outcome "none")')}
+{ex({'state': S_pending, 'event': {'kind': 'noop'}}, 'check (== out.request.kind "none")')}
+{ex({'state': S0, 'event': {'kind': 'fly'}}, 'refuse UnknownEvent')}
+{ex({'state': S0, 'event': {'kind': 'add'}}, 'refuse BadEvent')}
+{ex({'state': S_bad, 'event': {'kind': 'noop'}}, 'refuse BadState')}
+{ex({'state': S_ready, 'event': {'kind': 'add', 'sku': 'A'}}, 'refuse WrongPhase')}
+{ex({'state': state([A5], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'A', 'qty': 1}]), 'event': {'kind': 'add', 'sku': 'A'}}, 'refuse BadState')}
+{ex({'state': S0, 'event': {'kind': 'add', 'sku': 'Z'}}, 'refuse UnknownProduct')}
+{ex({'state': S0, 'event': {'kind': 'set', 'sku': 'A', 'qty': 10}}, 'refuse BadQty')}
+{ex({'state': S0, 'event': {'kind': 'set', 'sku': 'A', 'qty': 6}}, 'refuse ExceedsStock')}
+{ex({'state': state([A5, B1, item('C', 'c', 1, 1), item('D', 'd', 1, 1)], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'B', 'qty': 1}, {'sku': 'C', 'qty': 1}]), 'event': {'kind': 'add', 'sku': 'D'}}, 'refuse TooManyLines')}
+{ex({'state': S0, 'event': {'kind': 'review'}}, 'refuse EmptyCart')}
+{ex({'state': S_review, 'event': {'kind': 'place', 'id': 5}}, 'refuse UnknownInstruction')}
+{ex({'state': state([item('A', 'a', 10, 5, 2), B1], cart=[{'sku': 'A', 'qty': 3}], orders=[O1], next_id=2, phase='review', current=1), 'event': {'kind': 'place', 'id': 1}}, 'refuse ChangedIntent')}
+{ex({'state': S_ready, 'event': {'kind': 'pay', 'id': 7}}, 'refuse UnknownOrder')}
+{ex({'state': S_pending, 'event': {'kind': 'pay', 'id': 1}}, 'refuse AlreadySubmitted')}
+{ex({'state': S_declined, 'event': {'kind': 'pay', 'id': 1}}, 'refuse NotPayable')}
+{ex({'state': S_ready, 'event': {'kind': 'payment_result', 'id': 1, 'result': 'confirmed'}}, 'refuse NotPending')}
+{ex({'state': S_pending, 'event': {'kind': 'payment_result', 'id': 1, 'result': 'paid'}}, 'refuse BadResult')}
+{ex({'state': S_ready, 'event': {'kind': 'check', 'id': 1}}, 'refuse NotUncertain')}
+{ex({'state': S_pending, 'event': {'kind': 'cancel', 'id': 1}}, 'refuse NotCancellable')}
+{ex({'state': S0, 'event': {'kind': 'import_check', 'text': CSV_BROKEN}}, 'refuse BrokenQuote')}
+{ex({'state': S0, 'event': {'kind': 'import_confirm'}}, 'refuse NothingToImport')}
+{ex({'state': S_pend_badrec, 'event': {'kind': 'import_confirm'}}, 'refuse BadRecord')}
+{ex({'state': S_pend_dup, 'event': {'kind': 'import_confirm'}}, 'refuse DuplicateSku')}
+{ex({'state': S_pend_conflict, 'event': {'kind': 'import_confirm'}}, 'refuse StockBelowReserved')}
+{ex({'state': S0, 'event': {'kind': 'add', 'sku': 'A', 'qty': 1}}, 'check (== out.cart [{sku "A" qty 1}])')}
+{ex({'state': state([A5, B1], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'B', 'qty': 1}]), 'event': {'kind': 'add', 'sku': 'A'}}, 'check (== out.cart [{sku "A" qty 2} {sku "B" qty 1}])')}
+{ex({'state': state([A5, B1], cart=[{'sku': 'A', 'qty': 1}, {'sku': 'B', 'qty': 1}], orders=[order(1, [pl('A', 'a', 10, 1)], 'confirmed')], next_id=2, phase='review'), 'event': {'kind': 'place', 'id': 2}}, 'check (== (len out.orders) 2)')}
+
+'''
+
+# ---- the view ----
+src += '''; ---- the screen: panel items the generic host renders; the area field places them (shop, orders, desk) ----
+
+node money_text (n)
+  says "a whole VND amount as text with a thousands separator, for a label"
+  fx none
+  pre (>= n 0) Negative
+  post (> (text_len out) 0)
+  let m (div n THOUSAND)
+  let r (mod n THOUSAND)
+  let rt (if (< r TEN) (cat "00" (str r)) (if (< r HUNDRED) (cat "0" (str r)) (str r)))
+  out (if (< n THOUSAND) (str n) (cat (money_small m) (cat "." rt)))
+  ex {n 50000} -> "50.000"
+  ex {n 120000} -> "120.000"
+  ex {n 1000} -> "1.000"
+  ex {n 999} -> "999"
+  ex {n 1005} -> "1.005"
+  ex {n 1234567} -> "1.234.567"
+  ex {n -1} refuse Negative
+
+node money_small (n)
+  says "the thousands part of an amount as text, itself separated when a million or more"
+  fx none
+  pre (>= n 0) Negative
+  post (> (text_len out) 0)
+  let m (div n THOUSAND)
+  let r (mod n THOUSAND)
+  let rt (if (< r TEN) (cat "00" (str r)) (if (< r HUNDRED) (cat "0" (str r)) (str r)))
+  out (if (< n THOUSAND) (str n) (cat (str m) (cat "." rt)))
+  ex {n 50} -> "50"
+  ex {n 1234} -> "1.234"
+  ex {n 1001} -> "1.001"
+  ex {n -1} refuse Negative
+
+node card_of (s)
+  says "a product card: name, SKU, price, units available, and the add event"
+  fx none
+  pre (== (stock_item_ok s) 1) BadItem
+  post (== out.k "card")
+  let a (available s)
+  out {k "card" area "shop" title s.name sub s.sku price s.price money (cat (money_text s.price) " ₫") stock a note (if (== a 0) "Sold out" (if (== a 1) "Last one" (cat (str a) " available"))) event {kind "add" sku s.sku} enabled (> a 0)}
+  ex {s {sku "A" name "a" price 10 on_hand 5 reserved 3}} check (== out.stock 2) (== out.enabled true) (== out.note "2 available")
+  ex {s {sku "A" name "a" price 10 on_hand 5 reserved 5}} check (== out.enabled false) (== out.note "Sold out")
+  ex {s {sku "A" name "a" price 10 on_hand 5 reserved 6}} refuse BadItem
+
+node bag_line (l)
+  says "a bag line with its stepper events: minus, plus, remove"
+  fx none
+  pre (== l.subtotal (* l.price l.qty)) BadLine
+  pre (>= l.qty 1) BadQty
+  post (== out.k "line")
+  out {k "line" area "bag" title l.name sub (cat (cat (money_text l.price) " ₫ × ") (str l.qty)) qty l.qty money (cat (money_text l.subtotal) " ₫") minus {kind "set" sku l.sku qty (- l.qty 1)} plus {kind "set" sku l.sku qty (+ l.qty 1)} remove {kind "remove" sku l.sku}}
+  ex {l {sku "A" name "a" price 10 qty 2 subtotal 20}} check (== out.qty 2) (== out.minus {kind "set" sku "A" qty 1}) (== out.plus {kind "set" sku "A" qty 3})
+  ex {l {sku "A" name "a" price 10 qty 2 subtotal 21}} refuse BadLine
+  ex {l {sku "A" name "a" price 10 qty 0 subtotal 0}} refuse BadQty
+
+node order_line (l)
+  says "a read-only line of an order or a review"
+  fx none
+  pre (== l.subtotal (* l.price l.qty)) BadLine
+  post (== out.k "row")
+  out {k "row" area "bag" title l.name sub (cat (cat (money_text l.price) " ₫ × ") (str l.qty)) money (cat (money_text l.subtotal) " ₫")}
+  ex {l {sku "A" name "a" price 10 qty 2 subtotal 20}} check (== out.money "20 ₫")
+  ex {l {sku "A" name "a" price 10 qty 2 subtotal 21}} refuse BadLine
+
+node status_word (st)
+  says "the customer's word for an order status"
+  fx none
+  post (> (text_len out) 0)
+  out (if (== st "confirmed") "Paid" (if (== st "declined") "Declined" (if (== st "unknown") "Payment unconfirmed" (if (== st "ready") "Awaiting payment" (if (== st "pending") "Paying" (if (== st "cancelled") "Cancelled" "Unknown status"))))))
+  ex {st "confirmed"} -> "Paid"
+  ex {st "unknown"} -> "Payment unconfirmed"
+  ex {st "other"} -> "Unknown status"
+
+node status_tone (st)
+  says "the tone of an order status: ok, warn, err or info"
+  fx none
+  post (in out ["ok" "warn" "err" "info"])
+  out (if (== st "confirmed") "ok" (if (== st "declined") "err" (if (== st "unknown") "warn" "info")))
+  ex {st "confirmed"} -> "ok"
+  ex {st "unknown"} -> "warn"
+  ex {st "ready"} -> "info"
+
+node order_card (o)
+  says "an order in the orders list: number, status, total, and a button to open it"
+  fx none
+  pre (== (order_ok o) 1) BadOrder
+  post (== out.k "order")
+  out {k "order" area "orders" title (cat "Order #" (str o.id)) status (status_word o.status) tone (status_tone o.status) money (cat (money_text o.total) " ₫") count (len o.lines) event {kind "show" id o.id} label (if (== o.status "unknown") "Open and check payment" "Open")}
+  ex {o {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "unknown"}} check (== out.tone "warn") (== out.label "Open and check payment")
+  ex {o {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 21 status "unknown"}} refuse BadOrder
+
+node stock_cells (s)
+  says "a stock table row: SKU, name, price, on hand, reserved, available"
+  fx none
+  pre (== (stock_item_ok s) 1) BadItem
+  post (== (len out) 6)
+  out [s.sku s.name s.price s.on_hand s.reserved (available s)]
+  ex {s {sku "A" name "a" price 10 on_hand 5 reserved 3}} -> ["A" "a" 10 5 3 2]
+  ex {s {sku "A" name "a" price 10 on_hand 5 reserved 6}} refuse BadItem
+
+node order_cells (o)
+  says "an orders table row: id, status, total, lines"
+  fx none
+  post (== (len out) 4)
+  out [o.id o.status o.total (len o.lines)]
+  ex {o {id 1 lines [{sku "A" name "a" price 10 qty 2 subtotal 20}] total 20 status "ready"}} -> [1 "ready" 20 1]
+
+node problem_cells (d)
+  says "a validation problem row: record, field, problem"
+  fx none
+  post (== (len out) 3)
+  out [d.index d.field d.problem]
+  ex {d {index 2 field "SKU" problem "BadSku"}} -> [2 "SKU" "BadSku"]
+
+node conflict_cells (c)
+  says "a reservation conflict row"
+  fx none
+  post (== (len out) 3)
+  out [c.sku c.reserved c.supplier]
+  ex {c {sku "A" reserved 3 supplier 2}} -> ["A" 3 2]
+
+node change_cells (c)
+  says "an availability change row: SKU, name, available before, after, new"
+  fx none
+  post (== (len out) 5)
+  out [c.sku c.name c.before c.after (if c.new "new" "")]
+  ex {c {sku "A" name "a" before 2 after 1 new false}} -> ["A" "a" 2 1 ""]
+  ex {c {sku "C" name "c" before 0 after 7 new true}} -> ["C" "c" 0 7 "new"]
+
+node error_texts ()
+  says "what the customer reads when an action is refused, by refusal name; the host shows the matching line"
+  fx none
+  post (has out "ExceedsStock")
+  out {UnknownProduct "That product is not in the shop" ExceedsStock "Not enough in stock for that quantity" BadQty "Quantities go from 1 to 9" TooManyLines "An order has at most three different products" EmptyCart "Your bag is empty" ChangedIntent "This order was already placed with different items; start a new order instead" InsufficientStock "Someone else took the last of these; the bag was not changed" AlreadySubmitted "This payment was already sent; nothing was charged again" NotPayable "This order can no longer be paid" NotUncertain "There is nothing to check for this order" NotCancellable "This order can no longer be cancelled" BrokenQuote "The file has an unclosed quote; nothing was imported" NothingToImport "Validate a file first" StockBelowReserved "The supplier count is below what customers already hold; nothing was imported" WrongPhase "That action is not available here" UnknownOrder "No such order" UnknownInstruction "That instruction is not known to this shop" BadState "The shop state is inconsistent; clear the session"}
+  ex {} check (has out "ChangedIntent")
+
+node shop_items (state)
+  says "the shop page: products, the bag with its steppers, the total, and the way to review"
+  fx none
+  pre (state_ok state) BadState
+  post (> (len out) 0)
+  let plines (priced state.stock state.cart)
+  let total (total_of plines)
+  let n (len state.cart)
+  out (concat (concat [{k "steps" area "shop" labels ["Browse" "Review" "Pay" "Done"] current 0} {k "hero" area "shop" title "Three things for the desk." text "Prices in VND. Nothing is added at checkout; payment is simulated."} {k "section" area "shop" text "Products"}] (map "card_of" state.stock)) (concat (concat [{k "section" area "bag" text (if (== n 0) "Your bag is empty" (cat "Your bag: " (cat (str n) (if (== n 1) " product" " products"))))}] (map "bag_line" plines)) (if (== n 0) [{k "text" area "bag" text "Add something from the shelf to begin."}] [{k "total" area "bag" label "Total" money (cat (money_text total) " ₫")} {k "button" area "bag" label "Review order" primary true event {kind "review"}}])))
+  ex {state ''' + lit(S0) + '''} check (> (len out) 3)
+  ex {state ''' + lit(S_cart) + '''} check (> (len out) 5)
+  ex {state ''' + lit(S_bad) + '''} refuse BadState
+
+node review_items (state)
+  says "the review page: the lines, the total, place-order with the next instruction identity, and back"
+  fx none
+  pre (state_ok state) BadState
+  pre (== state.phase "review") WrongPhase
+  post (> (len out) 0)
+  let plines (priced state.stock state.cart)
+  let total (total_of plines)
+  out (concat (concat [{k "steps" area "shop" labels ["Browse" "Review" "Pay" "Done"] current 1} {k "section" area "bag" text "Review your order"}] (map "order_line" plines)) [{k "total" area "bag" label "Total to pay" money (cat (money_text total) " ₫")} {k "text" area "bag" text "Placing the order holds these items for you. Nothing is charged until you pay."} {k "button" area "bag" label "Place order" primary true event {kind "place" id state.next_id}} {k "button" area "bag" label "Back to the shop" primary false event {kind "back"}}])
+  ex {state ''' + lit(S_review) + '''} check (> (len out) 3)
+  ex {state ''' + lit(S_cart) + '''} refuse WrongPhase
+  ex {state ''' + lit(S_bad) + '''} refuse BadState
+
+node order_items (state)
+  says "the order page by status: ready offers pay or cancel; pending waits; confirmed is the receipt; declined and cancelled say nothing was charged; unknown offers a payment check"
+  fx none
+  pre (state_ok state) BadState
+  pre (== state.phase "order") WrongPhase
+  pre (has_order state.orders state.current) UnknownOrder
+  post (> (len out) 0)
+  let o (find_order state.orders state.current)
+  let st (status_of state.orders state.current)
+  let stepn (if (== st "confirmed") STEP_DONE STEP_PAY)
+  let head [{k "steps" area "shop" labels ["Browse" "Review" "Pay" "Done"] current stepn} {k "status" area "shop" tone (status_tone st) title (cat (cat "Order #" (str o.id)) (cat " · " (status_word st))) text (if (== st "ready") "Your items are held. Pay to complete the order, or cancel to release them." (if (== st "pending") "Sending your payment…" (if (== st "confirmed") "Paid. Your order is complete." (if (== st "declined") "Your bank declined the payment. Nothing was charged and the items were released." (if (== st "unknown") "We sent the payment but got no answer. Nothing more will be charged; your items stay held until we know." (if (== st "cancelled") "Cancelled. Nothing was charged." ""))))))}]
+  let lines (map "order_line" o.lines)
+  let total [{k "total" area "bag" label (if (== st "confirmed") "Paid" "Total") money (cat (money_text o.total) " ₫")}]
+  let actions (if (== st "ready") [{k "button" area "bag" label (cat "Pay " (cat (money_text o.total) " ₫")) primary true event {kind "pay" id o.id}} {k "button" area "bag" label "Cancel order" primary false event {kind "cancel" id o.id}} {k "button" area "bag" label "Back to the shop" primary false event {kind "new"}}] (if (== st "unknown") [{k "button" area "bag" label "Check payment status" primary true event {kind "check" id o.id}} {k "button" area "bag" label "Back to the shop" primary false event {kind "new"}}] (if (== st "pending") [] [{k "button" area "bag" label "Back to the shop" primary true event {kind "new"}}])))
+  out (concat (concat head [{k "section" area "bag" text (if (== st "confirmed") "Receipt" "Your order")}]) (concat lines (concat total actions)))
+  ex {state ''' + lit(S_ready) + '''} check (> (len out) 3)
+  ex {state ''' + lit(S_confirmed) + '''} check (> (len out) 3)
+  ex {state ''' + lit(S_unknown) + '''} check (> (len out) 3)
+  ex {state ''' + lit(S_declined) + '''} check (> (len out) 3)
+  ex {state ''' + lit(S_pending) + '''} check (> (len out) 3)
+  ex {state ''' + lit(S_cart) + '''} refuse WrongPhase
+  ex {state ''' + lit(state([A5], phase='order', current=0)) + '''} refuse UnknownOrder
+  ex {state ''' + lit(S_bad) + '''} refuse BadState
+
+node desk_items (state)
+  says "the test desk: the supplier import with its declared meaning and preview, the stock and orders tables, and the log"
+  fx none
+  pre (state_ok state) BadState
+  post (> (len out) 0)
+  let p state.pending
+  let oc p.outcome
+  let intake [{k "section" area "desk" text "Supplier snapshot"} {k "text" area "desk" text "A snapshot states physical unsold units per SKU, reservations included. It is not a delta and not an available quantity. Listed SKUs take the supplier's count; unlisted SKUs keep theirs; a count below what customers hold rejects the whole file."} {k "file" area "desk" field "text" label "Supplier CSV (SKU,NAME,PRICE_VND,QTY_ON_HAND)" submit "Validate" event {kind "import_check"}}]
+  let verdict (if (== oc "none") [] [{k "status" area "desk" tone (if (== oc "Accepted") "ok" "err") title (if (== oc "Accepted") "Snapshot valid — confirm to apply" (if (== oc "Conflict") "Rejected: supplier count below reserved units" (if (== oc "BadHeader") "Rejected: wrong header" "Rejected: invalid records"))) text (cat (str p.count) " data records read")}])
+  let problems (if (== (len p.problems) 0) [] [{k "table" area "desk" columns ["Record" "Field" "Problem"] rows (map "problem_cells" p.problems)}])
+  let dups (if (== (len p.duplicates) 0) [] [{k "warn" area "desk" text (cat "Duplicate SKUs at records " (cat (str (len p.duplicates)) " (see records table)"))} {k "table" area "desk" columns ["Duplicate SKU at record"] rows (map "one_cell" p.duplicates)}])
+  let cons (if (== (len p.conflicts) 0) [] [{k "table" area "desk" columns ["SKU" "Reserved" "Supplier count"] rows (map "conflict_cells" p.conflicts)}])
+  let chg (if (== (len p.changes) 0) [] [{k "table" area "desk" columns ["SKU" "Name" "Available now" "After import" ""] rows (map "change_cells" p.changes)}])
+  let confirm (if (== oc "Accepted") [{k "button" area "desk" label "Confirm import" primary true event {kind "import_confirm"}} {k "button" area "desk" label "Discard" primary false event {kind "import_cancel"}}] (if (== oc "none") [] [{k "button" area "desk" label "Discard" primary false event {kind "import_cancel"}}]))
+  let tables [{k "section" area "desk" text "Stock (H on hand, R reserved, A available = H − R)"} {k "table" area "desk" columns ["SKU" "Name" "Price" "H" "R" "A"] rows (map "stock_cells" state.stock)} {k "section" area "desk" text "Orders"} {k "table" area "desk" columns ["Id" "Status" "Total" "Lines"] rows (map "order_cells" state.orders)} {k "section" area "desk" text "Event log"} {k "log" area "desk" lines state.log}]
+  out (concat (concat intake verdict) (concat (concat problems dups) (concat (concat cons chg) (concat confirm tables))))
+  ex {state ''' + lit(S0) + '''} check (> (len out) 5)
+  ex {state ''' + lit(S_pend) + '''} check (> (len out) 8)
+  ex {state ''' + lit(state([A5], pending={'outcome': 'Rejected', 'problems': [{'index': 1, 'field': 'SKU', 'problem': 'BadSku'}], 'duplicates': [2, 3], 'records': [], 'conflicts': [], 'changes': [], 'count': 3}))+ '''} check (> (len out) 8)
+  ex {state ''' + lit(S_bad) + '''} refuse BadState
+
+node one_cell (x)
+  says "a one-column table row"
+  fx none
+  post (== (len out) 1)
+  out [x]
+  ex {x 2} -> [2]
+
+node view (state)
+  says "everything on screen: the shop area by phase, the orders area, the test desk, the notice, and the refusal texts"
+  fx none
+  pre (state_ok state) BadState
+  post (> (len out) 0)
+  let main (if (== state.phase "shop") (shop_items state) (if (== state.phase "review") (review_items state) (order_items state)))
+  let orders (concat [{k "section" area "orders" text (if (== (len state.orders) 0) "No orders yet" "Your orders")}] (map "order_card" state.orders))
+  out (concat (concat [{k "notice" area "shop" text state.notice} {k "errors" area "shop" texts (error_texts)}] main) (concat orders (desk_items state)))
+  ex {state ''' + lit(S0) + '''} check (> (len out) 5)
+  ex {state ''' + lit(S_review) + '''} check (> (len out) 5)
+  ex {state ''' + lit(S_unknown) + '''} check (> (len out) 5)
+  ex {state ''' + lit(S_bad) + '''} refuse BadState
+
+node frame (state event)
+  says "the entry point: one event in, the next state out, the screen shown; on a refusal nothing is shown and the host keeps the old state"
+  fx Panel
+  inv I1 I2 I3 I4 I5
+  raises BadState WrongPhase UnknownProduct BadQty ExceedsStock TooManyLines EmptyCart UnknownInstruction ChangedIntent DuplicateSku UnknownOrder AlreadySubmitted NotPayable NotPending BadResult NotUncertain NotCancellable BrokenQuote NothingToImport BadRecord StockBelowReserved UnknownEvent BadEvent
+  post (state_ok out)
+  let s (step state event)
+  let shown (panel.show (view s))
+  out s
+'''
+# frame examples: reuse step's examples
+import re
+step_block = src.split('node step (state event)')[1].split('\n\n')[0]
+frame_ex = '\n'.join(l for l in step_block.split('\n') if l.startswith('  ex '))
+src += frame_ex + '\n'
+src = src.replace('root shop\nnumbers exact', 'root shop\nnumbers exact\nconst THOUSAND 1000\nconst HUNDRED 100\nconst TEN 10\nconst NB_PRICE 50000\nconst NB_QTY 5\nconst PEN_PRICE 20000\nconst PEN_QTY 8\nconst TOTE_PRICE 120000\nconst TOTE_QTY 2\nconst STEP_PAY 2\nconst STEP_DONE 3')
+open('/home/claude/dist/apps/shop/shop.node', 'w').write(src)
+print('shop.node', len(src), 'chars')

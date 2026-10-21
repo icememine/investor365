@@ -1,0 +1,13 @@
+const { chromium } = require('playwright'); const path = require('path');
+(async () => { const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 390, height: 844 } });
+  p.on('pageerror', e => console.log('PAGEERROR', e.message));
+  await p.goto('file://' + path.resolve(__dirname, '../host/shop.html')); await p.waitForFunction(() => window.__dnode && window.__dnode.state);
+  await p.evaluate(() => window.__dnode.showTab('desk')); await p.click('button:has-text("Clear session")'); await p.evaluate(() => window.__dnode.showTab('shop'));
+  await p.click('button:has-text("Add to bag")'); await p.click('button:has-text("Review order")'); await p.click('button:has-text("Place order")');
+  await p.click('button:has-text("Pay ")'); await p.waitForTimeout(700);
+  await p.click('button:has-text("Back to the shop")'); await p.click('.card:nth-child(2) button'); await p.click('button:has-text("Review order")');
+  await p.evaluate(() => window.__dnode.send({ kind: 'place', id: 1 }));
+  console.log('err:', await p.evaluate(() => window.__dnode.lastError), 'phase:', (await p.evaluate(() => window.__dnode.state)).phase);
+  console.log(await p.evaluate(() => document.getElementById('tab-shop').innerText.slice(0, 600)));
+  console.log('notice:', await p.evaluate(() => document.getElementById('notice').innerText)); console.log(await p.evaluate(() => [...document.querySelectorAll('button')].filter(b => b.textContent.includes('Back to the shop')).map(b => b.closest('section').id + ' hidden=' + b.closest('section').hidden + ' rect=' + JSON.stringify(b.getBoundingClientRect()))));
+  await b.close(); })();

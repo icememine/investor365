@@ -1,0 +1,132 @@
+{
+ "page": "host/shop.html",
+ "at": "2026-10-20T13:04:25.438Z",
+ "results": [
+  {
+   "id": "A0",
+   "pass": true,
+   "note": "page admitted: admitted"
+  },
+  {
+   "id": "S01",
+   "pass": true,
+   "note": "paid; amount shown 70.000 ₫; status line \"Order #1 · Paid\""
+  },
+  {
+   "id": "S02a",
+   "pass": true,
+   "note": "cart total 120.000 ₫ for NOTEBOOK×2 + PEN×1"
+  },
+  {
+   "id": "S02b",
+   "pass": true,
+   "note": "malformed set refused (InputShape: InputShape: >= given a non-integer under numbers exact: [\"x\",0]); qty 12 refused BadQty; cart unchanged"
+  },
+  {
+   "id": "S03a",
+   "pass": true,
+   "note": "place delivered twice: still one order, stock reserved once"
+  },
+  {
+   "id": "S03b",
+   "pass": true,
+   "note": "pay delivered twice: ledger has 2 charges for 2 orders, second delivery refused AlreadySubmitted, NOTEBOOK on hand 2"
+  },
+  {
+   "id": "S03c",
+   "pass": true,
+   "note": "same identity with a different bag refused ChangedIntent"
+  },
+  {
+   "id": "S04",
+   "pass": true,
+   "note": "after order #3 reserved both totes: card says \"Sold out\", add refused ExceedsStock"
+  },
+  {
+   "id": "S06a",
+   "pass": true,
+   "note": "cancel before payment released the reservation"
+  },
+  {
+   "id": "S05a",
+   "pass": true,
+   "note": "reply lost: status \"Order #4 · Payment unconfirmed\", reservation kept, ledger 3 charges"
+  },
+  {
+   "id": "S07",
+   "pass": true,
+   "note": "after reload the same order and instruction are back and recovery is offered; ledger intact"
+  },
+  {
+   "id": "S05b",
+   "pass": true,
+   "note": "inquiry unavailable once then confirmed; ledger still 3; stock consumed once"
+  },
+  {
+   "id": "S06b",
+   "pass": true,
+   "note": "declined: reservation released, nothing consumed"
+  },
+  {
+   "id": "S06c",
+   "pass": true,
+   "note": "a second release attempt refused NotUncertain"
+  },
+  {
+   "id": "S06d",
+   "pass": true,
+   "note": "snapshot below reserved: outcome Conflict, no confirm offered, stock unchanged"
+  },
+  {
+   "id": "OP1",
+   "pass": true,
+   "note": "operator import applied whole: new SKU added, counts replaced, reservation and open order kept"
+  },
+  {
+   "id": "S02c",
+   "pass": true,
+   "note": "broken quote refused before any business logic"
+  },
+  {
+   "id": "B-op",
+   "pass": true,
+   "note": "bad rows located: [{\"index\":1,\"field\":\"PRICE_VND\",\"problem\":\"BadPrice\"},{\"index\":2,\"field\":\"SKU\",\"problem\":\"BadSku\"}]"
+  },
+  {
+   "id": "S08",
+   "pass": true,
+   "note": "on a 390×844 viewport the status sits at 214px and the next action ends at 568px"
+  },
+  {
+   "id": "ERR",
+   "pass": true,
+   "note": "no page errors (font fetch excluded)"
+  }
+ ],
+ "ledger": [
+  {
+   "ref": 1,
+   "amount": 70000,
+   "result": "confirmed",
+   "at": "2026-10-20T13:04:14.251Z"
+  },
+  {
+   "ref": 2,
+   "amount": 140000,
+   "result": "confirmed",
+   "at": "2026-10-20T13:04:15.924Z"
+  },
+  {
+   "ref": 4,
+   "amount": 50000,
+   "result": "confirmed",
+   "at": "2026-10-20T13:04:19.295Z"
+  },
+  {
+   "ref": 5,
+   "amount": 20000,
+   "result": "declined",
+   "at": "2026-10-20T13:04:23.173Z"
+  }
+ ]
+}

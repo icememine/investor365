@@ -1,0 +1,331 @@
+; breakout — BP-GAME: the whole game. One state, one event step, one draw list. The only root with effects.
+; Phases: title → (launch) play ⇄ paused; a lost ball goes to serve, where the ball rides the paddle until the player launches;
+; won when the wall is empty, lost when lives reach 0; restart returns to the exact initial state.
+; Events, in the order the host delivers them, are the whole input: tick {move target}, launch, pause, resume, restart.
+; Score is the number of removed bricks. Nothing here reads a clock or a random source.
+root breakout
+numbers exact
+use bk_physics
+effect Screen screen.draw
+effect Audio audio.play
+const LIVES 3
+const PADDLE_START 13000
+const BURST_MAX 8
+const HUD_Y 2400
+const HUD_X 1200
+const LIVES_X 30800
+const CENTER_X 16000
+const CENTER_Y 26000
+const LINE 2400
+const TITLE_Y 20000
+const TWO_LINES 4800
+
+event tick move target
+event launch
+event pause
+event resume
+event restart
+event noop
+
+inv G1 "the paddle stays inside the field" (paddle_ok out.paddle)
+inv G2 "bricks never come back and the wall keeps its 30 cells; only a restart to the title rebuilds the wall" (or (== out.phase "title") (and (== (len out.bricks) (len state.bricks)) (<= (intact out.bricks) (intact state.bricks))))
+inv G3 "the score is the number of removed bricks" (== out.score (- BRICKS (intact out.bricks)))
+inv G4 "a life is lost once, exactly when the ball exits; only a restart to the title gives lives back" (or (== out.phase "title") (== out.lives (- state.lives (if (== out.last "lost") 1 0))))
+inv G5 "the ball never passes the speed ceiling" (and (<= (abs out.ball.vx) MAXV) (<= (abs out.ball.vy) MAXV))
+
+node burst_ok (u)
+  says "1 when a burst is well formed"
+  fx none
+  post (in out [0 1])
+  out (if (and (>= u.age 0) (< u.age BURST_MAX)) 1 0)
+  ex {u {x 1 y 1 age 0}} -> 1
+  ex {u {x 1 y 1 age 8}} -> 0
+
+node state_ok (s)
+  says "true when the game state is well formed: a known phase, the paddle in the field, the ball within walls and speed limits, a 30-cell wall, score equal to removed bricks, lives 0–3"
+  fx none
+  post (in out [true false])
+  out (and (in s.phase ["title" "serve" "play" "paused" "won" "lost"]) (in s.resume_to ["serve" "play"]) (paddle_ok s.paddle) (ball_ok s.ball) (wall_ok s.bricks) (== s.score (- BRICKS (intact s.bricks))) (>= s.lives 0) (<= s.lives LIVES) (>= s.launches 0) (>= s.ticks 0) (in s.last ["none" "wall" "paddle" "brick" "lost" "win" "launch"]) (== (sum (map "burst_ok" s.bursts)) (len s.bursts)))
+  ex {s {phase "title" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx 0 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 0 ticks 0 last "none" bursts []}} -> true
+  ex {s {phase "title" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx 0 vy -450} bricks [] score 0 lives 3 launches 0 ticks 0 last "none" bursts []}} -> false
+  ex {s {phase "flying" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx 0 vy -450} bricks [] score 0 lives 3 launches 0 ticks 0 last "none" bursts []}} -> false
+
+node initial ()
+  says "the title screen: a fresh wall, the paddle centred, the ball resting on it, three lives, nothing launched"
+  fx none
+  post (state_ok out)
+  post (== out.phase "title")
+  out {phase "title" resume_to "play" paddle {x PADDLE_START} ball (on_paddle {x PADDLE_START} 0) bricks (wall) score 0 lives LIVES launches 0 ticks 0 last "none" bursts []}
+  ex {} check (== out.phase "title") (== out.lives 3) (== (intact out.bricks) 30) (== out.ball.y 43400)
+
+node age_burst (u)
+  says "a burst one tick older"
+  fx none
+  post (== out.age (+ u.age 1))
+  out {x u.x y u.y age (+ u.age 1)}
+  ex {u {x 1 y 2 age 0}} -> {x 1 y 2 age 1}
+
+node young (u)
+  says "true while a burst is still shown"
+  fx none
+  post (in out [true false])
+  out (< u.age BURST_MAX)
+  ex {u {x 1 y 2 age 3}} -> true
+  ex {u {x 1 y 2 age 8}} -> false
+
+node aged (bursts)
+  says "the bursts one tick older, the finished ones dropped"
+  fx none
+  post (<= (len out) (len bursts))
+  out (filter "young" (map "age_burst" bursts))
+  ex {bursts [{x 1 y 2 age 0} {x 1 y 2 age 7}]} -> [{x 1 y 2 age 1}]
+  ex {bursts []} -> []
+
+node removed_now (r)
+  says "true when a visit removed a brick this tick"
+  fx none
+  post (in out [true false])
+  out (!= r.axis "none")
+  ex {r {a 0 b 0 alive false axis "y"}} -> true
+  ex {r {a 0 b 0 alive true axis "none"}} -> false
+
+node burst_at (r)
+  says "a fresh burst at a removed brick's centre"
+  fx none
+  raises BadCell
+  post (== out.age 0)
+  out {x (brick_cx r) y (brick_cy r) age 0}
+  ex {r {a 0 b 0 alive false axis "y"}} -> {x 2250 y 6800 age 0}
+  ex {r {a 9 b 0 alive false axis "y"}} refuse BadCell
+
+node play_tick (state move target)
+  says "one tick of play: the paddle moves, the ball moves and reflects off walls, the paddle strike, brick hits, then loss or win"
+  fx none
+  inv G1 G2 G3 G4 G5
+  pre (state_ok state) BadState
+  pre (== state.phase "play") WrongPhase
+  pre (in move [-1 0 1]) BadIntent
+  post (state_ok out)
+  post (in out.phase ["play" "serve" "won" "lost"])
+  post (== out.ticks (+ state.ticks 1))
+  let p (move_paddle state.paddle move target)
+  let b1 (move_ball state.ball)
+  let wallHit (or (!= b1.vx state.ball.vx) (!= b1.vy state.ball.vy))
+  let b2 (paddle_hit b1 p)
+  let visits (bricks_visit b2 state.bricks)
+  let bricks (map "brick_of" visits)
+  let b3 (bounce_off_bricks b2 visits)
+  let broke (> (- (intact state.bricks) (intact bricks)) 0)
+  let gone (lost b3)
+  let lives (if gone (- state.lives 1) state.lives)
+  let cleared (== (intact bricks) 0)
+  let phase (if cleared "won" (if gone (if (== lives 0) "lost" "serve") "play"))
+  let ball (if gone (on_paddle p state.launches) b3)
+  let last (if cleared "win" (if gone "lost" (if broke "brick" (if b2.hit "paddle" (if wallHit "wall" "none")))))
+  let bursts (concat (aged state.bursts) (map "burst_at" (filter "removed_now" visits)))
+  out {phase phase resume_to "play" paddle p ball ball bricks bricks score (- BRICKS (intact bricks)) lives lives launches state.launches ticks (+ state.ticks 1) last last bursts bursts}
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 1 target -1} check (== out.ball {x 16100 y 29550 vx 100 vy -450}) (== out.paddle.x 13600) (== out.last "none") (== out.ticks 11) (== out.phase "play")
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 3000 y 8300 vx 0 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 0 target -1} check (== out.score 1) (== out.last "brick") (== out.ball.vy 450) (== (len out.bursts) 1) (== (intact out.bricks) 29)
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 48400 vx 0 vy 450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 0 target -1} check (== out.lives 2) (== out.phase "serve") (== out.last "lost") (== out.ball.y 43400) (== out.ball.vy -450)
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 48400 vx 0 vy 450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 1 launches 1 ticks 10 last "none" bursts []} move 0 target -1} check (== out.lives 0) (== out.phase "lost")
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 3000 y 8300 vx 0 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive false} {a 0 b 2 alive false} {a 0 b 3 alive false} {a 0 b 4 alive false} {a 0 b 5 alive false} {a 1 b 0 alive false} {a 1 b 1 alive false} {a 1 b 2 alive false} {a 1 b 3 alive false} {a 1 b 4 alive false} {a 1 b 5 alive false} {a 2 b 0 alive false} {a 2 b 1 alive false} {a 2 b 2 alive false} {a 2 b 3 alive false} {a 2 b 4 alive false} {a 2 b 5 alive false} {a 3 b 0 alive false} {a 3 b 1 alive false} {a 3 b 2 alive false} {a 3 b 3 alive false} {a 3 b 4 alive false} {a 3 b 5 alive false} {a 4 b 0 alive false} {a 4 b 1 alive false} {a 4 b 2 alive false} {a 4 b 3 alive false} {a 4 b 4 alive false} {a 4 b 5 alive false}] score 29 lives 3 launches 1 ticks 10 last "none" bursts []} move 0 target -1} check (== out.score 30) (== out.phase "won") (== out.last "win")
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 43300 vx 100 vy 450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 0 target -1} check (== out.last "paddle") (== out.ball.vy -460) (== out.ball.y 43400)
+  ex {state {phase "serve" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx 0 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 0 target -1} refuse WrongPhase
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 0 target -1} refuse BadState
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 2 target -1} refuse BadIntent
+
+node serve_tick (state move target)
+  says "one tick while the ball waits on the paddle: the paddle moves and the ball rides it; nothing else changes"
+  fx none
+  inv G1 G2 G3 G4 G5
+  pre (state_ok state) BadState
+  pre (== state.phase "serve") WrongPhase
+  pre (in move [-1 0 1]) BadIntent
+  post (state_ok out)
+  post (== out.phase "serve")
+  post (== out.ball.y (- PADDLE_Y R))
+  let p (move_paddle state.paddle move target)
+  out (with state paddle p ball (on_paddle p state.launches) ticks (+ state.ticks 1) last "none" bursts (aged state.bursts))
+  ex {state {phase "serve" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 2 launches 1 ticks 10 last "none" bursts []} move 1 target -1} check (== out.paddle.x 13600) (== out.ball.x 16600) (== out.ticks 11)
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 1 target -1} refuse WrongPhase
+  ex {state {phase "serve" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 2 launches 1 ticks 10 last "none" bursts []} move 3 target -1} refuse BadIntent
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 0 target -1} refuse BadState
+
+node on_tick (state move target)
+  says "a tick: play and serve advance; title, paused, won and lost stand still, so a delayed host frame can never move the game by itself"
+  fx none
+  inv G1 G2 G3 G4 G5
+  raises BadIntent
+  pre (state_ok state) BadState
+  post (state_ok out)
+  out (if (== state.phase "play") (play_tick state move target) (if (== state.phase "serve") (serve_tick state move target) (with state last "none")))
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 0 target -1} check (== out.ticks 11)
+  ex {state {phase "serve" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 2 launches 1 ticks 10 last "none" bursts []} move 0 target -1} check (== out.ticks 11) (== out.phase "serve")
+  ex {state {phase "paused" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 1 target -1} check (== out.ticks 10) (== out.paddle.x 13000)
+  ex {state {phase "title" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 0 ticks 0 last "none" bursts []} move 1 target -1} check (== out.ticks 0)
+  ex {state {phase "won" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive false} {a 0 b 1 alive false} {a 0 b 2 alive false} {a 0 b 3 alive false} {a 0 b 4 alive false} {a 0 b 5 alive false} {a 1 b 0 alive false} {a 1 b 1 alive false} {a 1 b 2 alive false} {a 1 b 3 alive false} {a 1 b 4 alive false} {a 1 b 5 alive false} {a 2 b 0 alive false} {a 2 b 1 alive false} {a 2 b 2 alive false} {a 2 b 3 alive false} {a 2 b 4 alive false} {a 2 b 5 alive false} {a 3 b 0 alive false} {a 3 b 1 alive false} {a 3 b 2 alive false} {a 3 b 3 alive false} {a 3 b 4 alive false} {a 3 b 5 alive false} {a 4 b 0 alive false} {a 4 b 1 alive false} {a 4 b 2 alive false} {a 4 b 3 alive false} {a 4 b 4 alive false} {a 4 b 5 alive false}] score 30 lives 3 launches 1 ticks 10 last "win" bursts []} move 1 target -1} check (== out.ticks 10)
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 3 target -1} refuse BadIntent
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} move 0 target -1} refuse BadState
+
+node on_launch (state)
+  says "the player launches: from the title or from the paddle the ball leaves upward; counted, so the next serve angle differs"
+  fx none
+  inv G1 G2 G3 G4 G5
+  pre (state_ok state) BadState
+  pre (in state.phase ["title" "serve"]) WrongPhase
+  post (state_ok out)
+  post (== out.phase "play")
+  post (== out.launches (+ state.launches 1))
+  out (with state phase "play" resume_to "play" ball (on_paddle state.paddle state.launches) launches (+ state.launches 1) last "launch")
+  ex {state {phase "title" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 0 ticks 0 last "none" bursts []}} check (== out.phase "play") (== out.launches 1) (== out.ball.vy -450)
+  ex {state {phase "serve" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 2 launches 1 ticks 10 last "none" bursts []}} check (== out.phase "play") (== out.launches 2)
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} refuse WrongPhase
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} refuse BadState
+
+node on_pause (state)
+  says "pause freezes play or serve exactly where it is"
+  fx none
+  inv G1 G2 G3 G4 G5
+  pre (state_ok state) BadState
+  pre (in state.phase ["play" "serve"]) WrongPhase
+  post (state_ok out)
+  post (== out.phase "paused")
+  post (== out.resume_to state.phase)
+  out (with state phase "paused" resume_to state.phase last "none")
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} check (== out.phase "paused") (== out.resume_to "play") (== out.ball state.ball)
+  ex {state {phase "serve" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 2 launches 1 ticks 10 last "none" bursts []}} check (== out.resume_to "serve")
+  ex {state {phase "paused" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} refuse WrongPhase
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} refuse BadState
+
+node on_resume (state)
+  says "resume continues from the frozen state; no time passed for the game"
+  fx none
+  inv G1 G2 G3 G4 G5
+  pre (state_ok state) BadState
+  pre (== state.phase "paused") WrongPhase
+  post (state_ok out)
+  post (== out.phase state.resume_to)
+  post (== out.ball state.ball)
+  out (with state phase state.resume_to last "none")
+  ex {state {phase "paused" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} check (== out.phase "play") (== out.ticks 10)
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} refuse WrongPhase
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} refuse BadState
+
+node on_restart (state)
+  says "restart: exactly the initial state, whatever came before"
+  fx none
+  post (state_ok out)
+  post (== out (initial))
+  let seen state.ticks
+  out (if (>= seen 0) (initial) (initial))
+  ex {state {phase "lost" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 0 launches 1 ticks 10 last "lost" bursts []}} check (== out.phase "title") (== out.lives 3) (== out.score 0) (== out.ticks 0)
+  ex {state {phase "won" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive false} {a 0 b 1 alive false} {a 0 b 2 alive false} {a 0 b 3 alive false} {a 0 b 4 alive false} {a 0 b 5 alive false} {a 1 b 0 alive false} {a 1 b 1 alive false} {a 1 b 2 alive false} {a 1 b 3 alive false} {a 1 b 4 alive false} {a 1 b 5 alive false} {a 2 b 0 alive false} {a 2 b 1 alive false} {a 2 b 2 alive false} {a 2 b 3 alive false} {a 2 b 4 alive false} {a 2 b 5 alive false} {a 3 b 0 alive false} {a 3 b 1 alive false} {a 3 b 2 alive false} {a 3 b 3 alive false} {a 3 b 4 alive false} {a 3 b 5 alive false} {a 4 b 0 alive false} {a 4 b 1 alive false} {a 4 b 2 alive false} {a 4 b 3 alive false} {a 4 b 4 alive false} {a 4 b 5 alive false}] score 30 lives 3 launches 1 ticks 10 last "win" bursts []}} check (== out (initial))
+
+node event_ok (event)
+  says "true when an event carries the fields its kind needs"
+  fx none
+  post (in out [true false])
+  out (if (== event.kind "tick") (and (has event "move") (has event "target")) (in event.kind ["launch" "pause" "resume" "restart" "noop"]))
+  ex {event {kind "tick" move 0 target -1}} -> true
+  ex {event {kind "tick" move 0}} -> false
+  ex {event {kind "launch"}} -> true
+  ex {event {kind "fly"}} -> false
+
+node step (state event)
+  says "one event applied to the game"
+  fx none
+  inv G1 G2 G3 G4 G5
+  raises WrongPhase BadIntent
+  pre (state_ok state) BadState
+  pre (event_ok event) BadEvent
+  post (state_ok out)
+  let k event.kind
+  out (if (== k "tick") (on_tick state event.move event.target) (if (== k "launch") (on_launch state) (if (== k "pause") (on_pause state) (if (== k "resume") (on_resume state) (if (== k "restart") (on_restart state) (with state last "none"))))))
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "tick" move 1 target -1}} check (== out.ticks 11) (== out.paddle.x 13600)
+  ex {state {phase "title" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 0 ticks 0 last "none" bursts []} event {kind "launch"}} check (== out.phase "play")
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "pause"}} check (== out.phase "paused")
+  ex {state {phase "paused" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "resume"}} check (== out.phase "play")
+  ex {state {phase "lost" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 0 launches 1 ticks 10 last "lost" bursts []} event {kind "restart"}} check (== out.phase "title")
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "noop"}} check (== out.ticks 10)
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "fly"}} refuse BadEvent
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "tick" move 3 target -1}} refuse BadIntent
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "launch"}} refuse WrongPhase
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "launch"}} refuse BadState
+
+; ---- the screen ----
+
+node brick_shape (c)
+  says "the rectangle of an intact brick in its row colour, or nothing for a removed one"
+  fx none
+  raises BadCell
+  post (in out.k ["rect" "none"])
+  out (if c.alive {k "rect" x (- (brick_cx c) HALF_BW) y (- (brick_cy c) HALF_BH) w BRICK_W h BRICK_H c (cat "row" (str c.a))} {k "none"})
+  ex {c {a 0 b 0 alive true}} -> {k "rect" x 150 y 6000 w 4200 h 1600 c "row0"}
+  ex {c {a 0 b 0 alive false}} -> {k "none"}
+  ex {c {a 9 b 0 alive true}} refuse BadCell
+
+node burst_shape (u)
+  says "a ring that grows and fades over a burst's life"
+  fx none
+  pre (== (burst_ok u) 1) BadBurst
+  post (== out.k "ring")
+  out {k "ring" x u.x y u.y r (+ R (* u.age HUD_X)) age u.age}
+  ex {u {x 2250 y 6800 age 2}} -> {k "ring" x 2250 y 6800 r 3000 age 2}
+  ex {u {x 2250 y 6800 age 9}} refuse BadBurst
+
+node overlay (state)
+  says "the words over the field for the phase: title, serve, paused, won, lost; nothing during play"
+  fx none
+  pre (state_ok state) BadState
+  post (<= (len out) 3)
+  let ph state.phase
+  out (if (== ph "title") [{k "text" x CENTER_X y TITLE_Y t "BREAKOUT" s "big"} {k "text" x CENTER_X y (+ TITLE_Y LINE) t "Move: ← → or drag · Launch: space or tap" s "small"} {k "text" x CENTER_X y (+ TITLE_Y TWO_LINES) t "P pauses · R restarts" s "small"}] (if (== ph "serve") [{k "text" x CENTER_X y CENTER_Y t (cat (str state.lives) (if (== state.lives 1) " life left" " lives left")) s "big"} {k "text" x CENTER_X y (+ CENTER_Y LINE) t "Space or tap to launch" s "small"}] (if (== ph "paused") [{k "text" x CENTER_X y CENTER_Y t "PAUSED" s "big"} {k "text" x CENTER_X y (+ CENTER_Y LINE) t "Space or tap to resume" s "small"}] (if (== ph "won") [{k "text" x CENTER_X y CENTER_Y t "YOU WIN" s "big"} {k "text" x CENTER_X y (+ CENTER_Y LINE) t "All 30 bricks cleared · R or tap to play again" s "small"}] (if (== ph "lost") [{k "text" x CENTER_X y CENTER_Y t "GAME OVER" s "big"} {k "text" x CENTER_X y (+ CENTER_Y LINE) t (cat (cat "Score " (str state.score)) " · R or tap to play again") s "small"}] [])))))
+  ex {state {phase "title" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 0 ticks 0 last "none" bursts []}} check (== (len out) 3)
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} check (== (len out) 0)
+  ex {state {phase "serve" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 2 launches 1 ticks 10 last "none" bursts []}} check (== (len out) 2)
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} refuse BadState
+
+node view (state)
+  says "the draw list: field, bricks, bursts, paddle, ball, score and lives, and the phase overlay"
+  fx none
+  pre (state_ok state) BadState
+  post (> (len out) BRICKS)
+  let field [{k "rect" x 0 y 0 w W h H c "field"}]
+  let bricks (map "brick_shape" state.bricks)
+  let bursts (map "burst_shape" state.bursts)
+  let actors [{k "rect" x state.paddle.x y PADDLE_Y w PADDLE_W h PADDLE_H c "paddle"} {k "circle" x state.ball.x y state.ball.y r R c "ball"}]
+  let hud [{k "text" x HUD_X y HUD_Y t (cat "SCORE " (str state.score)) s "hud" align "left"} {k "text" x LIVES_X y HUD_Y t (cat "LIVES " (str state.lives)) s "hud" align "right"}]
+  out (concat (concat field bricks) (concat (concat bursts actors) (concat hud (overlay state))))
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} check (== (len out) 35)
+  ex {state {phase "title" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 0 ticks 0 last "none" bursts []}} check (== (len out) 38)
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [] score 0 lives 3 launches 1 ticks 10 last "none" bursts []}} refuse BadState
+
+node sound_of (last)
+  says "the sound for what just happened, or none"
+  fx none
+  post (in out ["none" "wall" "paddle" "brick" "lost" "win" "launch"])
+  out (if (in last ["wall" "paddle" "brick" "lost" "win" "launch"]) last "none")
+  ex {last "brick"} -> "brick"
+  ex {last "none"} -> "none"
+  ex {last "other"} -> "none"
+
+node frame (state event)
+  says "the entry point: one event in, the next state out, the field drawn and the sound played; on a refusal nothing is drawn and the host keeps the old state"
+  fx Screen Audio
+  inv G1 G2 G3 G4 G5
+  raises BadState WrongPhase BadIntent BadEvent
+  post (state_ok out)
+  let s (step state event)
+  let drawn (screen.draw (view s))
+  let played (audio.play (sound_of s.last))
+  out s
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "tick" move 1 target -1}} check (== out.ticks 11) (== out.paddle.x 13600)
+  ex {state {phase "title" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 0 ticks 0 last "none" bursts []} event {kind "launch"}} check (== out.phase "play")
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "pause"}} check (== out.phase "paused")
+  ex {state {phase "paused" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "resume"}} check (== out.phase "play")
+  ex {state {phase "lost" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 0 launches 1 ticks 10 last "lost" bursts []} event {kind "restart"}} check (== out.phase "title")
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "fly"}} refuse BadEvent
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "tick" move 3 target -1}} refuse BadIntent
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "launch"}} refuse WrongPhase
+  ex {state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 30000 vx 100 vy -450} bricks [] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} event {kind "launch"}} refuse BadState
+  seq state {phase "play" resume_to "play" paddle {x 13000} ball {x 16000 y 43400 vx -200 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true} {a 0 b 2 alive true} {a 0 b 3 alive true} {a 0 b 4 alive true} {a 0 b 5 alive true} {a 1 b 0 alive true} {a 1 b 1 alive true} {a 1 b 2 alive true} {a 1 b 3 alive true} {a 1 b 4 alive true} {a 1 b 5 alive true} {a 2 b 0 alive true} {a 2 b 1 alive true} {a 2 b 2 alive true} {a 2 b 3 alive true} {a 2 b 4 alive true} {a 2 b 5 alive true} {a 3 b 0 alive true} {a 3 b 1 alive true} {a 3 b 2 alive true} {a 3 b 3 alive true} {a 3 b 4 alive true} {a 3 b 5 alive true} {a 4 b 0 alive true} {a 4 b 1 alive true} {a 4 b 2 alive true} {a 4 b 3 alive true} {a 4 b 4 alive true} {a 4 b 5 alive true}] score 0 lives 3 launches 1 ticks 10 last "none" bursts []} over [{event {kind "tick" move 0 target -1}} {event {kind "tick" move -1 target -1}} {event {kind "tick" move -1 target -1}} {event {kind "pause"}} {event {kind "tick" move 1 target -1}} {event {kind "resume"}} {event {kind "tick" move 1 target -1}} {event {kind "tick" move 0 target 20000}}] check (== out.phase "play") (== out.lives 3) (== out.ticks 15)

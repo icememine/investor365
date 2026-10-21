@@ -1,0 +1,230 @@
+; batch_transform — BP-BATCH reference: text in, validation report and normalised snapshot out.
+; This is the distribution's own reference application for the batch profile; authors in E1 write their own.
+root batch_transform
+numbers exact
+use supplier_snapshot
+effect Export file.export
+effect Panel panel.show
+const MAX_ROWS 10000
+const PREVIEW_ROWS 100
+
+node not_empty_record (r)
+  says "true when a raw record has any field with content; a blank line is not a record"
+  fx none
+  post (in out [true false])
+  out (not (or (== r.fields []) (== r.fields [""])))
+  ex {r {index 1 fields ["A" "a" "1" "1"]}} -> true
+  ex {r {index 2 fields [""]}} -> false
+  ex {r {index 3 fields []}} -> false
+
+node with_index (p)
+  says "a raw record with its 1-based data-record index; the index counts records after the header, blank lines included, so quoted newlines never shift it"
+  fx none
+  pre (>= p.a 0) BadPosition
+  pre (< p.a (len p.b)) BadPosition
+  post (== out.index (+ p.a 1))
+  out {index (+ p.a 1) fields (at p.b p.a)}
+  ex {p {a 0 b [["A" "a" "1" "1"]]}} -> {index 1 fields ["A" "a" "1" "1"]}
+  ex {p {a 1 b [["A" "a" "1" "1"]]}} refuse BadPosition
+
+node data_records (recs)
+  says "the data records of a parsed file with indices, blank lines dropped"
+  fx none
+  pre (> (len recs) 0) NoHeader
+  post (<= (len out) (- (len recs) 1))
+  let body (map "drop_first_item" [recs])
+  let rows (at body 0)
+  out (filter "not_empty_record" (map "with_index" (pairs (range (len rows)) [rows])))
+  ex {recs [["SKU" "NAME" "PRICE_VND" "QTY_ON_HAND"] ["A" "a" "1" "1"] [""] ["B" "b" "2" "2"]]} -> [{index 1 fields ["A" "a" "1" "1"]} {index 3 fields ["B" "b" "2" "2"]}]
+  ex {recs []} refuse NoHeader
+
+node drop_first_item (xs)
+  says "the list without its first item"
+  fx none
+  pre (> (len xs) 0) Empty
+  post (== (len out) (- (len xs) 1))
+  out (map "item_after" (pairs (range (- (len xs) 1)) [xs]))
+  ex {xs [1 2 3]} -> [2 3]
+  ex {xs [1]} -> []
+  ex {xs []} refuse Empty
+
+node item_after (p)
+  says "the item one position after the index in a"
+  fx none
+  pre (>= p.a 0) BadPosition
+  pre (< (+ p.a 1) (len p.b)) BadPosition
+  post (== out (at p.b (+ p.a 1)))
+  out (at p.b (+ p.a 1))
+  ex {p {a 0 b [1 2 3]}} -> 2
+  ex {p {a 2 b [1 2 3]}} refuse BadPosition
+
+node transform (text)
+  says "the whole batch result for a supplier file: lexical outcome, header check, the row limit, the validation report with the raw rows for diagnostics, and the normalised snapshot when accepted"
+  fx none
+  raises BrokenQuote
+  post (in out.outcome ["BrokenQuote" "BadHeader" "TooManyRows" "Rejected" "Accepted"])
+  post (== (== out.outcome "Accepted") (> (len out.records) 0))
+  post (<= (len out.records) (len out.rows))
+  let recs (csv_records text)
+  let hasHeader (and (> (len recs) 0) (header_ok (at (if (> (len recs) 0) recs [[]]) 0)))
+  let tooMany (> (- (len (filter "not_blank" recs)) 1) MAX_ROWS)
+  let data (if (and hasHeader (not tooMany)) (data_records recs) [])
+  let v (validate_snapshot data)
+  let accepted (and hasHeader (not tooMany) v.accepted)
+  out {outcome (if (not hasHeader) "BadHeader" (if tooMany "TooManyRows" (if accepted "Accepted" "Rejected"))) problems v.problems duplicates v.duplicates records (if accepted (normalize_snapshot data) []) rows data count (len data)}
+  ex {text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nB,b,2,2\nA,a,1,1\n"} check (== out.outcome "Accepted") (== out.records [{sku "A" name "a" price 1 qty 1} {sku "B" name "b" price 2 qty 2}]) (== out.count 2) (== (len out.rows) 2)
+  ex {text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,1,1\nA,b,1,1\n"} check (== out.outcome "Rejected") (== out.duplicates [1 2]) (== out.records [])
+  ex {text "SKU,NAME,PRICE_VND,QTY_ON_HAND\n"} check (== out.outcome "Rejected") (== out.count 0)
+  ex {text "sku,name\nA,a,1,1\n"} check (== out.outcome "BadHeader")
+  ex {text ""} check (== out.outcome "BadHeader")
+  ex {text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,\"unclosed,1,1\n"} refuse BrokenQuote
+
+node not_blank (fields)
+  says "true when a raw record has any field with content; counted before the row limit so the limit applies to data rows"
+  fx none
+  post (in out [true false])
+  out (not (or (== fields []) (== fields [""])))
+  ex {fields ["A" "a" "1" "1"]} -> true
+  ex {fields [""]} -> false
+
+node row_cells (r)
+  says "a raw row for the diagnostics table: record index and its fields joined for reading"
+  fx none
+  pre (>= r.index 1) BadIndex
+  post (== (len out) 2)
+  out [r.index (join_fields r.fields)]
+  ex {r {index 3 fields ["pen" "Pen" "20000" "3"]}} -> [3 "pen | Pen | 20000 | 3"]
+  ex {r {index 0 fields []}} refuse BadIndex
+
+node join_fields (fields)
+  says "up to four fields joined with bars for reading, with an ellipsis when there are more; four is the schema's width"
+  fx none
+  post (>= (text_len out) 0)
+  let n (len fields)
+  let f0 (if (> n 0) (at fields 0) "")
+  let f1 (if (> n 1) (cat " | " (at fields 1)) "")
+  let f2 (if (> n F_PRICE) (cat " | " (at fields F_PRICE)) "")
+  let f3 (if (> n F_QTY) (cat " | " (at fields F_QTY)) "")
+  let more (if (> n FIELDS) " | …" "")
+  out (cat (cat f0 f1) (cat (cat f2 f3) more))
+  ex {fields ["a" "b" "c"]} -> "a | b | c"
+  ex {fields ["a"]} -> "a"
+  ex {fields []} -> ""
+  ex {fields ["a" "b" "c" "d" "e"]} -> "a | b | c | d | …"
+
+node problem_cells (d)
+  says "a located diagnostic for the table: record, field, problem, and what to do"
+  fx none
+  pre (>= d.index 1) BadIndex
+  post (== (len out) 4)
+  let p d.problem
+  let fix (if (== p "FieldCount") "give the record exactly four fields" (if (== p "BadSku") "SKU: 1–32 uppercase letters, digits, hyphen or underscore; no case folding" (if (== p "EmptyName") "NAME must not be empty" (if (== p "NameTooLong") "NAME: at most 120 characters" (if (in p ["BadPrice" "BadQty"]) "digits only: no sign, decimal point, separator or spaces" (if (in p ["PriceOutOfRange" "QtyOutOfRange"]) "the number does not fit the exact integer range" (if (== p "ZeroPrice") "PRICE_VND must be above zero" "")))))))
+  out [d.index d.field p fix]
+  ex {d {index 2 field "SKU" problem "BadSku"}} -> [2 "SKU" "BadSku" "SKU: 1–32 uppercase letters, digits, hyphen or underscore; no case folding"]
+  ex {d {index 0 field "" problem "none"}} refuse BadIndex
+
+node record_cells (r)
+  says "a normalised record for the preview table"
+  fx none
+  post (== (len out) 4)
+  out [r.sku r.name r.price r.qty]
+  ex {r {sku "A" name "a" price 1 qty 1}} -> ["A" "a" 1 1]
+
+node dup_cells (i)
+  says "a duplicate index as a table row"
+  fx none
+  post (== (len out) 1)
+  out [i]
+  ex {i 2} -> [2]
+
+node in_problem (p)
+  says "true when the raw row in a is named by a diagnostic in the list in b"
+  fx none
+  post (in out [true false])
+  out (> (sum (map "index_is" (pairs [p.a.index] p.b))) 0)
+  ex {p {a {index 2 fields []} b [{index 2 field "SKU" problem "BadSku"}]}} -> true
+  ex {p {a {index 1 fields []} b [{index 2 field "SKU" problem "BadSku"}]}} -> false
+
+node index_is (p)
+  says "1 when the diagnostic in b names the index in a"
+  fx none
+  post (in out [0 1])
+  out (if (== p.a p.b.index) 1 0)
+  ex {p {a 2 b {index 2 field "SKU" problem "BadSku"}}} -> 1
+  ex {p {a 1 b {index 2 field "SKU" problem "BadSku"}}} -> 0
+
+node a_of (p)
+  says "the a of a pair"
+  fx none
+  post (== out p.a)
+  out p.a
+  ex {p {a 1 b 2}} -> 1
+
+node in_dup (p)
+  says "true when the raw row in a has an index listed in b"
+  fx none
+  post (in out [true false])
+  out (in p.a.index p.b)
+  ex {p {a {index 2 fields []} b [1 2]}} -> true
+  ex {p {a {index 3 fields []} b [1 2]}} -> false
+
+node first_rows (rows)
+  says "at most the first PREVIEW_ROWS rows"
+  fx none
+  post (<= (len out) PREVIEW_ROWS)
+  out (map "a_of" (filter "within_preview" (pairs rows [PREVIEW_ROWS])))
+  ex {rows [{index 1 fields []} {index 2 fields []}]} -> [{index 1 fields []} {index 2 fields []}]
+  ex {rows []} -> []
+
+node within_preview (p)
+  says "true when the row in a has an index at or below the limit in b"
+  fx none
+  post (in out [true false])
+  out (<= p.a.index p.b)
+  ex {p {a {index 1 fields []} b 100}} -> true
+  ex {p {a {index 101 fields []} b 100}} -> false
+
+node first_records (records)
+  says "at most the first PREVIEW_ROWS normalised records"
+  fx none
+  post (<= (len out) PREVIEW_ROWS)
+  out (map "item_at" (pairs (range (min (len records) PREVIEW_ROWS)) [records]))
+  ex {records [{sku "A" name "a" price 1 qty 1}]} -> [{sku "A" name "a" price 1 qty 1}]
+  ex {records []} -> []
+
+node item_at (p)
+  says "the item at the index in a of the list in b"
+  fx none
+  pre (>= p.a 0) BadPosition
+  pre (< p.a (len p.b)) BadPosition
+  post (== out (at p.b p.a))
+  out (at p.b p.a)
+  ex {p {a 1 b [1 2 3]}} -> 2
+  ex {p {a 3 b [1 2 3]}} refuse BadPosition
+
+node report (r)
+  says "the semantic report of a run: outcome, counts, every diagnostic and duplicate; no volatile value, so the same input gives the same bytes"
+  fx none
+  post (== out.outcome r.outcome)
+  out {outcome r.outcome accepted (== r.outcome "Accepted") records_read r.count records_out (len r.records) problems r.problems duplicates r.duplicates}
+  ex {r {outcome "Accepted" problems [] duplicates [] records [{sku "A" name "a" price 1 qty 1}] rows [{index 1 fields ["A" "a" "1" "1"]}] count 1}} -> {outcome "Accepted" accepted true records_read 1 records_out 1 problems [] duplicates []}
+
+node run (text)
+  says "the batch entry point: transform, show the declared meaning and the report on the panel with the rows to correct, export the report always and the normalised snapshot only when accepted"
+  fx Export Panel
+  raises BrokenQuote
+  post (in out.outcome ["BadHeader" "TooManyRows" "Rejected" "Accepted"])
+  let r (transform text)
+  let oc r.outcome
+  let meaning [{k "section" text "Declared meaning"} {k "text" text "Header exactly SKU,NAME,PRICE_VND,QTY_ON_HAND. SKU: 1–32 uppercase ASCII letters, digits, hyphen or underscore, no case folding. NAME: non-empty, at most 120 characters, kept as is. PRICE_VND: ASCII digits, an exact positive whole number of VND. QTY_ON_HAND: ASCII digits, the physical unsold units on the shelf including units reserved for customers; not a delta, not an available count. Leading zeros are accepted and normalised. Any invalid record rejects the whole file; duplicate SKUs reject the whole file; a header-only file is rejected as empty."}]
+  let verdict [{k "status" tone (if (== oc "Accepted") "ok" "err") title (if (== oc "Accepted") "Accepted — normalised snapshot exported" (if (== oc "BadHeader") "Rejected: the header is not SKU,NAME,PRICE_VND,QTY_ON_HAND" (if (== oc "TooManyRows") "Rejected: more than 10000 data rows" (if (== r.count 0) "Rejected: no data records (header only)" "Rejected: invalid records — nothing was published")))) text (cat (cat (str r.count) " data records read; ") (cat (str (len r.records)) " normalised"))}]
+  let probs (if (== (len r.problems) 0) [] [{k "section" text "Records to correct"} {k "table" columns ["Record" "Field" "Problem" "What to do"] rows (map "problem_cells" r.problems)} {k "table" columns ["Record" "As read"] rows (map "row_cells" (first_rows (map "a_of" (filter "in_problem" (pairs r.rows [r.problems])))))}])
+  let dups (if (== (len r.duplicates) 0) [] [{k "section" text "Duplicate SKUs (every record involved)"} {k "table" columns ["Record" "As read"] rows (map "row_cells" (first_rows (map "a_of" (filter "in_dup" (pairs r.rows [r.duplicates])))))}])
+  let preview (if (== oc "Accepted") [{k "section" text (cat "Normalised snapshot, sorted by SKU" (if (> (len r.records) PREVIEW_ROWS) " (first 100 shown; the export holds all)" ""))} {k "table" columns ["SKU" "NAME" "PRICE_VND" "QTY_ON_HAND"] rows (map "record_cells" (first_records r.records))}] [])
+  let shown (panel.show (concat (concat meaning verdict) (concat (concat probs dups) preview)))
+  let rep (file.export "snapshot.report.json" (encode (report r)))
+  let exported (if (== oc "Accepted") (file.export "snapshot.normalized.json" (encode r.records)) true)
+  out r
+  ex {text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,1,1\n"} check (== out.outcome "Accepted")
+  ex {text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,x,1\n"} check (== out.outcome "Rejected")
+  ex {text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,\"x,1,1\n"} refuse BrokenQuote

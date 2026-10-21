@@ -1,0 +1,138 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Generic DNode host for the canvas profile: captures input, schedules fixed ticks, draws the returned primitives, plays sounds,
+   records the trace. No collision, score or phase rule lives here. */
+:root { --bg:#0e1116; --panel:#171b22; --ink:#e8ecf2; --mute:#8b94a3; --line:#2a303a; --accent:#5ee0b5; --accent-ink:#06130e;
+  --field:#131821; --fieldtext:#e8ecf2; --paddle:#e8ecf2; --ball:#ffd166; --row0:#ef476f; --row1:#f78c6b; --row2:#ffd166; --row3:#06d6a0; --row4:#4cc9f0; --ring:#ffffff;
+  --sans:"Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg:#f3f4f7; --panel:#ffffff; --ink:#151922; --mute:#5f6775; --line:#dde1e8; --field:#1b2230; } }
+:root[data-theme="light"] { --bg:#f3f4f7; --panel:#ffffff; --ink:#151922; --mute:#5f6775; --line:#dde1e8; --field:#1b2230; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+header { max-width:980px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0 8px; }
+h1 { font-size:20px; margin:0; letter-spacing:0.02em; } h1 small { display:block; font-size:11px; color:var(--mute); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; }
+nav button { background:none; border:0; border-bottom:2px solid transparent; border-radius:0; padding:8px 10px; font:inherit; font-weight:500; color:var(--mute); cursor:pointer; } nav button.active { color:var(--ink); border-bottom-color:var(--accent); }
+main { max-width:980px; margin:0 auto; padding-bottom:30px; }
+.stage { display:flex; justify-content:center; }
+canvas { display:block; background:var(--field); border-radius:12px; touch-action:none; max-width:100%; height:auto; box-shadow:0 10px 40px rgba(0,0,0,0.35); }
+.controls { display:flex; justify-content:center; gap:8px; margin:12px 0; flex-wrap:wrap; }
+button.ctl { font:inherit; font-weight:700; padding:10px 16px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; min-width:84px; } button.ctl.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.hint { text-align:center; color:var(--mute); font-size:13px; margin:4px 0 10px; }
+.desk { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; } @media (max-width:720px) { .desk { grid-template-columns:minmax(0,1fr); } }
+.panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px; } .panel h3 { margin:0 0 8px; font-size:14px; } .meta { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; color:var(--mute); white-space:pre-wrap; word-break:break-word; }
+.panel .actions { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; } .panel label { display:flex; gap:8px; align-items:center; font-size:13px; margin:6px 0; } input[type=number] { width:5em; font:inherit; padding:4px 6px; border-radius:6px; border:1px solid var(--line); background:var(--bg); color:var(--ink); }
+.stat { display:flex; gap:18px; } .stat b { font-size:22px; display:block; } .stat span { font-size:12px; color:var(--mute); }
+[hidden] { display:none !important; }
+</style>
+
+<header><h1>__TITLE__<small>DNode game · canvas profile · fixed 60 Hz tick</small></h1><nav><button data-tab="play" class="active">Play</button><button data-tab="desk">Test desk</button></nav></header>
+<main>
+  <section id="tab-play">
+    <div class="stage"><canvas id="c" width="640" height="960" aria-label="Breakout field"></canvas></div>
+    <div class="controls"><button class="ctl" id="btnLeft" aria-label="move left">◀</button><button class="ctl primary" id="btnAction">Launch</button><button class="ctl" id="btnRight" aria-label="move right">▶</button><button class="ctl" id="btnPause">Pause</button><button class="ctl" id="btnRestart">Restart</button></div>
+    <div class="hint">Arrows or A/D move · drag on the field moves · space or tap launches / resumes · P pauses · R restarts</div>
+  </section>
+  <section id="tab-desk" hidden><div class="desk">
+    <div class="panel"><h3>Trace</h3><div class="stat"><div><b id="evN">0</b><span>events delivered</span></div><div><b id="tickN">0</b><span>ticks</span></div><div><b id="dropped">0</b><span>ticks discarded by the catch-up limit</span></div></div>
+      <div class="actions"><button class="ctl" id="replay">Replay the trace from initial()</button><button class="ctl" id="exportTrace">Copy trace as JSON</button></div><div id="replayResult" class="meta">—</div>
+      <h3>Delay injection</h3><label>Freeze the host for <input type="number" id="delayMs" value="1500" min="0" step="100"> ms, then continue <button class="ctl" id="delay">Inject</button></label><div id="delayResult" class="meta">—</div>
+      <h3>Render fault injection</h3><div class="actions"><button class="ctl" id="breakRender">Make the next draw throw</button></div><div id="renderResult" class="meta">—</div></div>
+    <div class="panel"><h3>State</h3><div id="stateView" class="meta"></div><h3>Admission</h3><div id="admission" class="meta"></div><h3>Host obligations (from the profile)</h3><div id="hostinfo" class="meta"></div></div>
+  </div></section>
+</main>
+
+<script>__NATIVES_TEXT__</script>
+<script>__ENGINE__</script>
+<script>const GRAPH = __GRAPH__; const CERTS = __CERTS__; const PROFILE = __PROFILE__; const LOCK = __LOCK__; const SEEDS = __SEEDS__;</script>
+<script>
+(async function () {
+  const E = window.Engine; const $ = (id) => document.getElementById(id);
+  const view = E.resolve(GRAPH, CERTS.main); view.profile = PROFILE;
+  const denied = [];
+  for (const [op, hsh] of Object.entries(LOCK.natives)) { if (!E.NATIVES[op]) denied.push(`native ${op} missing`); else if ((await E.hashNative(op)) !== hsh) denied.push(`native ${op} changed`); }
+  for (const op of Object.keys(E.NATIVES)) if (!LOCK.natives[op]) denied.push(`native ${op} not in lock`);
+  const hashes = await E.hashAll(view);
+  const pub = await crypto.subtle.importKey('jwk', CERTS.publicKey, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+  const b64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const verify = (c) => crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, pub, b64(c.sig), new TextEncoder().encode(`${c.hash}|${c.descriptionHash}|${CERTS.checker}|${c.at || CERTS.at}`));
+  const certified = new Set(); let bad = 0;
+  for (const [name, c] of Object.entries(CERTS.certified)) { const ok = hashes[name] === c.hash && (await E.descriptionHash(view, name)) === c.descriptionHash && await verify(c); if (ok) certified.add(name); else bad++; }
+  PROFILE.entry.map(e => e.node).filter(n => !certified.has(n)).forEach(n => denied.push(`entry point ${n} is not certified`));
+  $('admission').textContent = (denied.length ? 'DENIED: ' + denied.join('; ') : 'admitted') + `\nprofile ${PROFILE.name} ${PROFILE.version} · lock ${LOCK.identity}\n${CERTS.schema} ${CERTS.checker}\n${certified.size}/${Object.keys(CERTS.certified).length} certificates verified${bad ? ', ' + bad + ' failed' : ''}\nroots ${Object.entries(CERTS.roots).map(([r, x]) => r + '#' + x.slice(0, 8)).join(' ')}`;
+  $('hostinfo').textContent = Object.entries(PROFILE.host || {}).map(([k, v]) => `${k}: ${typeof v === 'string' ? v : JSON.stringify(v)}`).join('\n');
+  const showTab = (name) => { $('tab-play').hidden = name !== 'play'; $('tab-desk').hidden = name !== 'desk'; document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name)); };
+  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  if (denied.length) { showTab('desk'); return; }
+
+  // ---- state, trace, scheduling ----
+  const ctxOf = () => ({ view, effects: [], certified, profile: PROFILE });
+  let state = E.callNode('initial', [], ctxOf()); const trace = []; let dropped = 0, lastError = '', breakNext = false; let drawList = null;
+  const W = 32000, H = 48000; const cv = $('c'); const g = cv.getContext('2d');
+  const colors = () => { const cs = getComputedStyle(document.documentElement); const get = (n) => cs.getPropertyValue('--' + n).trim(); return { field: get('field'), paddle: get('paddle'), ball: get('ball'), row0: get('row0'), row1: get('row1'), row2: get('row2'), row3: get('row3'), row4: get('row4'), ring: get('ring'), text: get('fieldtext') }; };
+  function draw(list) {
+    if (breakNext) { breakNext = false; throw new Error('injected render fault'); }
+    const C = colors(); const sx = cv.width / W, sy = cv.height / H; g.clearRect(0, 0, cv.width, cv.height);
+    for (const it of list) {
+      if (it.k === 'rect') { g.fillStyle = C[it.c] || it.c; const r = it.c === 'paddle' ? 6 : 3; g.beginPath(); g.roundRect(it.x * sx, it.y * sy, it.w * sx, it.h * sy, r); g.fill(); }
+      else if (it.k === 'circle') { g.fillStyle = C[it.c] || it.c; g.beginPath(); g.arc(it.x * sx, it.y * sy, it.r * sx, 0, Math.PI * 2); g.fill(); }
+      else if (it.k === 'ring') { g.strokeStyle = C.ring; g.globalAlpha = Math.max(0, 1 - it.age / 8); g.lineWidth = 3; g.beginPath(); g.arc(it.x * sx, it.y * sy, it.r * sx, 0, Math.PI * 2); g.stroke(); g.globalAlpha = 1; }
+      else if (it.k === 'text') { g.fillStyle = C.text; g.font = (it.s === 'big' ? '700 ' + Math.round(cv.width / 10) : it.s === 'hud' ? '700 ' + Math.round(cv.width / 26) : '500 ' + Math.round(cv.width / 30)) + 'px ' + getComputedStyle(document.body).fontFamily; g.textAlign = it.align || 'center'; g.textBaseline = 'middle'; g.fillText(it.t, it.x * sx, it.y * sy); }
+    }
+  }
+  // ---- sound: short synthesized tones; a failure here never reaches the state ----
+  let ac = null; const tones = { wall: [220, 0.03], paddle: [440, 0.05], brick: [660, 0.06], lost: [110, 0.25], win: [880, 0.4], launch: [330, 0.08] };
+  function play(name) { try { if (!tones[name]) return; ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const o = ac.createOscillator(), gn = ac.createGain(); o.frequency.value = tones[name][0]; o.type = name === 'brick' ? 'square' : 'sine'; gn.gain.value = 0.05; o.connect(gn); gn.connect(ac.destination); o.start(); gn.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + tones[name][1]); o.stop(ac.currentTime + tones[name][1]); } catch (e) { } }
+  function deliver(event) {
+    const ctx = ctxOf();
+    try {
+      const out = E.callNode('frame', [state, event], ctx); state = out; trace.push(event); lastError = '';
+      for (const [k, v] of ctx.effects) { if (k === 'screen.draw') drawList = v; if (k === 'audio.play') play(v); }
+      try { if (drawList) draw(drawList); } catch (e) { $('renderResult').textContent = 'render threw: ' + e.message + ' — state unchanged by it (ticks ' + state.ticks + ')'; }
+    } catch (e) { lastError = e instanceof E.Refusal ? e.err : e.message; if (event.kind !== 'tick') console.warn('refused', event, lastError); }
+    $('btnAction').textContent = state.phase === 'paused' ? 'Resume' : (state.phase === 'won' || state.phase === 'lost') ? 'Play again' : 'Launch';
+    $('btnPause').textContent = state.phase === 'paused' ? 'Resume' : 'Pause';
+    $('evN').textContent = trace.length; $('tickN').textContent = state.ticks; $('dropped').textContent = dropped;
+    $('stateView').textContent = `phase ${state.phase} · score ${state.score} · lives ${state.lives} · launches ${state.launches} · ticks ${state.ticks}\nball ${JSON.stringify(state.ball)} paddle ${JSON.stringify(state.paddle)}\nlast refusal: ${lastError || 'none'}`;
+  }
+  // ---- input: keyboard intent is sampled at each tick; touch sets a target; actions are events ----
+  const keys = {}; let target = -1; let held = 0;
+  const action = () => { if (state.phase === 'paused') deliver({ kind: 'resume' }); else if (state.phase === 'won' || state.phase === 'lost') restart(); else deliver({ kind: 'launch' }); };
+  const restart = () => { for (const k in keys) keys[k] = false; held = 0; target = -1; pending.length = 0; deliver({ kind: 'restart' }); };
+  window.addEventListener('keydown', (e) => { if (['ArrowLeft', 'ArrowRight', ' ', 'a', 'd', 'A', 'D', 'p', 'P', 'r', 'R'].includes(e.key)) e.preventDefault(); if (e.repeat) return; keys[e.key] = true; if (e.key === ' ') action(); if (e.key === 'p' || e.key === 'P') { if (state.phase === 'paused') deliver({ kind: 'resume' }); else deliver({ kind: 'pause' }); } if (e.key === 'r' || e.key === 'R') restart(); });
+  window.addEventListener('keyup', (e) => { keys[e.key] = false; });
+  const intent = () => { const l = keys.ArrowLeft || keys.a || keys.A || held < 0, r = keys.ArrowRight || keys.d || keys.D || held > 0; return l && !r ? -1 : r && !l ? 1 : 0; };
+  const fieldX = (e) => { const r = cv.getBoundingClientRect(); const t = e.touches ? e.touches[0] : e; return Math.round((t.clientX - r.left) / r.width * W); };
+  let touchMoved = false, touchStart = 0;
+  cv.addEventListener('pointerdown', (e) => { cv.setPointerCapture(e.pointerId); touchMoved = false; touchStart = fieldX(e); target = touchStart; });
+  cv.addEventListener('pointermove', (e) => { if (e.buttons || e.pointerType === 'touch') { const x = fieldX(e); if (Math.abs(x - touchStart) > 600) touchMoved = true; target = x; } });
+  cv.addEventListener('pointerup', () => { target = -1; if (!touchMoved) action(); });
+  cv.addEventListener('pointercancel', () => { target = -1; });
+  const hold = (id, v) => { const b = $(id); const down = (e) => { e.preventDefault(); held = v; }; const up = () => { held = 0; }; b.addEventListener('pointerdown', down); b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerleave', up); };
+  hold('btnLeft', -1); hold('btnRight', 1);
+  $('btnAction').addEventListener('click', action); $('btnPause').addEventListener('click', () => { if (state.phase === 'paused') deliver({ kind: 'resume' }); else deliver({ kind: 'pause' }); }); $('btnRestart').addEventListener('click', restart);
+  // ---- fixed-tick scheduling with a catch-up limit; no ticks while paused ----
+  const TICK = 1000 / 60, MAX_CATCHUP = 3; let acc = 0, lastT = performance.now(); const pending = [];
+  function loop(now) {
+    acc += now - lastT; lastT = now; let n = Math.floor(acc / TICK); acc -= n * TICK;
+    if (n > MAX_CATCHUP) { dropped += n - MAX_CATCHUP; n = MAX_CATCHUP; acc = 0; }
+    if (state.phase === 'play' || state.phase === 'serve') for (let i = 0; i < n; i++) deliver({ kind: 'tick', move: intent(), target });
+    requestAnimationFrame(loop);
+  }
+  // ---- test desk: replay, delay, render fault ----
+  $('replay').addEventListener('click', () => {
+    let s = E.callNode('initial', [], ctxOf()); let refused = 0; const t0 = performance.now();
+    for (const ev of trace) { try { s = E.callNode('frame', [s, ev], ctxOf()); } catch (e) { refused++; } }
+    const same = E.canon(s) === E.canon(state);
+    $('replayResult').textContent = `replayed ${trace.length} events in ${Math.round(performance.now() - t0)} ms: final state ${same ? 'IDENTICAL' : 'DIFFERENT'} to the live state (ticks ${s.ticks}, score ${s.score}, lives ${s.lives}, refused ${refused})`;
+  });
+  $('exportTrace').addEventListener('click', async () => { const text = JSON.stringify({ main: CERTS.main, root: CERTS.roots[CERTS.main], trace, final: state }); try { await navigator.clipboard.writeText(text); $('replayResult').textContent = 'trace copied (' + text.length + ' chars)'; } catch (e) { $('replayResult').textContent = text; } });
+  $('delay').addEventListener('click', () => { const ms = Number($('delayMs').value) || 0; const before = state.ticks; const t0 = performance.now(); while (performance.now() - t0 < ms) { } setTimeout(() => { $('delayResult').textContent = `froze ${ms} ms: ticks ${before} → ${state.ticks} (at most ${MAX_CATCHUP} ran on the next frame; ${dropped} discarded so far)`; }, 50); });
+  $('breakRender').addEventListener('click', () => { breakNext = true; $('renderResult').textContent = 'the next draw will throw'; });
+  window.__dnode = { get state() { return state; }, deliver, trace, get lastError() { return lastError; }, get dropped() { return dropped; }, replay: () => $('replay').click(), setKeys: (k) => Object.assign(keys, k), setTarget: (x) => { target = x; } };
+  deliver({ kind: 'noop' });
+  requestAnimationFrame(loop);
+})();
+</script>

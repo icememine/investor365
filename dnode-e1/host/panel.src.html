@@ -1,0 +1,140 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* the generic DNode host for the panel and batch profiles: it renders item kinds, keeps session state, runs the simulator, exports files. No application rule lives here. */
+:root {
+  --bg: #f4f3ef; --fg: #1c1b18; --mute: #6b6861; --line: #d8d5cc; --panel: #ffffff;
+  --ok: #2f7d4f; --no: #b3392b; --warn: #a16207; --accent: #1d4ed8; --accent-ink: #ffffff;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #121316; --fg: #e6e3da; --mute: #9a968d; --line: #2a2c31; --panel: #1a1b1f; --ok: #5fbf84; --no: #e06a5a; --warn: #d9a441; --accent: #7aa2ff; --accent-ink: #0b1020; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #121316; --fg: #e6e3da; --mute: #9a968d; --line: #2a2c31; --panel: #1a1b1f; --ok: #5fbf84; --no: #e06a5a; --warn: #d9a441; --accent: #7aa2ff; --accent-ink: #0b1020; color-scheme: dark; }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.45; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 12px; }
+h1 { font-size: 20px; font-weight: 600; margin: 0; } header p { margin: 0; color: var(--mute); }
+.wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; } @media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); } }
+.col { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.section { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); font-weight: 500; margin-top: 10px; }
+.notice { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-height: 1.4em; } .notice.err { border-color: var(--no); color: var(--no); }
+.warn { border: 1px solid var(--warn); color: var(--warn); border-radius: 8px; padding: 10px 12px; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); } .row .sub { color: var(--mute); font-size: 13px; } .row.off { color: var(--mute); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 14px; }
+button, input, select, textarea { font: inherit; } button { padding: 7px 12px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); border-radius: 6px; cursor: pointer; } button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input[type=number], input[type=text] { padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--fg); } input[type=number] { width: 5em; }
+textarea { width: 100%; max-width: 100%; box-sizing: border-box; font-family: var(--mono); font-size: 12px; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--fg); min-height: 7em; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; } th, td { text-align: left; padding: 6px 8px; border-top: 1px solid var(--line); } th { color: var(--mute); font-weight: 500; font-size: 12px; } td.num { text-align: right; }
+.tablewrap { overflow-x: auto; min-width: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.log, .meta { font-family: var(--mono); font-size: 12px; color: var(--mute); white-space: pre-wrap; word-break: break-word; }
+.ledger { margin-top: 24px; font-size: 13px; } .ledger h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); margin: 16px 0 6px; font-weight: 500; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 3px; color: #fff; background: var(--ok); } .pill.no { background: var(--no); }
+</style>
+
+<header><h1>__TITLE__</h1><p id="tagline"></p></header>
+<div class="wrap"><div class="col" id="left"></div><div class="col" id="right"></div></div>
+<aside class="ledger">
+  <h2>Admission</h2><div id="admission" class="meta"></div>
+  <h2>Host</h2><div id="hostinfo" class="meta"></div>
+  <h2>Simulator ledger (readable by tests, not by the graph)</h2><div id="simledger" class="meta"></div>
+</aside>
+
+<script>__NATIVES_TEXT__</script>
+<script>__ENGINE__</script>
+<script>
+const GRAPH = __GRAPH__; const CERTS = __CERTS__; const PROFILE = __PROFILE__; const LOCK = __LOCK__; const SEEDS = __SEEDS__;
+</script>
+<script>
+(async function () {
+  const E = window.Engine; const $ = (id) => document.getElementById(id);
+  const h = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const view = E.resolve(GRAPH, CERTS.main); view.profile = PROFILE;
+
+  // ---- admission: natives against the lock, every certificate recomputed and verified ----
+  const denied = [];
+  for (const [op, hsh] of Object.entries(LOCK.natives)) { if (!E.NATIVES[op]) denied.push(`native ${op} missing`); else if ((await E.hashNative(op)) !== hsh) denied.push(`native ${op} changed`); }
+  for (const op of Object.keys(E.NATIVES)) if (!LOCK.natives[op]) denied.push(`native ${op} not in lock`);
+  const hashes = await E.hashAll(view);
+  const pub = await crypto.subtle.importKey('jwk', CERTS.publicKey, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+  const b64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const verify = (c) => crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, pub, b64(c.sig), new TextEncoder().encode(`${c.hash}|${c.descriptionHash}|${CERTS.checker}|${c.at || CERTS.at}`));
+  const certified = new Set(); let bad = 0;
+  for (const [name, c] of Object.entries(CERTS.certified)) { const ok = hashes[name] === c.hash && (await E.descriptionHash(view, name)) === c.descriptionHash && await verify(c); if (ok) certified.add(name); else bad++; }
+  const entries = PROFILE.entry.map(e => e.node);
+  entries.filter(n => !certified.has(n)).forEach(n => denied.push(`entry point ${n} is not certified`));
+  $('admission').textContent = (denied.length ? 'DENIED: ' + denied.join('; ') : 'admitted') + ` · profile ${PROFILE.name} ${PROFILE.version} · lock ${LOCK.identity} · ${CERTS.schema} ${CERTS.checker} · ${certified.size}/${Object.keys(CERTS.certified).length} certificates verified${bad ? ', ' + bad + ' failed' : ''}`;
+  $('tagline').textContent = `${Object.keys(view.nodes).length} nodes in ${view.roots.length} roots on the ${PROFILE.name} profile. ${PROFILE.says}`;
+  $('hostinfo').textContent = Object.entries(PROFILE.host || {}).map(([k, v]) => `${k}: ${v}`).join('\n') || '—';
+  if (denied.length) return;
+
+  // ---- session state: survives reload within the test session; cleared explicitly ----
+  const KEY = 'dnode.' + CERTS.main + '.' + CERTS.roots[CERTS.main];
+  const load = () => { try { const s = localStorage.getItem(KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } };
+  const save = (s) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { } };
+  const clear = () => { try { localStorage.removeItem(KEY); } catch (e) { } };
+
+  // ---- payment simulator: modes accept, decline, accept-lost, inquiry-unavailable; ledger readable by tests ----
+  const sim = { mode: 'accept', ledger: [], charge(ref, amount) { const existing = this.ledger.find(c => c.ref === ref); if (existing) return existing.amount === amount ? existing.result : 'conflict'; const result = this.mode === 'decline' ? 'declined' : 'confirmed'; this.ledger.push({ ref, amount, result }); if (this.mode === 'accept-lost') { this.mode = 'accept'; return 'lost'; } return result; }, inquire(ref) { if (this.mode === 'inquiry-unavailable') { this.mode = 'accept'; return 'unavailable'; } const c = this.ledger.find(c => c.ref === ref); return c ? c.result : 'none'; } };
+  window.__dnode = { sim, get state() { return state; }, send: (e) => send(e) };
+
+  // ---- events and effects ----
+  const isBatch = PROFILE.name === 'batch';
+  let state = isBatch ? null : (load() || E.callNode('initial', [], { view, effects: [], certified, profile: PROFILE }));
+  let lastError = ''; const inputs = {}; let exported = null;
+  function send(event) {
+    const ctx = { view, effects: [], certified, profile: PROFILE };
+    try {
+      const args = isBatch ? [event.text] : [state, Object.assign({}, inputs, event, { sim_mode: sim.mode })];
+      const out = E.callNode(isBatch ? 'run' : 'frame', args, ctx);
+      if (!isBatch) { state = out; save(state); }
+      lastError = '';
+      exported = null; let shown = null;
+      for (const [k, v] of ctx.effects) { if (k === 'panel.show') shown = v; if (k === 'file.export') exported = v; }
+      if (isBatch) render(intake().concat([{ k: 'section', side: 'right', text: 'Report' }], shown || [], [{ k: 'section', text: 'Returned record' }, { k: 'log', lines: [JSON.stringify(out)] }]));
+      else if (shown) render(shown);
+      if (isBatch) renderExport();
+    } catch (e) {
+      lastError = e instanceof E.Refusal ? `${e.err}` : e.message;
+      if (!isBatch) { const v = E.callNode('view', [state], { view, effects: [], certified, profile: PROFILE }); render(v); } else render(intake());
+    }
+    $('simledger').textContent = sim.ledger.length ? sim.ledger.map(c => `${c.ref}: ${c.amount} ${c.result}`).join('\n') : 'no charges';
+  }
+  // the simulator is reached by the graph only through events the host answers: the graph asks, the host charges, the answer comes back as an event
+  window.__dnode.pay = (ref, amount) => sim.charge(ref, amount);
+
+  function render(items) {
+    const left = [], right = []; let target = left;
+    for (const it of items) {
+      switch (it.k) {
+        case 'notice': left.push(`<div class="notice${lastError ? ' err' : ''}">${h(lastError || it.text || '')}</div>`); break;
+        case 'section': target = it.side === 'right' ? right : (it.side === 'left' ? left : target); target.push(`<div class="section">${h(it.text)}</div>`); break;
+        case 'text': target.push(`<div>${h(it.text)}</div>`); break;
+        case 'warn': target.push(`<div class="warn">${h(it.text)}</div>`); break;
+        case 'row': target.push(`<div class="row${it.off ? ' off' : ''}"><div><div>${h(it.text)}</div>${it.sub ? `<div class="sub">${h(it.sub)}</div>` : ''}</div><div class="num">${h(it.value || '')}</div></div>`); break;
+        case 'button': target.push(`<div class="actions"><button class="${it.primary ? 'primary' : ''}" data-ev='${h(JSON.stringify(it.event))}'>${h(it.label)}</button></div>`); break;
+        case 'input': target.push(`<div class="actions"><label>${h(it.label || it.field)} <input type="${it.kind === 'number' ? 'number' : 'text'}" id="in_${h(it.field)}" data-field="${h(it.field)}" value="${h(inputs[it.field] ?? it.value ?? '')}"${it.event ? ` data-ev='${h(JSON.stringify(it.event))}'` : ''}></label></div>`); break;
+        case 'table': target.push(`<div class="tablewrap"><table><thead><tr>${it.columns.map(c => `<th>${h(c)}</th>`).join('')}</tr></thead><tbody>${it.rows.map(r => `<tr>${r.map(c => `<td class="${typeof c === 'number' ? 'num' : ''}">${h(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`); break;
+        case 'file': target.push(`<div class="actions"><label>${h(it.label || 'Choose a file')} <input type="file" id="file_${h(it.field || 'text')}" data-field="${h(it.field || 'text')}" data-ev='${h(JSON.stringify(it.event))}'></label></div><textarea id="ta_${h(it.field || 'text')}" aria-label="file text">${h(inputs[it.field || 'text'] || '')}</textarea><div class="actions"><button data-ta="${h(it.field || 'text')}" data-ev='${h(JSON.stringify(it.event))}'>${h(it.submit || 'Use this text')}</button></div>`); break;
+        case 'log': target.push(`<div class="log">${(it.lines || []).map(h).join('\n') || '—'}</div>`); break;
+        case 'none': break;
+      }
+    }
+    $('left').innerHTML = left.join(''); $('right').innerHTML = right.join('');
+    document.querySelectorAll('button[data-ev]').forEach(b => b.addEventListener('click', () => { if (b.dataset.ta) inputs[b.dataset.ta] = $('ta_' + b.dataset.ta).value; const ev = JSON.parse(b.dataset.ev); if (b.dataset.ta) ev[b.dataset.ta] = inputs[b.dataset.ta]; send(ev); }));
+    document.querySelectorAll('input[data-field]').forEach(i => { if (i.type === 'file') { i.addEventListener('change', () => { const f = i.files[0]; if (!f) return; if (f.size > (PROFILE.host && PROFILE.host.maxBytes || 1048576)) { lastError = 'file exceeds the profile limit before parsing'; render([{ k: 'notice', text: '' }]); return; } const r = new FileReader(); r.onload = () => { inputs[i.dataset.field] = String(r.result); const ta = $('ta_' + i.dataset.field); if (ta) ta.value = inputs[i.dataset.field]; }; r.readAsText(f); }); } else { i.addEventListener('change', () => { inputs[i.dataset.field] = i.type === 'number' ? Number(i.value) : i.value; if (i.dataset.ev) send(JSON.parse(i.dataset.ev)); }); } });
+  }
+  function renderExport() { if (!exported) return; $('right').insertAdjacentHTML('beforeend', `<div class="section">Export: ${h(exported.name)} (staged by the host; copy to save)</div><textarea readonly aria-label="exported file">${h(exported.text)}</textarea>`); }
+
+  // ---- host controls: session reset, simulator mode ----
+  const controls = document.createElement('div'); controls.className = 'ledger'; controls.innerHTML = `<h2>Host controls</h2><div class="actions"><button id="reset">Clear session</button><label>Simulator <select id="simmode"><option value="accept">accept</option><option value="decline">decline</option><option value="accept-lost">accept, lose the reply</option><option value="inquiry-unavailable">inquiry unavailable once</option></select></label></div>`;
+  document.querySelector('aside.ledger').before(controls);
+  $('reset').addEventListener('click', () => { clear(); sim.ledger = []; if (!isBatch) { state = E.callNode('initial', [], { view, effects: [], certified, profile: PROFILE }); save(state); } send(isBatch ? { text: '' } : { kind: 'noop' }); });
+  $('simmode').addEventListener('change', () => { sim.mode = $('simmode').value; });
+
+  // ---- first frame ----
+  function intake() { return [{ k: 'notice', text: 'Choose a file or paste its text, then run.' }, { k: 'section', text: 'Input file' }, { k: 'file', field: 'text', event: {}, label: 'Choose a file', submit: 'Run' }].concat(SEEDS.map(s => ({ k: 'button', event: { text: s.text }, label: 'Fixture ' + s.name }))); }
+  if (isBatch) render(intake()); else send({ kind: 'noop' });
+})();
+</script>

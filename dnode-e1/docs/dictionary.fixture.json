@@ -1,0 +1,11 @@
+{
+  "note": "Independently specified expected fields for a few entries. Written by hand from the .node sources and natives-text.js, not copied from generator output.",
+  "entries": {
+    "parse_decimal_nat": { "kind": "node", "root": "lib_text", "inputs": ["s"], "effects": [], "pre": [{"unless": "is_digits(s)", "refuses": "InvalidInteger"}, {"unless": "digits_fit(s)", "refuses": "OutOfRange"}], "status": "admitted" },
+    "k04_mod": { "kind": "node", "root": "kernel", "inputs": ["a", "b"], "raises": ["DivideByZero"], "status": "admitted" },
+    "k09_post_enforced": { "kind": "demonstration", "root": "kernel", "status": "demonstrated" },
+    "csv_records": { "kind": "native", "fx": [], "examples": 7, "status": "certified" },
+    "file.export": { "kind": "native", "fx": ["file.export"], "examples": 0 },
+    "run": { "kind": "node", "root": "batch_transform", "effects": ["file.export", "panel.show"], "raises": ["BrokenQuote"], "profile": "batch", "status": "admitted" }
+  }
+}

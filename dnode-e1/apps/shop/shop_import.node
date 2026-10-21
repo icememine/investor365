@@ -1,0 +1,99 @@
+; shop_import — the operator's supplier-file preview for BP-SHOP. CSV framing (header, data records with indices) is the same
+; policy as the batch app and is a promotion candidate for a shared lib_csv root; recorded as duplication, not hidden.
+root shop_import
+numbers exact
+use shop_stock
+
+node not_empty_record (r)
+  says "true when a raw record has any field with content; a blank line is not a record"
+  fx none
+  post (in out [true false])
+  out (not (or (== r.fields []) (== r.fields [""])))
+  ex {r {index 1 fields ["A" "a" "1" "1"]}} -> true
+  ex {r {index 2 fields [""]}} -> false
+
+node with_index (p)
+  says "a raw record with its 1-based data-record index; the index counts records after the header, blank lines included"
+  fx none
+  pre (>= p.a 0) BadPosition
+  pre (< p.a (len p.b)) BadPosition
+  post (== out.index (+ p.a 1))
+  out {index (+ p.a 1) fields (at p.b p.a)}
+  ex {p {a 0 b [["A" "a" "1" "1"]]}} -> {index 1 fields ["A" "a" "1" "1"]}
+  ex {p {a 1 b [["A" "a" "1" "1"]]}} refuse BadPosition
+
+node item_after (p)
+  says "the item one position after the index in a"
+  fx none
+  pre (>= p.a 0) BadPosition
+  pre (< (+ p.a 1) (len p.b)) BadPosition
+  post (== out (at p.b (+ p.a 1)))
+  out (at p.b (+ p.a 1))
+  ex {p {a 0 b [1 2 3]}} -> 2
+  ex {p {a 2 b [1 2 3]}} refuse BadPosition
+
+node drop_first_item (xs)
+  says "the list without its first item"
+  fx none
+  pre (> (len xs) 0) Empty
+  post (== (len out) (- (len xs) 1))
+  out (map "item_after" (pairs (range (- (len xs) 1)) [xs]))
+  ex {xs [1 2 3]} -> [2 3]
+  ex {xs []} refuse Empty
+
+node data_records (recs)
+  says "the data records of a parsed file with indices, blank lines dropped"
+  fx none
+  pre (> (len recs) 0) NoHeader
+  post (<= (len out) (- (len recs) 1))
+  let rows (drop_first_item recs)
+  out (filter "not_empty_record" (map "with_index" (pairs (range (len rows)) [rows])))
+  ex {recs [["SKU" "NAME" "PRICE_VND" "QTY_ON_HAND"] ["A" "a" "1" "1"] [""] ["B" "b" "2" "2"]]} -> [{index 1 fields ["A" "a" "1" "1"]} {index 3 fields ["B" "b" "2" "2"]}]
+  ex {recs []} refuse NoHeader
+
+node preview (stock text)
+  says "what a supplier file would do to the shop, before anything changes: lexical outcome, header check, located field problems, duplicate SKUs, reservation conflicts, and the availability change per SKU when it could be applied"
+  fx none
+  raises BrokenQuote
+  pre (stock_ok stock) BadStock
+  post (in out.outcome ["BadHeader" "Rejected" "Conflict" "Accepted"])
+  post (== (== out.outcome "Accepted") (and (> (len out.records) 0) (== (len out.conflicts) 0)))
+  let recs (csv_records text)
+  let hasHeader (and (> (len recs) 0) (header_ok (at (if (> (len recs) 0) recs [[]]) 0)))
+  let data (if hasHeader (data_records recs) [])
+  let v (validate_snapshot data)
+  let valid (and hasHeader v.accepted)
+  let records (if valid (normalize_snapshot data) [])
+  let cons (conflicts stock records)
+  let outcome (if (not hasHeader) "BadHeader" (if (not valid) "Rejected" (if (> (len cons) 0) "Conflict" "Accepted")))
+  out {outcome outcome problems v.problems duplicates v.duplicates records (if (== outcome "Accepted") records []) conflicts cons changes (if (== outcome "Accepted") (changes stock records) []) count (len data)}
+  ex {stock [{sku "A" name "a" price 10 on_hand 5 reserved 3}] text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,10,4\nC,c,1,7\n"} check (== out.outcome "Accepted") (== out.records [{sku "A" name "a" price 10 qty 4} {sku "C" name "c" price 1 qty 7}]) (== out.changes [{sku "A" name "a" before 2 after 1 new false} {sku "C" name "c" before 0 after 7 new true}])
+  ex {stock [{sku "A" name "a" price 10 on_hand 5 reserved 3}] text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,10,2\n"} check (== out.outcome "Conflict") (== out.conflicts [{sku "A" reserved 3 supplier 2}]) (== out.records [])
+  ex {stock [] text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,10,2\nA,a,10,2\n"} check (== out.outcome "Rejected") (== out.duplicates [1 2])
+  ex {stock [] text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,x,2\n"} check (== out.outcome "Rejected") (== out.problems [{index 1 field "PRICE_VND" problem "BadPrice"}])
+  ex {stock [] text "SKU,NAME,PRICE_VND,QTY_ON_HAND\n"} check (== out.outcome "Rejected") (== out.count 0)
+  ex {stock [] text "sku,name\nA,a,1,1\n"} check (== out.outcome "BadHeader")
+  ex {stock [] text "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,\"unclosed,1,1\n"} refuse BrokenQuote
+  ex {stock [{sku "A" name "a" price 10 on_hand 5 reserved 6}] text ""} refuse BadStock
+
+node fits_now (p)
+  says "true when the cart line in a still fits the stock in b"
+  fx none
+  raises BadQty BadStock
+  post (in out [true false])
+  out (== (line_fits p) 1)
+  ex {p {a {sku "A" qty 2} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> true
+  ex {p {a {sku "A" qty 3} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> false
+  ex {p {a {sku "A" qty -1} b []}} refuse BadQty
+  ex {p {a {sku "A" qty 1} b [{sku "A" name "a" price 10 on_hand 5 reserved 6}]}} refuse BadStock
+
+node fit_cart (items lines)
+  says "the cart lines that still fit the stock after an import; the others are dropped"
+  fx none
+  pre (stock_ok items) BadStock
+  pre (lines_ok lines) BadQty
+  post (<= (len out) (len lines))
+  out (map "a_of" (filter "fits_now" (pairs lines [items])))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3} {sku "B" name "b" price 1 on_hand 0 reserved 0}] lines [{sku "A" qty 2} {sku "B" qty 1}]} -> [{sku "A" qty 2}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 6}] lines []} refuse BadStock
+  ex {items [] lines [{sku "A" qty -1}]} refuse BadQty

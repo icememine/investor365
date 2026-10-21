@@ -1,0 +1,124 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Generic DNode host for the batch profile: file bytes in, run(text), panel items rendered, exports staged then published together.
+   The byte limit is enforced here before parsing; nothing about CSV, SKUs or snapshots lives here. */
+:root { --bg:#f4f3ef; --card:#ffffff; --ink:#1c1b18; --mute:#6b6861; --line:#d8d5cc; --accent:#1d4ed8; --accent-ink:#fff;
+  --ok:#2f7d4f; --ok-bg:#e3f1e8; --err:#b3392b; --err-bg:#f9e3df; --warn:#a16207; --warn-bg:#faf0d7; --info:#2f4c7a; --info-bg:#e5ecf7;
+  --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#121316; --card:#1a1b1f; --ink:#e6e3da; --mute:#9a968d; --line:#2a2c31; --accent:#7aa2ff; --accent-ink:#0b1020; --ok:#7fd1a0; --ok-bg:#1c3326; --err:#f09a8c; --err-bg:#3f1f1a; --warn:#e5b85c; --warn-bg:#3a2f14; --info:#9db7e6; --info-bg:#1f2a3d; color-scheme:dark; } }
+:root[data-theme="dark"] { --bg:#121316; --card:#1a1b1f; --ink:#e6e3da; --mute:#9a968d; --line:#2a2c31; --accent:#7aa2ff; --accent-ink:#0b1020; --ok:#7fd1a0; --ok-bg:#1c3326; --err:#f09a8c; --err-bg:#3f1f1a; --warn:#e5b85c; --warn-bg:#3a2f14; --info:#9db7e6; --info-bg:#1f2a3d; color-scheme:dark; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.45; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+header { max-width:1100px; margin:0 auto; padding:18px 0 8px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 16px; align-items:baseline; }
+h1 { font-size:22px; margin:0; font-weight:600; } h1 small { display:block; font-size:12px; color:var(--mute); font-weight:500; }
+main { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:22px; padding-bottom:40px; } @media (max-width:860px) { main { grid-template-columns:minmax(0,1fr); } }
+.col { min-width:0; } h2.section { font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--mute); font-weight:600; margin:16px 0 8px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:12px; }
+textarea { width:100%; min-height:220px; font-family:var(--mono); font-size:12px; padding:10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--ink); }
+button { font:inherit; cursor:pointer; border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:8px; padding:8px 12px; font-weight:500; } button.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); } button:disabled { opacity:0.5; cursor:not-allowed; }
+button:focus-visible, textarea:focus-visible, input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.pills { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; } .pills button { font-size:12px; padding:5px 9px; }
+.actions { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; align-items:center; }
+.status { border-radius:10px; padding:12px 14px; margin:8px 0; } .status b { display:block; font-size:16px; margin-bottom:3px; } .status.ok { background:var(--ok-bg); color:var(--ok); } .status.err { background:var(--err-bg); color:var(--err); } .status.warn { background:var(--warn-bg); color:var(--warn); } .status.info { background:var(--info-bg); color:var(--info); }
+p.text { margin:6px 0 10px; color:var(--mute); font-size:14px; }
+.tablewrap { overflow-x:auto; } table { border-collapse:collapse; width:100%; font-size:13px; background:var(--card); border:1px solid var(--line); border-radius:8px; } th, td { text-align:left; padding:6px 9px; border-top:1px solid var(--line); vertical-align:top; } th { color:var(--mute); font-weight:500; font-size:12px; border-top:0; } td.num { text-align:right; font-variant-numeric:tabular-nums; font-family:var(--mono); }
+.meta { font-family:var(--mono); font-size:12px; color:var(--mute); white-space:pre-wrap; word-break:break-all; }
+.export { border:1px solid var(--line); border-radius:8px; padding:10px; margin:8px 0; } .export b { font-family:var(--mono); } .export textarea { min-height:90px; margin-top:8px; }
+label.file { display:block; font-size:13px; margin:6px 0; }
+.notice { min-height:20px; color:var(--err); font-weight:500; margin:6px 0; }
+</style>
+<header><h1>__TITLE__<small>DNode batch profile · a file in, a report and a normalised snapshot out · nothing here changes stock</small></h1></header>
+<main>
+  <div class="col">
+    <h2 class="section">1 · Supplier file</h2>
+    <div class="card">
+      <label class="file">Choose a CSV (UTF-8, up to 1 MiB; the limit is checked before any parsing) <input type="file" id="file" accept=".csv,text/csv"></label>
+      <div class="meta" id="fileinfo">no file chosen — or paste text below</div>
+      <textarea id="text" spellcheck="false" aria-label="supplier CSV text"></textarea>
+      <div class="pills" id="seeds"></div>
+      <div class="actions"><button class="primary" id="run">Validate and transform</button><span class="meta" id="runmeta"></span></div>
+      <div class="notice" id="notice"></div>
+    </div>
+    <h2 class="section">Test desk</h2>
+    <div class="card">
+      <div class="actions"><button id="twice">Run twice, compare export bytes</button><button id="interrupt">Interrupt the next publish</button><button id="big">Try a 1.1 MiB input</button></div>
+      <div class="meta" id="deskout">—</div>
+      <h2 class="section">Admission</h2><div class="meta" id="admission"></div>
+      <h2 class="section">Host obligations (from the profile)</h2><div class="meta" id="hostinfo"></div>
+    </div>
+  </div>
+  <div class="col">
+    <h2 class="section">2 · Result</h2>
+    <div id="panel"><p class="text">Run a file to see the declared meaning, the verdict, the records to correct, and the preview.</p></div>
+    <h2 class="section">3 · Published exports</h2>
+    <div id="exports"><p class="text">Nothing published yet. Exports are staged during a run and published together only when the run completes.</p></div>
+  </div>
+</main>
+<script>__NATIVES_TEXT__</script>
+<script>__ENGINE__</script>
+<script>const GRAPH = __GRAPH__; const CERTS = __CERTS__; const PROFILE = __PROFILE__; const LOCK = __LOCK__; const SEEDS = __SEEDS__;</script>
+<script>
+(async function () {
+  const E = window.Engine; const $ = (id) => document.getElementById(id);
+  const h = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const view = E.resolve(GRAPH, CERTS.main); view.profile = PROFILE;
+  const denied = [];
+  for (const [op, hsh] of Object.entries(LOCK.natives)) { if (!E.NATIVES[op]) denied.push(`native ${op} missing`); else if ((await E.hashNative(op)) !== hsh) denied.push(`native ${op} changed`); }
+  for (const op of Object.keys(E.NATIVES)) if (!LOCK.natives[op]) denied.push(`native ${op} not in lock`);
+  const hashes = await E.hashAll(view);
+  const pub = await crypto.subtle.importKey('jwk', CERTS.publicKey, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+  const b64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const verify = (c) => crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, pub, b64(c.sig), new TextEncoder().encode(`${c.hash}|${c.descriptionHash}|${CERTS.checker}|${c.at || CERTS.at}`));
+  const certified = new Set(); let bad = 0;
+  for (const [name, c] of Object.entries(CERTS.certified)) { const ok = hashes[name] === c.hash && (await E.descriptionHash(view, name)) === c.descriptionHash && await verify(c); if (ok) certified.add(name); else bad++; }
+  PROFILE.entry.map(e => e.node).filter(n => !certified.has(n)).forEach(n => denied.push(`entry point ${n} is not certified`));
+  const rootId = CERTS.roots[CERTS.main];
+  $('admission').textContent = (denied.length ? 'DENIED: ' + denied.join('; ') : 'admitted') + `\nprofile ${PROFILE.name} ${PROFILE.version} · lock ${LOCK.identity}\n${CERTS.schema} ${CERTS.checker}\n${certified.size}/${Object.keys(CERTS.certified).length} certificates verified${bad ? ', ' + bad + ' failed' : ''}\ntransformer ${CERTS.main}#${rootId} · roots ${Object.entries(CERTS.roots).map(([r, x]) => r + '#' + x.slice(0, 8)).join(' ')}`;
+  $('hostinfo').textContent = Object.entries(PROFILE.host || {}).map(([k, v]) => `${k}: ${typeof v === 'string' ? v : JSON.stringify(v)}`).join('\n');
+  if (denied.length) { $('notice').textContent = 'This build was not admitted; nothing will run.'; $('run').disabled = true; return; }
+  const MAX = (PROFILE.host && PROFILE.host.maxBytes) || 1048576; const enc = new TextEncoder();
+  const sha = async (s) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(s)))].map(b => b.toString(16).padStart(2, '0')).join('');
+  let interruptNext = false; let lastPublished = null;
+  // ---- render panel items (generic kinds) ----
+  const K = {
+    section: (it) => `<h2 class="section">${h(it.text)}</h2>`, text: (it) => `<p class="text">${h(it.text)}</p>`, warn: (it) => `<div class="status warn">${h(it.text)}</div>`,
+    status: (it) => `<div class="status ${h(it.tone)}"><b>${h(it.title)}</b>${h(it.text)}</div>`,
+    table: (it) => `<div class="tablewrap"><table><thead><tr>${it.columns.map(c => `<th>${h(c)}</th>`).join('')}</tr></thead><tbody>${it.rows.length ? it.rows.map(r => `<tr>${r.map(c => `<td class="${typeof c === 'number' ? 'num' : ''}">${h(c)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${it.columns.length}">—</td></tr>`}</tbody></table></div>`,
+    log: (it) => `<div class="meta">${(it.lines || []).map(h).join('\n')}</div>`,
+  };
+  const render = (items) => { $('panel').innerHTML = items.map(it => (K[it.k] || (() => ''))(it)).join('') || '<p class="text">—</p>'; };
+  // ---- a run: the byte limit first, then run(text); exports are staged in the effects list and published only after frame returns ----
+  async function run(text, opts) {
+    $('notice').textContent = ''; const bytes = enc.encode(text).length;
+    if (bytes > MAX) { $('notice').textContent = `The file is ${bytes.toLocaleString()} bytes; the limit is ${MAX.toLocaleString()} bytes. Nothing was parsed.`; return null; }
+    const ctx = { view, effects: [], certified, profile: PROFILE }; const t0 = performance.now(); let out;
+    try { out = E.callNode('run', [text], ctx); }
+    catch (e) { $('notice').textContent = e instanceof E.Refusal ? (e.err === 'BrokenQuote' ? 'Refused: a quoted field is never closed, so the file cannot be read. Nothing was published.' : 'Refused: ' + e.err) : 'Fault: ' + e.message; render([]); return null; }
+    const staged = []; let shown = [];
+    for (const [k, v] of ctx.effects) { if (k === 'panel.show') shown = v; if (k === 'file.export') staged.push(v); }
+    const inputSha = await sha(text); const runId = (await sha(`${CERTS.main}#${rootId}|${LOCK.identity}|${inputSha}`)).slice(0, 32);
+    const files = []; for (const f of staged) files.push({ name: f.name, text: f.text, bytes: enc.encode(f.text).length, sha256: await sha(f.text) });
+    files.push({ name: 'run.json', text: JSON.stringify({ run_id: runId, transformer: `${CERTS.main}#${rootId}`, natives_lock: LOCK.identity, checker: CERTS.checker, input_sha256: inputSha, outcome: out.outcome, published_at: new Date().toISOString() }, null, 1), volatile: true });
+    // publish: all files at once, after everything succeeded; an interruption here publishes nothing
+    try {
+      if (interruptNext) { interruptNext = false; throw new Error('injected interruption during publish'); }
+      lastPublished = { runId, files }; render(shown);
+      $('exports').innerHTML = `<div class="meta">run ${runId} · transformer ${CERTS.main}#${rootId.slice(0, 8)} · input sha256 ${inputSha.slice(0, 16)}… · ${Math.round(performance.now() - t0)} ms</div>` + files.map((f, i) => `<div class="export"><b>${h(f.name)}</b> <span class="meta">${f.bytes ? f.bytes + ' bytes · sha256 ' + f.sha256.slice(0, 16) + '…' : 'volatile (timestamp inside; not part of the snapshot or report bytes)'}</span><div class="actions"><button data-dl="${i}">Download</button><button data-cp="${i}">Copy</button></div><textarea readonly aria-label="${h(f.name)}">${h(f.text)}</textarea></div>`).join('');
+      document.querySelectorAll('button[data-dl]').forEach(b => b.addEventListener('click', () => { const f = files[Number(b.dataset.dl)]; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([f.text], { type: 'application/json' })); a.download = f.name; a.click(); }));
+      document.querySelectorAll('button[data-cp]').forEach(b => b.addEventListener('click', async () => { try { await navigator.clipboard.writeText(files[Number(b.dataset.cp)].text); b.textContent = 'Copied'; } catch (e) { } }));
+    } catch (e) { $('exports').innerHTML = `<div class="status err"><b>Publish interrupted</b>${h(e.message)} — nothing was published; the previous exports, if any, are unchanged.</div>`; $('notice').textContent = 'The run completed but publishing was interrupted; no partial file exists.'; return null; }
+    $('runmeta').textContent = `${out.outcome} · ${out.count} records read`;
+    return { out, files, runId };
+  }
+  window.__dnode = { run, get lastPublished() { return lastPublished; } };
+  $('seeds').innerHTML = SEEDS.map(s => `<button data-seed="${h(s.name)}">${h(s.name)}</button>`).join('');
+  document.querySelectorAll('button[data-seed]').forEach(b => b.addEventListener('click', () => { const s = SEEDS.find(x => x.name === b.dataset.seed); $('text').value = s.text; $('fileinfo').textContent = 'fixture ' + s.name + ' · ' + enc.encode(s.text).length + ' bytes'; }));
+  $('file').addEventListener('change', () => { const f = $('file').files[0]; if (!f) return; $('fileinfo').textContent = `${f.name} · ${f.size.toLocaleString()} bytes${f.size > MAX ? ' — over the 1 MiB limit; it will not be parsed' : ''}`; if (f.size > MAX) { $('text').value = ''; $('notice').textContent = `The file is ${f.size.toLocaleString()} bytes; the limit is ${MAX.toLocaleString()} bytes. Nothing was parsed.`; return; } const r = new FileReader(); r.onload = () => { $('text').value = String(r.result); }; r.readAsText(f); });
+  $('run').addEventListener('click', () => run($('text').value));
+  $('twice').addEventListener('click', async () => { const a = await run($('text').value); const b = await run($('text').value); if (!a || !b) { $('deskout').textContent = 'a run did not publish'; return; } const same = a.files.filter(f => !f.volatile).every((f, i) => f.sha256 === b.files[i].sha256) && a.runId === b.runId; $('deskout').textContent = `two runs of the same input: run id ${same ? 'identical' : 'DIFFERENT'} (${a.runId}); ${a.files.filter(f => !f.volatile).map(f => f.name + ' ' + f.sha256.slice(0, 12)).join(', ')} → ${same ? 'identical bytes' : 'bytes differ'}`; });
+  $('interrupt').addEventListener('click', () => { interruptNext = true; $('deskout').textContent = 'the next publish will be interrupted after the run completes'; });
+  $('big').addEventListener('click', async () => { const line = 'SKU-000001,Notebook,50000,12\n'; const n = Math.ceil(1.1 * 1048576 / line.length); let t = 'SKU,NAME,PRICE_VND,QTY_ON_HAND\n' + line.repeat(n); $('text').value = t; $('fileinfo').textContent = 'generated ' + enc.encode(t).length + ' bytes'; const r = await run(t); $('deskout').textContent = r ? 'unexpectedly ran' : 'stopped at the byte limit before parsing: ' + $('notice').textContent; });
+})();
+</script>

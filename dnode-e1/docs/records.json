@@ -1,0 +1,650 @@
+{
+ "shop": {
+  "identity": {
+   "blueprint": "BP-SHOP",
+   "revision": "201020261730",
+   "package": "E1 v0.4-e1-apps",
+   "main": "shop",
+   "roots": [
+    "lib_text#075b2010d04f782f",
+    "lib_sequence#0604e83310f90f05",
+    "supplier_snapshot#92c24d4d4f6a6a9d",
+    "shop_stock#3fc32a05f48062ae",
+    "shop_cart#dc6875ddd846bbc5",
+    "shop_orders#286790a17ccd666e",
+    "shop_import#eea5d84b0333fae0",
+    "shop#1998f31a2b772c99"
+   ],
+   "profile": "panel 0.4",
+   "nativesLock": "35330f94bfe082a0",
+   "checker": "checker#bdaf0d20",
+   "certifiedAt": "2026-10-20T13:17:04.441Z"
+  },
+  "purpose": "A customer buys a few familiar products and knows what they ordered, what it costs and whether payment completed; an operator imports a supplier stock snapshot. Exclusions (E1): no tax, delivery, discount, login, real bank or currency conversion.",
+  "experience": "Calm and trustworthy: the shopping journey (Shop tab) is separate from diagnostics (Test desk). Hashes and certificates live in the desk, never in checkout. Every status says what was charged and what happens to the held items.",
+  "journey": "browse → bag → review → place order (reserves) → pay → receipt, or declined / unconfirmed with recovery. Operator: choose file → read the declared meaning → validate → see conflicts or availability changes → confirm whole snapshot.",
+  "domain": "VND exact integers; cart lines qty 1–9, 1–3 lines, unique SKU; per SKU H on hand, R reserved, A = H − R, 0 ≤ R ≤ H; snapshot = physical unsold units including reserved; order captures priced lines and total; instruction identity = order id scoped to this shop; payment states ready/pending/confirmed/declined/unknown/cancelled.",
+  "behavior": "reserve only if q ≤ A, in the same step as order creation; confirmed: (H,R)→(H−q,R−q); declined or pre-payment cancel: (H,R)→(H,R−q); unknown keeps the reservation and makes no new charge; same id + same intent continues, changed intent refuses; snapshot with H_new < R rejected whole; imports never touch reservations or captured prices.",
+  "composition": {
+   "nodes": 153,
+   "demonstrated": 0,
+   "refused": 0,
+   "entryPoints": [
+    "initial()",
+    "frame(state, event)"
+   ],
+   "byRoot": {
+    "lib_text": [
+     "digits_fit",
+     "parse_decimal_nat"
+    ],
+    "lib_sequence": [
+     "same_text",
+     "unique_text",
+     "is_sorted_pair",
+     "is_min_of",
+     "min_text"
+    ],
+    "supplier_snapshot": [
+     "header_ok",
+     "field_problem",
+     "problem_count",
+     "has_problem",
+     "normalize_record",
+     "sku_of",
+     "index_of",
+     "sku_dup",
+     "involved_in_dup",
+     "raw_of",
+     "duplicate_indices",
+     "index_ok",
+     "validate_snapshot",
+     "accepted_of",
+     "sku_before",
+     "swap",
+     "count_before",
+     "position_is",
+     "at_position",
+     "normalize_snapshot"
+    ],
+    "shop_stock": [
+     "stock_item_ok",
+     "available",
+     "stock_ok",
+     "sku_matches",
+     "a_of",
+     "hits",
+     "known",
+     "find_item",
+     "qty_if_sku",
+     "needed",
+     "qty_nonneg",
+     "lines_ok",
+     "line_fits",
+     "lines_fit",
+     "reserve_by_lines",
+     "reserve_all",
+     "release_by_lines",
+     "release_all",
+     "consume_by_lines",
+     "consume_all",
+     "refresh_item",
+     "not_listed",
+     "new_item",
+     "new_items",
+     "is_conflict",
+     "conflict_view",
+     "conflicts",
+     "record_ok",
+     "records_ok",
+     "apply_snapshot",
+     "change_of",
+     "changes"
+    ],
+    "shop_cart": [
+     "line_ok",
+     "cart_ok",
+     "set_qty_if",
+     "other_sku",
+     "remove_line",
+     "set_line",
+     "add_one",
+     "priced_line",
+     "priced",
+     "subtotal_of",
+     "price_pos",
+     "total_of",
+     "bare",
+     "canonical_intent"
+    ],
+    "shop_orders": [
+     "subtotal_if",
+     "order_ok",
+     "id_text",
+     "orders_ok",
+     "is_open",
+     "held_by",
+     "held",
+     "item_held_ok",
+     "line_known",
+     "open_lines_known",
+     "reservations_consistent",
+     "id_matches",
+     "order_hits",
+     "has_order",
+     "find_order",
+     "status_of",
+     "set_status_if",
+     "with_status",
+     "same_intent",
+     "new_order"
+    ],
+    "shop_import": [
+     "not_empty_record",
+     "with_index",
+     "item_after",
+     "drop_first_item",
+     "data_records",
+     "preview",
+     "fits_now",
+     "fit_cart"
+    ],
+    "shop": [
+     "id_below",
+     "ids_below",
+     "captured",
+     "kept_in",
+     "orders_kept",
+     "state_ok",
+     "initial",
+     "log_add",
+     "on_add",
+     "on_set",
+     "on_remove",
+     "on_review",
+     "on_back",
+     "intent_matches",
+     "create_order",
+     "on_place",
+     "on_pay",
+     "settle_confirmed",
+     "settle_declined",
+     "on_payment_result",
+     "on_check",
+     "on_inquiry_result",
+     "on_cancel",
+     "on_new",
+     "on_show",
+     "on_import_check",
+     "on_import_confirm",
+     "on_import_cancel",
+     "on_noop",
+     "event_ok",
+     "step",
+     "money_small",
+     "money_text",
+     "card_of",
+     "bag_line",
+     "order_line",
+     "status_word",
+     "status_tone",
+     "order_card",
+     "stock_cells",
+     "order_cells",
+     "problem_cells",
+     "conflict_cells",
+     "change_cells",
+     "error_texts",
+     "shop_items",
+     "review_items",
+     "order_items",
+     "one_cell",
+     "desk_items",
+     "view",
+     "frame"
+    ]
+   },
+   "source": "apps/shop/*.node (shop.node is generated by gen_shop.py)",
+   "page": "host/shop.html"
+  },
+  "environment": "profile panel 0.4 (grants panel.show, file.export); host keeps the session in browser storage (reload restores; Clear session resets), moves file bytes, runs the payment simulator (accept / decline / accept-lost / inquiry-unavailable) with a ledger tests may read and the graph cannot; the graph asks for a charge or an inquiry through state.request and the host answers with payment_result / inquiry_result events.",
+  "obligations": [
+   {
+    "id": "S01",
+    "severity": "mandatory",
+    "acceptance": "first-time user completes an order and reads the final amount/status",
+    "method": "drive S01 (amount 70.000 ₫ shown, status Paid) + human session",
+    "computational": "passed",
+    "humanAcceptance": "pending — reviewer not yet recorded",
+    "observed": "S01: paid; amount shown 70.000 ₫; status line \"Order #1 · Paid\""
+   },
+   {
+    "id": "S02",
+    "severity": "mandatory",
+    "acceptance": "quantities, captured prices and totals follow the relationships; malformed data fails before business logic",
+    "method": "drive S02a/S02b/S02c; invariants I1–I5 on every state; generated tier",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "S02a: cart total 120.000 ₫ for NOTEBOOK×2 + PEN×1 · S02b: malformed set refused (InputShape: InputShape: >= given a non-integer under numbers exact: [\"x\",0]); qty 12 refused BadQty; cart unchanged · S02c: broken quote refused before any business logic"
+   },
+   {
+    "id": "S03",
+    "severity": "mandatory",
+    "acceptance": "same instruction/intent → at most one charge and one stock consumption; changed intent refuses",
+    "method": "drive S03a/S03b/S03c; on_place / on_pay examples (AlreadySubmitted, ChangedIntent); simulator ledger idempotent per id",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "S03a: place delivered twice: still one order, stock reserved once · S03b: pay delivered twice: ledger has 2 charges for 2 orders, second delivery refused AlreadySubmitted, NOTEBOOK on hand 2 · S03c: same identity with a different bag refused ChangedIntent"
+   },
+   {
+    "id": "S04",
+    "severity": "mandatory",
+    "acceptance": "two orders cannot both reserve the last unit; atomicity at the state boundary",
+    "method": "drive S04; reserve_all precondition and invariant I4 (every reserved unit belongs to one open order); cart validity against A at every step",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "S04: after order #3 reserved both totes: card says \"Sold out\", add refused ExceedsStock"
+   },
+   {
+    "id": "S05",
+    "severity": "mandatory",
+    "acceptance": "lost response → uncertainty shown, order/reservation kept, reconciliation without a fresh charge",
+    "method": "drive S05a/S05b (inquiry unavailable once, then confirmed; ledger unchanged)",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "S05a: reply lost: status \"Order #4 · Payment unconfirmed\", reservation kept, ledger 3 charges · S05b: inquiry unavailable once then confirmed; ledger still 3; stock consumed once"
+   },
+   {
+    "id": "S06",
+    "severity": "mandatory",
+    "acceptance": "definite decline releases once; supplier stock below reserved rejected unchanged",
+    "method": "drive S06a/S06b/S06c/S06d; apply_snapshot StockBelowReserved; preview outcome Conflict",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "S06a: cancel before payment released the reservation · S06b: declined: reservation released, nothing consumed · S06c: a second release attempt refused NotUncertain · S06d: snapshot below reserved: outcome Conflict, no confirm offered, stock unchanged"
+   },
+   {
+    "id": "S07",
+    "severity": "mandatory",
+    "acceptance": "reload during uncertainty restores the same order and instruction and offers recovery",
+    "method": "drive S07 (reload, same id, Check payment status offered, ledger intact)",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "S07: after reload the same order and instruction are back and recovery is offered; ledger intact"
+   },
+   {
+    "id": "S08",
+    "severity": "mandatory",
+    "acceptance": "reviewer distinguishes paid / declined / unknown; totals and next action visible on a phone viewport",
+    "method": "drive S08 (390×844 geometry) + screenshots docs/shots/shop-*.png + human session",
+    "computational": "passed",
+    "humanAcceptance": "pending — reviewer not yet recorded",
+    "observed": "S08: on a 390×844 viewport the status sits at 214px and the next action ends at 568px"
+   }
+  ],
+  "evidence": {
+   "drive": "work/test_shop.js",
+   "evidenceFile": "docs/evidence.shop.json",
+   "driveAt": "2026-10-20T13:04:25.438Z",
+   "drivePassed": "20/20",
+   "independent": null,
+   "screenshots": [
+    "docs/shots/shop-00-desktop.png",
+    "docs/shots/shop-00-home.png",
+    "docs/shots/shop-01-bag.png",
+    "docs/shots/shop-02-review.png",
+    "docs/shots/shop-03-placed.png",
+    "docs/shots/shop-04-paid.png",
+    "docs/shots/shop-05-changed-intent.png",
+    "docs/shots/shop-06-unknown.png",
+    "docs/shots/shop-07-after-reload.png",
+    "docs/shots/shop-08-reconciled.png",
+    "docs/shots/shop-09-declined.png",
+    "docs/shots/shop-10-import-conflict.png",
+    "docs/shots/shop-11-import-preview.png",
+    "docs/shots/shop-12-import-rejected.png",
+    "docs/shots/shop-13-orders.png"
+   ],
+   "reviewer": "none recorded"
+  },
+  "release": {
+   "decision": "incomplete",
+   "unsatisfiedMandatory": [
+    "S01 (human acceptance pending)",
+    "S08 (human acceptance pending)"
+   ],
+   "note": "Computational gates and human acceptance are recorded separately; a human acceptance result is never claimed here."
+  }
+ },
+ "game": {
+  "identity": {
+   "blueprint": "BP-GAME",
+   "revision": "201020261730",
+   "package": "E1 v0.4-e1-apps",
+   "main": "breakout",
+   "roots": [
+    "bk_physics#38e7d8302f71f9a8",
+    "breakout#ac2d8eae9fbc1b49"
+   ],
+   "profile": "canvas 0.4",
+   "nativesLock": "35330f94bfe082a0",
+   "checker": "checker#bdaf0d20",
+   "certifiedAt": "2026-10-20T13:17:15.594Z"
+  },
+  "purpose": "A player understands and enjoys a short Breakout immediately: a paddle keeps a ball in play and breaks a visible brick field. No new rules, upgrades or complex controls.",
+  "experience": "Responsive, readable, fair: 60 Hz fixed tick, impact rings on brick removal, row colours, big phase text (title, lives left, paused, win, game over), one Launch control that becomes Resume or Play again.",
+  "journey": "title/instructions → launch → play → lose a life (ball waits on the paddle until launched again) or clear bricks → win/lose → restart. Keyboard and touch both work; pause freezes everything.",
+  "domain": "field 32000 × 48000 units (320 × 480 px at 1/100 px), integer positions and velocities per tick; 30 bricks in 5 rows of 6; three lives; one point per removed brick; paddle 6000 wide at y 44000; ball radius 600; speed ceiling 700/tick per axis.",
+  "behavior": "the declared collision policy in the header of bk_physics.node (paddle, walls, paddle strike with spin and speed-up, brick hit axis of least penetration with ties to y, loss below the floor, no tunneling because 700 < every target thickness); each brick intact → removed once; a life lost once per exit; relaunch waits for the player; pause freezes; restart = initial(); identical initial state + event trace → identical state.",
+  "composition": {
+   "nodes": 44,
+   "demonstrated": 0,
+   "refused": 0,
+   "entryPoints": [
+    "initial()",
+    "frame(state, event)"
+   ],
+   "byRoot": {
+    "bk_physics": [
+     "paddle_ok",
+     "ball_ok",
+     "move_paddle",
+     "move_ball",
+     "paddle_hit",
+     "cell_ok",
+     "brick_cx",
+     "brick_cy",
+     "brick_visit",
+     "brick_of",
+     "hit_x",
+     "hit_y",
+     "alive_flag",
+     "intact",
+     "new_brick",
+     "wall",
+     "wall_ok",
+     "bricks_visit",
+     "bounce_off_bricks",
+     "lost",
+     "on_paddle"
+    ],
+    "breakout": [
+     "burst_ok",
+     "state_ok",
+     "initial",
+     "age_burst",
+     "young",
+     "aged",
+     "removed_now",
+     "burst_at",
+     "play_tick",
+     "serve_tick",
+     "on_tick",
+     "on_launch",
+     "on_pause",
+     "on_resume",
+     "on_restart",
+     "event_ok",
+     "step",
+     "brick_shape",
+     "burst_shape",
+     "overlay",
+     "view",
+     "sound_of",
+     "frame"
+    ]
+   },
+   "source": "apps/game/bk_physics.node, apps/game/breakout.node",
+   "page": "host/breakout.html"
+  },
+  "environment": "profile canvas 0.4 (grants screen.draw, audio.play); host delivers tick{move,target}, launch, pause, resume, restart in order at 60 Hz, at most 3 catch-up ticks per animation frame (rest discarded), no ticks while paused, clears sampled input on restart, records the trace and can replay it; renders rect/circle/ring/text; sounds are synthesized and never touch state.",
+  "obligations": [
+   {
+    "id": "G01",
+    "severity": "mandatory",
+    "acceptance": "first-time player starts, moves and launches without coaching; controls visible and familiar",
+    "method": "drive G01a/G01b (title with Launch; launched; moved) + human session",
+    "computational": "passed",
+    "humanAcceptance": "pending — reviewer not yet recorded",
+    "observed": "G01a: title screen with a visible Launch control · G01b: launched into play; 23 ticks ran"
+   },
+   {
+    "id": "G02",
+    "severity": "mandatory",
+    "acceptance": "keyboard and touch move the paddle across the field without page scrolling",
+    "method": "drive G02a (arrow) / G02b (touch target; scrollY unchanged)",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "G02a: arrow key moved the paddle 13000 → 22000 · G02b: touch target moved the paddle to 0; page scroll unchanged (0)"
+   },
+   {
+    "id": "G03",
+    "severity": "mandatory",
+    "acceptance": "score, brick removal, life loss, win/lose follow the declared transitions; corner and high-speed traces do not miss collisions",
+    "method": "drive G03a/G03b/G03c; 8 independent traces (fixtures/game/policy.py) agree with the certified graph; invariants G1–G5 on every step",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "G03a: first ball lost: lives 2, waiting on the paddle (y 43400) · G03b: relaunch waits for the player; no life lost while waiting · G03c: game over at 394 ticks, score 3; control offers Play again"
+   },
+   {
+    "id": "G04",
+    "severity": "mandatory",
+    "acceptance": "pause/resume and restart as defined, including after a long host delay",
+    "method": "drive G04a (no ticks while paused) / G04b (resume from the frozen tick) / G04c (1200 ms freeze → ≤3 catch-up ticks) / G04d (restart = initial, input cleared)",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "G04a: paused at tick 91; no ticks during pause · G04b: resume continued from tick 91 (now 94); no catch-up jump · G04c: after a 1200 ms host freeze only 8 ticks ran; 68 discarded · G04d: restart: title, 0 ticks, 3 lives, paddle centred"
+   },
+   {
+    "id": "G05",
+    "severity": "mandatory",
+    "acceptance": "replaying a recorded trace reproduces the state; render/audio failures cannot rewrite it",
+    "method": "drive G05a/G05c (IDENTICAL replay of 108 and 521 events) / G05b (injected render fault, game continues)",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "G05a: replayed 107 events in 199 ms: final state IDENTICAL to the live state (ticks 103, score 1, lives 3, refused 0) · G05b: render fault injected: \"render threw: injected render fault — state unchanged by it (ticks 109)\"; game went on · G05c: whole session replays identically: replayed 517 events in 1196 ms: final state IDENTICAL to the live state (ticks 394, score 3, lives 0, refused 0)"
+   },
+   {
+    "id": "G06",
+    "severity": "mandatory",
+    "acceptance": "reviewer finds ball/paddle/bricks readable and control responsive; frustration, confusion, fairness recorded",
+    "method": "human session only (screenshots docs/shots/game-*.png are context, not acceptance)",
+    "computational": "n/a",
+    "humanAcceptance": "pending — reviewer not yet recorded",
+    "observed": ""
+   }
+  ],
+  "evidence": {
+   "drive": "work/test_game.js",
+   "evidenceFile": "docs/evidence.game.json",
+   "driveAt": "2026-10-20T13:19:14.800Z",
+   "drivePassed": "16/16",
+   "independent": "fixtures/game/results.json: 8 agree, 0 disagree (policy.py written from the declared policy text)",
+   "screenshots": [
+    "docs/shots/game-01-title.png",
+    "docs/shots/game-02-play.png",
+    "docs/shots/game-03-paused.png",
+    "docs/shots/game-04-serve.png",
+    "docs/shots/game-05-lost.png"
+   ],
+   "reviewer": "none recorded"
+  },
+  "release": {
+   "decision": "incomplete",
+   "unsatisfiedMandatory": [
+    "G01 (human acceptance pending)",
+    "G06 (human acceptance pending)"
+   ],
+   "note": "Computational gates and human acceptance are recorded separately; a human acceptance result is never claimed here."
+  }
+ },
+ "batch": {
+  "identity": {
+   "blueprint": "BP-BATCH",
+   "revision": "201020261730",
+   "package": "E1 v0.4-e1-apps",
+   "main": "batch_transform",
+   "roots": [
+    "lib_text#075b2010d04f782f",
+    "lib_sequence#0604e83310f90f05",
+    "supplier_snapshot#92c24d4d4f6a6a9d",
+    "batch_transform#ecd83b4b1e887815"
+   ],
+   "profile": "batch 0.4",
+   "nativesLock": "35330f94bfe082a0",
+   "checker": "checker#8b82cf76",
+   "certifiedAt": "2026-10-20T13:25:04.257Z"
+  },
+  "purpose": "An operator turns a legacy supplier CSV into validated shop inventory records and understands exactly what was accepted or rejected; never wonders whether a failed run partially changed anything. No live stock mutation.",
+  "experience": "Mistakes are explainable and correction is easy: the declared meaning is on the page, every rejected record is named with its text, the field and what to do; the text is editable in place and re-run; exports are published together with their hashes and a run ID.",
+  "journey": "choose CSV (or paste) → declared meaning → validate → records to correct / duplicates / preview → export normalised snapshot and report.",
+  "domain": "UTF-8 CSV, optional BOM, header exactly SKU,NAME,PRICE_VND,QTY_ON_HAND, LF/CRLF, quoted commas/newlines/doubled quotes; SKU 1–32 [A-Z0-9_-]; NAME 1–120 scalars preserved; PRICE_VND digits → exact positive integer; QTY_ON_HAND digits → exact non-negative integer (physical unsold units incl. reserved); limits 1 MiB before parsing, 10000 data rows after lexical parsing.",
+  "behavior": "broken quote rejects the file (BrokenQuote); bad header → BadHeader; >10000 rows → TooManyRows; any invalid record or duplicate SKU → Rejected with located diagnostics (record, field, problem); header-only → Rejected (empty); Accepted → records sorted by SKU, integers as numbers, in the pinned export encoding (native encode = the substrate canonical form); the report never contains a volatile value.",
+  "composition": {
+   "nodes": 49,
+   "demonstrated": 0,
+   "refused": 0,
+   "entryPoints": [
+    "run(text)"
+   ],
+   "byRoot": {
+    "lib_text": [
+     "digits_fit",
+     "parse_decimal_nat"
+    ],
+    "lib_sequence": [
+     "same_text",
+     "unique_text",
+     "is_sorted_pair",
+     "is_min_of",
+     "min_text"
+    ],
+    "supplier_snapshot": [
+     "header_ok",
+     "field_problem",
+     "problem_count",
+     "has_problem",
+     "normalize_record",
+     "sku_of",
+     "index_of",
+     "sku_dup",
+     "involved_in_dup",
+     "raw_of",
+     "duplicate_indices",
+     "index_ok",
+     "validate_snapshot",
+     "accepted_of",
+     "sku_before",
+     "swap",
+     "count_before",
+     "position_is",
+     "at_position",
+     "normalize_snapshot"
+    ],
+    "batch_transform": [
+     "not_empty_record",
+     "with_index",
+     "item_after",
+     "drop_first_item",
+     "data_records",
+     "not_blank",
+     "transform",
+     "join_fields",
+     "row_cells",
+     "problem_cells",
+     "record_cells",
+     "dup_cells",
+     "index_is",
+     "in_problem",
+     "a_of",
+     "in_dup",
+     "within_preview",
+     "first_rows",
+     "item_at",
+     "first_records",
+     "report",
+     "run"
+    ]
+   },
+   "source": "roots/batch_transform.node (uses roots/supplier_snapshot.node)",
+   "page": "host/batch_transform.html"
+  },
+  "environment": "profile batch 0.4 (grants file.export, panel.show); host enforces the byte limit before parsing, stages exports during run(text) and publishes them together only when the run completes (an interrupted publish exposes nothing); run ID = sha256(transformer identity | natives lock | input sha256).",
+  "obligations": [
+   {
+    "id": "B01",
+    "severity": "mandatory",
+    "acceptance": "a valid file produces the exact independently expected normalised records and counts",
+    "method": "drive B01 (export bytes equal fixtures/expected.json, computed in Python) + fixtures/run_fixtures.js 15/15",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "B01: f01: 3 records equal the Python expectation; export 165 bytes"
+   },
+   {
+    "id": "B02",
+    "severity": "mandatory",
+    "acceptance": "quoted fields, escaped quotes and line endings parse per the declared dialect",
+    "method": "drive B02 (f02, f03, f04) + fixtures",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "B02: quoted commas/newlines/doubled quotes, CRLF+BOM, leading zeros all accepted as expected"
+   },
+   {
+    "id": "B03",
+    "severity": "mandatory",
+    "acceptance": "invalid shapes, integers, bounds, duplicates and empty input give actionable record/field diagnostics; no accepted snapshot published",
+    "method": "drive B03a–B03d; fixtures f05–f15",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "B03a: bad numbers: 5 located problems with advice, 2 tables, no snapshot export · B03b: duplicates at records 1,3,4; no snapshot · B03c: header-only file is an empty-snapshot refusal · B03d: broken quote refuses the whole file with a readable reason"
+   },
+   {
+    "id": "B04",
+    "severity": "mandatory",
+    "acceptance": "repeated input under the same semantics yields identical normalised bytes and report; timestamps outside those bytes",
+    "method": "drive B04 (two runs: same run ID, same sha256 of both exports; run.json carries the timestamp separately)",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "B04: two runs of the same input: run id identical (c16f8d99ae46c0531b9ca070b7107a80); snapshot.report.json 21e29b613cef, snapshot.normalized.json b2cf614b57f4 → identical bytes"
+   },
+   {
+    "id": "B05",
+    "severity": "mandatory",
+    "acceptance": "interruption leaves no partially published snapshot; oversized input stops at the declared boundary",
+    "method": "drive B05a (injected interruption: nothing published) / B05b (1.1 MiB refused before parsing) / B05c (10001 rows → TooManyRows)",
+    "computational": "passed",
+    "humanAcceptance": "not required",
+    "observed": "B05a: interrupted publish: nothing published, previous exports unchanged · B05b: stopped at the byte limit before parsing: The file is 1,153,477 bytes; the limit is 1,048,576 bytes. Nothing was parsed. · B05c: 10001 rows → TooManyRows"
+   },
+   {
+    "id": "B06",
+    "severity": "mandatory",
+    "acceptance": "operator can identify and correct a rejected record without explanation and knows whether output is usable",
+    "method": "drive B06 (record named with its text and the fix; corrected in place → Accepted) + human session",
+    "computational": "passed",
+    "humanAcceptance": "pending — reviewer not yet recorded",
+    "observed": "B06: the rejected record is named with its text and the fix; corrected in place, the file is accepted"
+   }
+  ],
+  "evidence": {
+   "drive": "work/test_batch.js",
+   "evidenceFile": "docs/evidence.batch.json",
+   "driveAt": "2026-10-20T13:25:08.405Z",
+   "drivePassed": "13/13",
+   "independent": "fixtures/results: 15 agree, 0 disagree (expected.json computed in Python)",
+   "screenshots": [
+    "docs/shots/batch-01-accepted.png",
+    "docs/shots/batch-02-rejected.png",
+    "docs/shots/batch-03-corrected.png"
+   ],
+   "reviewer": "none recorded"
+  },
+  "release": {
+   "decision": "incomplete",
+   "unsatisfiedMandatory": [
+    "B06 (human acceptance pending)"
+   ],
+   "note": "Computational gates and human acceptance are recorded separately; a human acceptance result is never claimed here."
+  }
+ }
+}

@@ -1,0 +1,6 @@
+SKU,NAME,PRICE_VND,QTY_ON_HAND
+A,a,45 000,1
+B,b,1, 2
+C,c,-1,1
+D,d,1.5,1
+E,e,1e3,1

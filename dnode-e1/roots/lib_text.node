@@ -1,0 +1,41 @@
+; lib_text — text to number without coercion, and the range check that must happen before conversion.
+; Section 6.1 candidate text.parse_decimal_nat, plus the independently tested range check BP-BATCH requires.
+root lib_text
+numbers exact
+const MAX_DIGITS 16
+
+node digits_fit (s)
+  says "true when a digit string, without its leading zeros, denotes a number no larger than the exact maximum; decided by length and then by text comparison, never by converting"
+  fx none
+  pre (is_digits s) NotDigits
+  post (in out [true false])
+  let d (strip_zeros s)
+  let n (scalars d)
+  out (or (< n MAX_DIGITS) (and (== n MAX_DIGITS) (<= (text_cmp d "9007199254740991") 0)))
+  ex {s "0"} -> true
+  ex {s "12"} -> true
+  ex {s "0009007199254740991"} -> true
+  ex {s "9007199254740991"} -> true
+  ex {s "9007199254740992"} -> false
+  ex {s "10000000000000000"} -> false
+  ex {s "99999999999999999999"} -> false
+  ex {s "12a"} refuse NotDigits
+  ex {s ""} refuse NotDigits
+
+node parse_decimal_nat (s)
+  says "the value of a string of ASCII digits; refuses anything else and refuses a value that would leave the exact range, before converting"
+  fx none
+  pre (is_digits s) InvalidInteger
+  pre (digits_fit s) OutOfRange
+  post (>= out 0)
+  post (== (str out) (strip_zeros s))
+  out (to_int (strip_zeros s))
+  ex {s "12"} -> 12
+  ex {s "0012"} -> 12
+  ex {s "0"} -> 0
+  ex {s "9007199254740991"} -> 9007199254740991
+  ex {s "9007199254740992"} refuse OutOfRange
+  ex {s " 12"} refuse InvalidInteger
+  ex {s "-1"} refuse InvalidInteger
+  ex {s "1.0"} refuse InvalidInteger
+  ex {s ""} refuse InvalidInteger

@@ -1,0 +1,200 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Generic DNode host for the panel profile. It renders item kinds, keeps session state, runs the payment simulator and
+   fulfils the graph's requests. No price, stock or order rule lives here. */
+:root { --paper:#f6f1e7; --card:#fffdf8; --ink:#1f1b16; --mute:#6f675c; --line:#e3dacb; --accent:#2f5d50; --accent-ink:#fff; --soft:#e8efe9;
+  --ok:#2f6f4e; --ok-bg:#e4f1e8; --warn:#8a5a0b; --warn-bg:#fbf0d6; --err:#a93b2a; --err-bg:#fae3df; --info:#2f4c7a; --info-bg:#e5ecf7;
+  --serif:"Fraunces", Georgia, serif; --sans:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --paper:#17150f; --card:#201d16; --ink:#efe9dc; --mute:#a69d8d; --line:#36302a; --accent:#7fc1a7; --accent-ink:#0f1a14; --soft:#243029;
+  --ok:#8fd0aa; --ok-bg:#1d3327; --warn:#e5b85c; --warn-bg:#3a2f14; --err:#f09a8c; --err-bg:#3f1f1a; --info:#9db7e6; --info-bg:#1f2a3d; color-scheme: dark; } }
+:root[data-theme="dark"] { --paper:#17150f; --card:#201d16; --ink:#efe9dc; --mute:#a69d8d; --line:#36302a; --accent:#7fc1a7; --accent-ink:#0f1a14; --soft:#243029;
+  --ok:#8fd0aa; --ok-bg:#1d3327; --warn:#e5b85c; --warn-bg:#3a2f14; --err:#f09a8c; --err-bg:#3f1f1a; --info:#9db7e6; --info-bg:#1f2a3d; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.45; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+header { max-width:1040px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 0 10px; }
+.brand { font-family:var(--serif); font-size:24px; font-weight:600; letter-spacing:-0.5px; } .brand small { display:block; font-family:var(--sans); font-size:11px; color:var(--mute); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; }
+nav { display:flex; gap:4px; } nav button { background:none; border:0; border-bottom:2px solid transparent; border-radius:0; padding:8px 10px; font-weight:500; color:var(--mute); } nav button.active { color:var(--ink); border-bottom-color:var(--ink); }
+nav button .n { background:var(--soft); border-radius:12px; padding:1px 7px; font-size:12px; margin-left:4px; color:var(--ink); }
+main { max-width:1040px; margin:0 auto; padding-bottom:40px; }
+.notice { min-height:22px; font-size:14px; color:var(--mute); margin:4px 0 10px; } .notice.err { color:var(--err); font-weight:500; }
+.steps { display:flex; gap:6px; margin:6px 0 18px; } .steps span { flex:1; text-align:center; font-size:12px; padding:6px 4px; border-radius:6px; background:var(--card); border:1px solid var(--line); color:var(--mute); } .steps span.on { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); font-weight:600; } .steps span.done { color:var(--ink); }
+.hero h1 { font-family:var(--serif); font-size:34px; font-weight:500; margin:6px 0 4px; letter-spacing:-0.5px; } .hero p { margin:0 0 18px; color:var(--mute); }
+.layout { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:28px; align-items:start; } @media (max-width:760px) { .layout { grid-template-columns:minmax(0,1fr); gap:16px; } }
+h2.section { font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:var(--mute); font-weight:600; margin:18px 0 10px; }
+.cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:14px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:6px; }
+.card .tile { height:96px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-size:34px; color:var(--accent); background:var(--soft); }
+.card h3 { margin:4px 0 0; font-size:15px; font-weight:600; } .card .sub { font-size:12px; color:var(--mute); } .card .money { font-weight:600; } .card .note { font-size:12px; color:var(--mute); }
+.card .note.out { color:var(--err); }
+button { font:inherit; cursor:pointer; border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:8px; padding:9px 14px; font-weight:500; }
+button.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); } button:disabled { opacity:0.45; cursor:not-allowed; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.bag { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; }
+.line { display:grid; grid-template-columns:1fr auto; gap:4px 10px; padding:10px 0; border-top:1px solid var(--line); align-items:center; } .line:first-of-type { border-top:0; }
+.line .t { font-weight:500; } .line .s { font-size:12px; color:var(--mute); } .line .m { font-variant-numeric:tabular-nums; font-weight:600; text-align:right; }
+.stepper { display:flex; align-items:center; gap:6px; grid-column:1 / -1; } .stepper button { padding:4px 10px; } .stepper .q { min-width:1.5em; text-align:center; font-weight:600; } .stepper .rm { margin-left:auto; border:0; background:none; color:var(--mute); font-size:13px; }
+.row { display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid var(--line); } .row .s { font-size:12px; color:var(--mute); display:block; } .row .m { font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; }
+.total { display:flex; justify-content:space-between; align-items:baseline; padding:14px 0 6px; border-top:2px solid var(--ink); margin-top:8px; } .total .m { font-family:var(--serif); font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; }
+.actions { display:flex; flex-direction:column; gap:8px; margin:12px 0; } .actions button { width:100%; padding:12px; font-size:15px; }
+.status { border-radius:12px; padding:14px 16px; margin:8px 0 14px; border:1px solid transparent; } .status b { display:block; font-size:16px; margin-bottom:4px; }
+.status.ok { background:var(--ok-bg); color:var(--ok); } .status.warn { background:var(--warn-bg); color:var(--warn); } .status.err { background:var(--err-bg); color:var(--err); } .status.info { background:var(--info-bg); color:var(--info); }
+.warn { background:var(--warn-bg); color:var(--warn); border-radius:8px; padding:10px 12px; margin:8px 0; }
+p.text { margin:6px 0 10px; color:var(--mute); }
+.order { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin:10px 0; display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; }
+.order .t { font-weight:600; } .order .pill { font-size:12px; padding:3px 9px; border-radius:12px; font-weight:600; justify-self:end; } .order .m { font-variant-numeric:tabular-nums; } .order button { grid-column:1 / -1; justify-self:start; }
+.pill.ok { background:var(--ok-bg); color:var(--ok); } .pill.warn { background:var(--warn-bg); color:var(--warn); } .pill.err { background:var(--err-bg); color:var(--err); } .pill.info { background:var(--info-bg); color:var(--info); }
+.tablewrap { overflow-x:auto; } table { border-collapse:collapse; width:100%; font-size:13px; background:var(--card); border:1px solid var(--line); border-radius:8px; } th, td { text-align:left; padding:7px 9px; border-top:1px solid var(--line); } th { color:var(--mute); font-weight:500; font-size:12px; border-top:0; } td.num { text-align:right; font-variant-numeric:tabular-nums; }
+textarea, select, input[type=file] { font:inherit; } textarea { width:100%; min-height:7em; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; padding:8px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--ink); }
+.file label { display:block; font-size:13px; margin:6px 0; } .file .pills { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; } .file .pills button { font-size:12px; padding:5px 9px; }
+.log { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; color:var(--mute); white-space:pre-wrap; word-break:break-word; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px; max-height:220px; overflow:auto; }
+.desk { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; } @media (max-width:760px) { .desk { grid-template-columns:minmax(0,1fr); } }
+.panel { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:14px; } .panel h3 { margin:0 0 8px; font-size:14px; } .panel .meta { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; color:var(--mute); white-space:pre-wrap; word-break:break-word; }
+.panel label { display:flex; gap:8px; align-items:center; font-size:13px; margin:6px 0; } .panel select { padding:6px; border-radius:6px; border:1px solid var(--line); background:var(--card); color:var(--ink); }
+.sticky { display:none; } @media (max-width:760px) { .sticky { display:flex; position:fixed; left:0; right:0; bottom:0; gap:12px; align-items:center; justify-content:space-between; padding:10px max(16px, env(safe-area-inset-left,0px)) max(10px, env(safe-area-inset-bottom,0px)); background:var(--card); border-top:1px solid var(--line); box-shadow:0 -6px 20px rgba(0,0,0,0.06); z-index:5; } .sticky .m { font-family:var(--serif); font-size:20px; font-weight:600; } .sticky button { padding:10px 16px; } body.has-sticky main { padding-bottom:90px; } }
+@media (max-width:600px) { header { flex-wrap:wrap; padding-top:14px; } .brand { width:100%; font-size:22px; } nav { width:100%; justify-content:space-between; } nav button { padding:8px 4px; font-size:14px; } }
+footer { max-width:1040px; margin:30px auto 20px; font-size:12px; color:var(--mute); border-top:1px solid var(--line); padding-top:12px; }
+[hidden] { display:none !important; }
+</style>
+
+<header><div class="brand">__TITLE__<small>DNode shop · simulated payments · VND</small></div>
+<nav><button data-tab="shop" class="active">Shop</button><button data-tab="orders">Orders<span class="n" id="ordersN">0</span></button><button data-tab="desk">Test desk</button></nav></header>
+<main>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  <section id="tab-shop"></section>
+  <section id="tab-orders" hidden></section>
+  <section id="tab-desk" hidden>
+    <div class="desk"><div id="desk-left"></div><div id="desk-right">
+      <div class="panel"><h3>Payment simulator</h3>
+        <label>Next payment <select id="simmode"><option value="accept">is accepted</option><option value="decline">is declined</option><option value="accept-lost">is accepted but the reply is lost</option><option value="inquiry-unavailable">— the bank inquiry is unavailable once</option></select></label>
+        <div class="actions"><button id="redeliver">Deliver the last instruction again</button><button id="reset">Clear session</button></div>
+        <h3>Charge ledger (the bank's view; tests read it, the graph cannot)</h3><div id="ledger" class="meta">no charges</div></div>
+      <div class="panel"><h3>Admission</h3><div id="admission" class="meta"></div></div>
+      <div class="panel"><h3>Host obligations (from the profile)</h3><div id="hostinfo" class="meta"></div></div>
+    </div></div>
+  </section>
+</main>
+<footer>Every price, stock movement, order transition and import decision runs from the certified graph. The host renders, stores the session, moves file bytes and simulates the bank.</footer>
+
+<script>__NATIVES_TEXT__</script>
+<script>__ENGINE__</script>
+<script>const GRAPH = __GRAPH__; const CERTS = __CERTS__; const PROFILE = __PROFILE__; const LOCK = __LOCK__; const SEEDS = __SEEDS__;</script>
+<script>
+(async function () {
+  const E = window.Engine; const $ = (id) => document.getElementById(id);
+  const h = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const view = E.resolve(GRAPH, CERTS.main); view.profile = PROFILE;
+
+  // ---- admission: natives against the lock, every certificate recomputed and verified ----
+  const denied = [];
+  for (const [op, hsh] of Object.entries(LOCK.natives)) { if (!E.NATIVES[op]) denied.push(`native ${op} missing`); else if ((await E.hashNative(op)) !== hsh) denied.push(`native ${op} changed`); }
+  for (const op of Object.keys(E.NATIVES)) if (!LOCK.natives[op]) denied.push(`native ${op} not in lock`);
+  const hashes = await E.hashAll(view);
+  const pub = await crypto.subtle.importKey('jwk', CERTS.publicKey, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+  const b64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const verify = (c) => crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, pub, b64(c.sig), new TextEncoder().encode(`${c.hash}|${c.descriptionHash}|${CERTS.checker}|${c.at || CERTS.at}`));
+  const certified = new Set(); let bad = 0;
+  for (const [name, c] of Object.entries(CERTS.certified)) { const ok = hashes[name] === c.hash && (await E.descriptionHash(view, name)) === c.descriptionHash && await verify(c); if (ok) certified.add(name); else bad++; }
+  PROFILE.entry.map(e => e.node).filter(n => !certified.has(n)).forEach(n => denied.push(`entry point ${n} is not certified`));
+  $('admission').textContent = (denied.length ? 'DENIED: ' + denied.join('; ') : 'admitted') + `\nprofile ${PROFILE.name} ${PROFILE.version} · lock ${LOCK.identity}\n${CERTS.schema} ${CERTS.checker}\n${certified.size}/${Object.keys(CERTS.certified).length} certificates verified${bad ? ', ' + bad + ' failed' : ''}\nroots ${Object.entries(CERTS.roots).map(([r, x]) => r + '#' + x.slice(0, 8)).join(' ')}`;
+  $('hostinfo').textContent = Object.entries(PROFILE.host || {}).map(([k, v]) => `${k}: ${typeof v === 'string' ? v : JSON.stringify(v)}`).join('\n');
+  if (denied.length) { $('notice').textContent = 'This build was not admitted: ' + denied.join('; '); $('notice').className = 'notice err'; showTab('desk'); return; }
+
+  // ---- session state and the bank's ledger survive reload within the test session ----
+  const KEY = 'dnode.' + CERTS.main + '.' + CERTS.roots[CERTS.main];
+  const load = (k) => { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : null; } catch (e) { return null; } };
+  const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } };
+  const clear = () => { try { localStorage.removeItem(KEY); localStorage.removeItem(KEY + '.bank'); } catch (e) { } };
+  const sim = { mode: 'accept', ledger: load(KEY + '.bank') || [],
+    charge(ref, amount) { const ex = this.ledger.find(c => c.ref === ref); if (ex) return ex.amount === amount ? ex.result : 'declined'; const result = this.mode === 'decline' ? 'declined' : 'confirmed'; this.ledger.push({ ref, amount, result, at: new Date().toISOString() }); save(KEY + '.bank', this.ledger); const lost = this.mode === 'accept-lost'; if (this.mode !== 'inquiry-unavailable') this.mode = 'accept'; $('simmode').value = this.mode; return lost ? 'lost' : result; },
+    inquire(ref) { if (this.mode === 'inquiry-unavailable') { this.mode = 'accept'; $('simmode').value = 'accept'; return 'unavailable'; } const c = this.ledger.find(c => c.ref === ref); return c ? c.result : 'none'; } };
+  const ctxOf = () => ({ view, effects: [], certified, profile: PROFILE });
+  let state = load(KEY) || E.callNode('initial', [], ctxOf());
+  let lastError = '', errorTexts = {}, lastEvent = null; const inputs = {};
+  window.__dnode = { sim, get state() { return state; }, send: (e) => send(e), get lastError() { return lastError; } };
+
+  function send(event, opts) {
+    const ctx = ctxOf();
+    try {
+      const out = E.callNode('frame', [state, event], ctx);
+      state = out; save(KEY, state); lastError = '';
+      if (!opts || !opts.quiet) lastEvent = event;
+      for (const [k, v] of ctx.effects) if (k === 'panel.show') render(v);
+      fulfil(out.request);
+    } catch (e) {
+      lastError = e instanceof E.Refusal ? e.err : (e.kind ? e.kind + ': ' + e.message : e.message);
+      const ctx2 = ctxOf(); try { render(E.callNode('view', [state], ctx2)); } catch (e2) { $('notice').textContent = 'The stored session cannot be shown: ' + e2.message + '. Clear the session.'; $('notice').className = 'notice err'; }
+    }
+    $('ledger').textContent = sim.ledger.length ? sim.ledger.map(c => `#${c.ref}: ${c.amount} ${c.result}`).join('\n') : 'no charges';
+  }
+  // the graph asks; the host charges or inquires and answers with an event. The simulator is idempotent per instruction.
+  function fulfil(req) {
+    if (!req || req.kind === 'none') return;
+    setTimeout(() => {
+      if (req.kind === 'charge') send({ kind: 'payment_result', id: req.id, result: sim.charge(req.id, req.amount) }, { quiet: true });
+      else if (req.kind === 'inquire') send({ kind: 'inquiry_result', id: req.id, result: sim.inquire(req.id) }, { quiet: true });
+    }, 500);
+  }
+
+  // ---- rendering: one generic function per item kind ----
+  const ev = (e) => `data-ev='${h(JSON.stringify(e))}'`;
+  const K = {
+    notice: (it) => { $('notice').textContent = lastError ? (errorTexts[lastError] || ('Not done: ' + lastError)) : (it.text || ''); $('notice').className = 'notice' + (lastError ? ' err' : ''); return ''; },
+    errors: (it) => { errorTexts = it.texts || {}; return ''; },
+    steps: (it) => `<div class="steps">${it.labels.map((l, i) => `<span class="${i === it.current ? 'on' : i < it.current ? 'done' : ''}">${h(l)}</span>`).join('')}</div>`,
+    hero: (it) => `<div class="hero"><h1>${h(it.title)}</h1><p>${h(it.text)}</p></div>`,
+    section: (it) => `<h2 class="section">${h(it.text)}</h2>`,
+    text: (it) => `<p class="text">${h(it.text)}</p>`,
+    warn: (it) => `<div class="warn">${h(it.text)}</div>`,
+    status: (it) => `<div class="status ${h(it.tone)}"><b>${h(it.title)}</b>${h(it.text)}</div>`,
+    card: (it) => `<div class="card"><div class="tile">${h(String(it.title).slice(0, 1))}</div><h3>${h(it.title)}</h3><div class="sub">${h(it.sub)}</div><div class="money">${h(it.money)}</div><div class="note ${it.enabled ? '' : 'out'}">${h(it.note)}</div><button class="primary" ${ev(it.event)} ${it.enabled ? '' : 'disabled'}>Add to bag</button></div>`,
+    line: (it) => `<div class="line"><div><div class="t">${h(it.title)}</div><div class="s">${h(it.sub)}</div></div><div class="m">${h(it.money)}</div><div class="stepper"><button ${ev(it.minus)} aria-label="one less">−</button><span class="q">${h(it.qty)}</span><button ${ev(it.plus)} aria-label="one more">+</button><button class="rm" ${ev(it.remove)}>Remove</button></div></div>`,
+    row: (it) => `<div class="row"><div>${h(it.title)}<span class="s">${h(it.sub || '')}</span></div><div class="m">${h(it.money)}</div></div>`,
+    total: (it) => `<div class="total"><span>${h(it.label)}</span><span class="m">${h(it.money)}</span></div>`,
+    button: (it) => `<div class="actions"><button class="${it.primary ? 'primary' : ''}" ${ev(it.event)}>${h(it.label)}</button></div>`,
+    order: (it) => `<div class="order"><div class="t">${h(it.title)}</div><span class="pill ${h(it.tone)}">${h(it.status)}</span><div class="m">${h(it.money)} · ${h(it.count)} ${it.count === 1 ? 'line' : 'lines'}</div><button ${ev(it.event)}>${h(it.label)}</button></div>`,
+    table: (it) => `<div class="tablewrap"><table><thead><tr>${it.columns.map(c => `<th>${h(c)}</th>`).join('')}</tr></thead><tbody>${it.rows.length ? it.rows.map(r => `<tr>${r.map(c => `<td class="${typeof c === 'number' ? 'num' : ''}">${h(c)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${it.columns.length}" class="s">—</td></tr>`}</tbody></table></div>`,
+    file: (it) => { const f = it.field || 'text'; return `<div class="file"><label>${h(it.label || 'Choose a file')} <input type="file" data-field="${h(f)}" accept=".csv,text/csv"></label><textarea id="ta_${h(f)}" aria-label="file text" spellcheck="false">${h(inputs[f] || '')}</textarea><div class="pills">${SEEDS.map(s => `<button data-seed="${h(s.name)}" data-field="${h(f)}" ${ev(it.event)}>${h(s.name)}</button>`).join('')}</div><div class="actions"><button class="primary" data-ta="${h(f)}" ${ev(it.event)}>${h(it.submit || 'Use this text')}</button></div></div>`; },
+    log: (it) => `<div class="log">${(it.lines || []).map(h).join('\n') || '—'}</div>`,
+  };
+  function render(items) {
+    const areas = { shop: [], bag: [], orders: [], desk: [] }; let cards = null;
+    for (const it of items) {
+      const f = K[it.k]; if (!f) continue; const html = f(it); if (!html) continue;
+      const a = areas[it.area] || areas.shop;
+      if (it.k === 'card') { if (!cards) { cards = []; a.push(cards); } cards.push(html); } else { cards = null; a.push(html); }
+    }
+    const join = (xs) => xs.map(x => Array.isArray(x) ? `<div class="cards">${x.join('')}</div>` : x).join('');
+    // phone: the total and the primary action of the bag also sit in a bar at the bottom, so they are visible without scrolling
+    const totalIt = items.find(it => it.k === 'total' && it.area === 'bag'), primaryIt = items.find(it => it.k === 'button' && it.area === 'bag' && it.primary);
+    const sticky = totalIt && primaryIt && state.phase !== 'order' ? `<div class="sticky"><span class="m">${h(totalIt.money)}</span><button class="primary" ${ev(primaryIt.event)}>${h(primaryIt.label)}</button></div>` : '';
+    document.body.classList.toggle('has-sticky', !!sticky);
+    $('tab-shop').innerHTML = `<div class="layout"><div>${join(areas.shop)}</div>${areas.bag.length ? `<div class="bag">${join(areas.bag)}</div>` : ''}</div>${sticky}`;
+    $('tab-orders').innerHTML = join(areas.orders);
+    $('desk-left').innerHTML = join(areas.desk);
+    $('ordersN').textContent = String((state.orders || []).length);
+    document.querySelectorAll('button[data-ev]').forEach(b => b.addEventListener('click', () => {
+      const e = JSON.parse(b.dataset.ev);
+      if (b.dataset.seed) { const s = SEEDS.find(x => x.name === b.dataset.seed); inputs[b.dataset.field] = s.text; const ta = $('ta_' + b.dataset.field); if (ta) ta.value = s.text; e[b.dataset.field] = s.text; }
+      if (b.dataset.ta) { inputs[b.dataset.ta] = $('ta_' + b.dataset.ta).value; e[b.dataset.ta] = inputs[b.dataset.ta]; }
+      send(e);
+    }));
+    document.querySelectorAll('input[type=file][data-field]').forEach(i => i.addEventListener('change', () => { const f = i.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { inputs[i.dataset.field] = String(r.result); const ta = $('ta_' + i.dataset.field); if (ta) ta.value = inputs[i.dataset.field]; }; r.readAsText(f); }));
+  }
+
+  // ---- tabs and host controls ----
+  function showTab(name) { for (const t of ['shop', 'orders', 'desk']) { $('tab-' + t).hidden = t !== name; } document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name)); try { sessionStorage.setItem(KEY + '.tab', name); } catch (e) { } }
+  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  $('simmode').addEventListener('change', () => { sim.mode = $('simmode').value; });
+  $('reset').addEventListener('click', () => { clear(); sim.ledger = []; state = E.callNode('initial', [], ctxOf()); save(KEY, state); lastError = ''; send({ kind: 'noop' }); showTab('shop'); });
+  $('redeliver').addEventListener('click', () => { if (lastEvent) send(lastEvent); });
+  window.__dnode.showTab = showTab;
+  try { showTab(sessionStorage.getItem(KEY + '.tab') || 'shop'); } catch (e) { showTab('shop'); }
+
+  // ---- first frame: a stored session is shown as it was; a request left pending by a reload is fulfilled again (the simulator is idempotent) ----
+  const pendingReq = state.request && state.request.kind !== 'none' ? state.request : null;
+  send({ kind: 'noop' }, { quiet: true });
+  if (pendingReq) fulfil(pendingReq);
+})();
+</script>

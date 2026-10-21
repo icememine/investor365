@@ -1,0 +1,350 @@
+; shop_stock — BP-SHOP stock meaning. Per SKU: H on hand (physical unsold units, reservations included), R reserved, A = H − R available.
+; Reserve (H,R)→(H,R+q) only when q ≤ A. Confirmed purchase (H,R)→(H−q,R−q). Release (H,R)→(H,R−q). 0 ≤ R ≤ H always.
+; A supplier snapshot replaces H for the SKUs it lists and adds unlisted SKUs; it is rejected whole when any new H is below R.
+root shop_stock
+numbers exact
+use supplier_snapshot
+const QTY_MAX 9
+const LINES_MAX 3
+
+node available (s)
+  says "the units of a stock item a customer may still reserve: on hand minus reserved"
+  fx none
+  pre (== (stock_item_ok s) 1) BadItem
+  post (<= out s.on_hand)
+  post (>= out 0)
+  out (- s.on_hand s.reserved)
+  ex {s {sku "A" name "a" price 10 on_hand 5 reserved 2}} -> 3
+  ex {s {sku "A" name "a" price 10 on_hand 5 reserved 5}} -> 0
+  ex {s {sku "A" name "a" price 10 on_hand 5 reserved 6}} refuse BadItem
+
+node stock_item_ok (s)
+  says "1 when a stock item is well formed: SKU text, nonempty name, positive price, 0 ≤ reserved ≤ on hand"
+  fx none
+  post (in out [0 1])
+  out (if (and (is_sku_text s.sku) (> (scalars s.name) 0) (> s.price 0) (>= s.on_hand 0) (>= s.reserved 0) (<= s.reserved s.on_hand)) 1 0)
+  ex {s {sku "A" name "a" price 10 on_hand 5 reserved 2}} -> 1
+  ex {s {sku "A" name "a" price 10 on_hand 5 reserved 6}} -> 0
+  ex {s {sku "a" name "a" price 10 on_hand 5 reserved 0}} -> 0
+  ex {s {sku "A" name "a" price 0 on_hand 5 reserved 0}} -> 0
+
+node stock_ok (items)
+  says "true when every stock item is well formed and SKUs are unique"
+  fx none
+  post (in out [true false])
+  out (and (== (sum (map "stock_item_ok" items)) (len items)) (unique_text (map "sku_of" items)))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 2} {sku "B" name "b" price 1 on_hand 0 reserved 0}]} -> true
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 2} {sku "A" name "b" price 1 on_hand 0 reserved 0}]} -> false
+  ex {items []} -> true
+
+node sku_matches (p)
+  says "true when the item in a carries the SKU text in b"
+  fx none
+  post (in out [true false])
+  out (== p.a.sku p.b)
+  ex {p {a {sku "A"} b "A"}} -> true
+  ex {p {a {sku "A"} b "B"}} -> false
+
+node a_of (p)
+  says "the a of a pair"
+  fx none
+  post (== out p.a)
+  out p.a
+  ex {p {a 1 b 2}} -> 1
+
+node hits (items sku)
+  says "the items carrying a SKU, in list order"
+  fx none
+  post (<= (len out) (len items))
+  out (map "a_of" (filter "sku_matches" (pairs items [sku])))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 2} {sku "B" name "b" price 1 on_hand 0 reserved 0}] sku "B"} -> [{sku "B" name "b" price 1 on_hand 0 reserved 0}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 2}] sku "Z"} -> []
+
+node known (items sku)
+  says "true when exactly one item carries the SKU"
+  fx none
+  post (in out [true false])
+  out (== (len (hits items sku)) 1)
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 2}] sku "A"} -> true
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 2}] sku "Z"} -> false
+
+node find_item (items sku)
+  says "the one item carrying the SKU"
+  fx none
+  pre (known items sku) UnknownProduct
+  post (== out.sku sku)
+  out (at (hits items sku) 0)
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 2}] sku "A"} -> {sku "A" name "a" price 10 on_hand 5 reserved 2}
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 2}] sku "Z"} refuse UnknownProduct
+
+node qty_if_sku (p)
+  says "the quantity of the line in a when it carries the SKU in b, else 0"
+  fx none
+  post (>= out 0)
+  pre (>= p.a.qty 0) BadQty
+  out (if (== p.a.sku p.b) p.a.qty 0)
+  ex {p {a {sku "A" qty 2} b "A"}} -> 2
+  ex {p {a {sku "A" qty 2} b "B"}} -> 0
+  ex {p {a {sku "A" qty -1} b "A"}} refuse BadQty
+
+node needed (lines sku)
+  says "how many units of a SKU a list of lines asks for"
+  fx none
+  raises BadQty
+  post (>= out 0)
+  out (sum (map "qty_if_sku" (pairs lines [sku])))
+  ex {lines [{sku "A" qty 2} {sku "B" qty 1}] sku "A"} -> 2
+  ex {lines [{sku "A" qty 2} {sku "B" qty 1}] sku "C"} -> 0
+  ex {lines [] sku "A"} -> 0
+  ex {lines [{sku "A" qty -2}] sku "A"} refuse BadQty
+
+node qty_nonneg (l)
+  says "1 when a line asks for zero or more units"
+  fx none
+  post (in out [0 1])
+  out (if (>= l.qty 0) 1 0)
+  ex {l {sku "A" qty 2}} -> 1
+  ex {l {sku "A" qty -1}} -> 0
+
+node lines_ok (lines)
+  says "true when no line asks for a negative quantity"
+  fx none
+  post (in out [true false])
+  out (== (sum (map "qty_nonneg" lines)) (len lines))
+  ex {lines [{sku "A" qty 2} {sku "B" qty 0}]} -> true
+  ex {lines [{sku "A" qty -1}]} -> false
+  ex {lines []} -> true
+
+node line_fits (p)
+  says "1 when the line in a names a known SKU in the stock in b and asks for no more than is available"
+  fx none
+  pre (>= p.a.qty 0) BadQty
+  pre (stock_ok p.b) BadStock
+  post (in out [0 1])
+  let k (known p.b p.a.sku)
+  let it (if k (find_item p.b p.a.sku) {sku "NONE" name "-" price 1 on_hand 0 reserved 0})
+  out (if (and k (<= p.a.qty (available it))) 1 0)
+  ex {p {a {sku "A" qty 2} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> 1
+  ex {p {a {sku "A" qty 3} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> 0
+  ex {p {a {sku "Z" qty 1} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> 0
+  ex {p {a {sku "A" qty -1} b []}} refuse BadQty
+  ex {p {a {sku "A" qty 1} b [{sku "A" name "a" price 10 on_hand 5 reserved 6}]}} refuse BadStock
+
+node lines_fit (lines items)
+  says "true when every line fits the stock on its own; lines with distinct SKUs then fit together"
+  fx none
+  raises BadQty BadStock
+  post (in out [true false])
+  out (== (sum (map "line_fits" (pairs lines [items]))) (len lines))
+  ex {lines [{sku "A" qty 2}] items [{sku "A" name "a" price 10 on_hand 5 reserved 3}]} -> true
+  ex {lines [{sku "A" qty 3}] items [{sku "A" name "a" price 10 on_hand 5 reserved 3}]} -> false
+  ex {lines [] items []} -> true
+  ex {lines [{sku "A" qty -1}] items []} refuse BadQty
+  ex {lines [{sku "A" qty 1}] items [{sku "A" name "a" price 10 on_hand 5 reserved 6}]} refuse BadStock
+
+node reserve_by_lines (p)
+  pre (lines_ok p.b) BadQty
+  says "the item in a with the units the lines in b need added to its reservation"
+  fx none
+  pre (<= (+ p.a.reserved (needed p.b p.a.sku)) p.a.on_hand) InsufficientStock
+  post (== out.on_hand p.a.on_hand)
+  post (<= out.reserved out.on_hand)
+  out (with p.a reserved (+ p.a.reserved (needed p.b p.a.sku)))
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "A" qty 2}]}} -> {sku "A" name "a" price 10 on_hand 5 reserved 5}
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "B" qty 2}]}} -> {sku "A" name "a" price 10 on_hand 5 reserved 3}
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "A" qty 3}]}} refuse InsufficientStock
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "A" qty -1}]}} refuse BadQty
+
+node reserve_all (items lines)
+  pre (lines_ok lines) BadQty
+  says "the stock with every line reserved, as one step: all lines fit or nothing changes"
+  fx none
+  raises InsufficientStock
+  pre (unique_text (map "sku_of" lines)) DuplicateSku
+  post (== (len out) (len items))
+  post (stock_ok out)
+  pre (stock_ok items) BadStock
+  out (map "reserve_by_lines" (pairs items [lines]))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3} {sku "B" name "b" price 1 on_hand 1 reserved 0}] lines [{sku "A" qty 2} {sku "B" qty 1}]} -> [{sku "A" name "a" price 10 on_hand 5 reserved 5} {sku "B" name "b" price 1 on_hand 1 reserved 1}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] lines [{sku "A" qty 3}]} refuse InsufficientStock
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] lines [{sku "A" qty 1} {sku "A" qty 1}]} refuse DuplicateSku
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] lines [{sku "A" qty -1}]} refuse BadQty
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 6}] lines []} refuse BadStock
+
+node release_by_lines (p)
+  pre (lines_ok p.b) BadQty
+  says "the item in a with the units the lines in b need taken off its reservation"
+  fx none
+  pre (>= p.a.reserved (needed p.b p.a.sku)) NotHeld
+  post (== out.on_hand p.a.on_hand)
+  post (>= out.reserved 0)
+  out (with p.a reserved (- p.a.reserved (needed p.b p.a.sku)))
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "A" qty 2}]}} -> {sku "A" name "a" price 10 on_hand 5 reserved 1}
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 1} b [{sku "A" qty 2}]}} refuse NotHeld
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 1} b [{sku "A" qty -2}]}} refuse BadQty
+
+node release_all (items lines)
+  pre (lines_ok lines) BadQty
+  says "the stock with every line's reservation released"
+  fx none
+  raises NotHeld
+  pre (stock_ok items) BadStock
+  post (stock_ok out)
+  out (map "release_by_lines" (pairs items [lines]))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] lines [{sku "A" qty 2}]} -> [{sku "A" name "a" price 10 on_hand 5 reserved 1}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 1}] lines [{sku "A" qty 2}]} refuse NotHeld
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 1}] lines [{sku "A" qty -2}]} refuse BadQty
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 6}] lines []} refuse BadStock
+
+node consume_by_lines (p)
+  pre (lines_ok p.b) BadQty
+  says "the item in a after the units the lines in b need are sold: off the shelf and off the reservation"
+  fx none
+  pre (>= p.a.reserved (needed p.b p.a.sku)) NotHeld
+  post (== (- p.a.on_hand out.on_hand) (- p.a.reserved out.reserved))
+  post (>= out.reserved 0)
+  let n (needed p.b p.a.sku)
+  out (with p.a on_hand (- p.a.on_hand n) reserved (- p.a.reserved n))
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "A" qty 2}]}} -> {sku "A" name "a" price 10 on_hand 3 reserved 1}
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 1} b [{sku "A" qty 2}]}} refuse NotHeld
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 1} b [{sku "A" qty -2}]}} refuse BadQty
+
+node consume_all (items lines)
+  pre (lines_ok lines) BadQty
+  says "the stock after every line is sold"
+  fx none
+  raises NotHeld
+  pre (stock_ok items) BadStock
+  post (stock_ok out)
+  out (map "consume_by_lines" (pairs items [lines]))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] lines [{sku "A" qty 2}]} -> [{sku "A" name "a" price 10 on_hand 3 reserved 1}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 1}] lines [{sku "A" qty 2}]} refuse NotHeld
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 1}] lines [{sku "A" qty -2}]} refuse BadQty
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 6}] lines []} refuse BadStock
+
+; ---- supplier snapshot into stock: records are normalised products {sku name price qty} from supplier_snapshot ----
+
+node refresh_item (p)
+  says "the item in a updated from the snapshot records in b when listed: name and price follow the supplier, on hand becomes the supplier's unsold count; reservations are kept"
+  fx none
+  post (== out.sku p.a.sku)
+  post (== out.reserved p.a.reserved)
+  let hs (hits p.b p.a.sku)
+  let listed (== (len hs) 1)
+  let r (at (if listed hs [p.a]) 0)
+  out (if listed (with p.a name r.name price r.price on_hand r.qty) p.a)
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "A" name "A new" price 12 qty 4}]}} -> {sku "A" name "A new" price 12 on_hand 4 reserved 3}
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "B" name "b" price 12 qty 4}]}} -> {sku "A" name "a" price 10 on_hand 5 reserved 3}
+
+node not_listed (p)
+  says "true when the record in a names a SKU absent from the items in b"
+  fx none
+  post (in out [true false])
+  out (not (known p.b p.a.sku))
+  ex {p {a {sku "C" name "c" price 1 qty 1} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> true
+  ex {p {a {sku "A" name "c" price 1 qty 1} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> false
+
+node new_item (r)
+  says "a stock item for a snapshot record new to the shop: nothing reserved yet"
+  fx none
+  post (== out.reserved 0)
+  out {sku r.sku name r.name price r.price on_hand r.qty reserved 0}
+  ex {r {sku "C" name "c" price 1 qty 7}} -> {sku "C" name "c" price 1 on_hand 7 reserved 0}
+
+node new_items (items records)
+  says "stock items for the snapshot records the shop does not carry yet, in record order"
+  fx none
+  post (<= (len out) (len records))
+  out (map "new_item" (map "a_of" (filter "not_listed" (pairs records [items]))))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] records [{sku "A" name "a" price 10 qty 4} {sku "C" name "c" price 1 qty 7}]} -> [{sku "C" name "c" price 1 on_hand 7 reserved 0}]
+  ex {items [] records []} -> []
+
+node is_conflict (p)
+  says "true when the snapshot records in b list the item in a with fewer units than it has reserved"
+  fx none
+  post (in out [true false])
+  let hs (hits p.b p.a.sku)
+  let listed (== (len hs) 1)
+  let r (at (if listed hs [p.a]) 0)
+  out (if listed (< r.qty p.a.reserved) false)
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "A" name "a" price 10 qty 2}]}} -> true
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "A" name "a" price 10 qty 3}]}} -> false
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b []}} -> false
+
+node conflict_view (p)
+  says "a conflict as the operator sees it: SKU, units reserved, units the supplier reports"
+  fx none
+  pre (is_conflict p) NotAConflict
+  post (< out.supplier out.reserved)
+  let r (at (hits p.b p.a.sku) 0)
+  out {sku p.a.sku reserved p.a.reserved supplier r.qty}
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b [{sku "A" name "a" price 10 qty 2}]}} -> {sku "A" reserved 3 supplier 2}
+  ex {p {a {sku "A" name "a" price 10 on_hand 5 reserved 3} b []}} refuse NotAConflict
+
+node conflicts (items records)
+  says "every SKU whose reported units are below its reservation; a snapshot with any is rejected whole"
+  fx none
+  post (<= (len out) (len items))
+  out (map "conflict_view" (filter "is_conflict" (pairs items [records])))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3} {sku "B" name "b" price 1 on_hand 1 reserved 1}] records [{sku "A" name "a" price 10 qty 2} {sku "B" name "b" price 1 qty 1}]} -> [{sku "A" reserved 3 supplier 2}]
+  ex {items [] records []} -> []
+
+node record_ok (r)
+  says "1 when a snapshot record is a well-formed product: SKU text, nonempty name, positive price, nonnegative units"
+  fx none
+  post (in out [0 1])
+  out (if (and (is_sku_text r.sku) (> (scalars r.name) 0) (> r.price 0) (>= r.qty 0)) 1 0)
+  ex {r {sku "A" name "a" price 10 qty 4}} -> 1
+  ex {r {sku "A new" name "a" price 10 qty 4}} -> 0
+  ex {r {sku "A" name "a" price 10 qty -1}} -> 0
+
+node records_ok (records)
+  says "true when every snapshot record is well formed"
+  fx none
+  post (in out [true false])
+  out (== (sum (map "record_ok" records)) (len records))
+  ex {records [{sku "A" name "a" price 10 qty 4}]} -> true
+  ex {records [{sku "A" name "" price 10 qty 4}]} -> false
+  ex {records []} -> true
+
+node apply_snapshot (items records)
+  says "the stock after a whole supplier snapshot: listed SKUs take the supplier's counts, names and prices; unlisted SKUs are kept; new SKUs are added; reservations never change"
+  fx none
+  pre (stock_ok items) BadStock
+  pre (records_ok records) BadRecord
+  pre (unique_text (map "sku_of" records)) DuplicateSku
+  pre (== (len (conflicts items records)) 0) StockBelowReserved
+  post (stock_ok out)
+  post (>= (len out) (len items))
+  out (concat (map "refresh_item" (pairs items [records])) (new_items items records))
+  ex {items [{sku "B" name "b" price 1 on_hand 1 reserved 1} {sku "A" name "a" price 10 on_hand 5 reserved 3}] records [{sku "A" name "A new" price 12 qty 4} {sku "C" name "c" price 1 qty 7}]} -> [{sku "B" name "b" price 1 on_hand 1 reserved 1} {sku "A" name "A new" price 12 on_hand 4 reserved 3} {sku "C" name "c" price 1 on_hand 7 reserved 0}]
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] records [{sku "A" name "a" price 10 qty 2}]} refuse StockBelowReserved
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] records [{sku "C" name "c" price 1 qty 2} {sku "C" name "c" price 1 qty 2}]} refuse DuplicateSku
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 6}] records []} refuse BadStock
+  ex {items [] records [{sku "A" name "" price 10 qty 4}]} refuse BadRecord
+
+node change_of (p)
+  says "what a snapshot record in a does to availability given the stock in b: available before and after"
+  fx none
+  pre (stock_ok p.b) BadStock
+  pre (== (record_ok p.a) 1) BadRecord
+  post (== out.sku p.a.sku)
+  let k (known p.b p.a.sku)
+  let it (if k (find_item p.b p.a.sku) {sku p.a.sku name "-" price 1 on_hand 0 reserved 0})
+  out {sku p.a.sku name p.a.name before (available it) after (- p.a.qty it.reserved) new (not k)}
+  ex {p {a {sku "A" name "a" price 10 qty 4} b [{sku "A" name "a" price 10 on_hand 5 reserved 3}]}} -> {sku "A" name "a" before 2 after 1 new false}
+  ex {p {a {sku "C" name "c" price 1 qty 7} b []}} -> {sku "C" name "c" before 0 after 7 new true}
+  ex {p {a {sku "C" name "c" price 1 qty 7} b [{sku "A" name "a" price 10 on_hand 5 reserved 6}]}} refuse BadStock
+  ex {p {a {sku "c" name "c" price 1 qty 7} b []}} refuse BadRecord
+
+node changes (items records)
+  says "the availability change for every snapshot record"
+  fx none
+  raises BadStock
+  pre (records_ok records) BadRecord
+  post (== (len out) (len records))
+  out (map "change_of" (pairs records [items]))
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 3}] records [{sku "A" name "a" price 10 qty 4}]} -> [{sku "A" name "a" before 2 after 1 new false}]
+  ex {items [] records []} -> []
+  ex {items [{sku "A" name "a" price 10 on_hand 5 reserved 6}] records [{sku "A" name "a" price 10 qty 4}]} refuse BadStock
+  ex {items [] records [{sku "a" name "a" price 10 qty 4}]} refuse BadRecord

@@ -1,0 +1,2987 @@
+{
+  "schema": "dnode-cert/0.4",
+  "profile": null,
+  "nativesLock": "49216d6c0fe5a501",
+  "checker": "checker#a76d1257",
+  "at": "2026-10-20T12:46:03.854Z",
+  "publicKey": {
+    "key_ops": [
+      "verify"
+    ],
+    "ext": true,
+    "kty": "EC",
+    "x": "o7yg0bXmmE4YtBu677jQLpGIyKdPByoYmyhG9mu_Fd4",
+    "y": "0U1Xsu9wIvAS9S0Y4i2EWXj5sAOKBL4BlJt2f4H4YW4",
+    "crv": "P-256"
+  },
+  "main": "shop_cart",
+  "roots": {
+    "lib_text": "075b2010d04f782f",
+    "lib_sequence": "0604e83310f90f05",
+    "supplier_snapshot": "92c24d4d4f6a6a9d",
+    "shop_stock": "3fc32a05f48062ae",
+    "shop_cart": "dc6875ddd846bbc5"
+  },
+  "numbers": "exact",
+  "natives": {
+    "+": {
+      "hash": "04ee6755c57ad4a9",
+      "descriptionHash": "04ee6755c57ad4a9",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "hkalkVAlSIQhSfn9ez/55bv9LujDtjo0wOIH3aA3DHJvzFYLgdMjJIV8+o48RlC4QjIdxYJP4NYksb0jkZgj7g=="
+    },
+    "-": {
+      "hash": "934cc4212d11ccc6",
+      "descriptionHash": "934cc4212d11ccc6",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "C2X1e2uCkUQhlE7Lw1LhQbrNXNEEcuRrxdg7PDdbEOa6OOLuPoAVeqRwyXVFFputViIVap00Q6Gho9mc1Tvo1Q=="
+    },
+    "*": {
+      "hash": "309c64ab3c37419a",
+      "descriptionHash": "309c64ab3c37419a",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "wiWl0r6+HWW+ObMroYSXZjoOpuMOFIPgm5vbnCciGyilr3kCPS+Vg1i8GdOhamRNIod7vo6omOmc3bz1LIDcFQ=="
+    },
+    "/": {
+      "hash": "126cd85105575e81",
+      "descriptionHash": "126cd85105575e81",
+      "fx": [],
+      "examples": 1,
+      "status": "excluded",
+      "problems": [
+        "not allowed under numbers exact"
+      ],
+      "sig": null
+    },
+    "div": {
+      "hash": "7775975cf8fffdac",
+      "descriptionHash": "7775975cf8fffdac",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "4JOzVf2/XALfmSJjYE5otm7ubTCm9ae1czMBDHCz/0LdXDDHDHUTAFeP8vzh7BweeFvLTxWvd4uJCLA6SVoLvg=="
+    },
+    "mod": {
+      "hash": "f91010efff84116f",
+      "descriptionHash": "f91010efff84116f",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "JwGxEKQYdBk7ScrER4s/bTRRZpcK5+Lab7jh0xCapJiUzRGZWWrhfVY1IZ2hgwTp3jTqjpSlulyFIdjtbG287g=="
+    },
+    "neg": {
+      "hash": "7dca92aa6d10fe31",
+      "descriptionHash": "7dca92aa6d10fe31",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "heQgnnaoPX3LbTxmLzUDXLvhiwX+LgC9O1sF/jMoHxli5IKiscnPQHmBaihXHqVlDU3aFgJXwgVdnp+CpxGi3Q=="
+    },
+    "abs": {
+      "hash": "080be550e3b503f3",
+      "descriptionHash": "080be550e3b503f3",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "4Ulz3eG9p2K3hw77g5C1WVPNJcHk18JtuSfMSzdJPXP++CIz6pXjaeiXDXU0bCnMPa1kufc863mlh96NgqPJog=="
+    },
+    "sign": {
+      "hash": "a32a35aefeed186d",
+      "descriptionHash": "a32a35aefeed186d",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "VHOB7pU9VriJPU/79tixBYfwhndNe45PwHvYNkZgmcpMpa615m45lx7Sb2FBsSJuqU4XCmuzcY4dquyLJxEZlw=="
+    },
+    "min": {
+      "hash": "a099efca63fb7d9d",
+      "descriptionHash": "a099efca63fb7d9d",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "IkMLUkSeoZAViRvLoeThmmNXve860cCW/dKX03SPTFCZrkecxNQ0/7kmSHUpbAnjS074uC9nF9wrpP8KG+hUeQ=="
+    },
+    "max": {
+      "hash": "adcb62320ed2da9f",
+      "descriptionHash": "adcb62320ed2da9f",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "TS5InqH7nr++9p0ZB36FiSGrw24eJ5BQ2eXB7297I/86uLe8yVAQQskX/O0WJy9/ExuWJN0EOkpJC8AuicQcqQ=="
+    },
+    "clamp": {
+      "hash": "e0ef69a2bb4c3c26",
+      "descriptionHash": "e0ef69a2bb4c3c26",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "m6XllHrrh8mABZeedGvMU/nYA2mCnGh9+UIXMuLtv3kBKfe1upvANGcBu5WDN6jJzSeiUH5lMP8AQ8P0OYvPWA=="
+    },
+    "<": {
+      "hash": "5f1100e40ae17f00",
+      "descriptionHash": "5f1100e40ae17f00",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "KCdIeiJCae4yubq4tYHGdVWXM+7BdNtEuqvJufD1oxj8segs32aOCjaGbFG+TcRXMCVVhas9JkknGr5gAImQsw=="
+    },
+    "<=": {
+      "hash": "b5f065abcf4d8471",
+      "descriptionHash": "b5f065abcf4d8471",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "xbdEj8/mBh936GiW5CrCbBLam5j/6W0B4oRf2A7huXOdlDMLz6HHUtH9PxjXjRxHWWjNc9bR1zm5RMKtLJQ4ZQ=="
+    },
+    ">": {
+      "hash": "09b22adeea354346",
+      "descriptionHash": "09b22adeea354346",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "RhQy7sP61GEyZ4kQJgpglRHss6g78DIPOzYS42alshxbqDrHHcO0qeQ0ktEoTo5c9Q34Kq5Q+pCStt0rpLVgKA=="
+    },
+    ">=": {
+      "hash": "32f9c4cda2ae93d8",
+      "descriptionHash": "32f9c4cda2ae93d8",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "OYk948lXh2TMaP9XEYi9xKn7sTiDKMs6zgT7DVyqdTm1miPlXK0TbJzTwMZHoWE0RpiIZFRwlDr54vYHAnQYRw=="
+    },
+    "==": {
+      "hash": "dc185b5d1231e5a2",
+      "descriptionHash": "dc185b5d1231e5a2",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "2aiEIB98vcXX9+da0LUysLlE/lPrAuOBRXG8FAhnv9aVvJKhZkcnCRz6XQBlqxbZj2aHFNUwSdjidmd0BwLh0Q=="
+    },
+    "!=": {
+      "hash": "6e1d3dcfbcba64e5",
+      "descriptionHash": "6e1d3dcfbcba64e5",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "0xtMXuOGqFhtvikZGR/wUt71voWNksoRrTRnLOH58HqOij4JirJs3ChJP3P5B12eEDjD+ppTCjdrvpHonNdkYw=="
+    },
+    "and": {
+      "hash": "eefbf8c8520218a6",
+      "descriptionHash": "eefbf8c8520218a6",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "fs/mMDor1KGc3p9M51P9IQeCL1GF3A44szKeFmgY2wnGVWQL+3UYxM6wJtxvJ3HGCkKwIWuQMx4YY0r2IuaSOw=="
+    },
+    "or": {
+      "hash": "5681f711cad4d51d",
+      "descriptionHash": "5681f711cad4d51d",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "7cXH0FD5/7Pa/AVStQNue4cS5tAYRxZjm9omZ8XBV6nHR35C/xTzXIrSqX1RzmX4CSsFiBNC14f78l4plZkoEA=="
+    },
+    "not": {
+      "hash": "b3df3180de936a7e",
+      "descriptionHash": "b3df3180de936a7e",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "1r5C76ZSdC+f3OhIfGLXGMuO8o/aYj4pVYfF/IY5G99bD0KME9GGkP5HMqTwB4zZ4mlz1ulMpdKG++89ijtf3g=="
+    },
+    "in": {
+      "hash": "445de391b0b2501d",
+      "descriptionHash": "445de391b0b2501d",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "Z83WMNk+9HPOWbhFjP3TxR9pTZOnDDkdjdPxZMrCfpznCk3sCw/Xc9mOuUrZ/FKVBCGd87/7qwEO35f8qTwUTw=="
+    },
+    "len": {
+      "hash": "91fb384146bacc50",
+      "descriptionHash": "91fb384146bacc50",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "brwGAnagPqCsn+CKJb2u80Jb4RCaOkH0qwaK3Bq9BDD9dmOX1x/pPLeZf9jLrUypzXZt9DeapA19JSjalBZGyQ=="
+    },
+    "str": {
+      "hash": "1aed9d513185c308",
+      "descriptionHash": "1aed9d513185c308",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "uKhiACXIdgzREdLK3oSzLk3VEuoQ3el6mm+nlJPJaPKs9TpX80qAsNbk9PQ4DrJDlppZ/kiEO+DAcqfzLaPOXA=="
+    },
+    "cat": {
+      "hash": "9803ced4c4ca74db",
+      "descriptionHash": "9803ced4c4ca74db",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "K6q1EbRaU+xVNDInXjwYLiOAz3x4GApG+gtf8wArTIEo4ZUG4eEGWP+NCpLKI3zqpY58rbADUk+d14OmmE5HVg=="
+    },
+    "range": {
+      "hash": "c8b0cd8afced686a",
+      "descriptionHash": "c8b0cd8afced686a",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "HsFEs5nSj8pUA1SWYzWjkUVWYDEGk4jHWqg1Yzsf2gc3uCNcaKCHCOvTsSHBl2mxFocpSaFjH3LC/OAoQTY5dw=="
+    },
+    "pairs": {
+      "hash": "f5e1f6fa15d1a2dd",
+      "descriptionHash": "f5e1f6fa15d1a2dd",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "Ko1sJW6hXQMUPDocIysus43uAMCO4KK2s1FSco0fO4hYAPtr7a4igsuuTvg4KHxEOrYqGde0WFJ4fPUdIy6sOg=="
+    },
+    "concat": {
+      "hash": "a5c07058c15403c8",
+      "descriptionHash": "a5c07058c15403c8",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "7HsBXj8RF2wzIkb/NT1NPjcz1q0aifVbdk350nRRmLa8OmWsKh3ec8e/futthCQ1/UyVjMjh5l2lQlAtKTZatQ=="
+    },
+    "sum": {
+      "hash": "922549ff952b5533",
+      "descriptionHash": "922549ff952b5533",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "GJJrlMg61fkAIYbzM9qZpcYs304dAp4VW7YRujBEujzNU6iPYat9GJ+qAzjuVQ/5kObx/JSWxWVlzpCHg9zL9w=="
+    },
+    "split": {
+      "hash": "2c3e82f3f16da415",
+      "descriptionHash": "2c3e82f3f16da415",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "4JemjMy4piqeqxmsPjGSHON/xVJ4M2DPM6E6KMx46iVkSW0nFn4bGg+do3ZFiHDhP+9dvVTydFR1PXBPw1U1Ww=="
+    },
+    "csv_fields": {
+      "hash": "314acdfe83140b3b",
+      "descriptionHash": "314acdfe83140b3b",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "7z74ma4UZyjAdx06Ub9aHjP5n+9OIivaXNUQKSX4kqlJxsA/7kFj+Y1n/QE1mYQVLH/rJznstBuEfLbul8MGTA=="
+    },
+    "trim": {
+      "hash": "6c1e216b2266b629",
+      "descriptionHash": "6c1e216b2266b629",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "YhiN+sockNRlqlRUV75+RwA2NqJe20FzEJKDi4CXRpkLDhe0UkpXe9nOrOQQDpeXSujaaoHQYu1JsAUBAQ79TA=="
+    },
+    "to_int": {
+      "hash": "d07a011cd6cf3dbd",
+      "descriptionHash": "d07a011cd6cf3dbd",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "ebiFV0gf07xmFcRu14x+j7heBoAOPyh1jTlIuV9r7UmcYX+6fJsJTDn+cCdIO0RFYN3tRo82PDdRYsBnVZLOeQ=="
+    },
+    "is_int": {
+      "hash": "2ea5f9dc8ff2a268",
+      "descriptionHash": "2ea5f9dc8ff2a268",
+      "fx": [],
+      "examples": 3,
+      "status": "certified",
+      "problems": [],
+      "sig": "nqKjWWUHoScP7navfPOj0CeB2L4TyWh5BAzohELSBZb4P7LOjBifp9+xn3AnCRJTNSyd7SVJ0FjecKxd+OxOmA=="
+    },
+    "has": {
+      "hash": "f8d36234da050f15",
+      "descriptionHash": "f8d36234da050f15",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "k6mEMdOTQHzf9sV0gEEUdgwsZrpptiOtnF8M9z1bD4Kmn/crkta3DBEwmNt+gaRRHc5cddkrvMdi2iuYiT7p+g=="
+    },
+    "text_len": {
+      "hash": "4a4a3d6436e9cb7a",
+      "descriptionHash": "4a4a3d6436e9cb7a",
+      "fx": [],
+      "examples": 2,
+      "status": "certified",
+      "problems": [],
+      "sig": "OpwPbjBjAg2w+hTCZbnXaxB0UoI96t2QRT/ffnw+0AcyhvMTx5ZaMJGZMmnY7n6Lm6V2ewn/lEWjQA/QviN6dg=="
+    },
+    "filter": {
+      "hash": "7393d722a0ea002a",
+      "descriptionHash": "7393d722a0ea002a",
+      "fx": [],
+      "examples": 0,
+      "status": "certified-by-use",
+      "problems": [],
+      "sig": "7Y3IuIN3jeDwCm0IWQgw8G71p1iXq3/eV08OUueQhJQGydtg+rSDUOlI7A7cvRfyhkIHQK0UwyAIyDWMcSl9Cw==",
+      "usedBy": [
+        "min_text",
+        "duplicate_indices",
+        "validate_snapshot",
+        "count_before",
+        "at_position",
+        "hits",
+        "new_items",
+        "conflicts",
+        "remove_line"
+      ]
+    },
+    "at": {
+      "hash": "a8cbbfe1c863db55",
+      "descriptionHash": "a8cbbfe1c863db55",
+      "fx": [],
+      "examples": 1,
+      "status": "certified",
+      "problems": [],
+      "sig": "rbOjvLnpc2aP3gnA0vJ79WhZ12/amHrvRt6oHEvx9lOVgGqncMVKwixBiGw8peV9CGEv+lIGyLe31XXOBOArvA=="
+    },
+    "map": {
+      "hash": "a271f622dacf7803",
+      "descriptionHash": "a271f622dacf7803",
+      "fx": [],
+      "examples": 0,
+      "status": "certified-by-use",
+      "problems": [],
+      "sig": "lbQgO8GgelHjpHtrtuTxElpcBQuZKsoyj5nHQLG2eLyJ0RgdDNLp+z7oG+EYNwFu6mIoaGWWmRpESQxineSQag==",
+      "usedBy": [
+        "unique_text",
+        "is_min_of",
+        "min_text",
+        "involved_in_dup",
+        "duplicate_indices",
+        "validate_snapshot",
+        "count_before",
+        "at_position",
+        "normalize_snapshot",
+        "stock_ok",
+        "hits",
+        "needed",
+        "lines_ok",
+        "lines_fit",
+        "reserve_all",
+        "release_all",
+        "consume_all",
+        "new_items",
+        "conflicts",
+        "records_ok",
+        "apply_snapshot",
+        "changes",
+        "cart_ok",
+        "remove_line",
+        "set_line",
+        "priced",
+        "total_of",
+        "canonical_intent"
+      ]
+    },
+    "screen.draw": {
+      "hash": "a1a2c243be4b2b2c",
+      "descriptionHash": "a1a2c243be4b2b2c",
+      "fx": [
+        "screen.draw"
+      ],
+      "examples": 0,
+      "status": "not_checked",
+      "problems": [],
+      "sig": "zwd6Tt8i0F9lSEZsjNrPRc/0tsc1VKZ0WjyxRcd0rIuhGF4SGbqSef/v8YrFitW9+aQ+HyPKc8+TWyOuK5gkxg==",
+      "usedBy": []
+    },
+    "panel.show": {
+      "hash": "0760041a247770e1",
+      "descriptionHash": "0760041a247770e1",
+      "fx": [
+        "panel.show"
+      ],
+      "examples": 0,
+      "status": "not_checked",
+      "problems": [],
+      "sig": "PfvfoXGDjjJolYgTRA6m5Nw2XV9uJ5Mn2WeP1jclvcQKySNUhD1QKlTrrcFfYYKYksSUI0Z951Y8ZepQAiqxGg==",
+      "usedBy": []
+    },
+    "audio.play": {
+      "hash": "da024e91452edcc4",
+      "descriptionHash": "da024e91452edcc4",
+      "fx": [
+        "audio.play"
+      ],
+      "examples": 0,
+      "status": "not_checked",
+      "problems": [],
+      "sig": "lCq0BLF5KTvfnYE/uU8e0UE2eq7OUy6rwGLo8T55SU6PlA1bO8y2wm+5D8WxgZvhVsjutnL5GquarPh0hZNCoA==",
+      "usedBy": []
+    },
+    "csv_records": {
+      "hash": "7b1de56ef43ce2dd",
+      "descriptionHash": "7b1de56ef43ce2dd",
+      "fx": [],
+      "examples": 7,
+      "status": "certified",
+      "problems": [],
+      "sig": "nrxEu6MbK0wfCptk+9bIxe1ft8XZ0brHoAJDks6VmAkr86uhtkZ+AW6tJNPK2qhps+61e4lDR+bJvpIfaeJVFw=="
+    },
+    "text_cmp": {
+      "hash": "f3087409724e1e6c",
+      "descriptionHash": "f3087409724e1e6c",
+      "fx": [],
+      "examples": 6,
+      "status": "certified",
+      "problems": [],
+      "sig": "ZeWqQ1uVnlgej6SNoan4/5fbrUOtaAoUu2u39gxb+8Tct+qH8121r1fw7k2oml/q2E94c7qk82K+1BoA7OvQ3w=="
+    },
+    "is_digits": {
+      "hash": "a21310b7f7a13b95",
+      "descriptionHash": "a21310b7f7a13b95",
+      "fx": [],
+      "examples": 6,
+      "status": "certified",
+      "problems": [],
+      "sig": "WBe8zWdyn1hrTB0P7RCa+uz7E0P2lRqg5VMVqGsjjFdIIVX7624OQDZoc8skWMBf5bEbTy5E9MwDu20TW0cZMA=="
+    },
+    "scalars": {
+      "hash": "03f8c0e9540fd482",
+      "descriptionHash": "03f8c0e9540fd482",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "MbHsAlzXVUNGNlVwe7ghmG/Ch1jas9I+qfgL5FC+oD47pk7bVOYLAoH0MJAPceZFbBTksRzeYSh5Ug7k39yWvQ=="
+    },
+    "is_sku_text": {
+      "hash": "c6b1580929bb86ca",
+      "descriptionHash": "c6b1580929bb86ca",
+      "fx": [],
+      "examples": 6,
+      "status": "certified",
+      "problems": [],
+      "sig": "HejlLrOzqvtmpAwWkP1epyMx5LaIzP/RamHvpG0g07YPU5CLHcRbRSkfCyujxG2NTnNiD/gvEyobYKspxAc1yw=="
+    },
+    "strip_zeros": {
+      "hash": "b4916767c477b984",
+      "descriptionHash": "b4916767c477b984",
+      "fx": [],
+      "examples": 4,
+      "status": "certified",
+      "problems": [],
+      "sig": "dYV2fdnAMJ6EnzFPuTP9cdzE/JHbj78+mqT5pjnx/QY2+lUuK2ktFQFL6fWNXYfSL3u4oEbiQJRvG3Ks6EvJLA=="
+    },
+    "file.export": {
+      "hash": "35c20f9eece85429",
+      "descriptionHash": "35c20f9eece85429",
+      "fx": [
+        "file.export"
+      ],
+      "examples": 0,
+      "status": "not_checked",
+      "problems": [],
+      "sig": "gfYh99KT0wwEcNHMwAVEnFL8zNXW9tjcQeebSbVCEM8RhxMYUdH3kF5vXRuD6OXhG6IgMH4JAesvZ41L0IHoTg==",
+      "usedBy": []
+    }
+  },
+  "certified": {
+    "digits_fit": {
+      "name": "digits_fit",
+      "root": "lib_text",
+      "hash": "68fe424362295235",
+      "in": [
+        "s"
+      ],
+      "inv": [],
+      "examples": 9,
+      "descriptionHash": "b56d10cffc656f01",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "is_digits",
+        "in",
+        "strip_zeros",
+        "scalars",
+        "or",
+        "<",
+        "and",
+        "==",
+        "<=",
+        "text_cmp"
+      ],
+      "passed": 9,
+      "raises": [],
+      "generated": {
+        "attempted": 7,
+        "distinct": 7,
+        "returned": 7,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "CNou2eYThWEm3ACNNKO615kNXA4gQSE+rkoXPA94BV+kntWQCLjagXkUcOqbZ3NxrtYvF2DIDmHITjxrE0KjKQ==",
+      "reused": true
+    },
+    "parse_decimal_nat": {
+      "name": "parse_decimal_nat",
+      "root": "lib_text",
+      "hash": "7986512537b92b5b",
+      "in": [
+        "s"
+      ],
+      "inv": [],
+      "examples": 9,
+      "descriptionHash": "495886a13ecd6ffb",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "is_digits",
+        ">=",
+        "==",
+        "str",
+        "strip_zeros",
+        "to_int"
+      ],
+      "passed": 9,
+      "raises": [],
+      "generated": {
+        "attempted": 4,
+        "distinct": 4,
+        "returned": 4,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "fyumXaS3Ttw5A4B8igVeVTgLOZFOuUP5+ncuQXvr3XzFb4L2ISCIjuQc9bqUzX3hok6VEws/pfTu31/aaF87aA==",
+      "reused": true
+    },
+    "same_text": {
+      "name": "same_text",
+      "root": "lib_sequence",
+      "hash": "4fbb85dedcd054fa",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "eb801fce66a6b0d1",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "==",
+        "text_cmp"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 4,
+        "distinct": 4,
+        "returned": 4,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "6BWQvgifyTt0NEDjri0oi4bDmTcrDbBVp/ZcvG+i9yywhhx4ygz8Czcuu7P/5SuScsOIk3upMA5qA5rvQXty9g==",
+      "reused": true
+    },
+    "unique_text": {
+      "name": "unique_text",
+      "root": "lib_sequence",
+      "hash": "506ec4dd65425776",
+      "in": [
+        "xs"
+      ],
+      "inv": [],
+      "examples": 4,
+      "descriptionHash": "57afe7d122e4fc37",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "==",
+        "sum",
+        "map",
+        "pairs",
+        "len"
+      ],
+      "passed": 4,
+      "raises": [],
+      "generated": {
+        "attempted": 10,
+        "distinct": 10,
+        "returned": 10,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "lAaingbarRcWSuafBCbxJlS0dxHHoVnBomSnbgY1cWVpElZVW/hIXa7gE8HmpHeiQkGLIuuCEPa6tXsFSOm70g==",
+      "reused": true
+    },
+    "is_sorted_pair": {
+      "name": "is_sorted_pair",
+      "root": "lib_sequence",
+      "hash": "0a71ee2f28808a88",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "3bc931e181c5e759",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "<=",
+        "text_cmp"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 4,
+        "distinct": 4,
+        "returned": 4,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "dCxj4nkEyAXgJrJlrxpURuKrG3+7+EgL8XAmy5Uxji/SInwgJRlY48p9MMJYYRc5vlbjV7yZhlFv6rTolonv+Q==",
+      "reused": true
+    },
+    "is_min_of": {
+      "name": "is_min_of",
+      "root": "lib_sequence",
+      "hash": "c0e5b07023ff4942",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "a35e00ada56f2a6b",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "==",
+        "sum",
+        "map",
+        "pairs",
+        "len"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 8,
+        "distinct": 8,
+        "returned": 8,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "wFQbkWvNSsNcC2pPwyoYaXJt2T9RMV/8vIzfdpibdVFUX6qywrb/VFHbcCSAIHExoYMOQGgAUND4Zs258aqZhQ==",
+      "reused": true
+    },
+    "min_text": {
+      "name": "min_text",
+      "root": "lib_sequence",
+      "hash": "8753f186c1e90bda",
+      "in": [
+        "xs"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "609539add664ed5f",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">",
+        "len",
+        "in",
+        "==",
+        "sum",
+        "map",
+        "pairs",
+        "filter",
+        "at"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 30,
+        "distinct": 30,
+        "returned": 30,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "li3sgJJqChlVxQHzlu/HP5Ps/ilczQiuI11GiPkNesi94pZGIusuCVtfjwiKnqcVyqKIvQ3kR5IHCzRWVPGy8w==",
+      "reused": true
+    },
+    "header_ok": {
+      "name": "header_ok",
+      "root": "supplier_snapshot",
+      "hash": "41b1bbb0dc01efc5",
+      "in": [
+        "fields"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "e6d01605216f64b4",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "=="
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 990,
+        "distinct": 990,
+        "returned": 990,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "zBob2FbmuhP32a01UdTPHOALVj7Mz88StUTnH8J6MaWa3JuD1XnJDFmsqZsPWDgeTKXvvWFfbKZUPTuCBCFBsw==",
+      "reused": true
+    },
+    "field_problem": {
+      "name": "field_problem",
+      "root": "supplier_snapshot",
+      "hash": "0ef0ced650350022",
+      "in": [
+        "r"
+      ],
+      "inv": [],
+      "examples": 10,
+      "descriptionHash": "a3c61c6313322281",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">=",
+        "in",
+        "==",
+        "len",
+        "at",
+        "not",
+        "is_sku_text",
+        "scalars",
+        ">",
+        "is_digits",
+        "strip_zeros"
+      ],
+      "passed": 10,
+      "raises": [],
+      "generated": {
+        "attempted": 1381,
+        "distinct": 1381,
+        "returned": 978,
+        "preRejected": 403,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "fFaw+NSUoVY+gb4ARO9sjxrjwDj+d+8st5jjzxaEnDRD6hhJcF6mZgC0OaaNWD6myNXiVfxEb23E/oAnfcG6tA==",
+      "reused": true
+    },
+    "problem_count": {
+      "name": "problem_count",
+      "root": "supplier_snapshot",
+      "hash": "9f2ec91000da5047",
+      "in": [
+        "d"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "36132d43518db6f6",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 825,
+        "distinct": 825,
+        "returned": 825,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "S4OmK8LyLNjhSijAVMqad1iNIEDGeihgphR94gAZ15TFgXWGuZBXshFNIwo0ToOn6qX+P7dz2+Ag2MNI6QiMww==",
+      "reused": true
+    },
+    "has_problem": {
+      "name": "has_problem",
+      "root": "supplier_snapshot",
+      "hash": "59655ee599ac5c45",
+      "in": [
+        "d"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "c73f542f9486675c",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "!="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 819,
+        "distinct": 819,
+        "returned": 819,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "VGS3y2fXQPn2JxwEkdlt9xm//rghfmGX3et0PASfhZ1MmqoXiC8Yj6Xi2cZu2PcVCBQIR5gIGWcMfqSadSM74Q==",
+      "reused": true
+    },
+    "normalize_record": {
+      "name": "normalize_record",
+      "root": "supplier_snapshot",
+      "hash": "2a6b6c56b44247aa",
+      "in": [
+        "r"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "e0c88a83e17a1227",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">=",
+        "not",
+        "==",
+        "at",
+        ">"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 1023,
+        "distinct": 1023,
+        "returned": 155,
+        "preRejected": 868,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "V6MPW5Xv2C+y+NGia8LGMONcSbUzkj4sTNDAiOkhQgfZDtJ5BjufKiOGQoOpmClDXi5D0b/WR6cNKEPqcwy3gw==",
+      "reused": true
+    },
+    "sku_of": {
+      "name": "sku_of",
+      "root": "supplier_snapshot",
+      "hash": "ebcb128a06aa715b",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "e2ae66bcf0d6e3bb",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "generated": {
+        "attempted": 1161,
+        "distinct": 1161,
+        "returned": 1161,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "y2PfMErF/DhO7rNLIbI4jyAfCjXoD/Zj0bi5ag4sMof1/d8sHBGzeZvBYiM9Mz7BEsUtCgSsU1iNWGcS4OKpvQ==",
+      "reused": true
+    },
+    "index_of": {
+      "name": "index_of",
+      "root": "supplier_snapshot",
+      "hash": "b951425c87e1d5c7",
+      "in": [
+        "r"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "75ad91a6a727f9bb",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "generated": {
+        "attempted": 757,
+        "distinct": 757,
+        "returned": 757,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "ChVPzDHZPslMZN7b3zsKJ8BtMCYTzttwRLgKlZGJLbOanFL36tP7kC8j29NNzWoxA7h6fKaef6AT0VCFmUHsDw==",
+      "reused": true
+    },
+    "sku_dup": {
+      "name": "sku_dup",
+      "root": "supplier_snapshot",
+      "hash": "5a223d677c28e6c0",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "3aa94ad6a3f5be87",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "and",
+        "==",
+        "len",
+        "at",
+        "!=",
+        "text_cmp"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 1391,
+        "distinct": 1391,
+        "returned": 1391,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "H7H/JfPq2D2xnGs1zl+kVaK8sLKIKdxr1ANbaNC/tpzvK9mHZrxhIY/OJ2cglSaj0GBEP9wK6cgqHPqW7ams/A==",
+      "reused": true
+    },
+    "involved_in_dup": {
+      "name": "involved_in_dup",
+      "root": "supplier_snapshot",
+      "hash": "bff6be1dcb39240b",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "0df6b77fa485fac8",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        ">",
+        "sum",
+        "map",
+        "pairs"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1385,
+        "distinct": 1385,
+        "returned": 1385,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "DFI4IakB6vBvI5cvO+uEGI5bwVfuLqJo/D+LNO05Pxcs/bXwIzPYv0juKGf5ipmLg3oknsthfnRFOr1EmvcBaA==",
+      "reused": true
+    },
+    "raw_of": {
+      "name": "raw_of",
+      "root": "supplier_snapshot",
+      "hash": "971c5b663a4f8a48",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "35166634dde5008e",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "generated": {
+        "attempted": 760,
+        "distinct": 760,
+        "returned": 760,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "u+YtvctOvdU/U7/fi1GGi5JJJ+BgcTfcCtn/LAGtDniGfJIv3PCer8tHpJTC1qxkl6NSfJ0NalCUbNXFpwQ1Yg==",
+      "reused": true
+    },
+    "duplicate_indices": {
+      "name": "duplicate_indices",
+      "root": "supplier_snapshot",
+      "hash": "2e6e3001d2e0a74c",
+      "in": [
+        "records"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "36d77939f90e90e7",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "<=",
+        "len",
+        "map",
+        "filter",
+        "pairs"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 891,
+        "distinct": 891,
+        "returned": 891,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "eFs/135zlHLgUSyQBTouGqgRCfihpEqK7KReu+GYSyidKiRc6p+dK3iJJE1E9gZp1DEVeD9RfTs4Db9xIqk2tA==",
+      "reused": true
+    },
+    "index_ok": {
+      "name": "index_ok",
+      "root": "supplier_snapshot",
+      "hash": "3e423349ac0fa158",
+      "in": [
+        "r"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "3c1afc012b26b770",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        ">="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 726,
+        "distinct": 726,
+        "returned": 726,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "6glkjgNe9df+7mAYgW9xHbEFF4gWYycuJ1+npBG0nEg9vh9sdHcMxHxnzuS7xBSJLXtqOpOVYJ01Wjwnj7L82g==",
+      "reused": true
+    },
+    "validate_snapshot": {
+      "name": "validate_snapshot",
+      "root": "supplier_snapshot",
+      "hash": "d901d0a056f66215",
+      "in": [
+        "records"
+      ],
+      "inv": [],
+      "examples": 5,
+      "descriptionHash": "1dea31978bc98fe0",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "sum",
+        "map",
+        "len",
+        "in",
+        "and",
+        ">",
+        "filter"
+      ],
+      "passed": 5,
+      "raises": [],
+      "generated": {
+        "attempted": 1063,
+        "distinct": 1063,
+        "returned": 618,
+        "preRejected": 445,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "hRkXlvhVDrzad0r+pLdDnsrnhtBgH3fKtUZmH0C+oND8sFIqO86QlOmaz96cUOnVUH067NtHm2aFyqHwB4qdPA==",
+      "reused": true
+    },
+    "accepted_of": {
+      "name": "accepted_of",
+      "root": "supplier_snapshot",
+      "hash": "d4233842a20b2629",
+      "in": [
+        "v"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "e265809621cc02a6",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "generated": {
+        "attempted": 2,
+        "distinct": 2,
+        "returned": 2,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "sDV3SoLJYjnxuke8xa8txlg3gD9+ewfgpJJ3rU9eIPTPyPRut1JHjH8bxJxdpRnFdFnXmD4Z2sisc4cpzFVOFQ==",
+      "reused": true
+    },
+    "sku_before": {
+      "name": "sku_before",
+      "root": "supplier_snapshot",
+      "hash": "30560693b17f8955",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "429a33e85aee2065",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "<",
+        "text_cmp"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1421,
+        "distinct": 1421,
+        "returned": 1421,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "PqllxbjVEx7i+M8LAnXO9irqXvvZio8alN4nVb16mKn7GnkjSMjPuBMHOfcQPdMwYvq7eC1Nh8rI7r51VHC7dg==",
+      "reused": true
+    },
+    "swap": {
+      "name": "swap",
+      "root": "supplier_snapshot",
+      "hash": "6cf45243c1a0de2b",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "1474ffdfa8f63144",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "generated": {
+        "attempted": 1144,
+        "distinct": 1144,
+        "returned": 1144,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "DpJb3zOJhBw3/nlH+3p5CWLk5NVznAK8Qjg5RfVvhd9XXIwz0J4B9b02A0y0IjK2SuULR9ZJgea0nwIbgYTrWg==",
+      "reused": true
+    },
+    "count_before": {
+      "name": "count_before",
+      "root": "supplier_snapshot",
+      "hash": "8b80fd13af9489ee",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "be88b8d02a0cb2d9",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">=",
+        "len",
+        "filter",
+        "map",
+        "pairs"
+      ],
+      "passed": 1,
+      "raises": [],
+      "generated": {
+        "attempted": 1403,
+        "distinct": 1403,
+        "returned": 1403,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "i/fNZtVAZKVsfHYMWtHXEsJPZ5/0HSHTZQqcHFweQ3lLMZACZBVDHFG/gkkZMmXDTUG4/19VgPtchXyFjQyQZw==",
+      "reused": true
+    },
+    "position_is": {
+      "name": "position_is",
+      "root": "supplier_snapshot",
+      "hash": "f1f098548f227483",
+      "in": [
+        "q"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "ce1243ccc89bafd4",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "generated": {
+        "attempted": 1384,
+        "distinct": 1384,
+        "returned": 1384,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "Pla+Gj7dxSXZeYWnrNyXLRASas4+3TDiw7Jccj2ygW4OZ1HtaMXUNc0keuZLoIUI75VmiRlY4spDAdxE9OqnvQ==",
+      "reused": true
+    },
+    "at_position": {
+      "name": "at_position",
+      "root": "supplier_snapshot",
+      "hash": "8dfc0b0902eb772f",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "dccdccd26757d5db",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">=",
+        "<",
+        "len",
+        "map",
+        "in",
+        "filter",
+        "pairs",
+        "at"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 1398,
+        "distinct": 1398,
+        "returned": 428,
+        "preRejected": 970,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "lfoiWAF6qmLlRU2EsjcUHs+vtBMN7F+fm371CCBCYxYR4fM/qrDGgsgystFJDLkRhL4cHEKPQlV0Lo3H38Zk/g==",
+      "reused": true
+    },
+    "normalize_snapshot": {
+      "name": "normalize_snapshot",
+      "root": "supplier_snapshot",
+      "hash": "fd5a2c9e5fe70ae0",
+      "in": [
+        "records"
+      ],
+      "inv": [],
+      "examples": 4,
+      "descriptionHash": "74f7d2874f93c05f",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "sum",
+        "map",
+        "len",
+        "pairs",
+        "range"
+      ],
+      "passed": 4,
+      "raises": [],
+      "generated": {
+        "attempted": 1417,
+        "distinct": 1417,
+        "returned": 48,
+        "preRejected": 1369,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "5YKCIRo7RcUkmmxhZuS7ROkILmbJ4pCkEp7Efi6ngdCgfd1BrJgSjVfu8STfuuBZGwLm8MvD9ou3zuMPM+UCtQ==",
+      "reused": true
+    },
+    "stock_item_ok": {
+      "name": "stock_item_ok",
+      "root": "shop_stock",
+      "hash": "9f3f0f7dcb91580e",
+      "in": [
+        "s"
+      ],
+      "inv": [],
+      "examples": 4,
+      "descriptionHash": "7ac922aee181ac92",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "and",
+        "is_sku_text",
+        ">",
+        "scalars",
+        ">=",
+        "<="
+      ],
+      "passed": 4,
+      "raises": [],
+      "generated": {
+        "attempted": 1350,
+        "distinct": 1350,
+        "returned": 1350,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "tpoYNj9FuVaew63eEcMof1wpEwSPKZHjplPRd5c7fWBmKYNJO0K2yvgS4frOw3tv/IWhfAucKmkyztMO6RmfDw==",
+      "reused": true
+    },
+    "available": {
+      "name": "available",
+      "root": "shop_stock",
+      "hash": "f8da2849252acc8d",
+      "in": [
+        "s"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "321ef5f1cce2a67f",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "<=",
+        ">=",
+        "-"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 1337,
+        "distinct": 1337,
+        "returned": 150,
+        "preRejected": 1187,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "NFb/QLjgsYnvcWvCWJ+XPD2BBhmtPEtBBhzwvtE6S1r2qgHBvlpI2vH++XHk7+o9xph1j/LrDI5pWpXM9S2kqA==",
+      "reused": true
+    },
+    "stock_ok": {
+      "name": "stock_ok",
+      "root": "shop_stock",
+      "hash": "f424a1b5ab7c614b",
+      "in": [
+        "items"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "698ba79ac1ce8838",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "and",
+        "==",
+        "sum",
+        "map",
+        "len"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 897,
+        "distinct": 897,
+        "returned": 897,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "GyBvwyVphf34H6aP26BxUpf1X0a+OikzatgLgj/YZDISaoD3Jmhd6cR3FRjThhUPrsFx04Jg/yrU2tMS3W/L1g==",
+      "reused": true
+    },
+    "sku_matches": {
+      "name": "sku_matches",
+      "root": "shop_stock",
+      "hash": "42b4b9e610a09f2a",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "27401b9fc7654cb4",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 4,
+        "distinct": 4,
+        "returned": 4,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "hUoitNwaIrJcPKTHqqePfEIJoTjIbcbeV76nP0yD5KdfWBnW58V9ChDkhNk3Od5TqOJRmND2RcLtmUg/Lws94w==",
+      "reused": true
+    },
+    "a_of": {
+      "name": "a_of",
+      "root": "shop_stock",
+      "hash": "21d042a768fe1e0a",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "8ec9343393ea6282",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "generated": {
+        "attempted": 1112,
+        "distinct": 1112,
+        "returned": 1112,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "Ugvi5qCNnYtvWvMltzMG80ag/AWeQ1akeyfqmV0zu48krH28SpbxZ+FAmAXJfsEGpXe5j/ZkU+pKWgvdbOEo1A==",
+      "reused": true
+    },
+    "hits": {
+      "name": "hits",
+      "root": "shop_stock",
+      "hash": "c9384d29ac675af3",
+      "in": [
+        "items",
+        "sku"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "151fac89ee163af9",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "<=",
+        "len",
+        "map",
+        "filter",
+        "pairs"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1392,
+        "distinct": 1392,
+        "returned": 1392,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "9jyIZS4oS2C+ZhYeGJIS/058BrZzStu/epQLXepYTh4ZCh9ovDZzacm2dk1efQNACtee1sCSu50d+MYNaxNyzQ==",
+      "reused": true
+    },
+    "known": {
+      "name": "known",
+      "root": "shop_stock",
+      "hash": "3f1e0f6fb54e3160",
+      "in": [
+        "items",
+        "sku"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "b4dd90c05fe340f4",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "==",
+        "len"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1340,
+        "distinct": 1340,
+        "returned": 1340,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "xXjl5Hx1lABeMGdzhT6VSTo7GY108X84SDSR7MfgCKIaMxLJ+4KX4GX7QJ3UIYlPeAGUU3LLG1XUCZFtbVVqwQ==",
+      "reused": true
+    },
+    "find_item": {
+      "name": "find_item",
+      "root": "shop_stock",
+      "hash": "068a2ddb5cfdf284",
+      "in": [
+        "items",
+        "sku"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "db0d2538a3bc9ec0",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "at"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1333,
+        "distinct": 1333,
+        "returned": 852,
+        "preRejected": 481,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "K/zdGCkvIWmGzu3W5gqZIhZPTzWFlnZCGLi/ouByUnGQbxtO79XEySl655+znmcKNPZp2aXcShnXphtEIEaOSQ==",
+      "reused": true
+    },
+    "qty_if_sku": {
+      "name": "qty_if_sku",
+      "root": "shop_stock",
+      "hash": "5c4534d0523e142e",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "620d6c0f58003854",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">=",
+        "=="
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 794,
+        "distinct": 794,
+        "returned": 390,
+        "preRejected": 404,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "fNooO34WctUi1mcUZEcu5bWSO+SDDeIg7pauzYGxWKuPNuMhuBHjusbw64/Wgrvp0Dz7BrtYqH/fx66G6Wgi0Q==",
+      "reused": true
+    },
+    "needed": {
+      "name": "needed",
+      "root": "shop_stock",
+      "hash": "40179eadf644f9da",
+      "in": [
+        "lines",
+        "sku"
+      ],
+      "inv": [],
+      "examples": 4,
+      "descriptionHash": "4787624b2530d67e",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">=",
+        "sum",
+        "map",
+        "pairs"
+      ],
+      "passed": 4,
+      "raises": [
+        "BadQty"
+      ],
+      "generated": {
+        "attempted": 785,
+        "distinct": 785,
+        "returned": 325,
+        "preRejected": 0,
+        "propagated": 460
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "c3HKrjUlpZu7LAFcHcki9Zi5+y7PVLNh0HrFnTWbeok4nbZ0175q1ZtpW0WIkgEwXTnUbH6Qrjl0/gAPpiJV7A==",
+      "reused": true
+    },
+    "qty_nonneg": {
+      "name": "qty_nonneg",
+      "root": "shop_stock",
+      "hash": "68d9ffbacc742587",
+      "in": [
+        "l"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "5659fd17f72c74c9",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        ">="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 739,
+        "distinct": 739,
+        "returned": 739,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "J2ZUQFkZRTT6sKVnfEi61J9hAWHs0HAf/sXhacCGFs4U4dEqnM6sodW5aijzsQxE/0Cx5PA7j8T92LjdN44gkg==",
+      "reused": true
+    },
+    "lines_ok": {
+      "name": "lines_ok",
+      "root": "shop_stock",
+      "hash": "5c5f522e78bc0990",
+      "in": [
+        "lines"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "e6160bd35138af18",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "==",
+        "sum",
+        "map",
+        "len"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 680,
+        "distinct": 680,
+        "returned": 680,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "xM2LXH8lx68NZFjbKFsABxIS969hwc8qrLlR2bhyv4xTbR9uaQ6kmsbdRcY/6VJEJf2P35XIGnQSI6QGBrEazA==",
+      "reused": true
+    },
+    "line_fits": {
+      "name": "line_fits",
+      "root": "shop_stock",
+      "hash": "e9eb764eafc1aea8",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 5,
+      "descriptionHash": "d3802636dd2266bc",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">=",
+        "in",
+        "and",
+        "<="
+      ],
+      "passed": 5,
+      "raises": [],
+      "generated": {
+        "attempted": 1373,
+        "distinct": 1373,
+        "returned": 146,
+        "preRejected": 1227,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "S1rsORYPla2VoiLmLeVdaKbkXrZi58kNKYTUvVNVT8FQ34KjxvkPlCSuDXytGYWfSDenZHfrKz++oAv0wmTR3g==",
+      "reused": true
+    },
+    "lines_fit": {
+      "name": "lines_fit",
+      "root": "shop_stock",
+      "hash": "080784e7eca19263",
+      "in": [
+        "lines",
+        "items"
+      ],
+      "inv": [],
+      "examples": 5,
+      "descriptionHash": "1f84019c674eb399",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "==",
+        "sum",
+        "map",
+        "pairs",
+        "len"
+      ],
+      "passed": 5,
+      "raises": [
+        "BadQty",
+        "BadStock"
+      ],
+      "generated": {
+        "attempted": 1089,
+        "distinct": 1089,
+        "returned": 204,
+        "preRejected": 0,
+        "propagated": 885
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "LgGhCpHDTJTVArlWKAlyJD3QZAkPsPP49DEYteDAAYBDGQv1zvF6re140JbVL0y6NPFOGHOG3MN8rncxL3XIRw==",
+      "reused": true
+    },
+    "reserve_by_lines": {
+      "name": "reserve_by_lines",
+      "root": "shop_stock",
+      "hash": "2ba318e206ea1cb0",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 4,
+      "descriptionHash": "f4543b395df82382",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "<=",
+        "+",
+        "=="
+      ],
+      "passed": 4,
+      "raises": [],
+      "generated": {
+        "attempted": 1385,
+        "distinct": 1385,
+        "returned": 496,
+        "preRejected": 889,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "mUEMWylwaXY+DqQGJU79DN3qX1TL9A+pr/POJ6VrkJ/L39z5DGtH/CsmYb+u99Zq2BdTv87YcgsRQrf+qoCe/Q==",
+      "reused": true
+    },
+    "reserve_all": {
+      "name": "reserve_all",
+      "root": "shop_stock",
+      "hash": "9f3870883f93fcdb",
+      "in": [
+        "items",
+        "lines"
+      ],
+      "inv": [],
+      "examples": 5,
+      "descriptionHash": "9913aea9582e0cdd",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "map",
+        "==",
+        "len",
+        "pairs"
+      ],
+      "passed": 5,
+      "raises": [
+        "InsufficientStock"
+      ],
+      "generated": {
+        "attempted": 1758,
+        "distinct": 1758,
+        "returned": 41,
+        "preRejected": 1633,
+        "propagated": 84
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "dOlOKxQj3CORS+buoqK9C/oyha98SAxG0lNwz+H00bCBP77oxZzmblrzr94oBLbLTfGHxPofr4+nm2phoxd9gg==",
+      "reused": true
+    },
+    "release_by_lines": {
+      "name": "release_by_lines",
+      "root": "shop_stock",
+      "hash": "cf8684057a467169",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "3da2a8f923f99f33",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">=",
+        "==",
+        "-"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 1380,
+        "distinct": 1380,
+        "returned": 502,
+        "preRejected": 878,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "XCsXlAM6dJVHMTRREKH+y4xBgdXZV+2AbzEcnN5lLspn4QrhVt8tRmysSyqi4RRPO15P5C+LeyMslqC+DvSynA==",
+      "reused": true
+    },
+    "release_all": {
+      "name": "release_all",
+      "root": "shop_stock",
+      "hash": "b0e638cff10c5afe",
+      "in": [
+        "items",
+        "lines"
+      ],
+      "inv": [],
+      "examples": 4,
+      "descriptionHash": "6bee9977271220ff",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "map",
+        "pairs"
+      ],
+      "passed": 4,
+      "raises": [
+        "NotHeld"
+      ],
+      "generated": {
+        "attempted": 1569,
+        "distinct": 1569,
+        "returned": 140,
+        "preRejected": 1289,
+        "propagated": 140
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "PCabXJ3Rh0E9oL4JOp/Rx5seMI9qkE+A4NlBPrwPjNqGY6fqT9DWxDrl7+wCntuEyg06Ox8FnQe4o/UuBpa8Pw==",
+      "reused": true
+    },
+    "consume_by_lines": {
+      "name": "consume_by_lines",
+      "root": "shop_stock",
+      "hash": "8762676216a2b9cb",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "a3a62b603146f088",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">=",
+        "==",
+        "-"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 1415,
+        "distinct": 1415,
+        "returned": 508,
+        "preRejected": 907,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "cQK3PdQwvdgxY/mnHHsAFgAkp8xiXlnOxyfg/leu9f/0Tp7RB/wCZZF93YwcTY8O0hj0qbn/BnhGz4jqBkZYIA==",
+      "reused": true
+    },
+    "consume_all": {
+      "name": "consume_all",
+      "root": "shop_stock",
+      "hash": "36926b34812c7622",
+      "in": [
+        "items",
+        "lines"
+      ],
+      "inv": [],
+      "examples": 4,
+      "descriptionHash": "cb5bd19fac279581",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "map",
+        "pairs"
+      ],
+      "passed": 4,
+      "raises": [
+        "NotHeld"
+      ],
+      "generated": {
+        "attempted": 1579,
+        "distinct": 1579,
+        "returned": 137,
+        "preRejected": 1321,
+        "propagated": 121
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "1LnvAY7UvPe27MFvYnpDBaUuSc94TTI5tEVg8VENmNwvdiSoSkaVZ0J+HytC8KviV4dq9fEL0hQQYCrullKGGg==",
+      "reused": true
+    },
+    "refresh_item": {
+      "name": "refresh_item",
+      "root": "shop_stock",
+      "hash": "2d260dd62c7e7877",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "9f3fb09834c992a4",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "len",
+        "at"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1413,
+        "distinct": 1413,
+        "returned": 1413,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "Te45v4rqT8ih2DKhHZUyoD8z88Jtk7HQIS69MdXINoqQ+n5LSGMk6Csiu5RGVmzmWblfb3d9vpzzEooLb4ZYJA==",
+      "reused": true
+    },
+    "not_listed": {
+      "name": "not_listed",
+      "root": "shop_stock",
+      "hash": "3d50a76d701ac145",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "b25c880f5785bff4",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "not"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1398,
+        "distinct": 1398,
+        "returned": 1398,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "cWjvVKDghQp6SXR2iQexyxJPZHPa6VFXSvLvyZ+YUbWcLCpHWglMbfkhfSVJniZZIEcFSrbFX18biwEbZXRHqw==",
+      "reused": true
+    },
+    "new_item": {
+      "name": "new_item",
+      "root": "shop_stock",
+      "hash": "f734ad2875459332",
+      "in": [
+        "r"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "ecc70e7b022a6147",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "generated": {
+        "attempted": 1176,
+        "distinct": 1176,
+        "returned": 1176,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [
+        "output field reserved is constant"
+      ],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "U/4q1NPDjn5dQUG2u4expZ3NNo7YmzbEviy4NY5YeuhkPdngiGEsdKwfl/VnDcRVuXvqbIvlHRF5T0QUaxZ5QA==",
+      "reused": true
+    },
+    "new_items": {
+      "name": "new_items",
+      "root": "shop_stock",
+      "hash": "11672dcb18c302e5",
+      "in": [
+        "items",
+        "records"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "7a0dd370e0452255",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "<=",
+        "len",
+        "map",
+        "filter",
+        "pairs"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 927,
+        "distinct": 927,
+        "returned": 927,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "IG2/ULByvSBza9gMHGDMOXBp15oxw3cOzzS5f3nKbfHDLPlB/zjFCeeXHgInQBvmiKirCbzT0znRXcn5jmQwtg==",
+      "reused": true
+    },
+    "is_conflict": {
+      "name": "is_conflict",
+      "root": "shop_stock",
+      "hash": "af176f6a08efd498",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "b4143e706dda29cb",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "==",
+        "len",
+        "at",
+        "<"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 1375,
+        "distinct": 1375,
+        "returned": 1375,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "iGQ3Z9dBd532MWX6fWfzf/s7z99htFT/coKwYNUinD2cPzxNM+ROLv8G7cGPhMMwvOnHB0oPp9groz/BCVl9Ug==",
+      "reused": true
+    },
+    "conflict_view": {
+      "name": "conflict_view",
+      "root": "shop_stock",
+      "hash": "3cffa78feea6a9da",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "e73788beddd82d4b",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "<",
+        "at"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1357,
+        "distinct": 1357,
+        "returned": 408,
+        "preRejected": 949,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "KiRoAyzN+rT9REl9ngOqcqz89cC1K5rDRtezWkOEF37m36WY3n5r2Cz0RWvcArdqIJScAyNrNG9Kx4XUCAX3Hg==",
+      "reused": true
+    },
+    "conflicts": {
+      "name": "conflicts",
+      "root": "shop_stock",
+      "hash": "e5a6f56cc8307d3a",
+      "in": [
+        "items",
+        "records"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "431e153ad9e60430",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "<=",
+        "len",
+        "map",
+        "filter",
+        "pairs"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 923,
+        "distinct": 923,
+        "returned": 923,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "yZFZFIemwt2bodseeu8FFhP6I+iNHf9N+NGcoNwCmW4gLXXyCf0qyakAMFMrsD5Fs/qq1F5yHKfoUpEEtPLoyw==",
+      "reused": true
+    },
+    "record_ok": {
+      "name": "record_ok",
+      "root": "shop_stock",
+      "hash": "50a48ce03dfe8fc9",
+      "in": [
+        "r"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "581b9a157e8072f7",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "and",
+        "is_sku_text",
+        ">",
+        "scalars",
+        ">="
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 1175,
+        "distinct": 1175,
+        "returned": 1175,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "nECeTh5TGiG0Aba/WK88JNhPuqNPW3ZRsgQ5o9koBwi5C50A1WpBmMrgYGG3XuP8UqTp2NyyI213/P3rHwM95g==",
+      "reused": true
+    },
+    "records_ok": {
+      "name": "records_ok",
+      "root": "shop_stock",
+      "hash": "5cf1d0c9d83fa642",
+      "in": [
+        "records"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "6defcac06eb5e55c",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "==",
+        "sum",
+        "map",
+        "len"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 832,
+        "distinct": 832,
+        "returned": 832,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "B5PW8wUTTEptVCMNIyYFB+ojmIUynI5EFHdUDnI/PydV4COkuhwGvnhXa6vPXIK4+bEwIiwXwdYgnSu3j2XZwg==",
+      "reused": true
+    },
+    "apply_snapshot": {
+      "name": "apply_snapshot",
+      "root": "shop_stock",
+      "hash": "aadd1464d1c5ef1b",
+      "in": [
+        "items",
+        "records"
+      ],
+      "inv": [],
+      "examples": 5,
+      "descriptionHash": "7d3ede5066b2ee01",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "map",
+        "==",
+        "len",
+        ">=",
+        "concat",
+        "pairs"
+      ],
+      "passed": 5,
+      "raises": [],
+      "generated": {
+        "attempted": 1824,
+        "distinct": 1824,
+        "returned": 29,
+        "preRejected": 1795,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "Ajv5V9vofsgECkL4tL/NBUjEeyRpZnrPIpbTCbb90FzUgsK8cp9cUOOB7+me2rc/rVOGpIEMsPKhT2b024DcdA==",
+      "reused": true
+    },
+    "change_of": {
+      "name": "change_of",
+      "root": "shop_stock",
+      "hash": "27df322850760de6",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 4,
+      "descriptionHash": "1d94f64cdd1c5751",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "-",
+        "not"
+      ],
+      "passed": 4,
+      "raises": [],
+      "generated": {
+        "attempted": 1298,
+        "distinct": 1298,
+        "returned": 151,
+        "preRejected": 1147,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "jegQpDoYQfmMfzKs2lUF7MT9g+kFhv3DhYVPrIpuTG7PhmMM4kMye0m4gE3jRhD1H5Ox8gN6UJ3RLkQc+rWXRQ==",
+      "reused": true
+    },
+    "changes": {
+      "name": "changes",
+      "root": "shop_stock",
+      "hash": "29ad2ea010f56b8c",
+      "in": [
+        "items",
+        "records"
+      ],
+      "inv": [],
+      "examples": 4,
+      "descriptionHash": "2bf0d635737556e6",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "len",
+        "map",
+        "pairs"
+      ],
+      "passed": 4,
+      "raises": [
+        "BadStock"
+      ],
+      "generated": {
+        "attempted": 879,
+        "distinct": 879,
+        "returned": 86,
+        "preRejected": 503,
+        "propagated": 290
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "9J4UNnSD2WwJH242grg5XB5hxMroxPdfafOROMhtMPrZutEJew70qmm5pbIctg9VSDsnUX1QYXqrPg7GQZGu9A==",
+      "reused": true
+    },
+    "line_ok": {
+      "name": "line_ok",
+      "root": "shop_cart",
+      "hash": "8b66861503eea46c",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 5,
+      "descriptionHash": "bab1c47fc881e569",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "and",
+        ">=",
+        "<="
+      ],
+      "passed": 5,
+      "raises": [],
+      "generated": {
+        "attempted": 1389,
+        "distinct": 1389,
+        "returned": 1389,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:46:03.854Z",
+      "sig": "B6yklHz2kjnIt8lcZn5xAPfRrU5DJsIm2o7UoCcYf/tvrwYpO++uqYd3NPCLwb23I45/WeZCTBxFS0dyGdZoQA=="
+    },
+    "cart_ok": {
+      "name": "cart_ok",
+      "root": "shop_cart",
+      "hash": "7049b939056b9264",
+      "in": [
+        "items",
+        "lines"
+      ],
+      "inv": [],
+      "examples": 6,
+      "descriptionHash": "f4a08ed61c17d5ef",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "and",
+        "<=",
+        "len",
+        "map",
+        "==",
+        "sum",
+        "pairs"
+      ],
+      "passed": 6,
+      "raises": [],
+      "generated": {
+        "attempted": 1449,
+        "distinct": 1449,
+        "returned": 1449,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:46:03.854Z",
+      "sig": "JdVrgt27qFURX6zi4Yqqt/8dBdmgNBJVz64Hcof63jbKhJCwAa/HBLHGnqc6tDHvw0l1fNoV0Wbg570/t+Wi/Q=="
+    },
+    "set_qty_if": {
+      "name": "set_qty_if",
+      "root": "shop_cart",
+      "hash": "0b901ec88cd099fa",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "e98c203b381c6d7b",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1180,
+        "distinct": 1180,
+        "returned": 1180,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "g2rg6vOJr+qTLftV/MrIiu1iEp3sC+28LDu0+qglaUv2Jb28UOILJ26Ccx3L03tWWLao5bOpTRJU5n1hWPqFvA==",
+      "reused": true
+    },
+    "other_sku": {
+      "name": "other_sku",
+      "root": "shop_cart",
+      "hash": "0c3d8773d9efda73",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "03747a1ce1fb2e83",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        "!="
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 806,
+        "distinct": 806,
+        "returned": 806,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "ZCH/CBP2JYPMCjm1SC3IyfeDsMEqmVI4fY3xuXlcBx40rPdQ9OL4a0FJ46C1/+MjFD2izk2B9pGfgeEqXwk0HA==",
+      "reused": true
+    },
+    "remove_line": {
+      "name": "remove_line",
+      "root": "shop_cart",
+      "hash": "f3b2e8c71000cf2f",
+      "in": [
+        "lines",
+        "sku"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "18bb18aac74e4ac3",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "<=",
+        "len",
+        "==",
+        "map",
+        "filter",
+        "pairs"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 1030,
+        "distinct": 1030,
+        "returned": 458,
+        "preRejected": 572,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "oWFdpYyen5YTLi0IRZUDhfQ1lCQyNMMnYTBwJOz0Tkwf4BnkdAw3FRUZTp1jNDLn0xcWJPjaiac4ghHkCGTa/Q==",
+      "reused": true
+    },
+    "set_line": {
+      "name": "set_line",
+      "root": "shop_cart",
+      "hash": "3ca0e7aa78eb2ffc",
+      "in": [
+        "items",
+        "lines",
+        "sku",
+        "qty"
+      ],
+      "inv": [],
+      "examples": 9,
+      "descriptionHash": "c088f8cf69ca2881",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "and",
+        ">=",
+        "<=",
+        "or",
+        "==",
+        ">",
+        "<",
+        "len",
+        "map",
+        "pairs",
+        "concat"
+      ],
+      "passed": 9,
+      "raises": [],
+      "generated": {
+        "attempted": 1740,
+        "distinct": 1740,
+        "returned": 65,
+        "preRejected": 1675,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:46:03.854Z",
+      "sig": "NIKL94Y0SFX9tIBTrcUoGGNSA6CO4YXtIpHwRl9w9ClaiUQBN+ULLX4c0mIUpXueLXF4UPPBrqg6GJcnc8qWDQ=="
+    },
+    "add_one": {
+      "name": "add_one",
+      "root": "shop_cart",
+      "hash": "fa1810600133272e",
+      "in": [
+        "items",
+        "lines",
+        "sku"
+      ],
+      "inv": [],
+      "examples": 7,
+      "descriptionHash": "29d52f255c43202b",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "+"
+      ],
+      "passed": 7,
+      "raises": [
+        "BadCart",
+        "UnknownProduct",
+        "BadQty",
+        "ExceedsStock",
+        "TooManyLines"
+      ],
+      "generated": {
+        "attempted": 1455,
+        "distinct": 1455,
+        "returned": 115,
+        "preRejected": 0,
+        "propagated": 1340
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:46:03.854Z",
+      "sig": "47FU3QfmV2nihxO8TE1JXBtDmdryCnMO2a7LgT/oJ36hDcF8VeVzMsk47hjwc23KE9IaAqvAspmLjMpCdiiIfw=="
+    },
+    "priced_line": {
+      "name": "priced_line",
+      "root": "shop_cart",
+      "hash": "2f63436512155aad",
+      "in": [
+        "p"
+      ],
+      "inv": [],
+      "examples": 4,
+      "descriptionHash": "4c3e12a87d95d989",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        ">=",
+        "==",
+        "*"
+      ],
+      "passed": 4,
+      "raises": [
+        "UnknownProduct"
+      ],
+      "generated": {
+        "attempted": 1378,
+        "distinct": 1378,
+        "returned": 100,
+        "preRejected": 1248,
+        "propagated": 30
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "CEHmp6o/ZulmicZ7tWSBP/QYX/mmilbal/tCK0tvJiHNrTXMf3AS/dAPZFfWQQjXZmRjCMP1qlZbKFbq50EoOg==",
+      "reused": true
+    },
+    "priced": {
+      "name": "priced",
+      "root": "shop_cart",
+      "hash": "620349e452151495",
+      "in": [
+        "items",
+        "lines"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "83c6cee68e2b0db2",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "len",
+        "map",
+        "pairs"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1764,
+        "distinct": 1764,
+        "returned": 14,
+        "preRejected": 1750,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:46:03.854Z",
+      "sig": "KCgPKyKYFvkNyYmhgEln+Zr0foVO1C0UDe0e6sk3SQ2O1Oz2c8LI/HKPB3hBbLX+2FVvxdC4c9vYGfCP+vXBZw=="
+    },
+    "subtotal_of": {
+      "name": "subtotal_of",
+      "root": "shop_cart",
+      "hash": "0bdcea7bda26e39f",
+      "in": [
+        "l"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "1ca956dcd68154b9",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "*"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 1355,
+        "distinct": 1355,
+        "returned": 4,
+        "preRejected": 1351,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "RdeYQrBOCGjoABe3dfSgnUyUUer9sCRcXs5edI54pm/eIZs1HITjKBcO3m5o9ADxQ1Gp8SQvWXdCNULK1AhJZw==",
+      "reused": true
+    },
+    "price_pos": {
+      "name": "price_pos",
+      "root": "shop_cart",
+      "hash": "0b0cb5f07723f50f",
+      "in": [
+        "l"
+      ],
+      "inv": [],
+      "examples": 2,
+      "descriptionHash": "22c1d0e641fa6d33",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "in",
+        ">"
+      ],
+      "passed": 2,
+      "raises": [],
+      "generated": {
+        "attempted": 718,
+        "distinct": 718,
+        "returned": 718,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "/LY1MHTRAvGmxhpZ1BVc96cPsZQvDILwwYQuokLlU5no7ouqXr5g0cglrlEUo57e6NKrhdCBqMTPkgTx77e1pw==",
+      "reused": true
+    },
+    "total_of": {
+      "name": "total_of",
+      "root": "shop_cart",
+      "hash": "90023fd76d192f2f",
+      "in": [
+        "plines"
+      ],
+      "inv": [],
+      "examples": 5,
+      "descriptionHash": "4fdd6651fb28204f",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "==",
+        "sum",
+        "map",
+        "len",
+        ">="
+      ],
+      "passed": 5,
+      "raises": [
+        "BadLine"
+      ],
+      "generated": {
+        "attempted": 695,
+        "distinct": 695,
+        "returned": 6,
+        "preRejected": 521,
+        "propagated": 168
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "vYuOp6HnFLcfFKeKqX4k+KFRvHGlM4MWnyjTTnsTy4OrKwv+gniR3KiLeQJjebmiulDs2DMiuSgioavtya6BiA==",
+      "reused": true
+    },
+    "bare": {
+      "name": "bare",
+      "root": "shop_cart",
+      "hash": "facbbb2b2f0e43f3",
+      "in": [
+        "l"
+      ],
+      "inv": [],
+      "examples": 1,
+      "descriptionHash": "54d3ade55e7b8429",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "=="
+      ],
+      "passed": 1,
+      "raises": [],
+      "generated": {
+        "attempted": 1289,
+        "distinct": 1289,
+        "returned": 1289,
+        "preRejected": 0,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "wieGyY24PGz5jFTVNtGSJL8bs68USD6oN8FvbFrvQOdVIELLGLl+/03g1zRIKpHW02Ak1wuU50D6wZHZgD+mQA==",
+      "reused": true
+    },
+    "canonical_intent": {
+      "name": "canonical_intent",
+      "root": "shop_cart",
+      "hash": "f97929aa40c180e4",
+      "in": [
+        "lines"
+      ],
+      "inv": [],
+      "examples": 3,
+      "descriptionHash": "9021adf700ad2dfb",
+      "fx": [],
+      "computedFx": [],
+      "natives": [
+        "map",
+        "==",
+        "len",
+        "pairs",
+        "range"
+      ],
+      "passed": 3,
+      "raises": [],
+      "generated": {
+        "attempted": 695,
+        "distinct": 695,
+        "returned": 490,
+        "preRejected": 205,
+        "propagated": 0
+      },
+      "gaps": [],
+      "checker": "checker#a76d1257",
+      "at": "2026-10-20T12:45:35.094Z",
+      "sig": "1GCzSp0j/xrRe95du9WMtv8mhU+WWo/O1iu4Khl3GkviZdSp4nTJupsGZNyi/6zrdQMOtX3BbAitQqFugPjfLw==",
+      "reused": true
+    }
+  },
+  "refused": {},
+  "demonstrated": {},
+  "metrics": {
+    "freshNodes": 73,
+    "preludeNodes": 0,
+    "callsToPrelude": 0,
+    "callsToFresh": 81,
+    "callsToNatives": 393,
+    "reusedCertificates": 68
+  },
+  "meaning": "Under this checker and runtime, each certified node passed its written examples and the generated inputs recorded here, kept its contracts and listed invariants on every returned case, and requested no effect beyond its declared set. This is tested evidence with signatures, not a proof over all inputs."
+}

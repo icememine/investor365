@@ -1,0 +1,7051 @@
+{
+ "roots": {
+  "batch_transform": {
+   "name": "batch_transform",
+   "uses": [
+    "supplier_snapshot"
+   ],
+   "numbers": "exact",
+   "effects": {
+    "Export": [
+     "file.export"
+    ],
+    "Panel": [
+     "panel.show"
+    ]
+   },
+   "consts": {},
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "not_empty_record": {
+     "says": "true when a raw record has any field with content; a blank line is not a record",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "not",
+      [
+       "or",
+       [
+        "==",
+        "r.fields",
+        [
+         "list"
+        ]
+       ],
+       [
+        "==",
+        "r.fields",
+        [
+         "list",
+         [
+          "lit",
+          ""
+         ]
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "index": 1,
+         "fields": [
+          "A",
+          "a",
+          "1",
+          "1"
+         ]
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "r": {
+         "index": 2,
+         "fields": [
+          ""
+         ]
+        }
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "r": {
+         "index": 3,
+         "fields": []
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 9
+    },
+    "with_index": {
+     "says": "a raw record with its 1-based data-record index; the index counts records after the header, blank lines included, so quoted newlines never shift it",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "p.a",
+        0
+       ],
+       "err": "BadPosition"
+      },
+      {
+       "expr": [
+        "<",
+        "p.a",
+        [
+         "len",
+         "p.b"
+        ]
+       ],
+       "err": "BadPosition"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.index",
+       [
+        "+",
+        "p.a",
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadPosition"
+     ],
+     "body": [],
+     "out": [
+      "rec",
+      "index",
+      [
+       "+",
+       "p.a",
+       1
+      ],
+      "fields",
+      [
+       "at",
+       "p.b",
+       "p.a"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": 0,
+         "b": [
+          [
+           "A",
+           "a",
+           "1",
+           "1"
+          ]
+         ]
+        }
+       },
+       "out": {
+        "index": 1,
+        "fields": [
+         "A",
+         "a",
+         "1",
+         "1"
+        ]
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": 1,
+         "b": [
+          [
+           "A",
+           "a",
+           "1",
+           "1"
+          ]
+         ]
+        }
+       },
+       "refuse": "BadPosition"
+      }
+     ],
+     "line": 18
+    },
+    "data_records": {
+     "says": "the data records of a parsed file with indices, blank lines dropped",
+     "in": [
+      "recs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">",
+        [
+         "len",
+         "recs"
+        ],
+        0
+       ],
+       "err": "NoHeader"
+      }
+     ],
+     "post": [
+      [
+       "<=",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "-",
+        [
+         "len",
+         "recs"
+        ],
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "NoHeader"
+     ],
+     "body": [
+      {
+       "let": "body",
+       "expr": [
+        "map",
+        [
+         "lit",
+         "drop_first_item"
+        ],
+        [
+         "list",
+         "recs"
+        ]
+       ]
+      },
+      {
+       "let": "rows",
+       "expr": [
+        "at",
+        "body",
+        0
+       ]
+      }
+     ],
+     "out": [
+      "filter",
+      [
+       "lit",
+       "not_empty_record"
+      ],
+      [
+       "map",
+       [
+        "lit",
+        "with_index"
+       ],
+       [
+        "pairs",
+        [
+         "range",
+         [
+          "len",
+          "rows"
+         ]
+        ],
+        [
+         "list",
+         "rows"
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "recs": [
+         [
+          "SKU",
+          "NAME",
+          "PRICE_VND",
+          "QTY_ON_HAND"
+         ],
+         [
+          "A",
+          "a",
+          "1",
+          "1"
+         ],
+         [
+          ""
+         ],
+         [
+          "B",
+          "b",
+          "2",
+          "2"
+         ]
+        ]
+       },
+       "out": [
+        {
+         "index": 1,
+         "fields": [
+          "A",
+          "a",
+          "1",
+          "1"
+         ]
+        },
+        {
+         "index": 3,
+         "fields": [
+          "B",
+          "b",
+          "2",
+          "2"
+         ]
+        }
+       ]
+      },
+      {
+       "args": {
+        "recs": []
+       },
+       "refuse": "NoHeader"
+      }
+     ],
+     "line": 28
+    },
+    "drop_first_item": {
+     "says": "the list without its first item",
+     "in": [
+      "xs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">",
+        [
+         "len",
+         "xs"
+        ],
+        0
+       ],
+       "err": "Empty"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "-",
+        [
+         "len",
+         "xs"
+        ],
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "Empty"
+     ],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "item_after"
+      ],
+      [
+       "pairs",
+       [
+        "range",
+        [
+         "-",
+         [
+          "len",
+          "xs"
+         ],
+         1
+        ]
+       ],
+       [
+        "list",
+        "xs"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "xs": [
+         1,
+         2,
+         3
+        ]
+       },
+       "out": [
+        2,
+        3
+       ]
+      },
+      {
+       "args": {
+        "xs": [
+         1
+        ]
+       },
+       "out": []
+      },
+      {
+       "args": {
+        "xs": []
+       },
+       "refuse": "Empty"
+      }
+     ],
+     "line": 39
+    },
+    "item_after": {
+     "says": "the item one position after the index in a",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "p.a",
+        0
+       ],
+       "err": "BadPosition"
+      },
+      {
+       "expr": [
+        "<",
+        [
+         "+",
+         "p.a",
+         1
+        ],
+        [
+         "len",
+         "p.b"
+        ]
+       ],
+       "err": "BadPosition"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "at",
+        "p.b",
+        [
+         "+",
+         "p.a",
+         1
+        ]
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadPosition"
+     ],
+     "body": [],
+     "out": [
+      "at",
+      "p.b",
+      [
+       "+",
+       "p.a",
+       1
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": 0,
+         "b": [
+          1,
+          2,
+          3
+         ]
+        }
+       },
+       "out": 2
+      },
+      {
+       "args": {
+        "p": {
+         "a": 2,
+         "b": [
+          1,
+          2,
+          3
+         ]
+        }
+       },
+       "refuse": "BadPosition"
+      }
+     ],
+     "line": 49
+    },
+    "transform": {
+     "says": "the whole batch result for a supplier file: lexical outcome, header check, validation report, and the normalised snapshot when accepted",
+     "in": [
+      "text"
+     ],
+     "fx": [],
+     "raises": [
+      "BrokenQuote"
+     ],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out.outcome",
+       [
+        "list",
+        [
+         "lit",
+         "BrokenQuote"
+        ],
+        [
+         "lit",
+         "BadHeader"
+        ],
+        [
+         "lit",
+         "Rejected"
+        ],
+        [
+         "lit",
+         "Accepted"
+        ]
+       ]
+      ],
+      [
+       "==",
+       [
+        "==",
+        "out.outcome",
+        [
+         "lit",
+         "Accepted"
+        ]
+       ],
+       [
+        ">",
+        [
+         "len",
+         "out.records"
+        ],
+        0
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [
+      {
+       "let": "recs",
+       "expr": [
+        "csv_records",
+        "text"
+       ]
+      },
+      {
+       "let": "hasHeader",
+       "expr": [
+        "and",
+        [
+         ">",
+         [
+          "len",
+          "recs"
+         ],
+         0
+        ],
+        [
+         "header_ok",
+         [
+          "at",
+          [
+           "if",
+           [
+            ">",
+            [
+             "len",
+             "recs"
+            ],
+            0
+           ],
+           "recs",
+           [
+            "list",
+            [
+             "list"
+            ]
+           ]
+          ],
+          0
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "data",
+       "expr": [
+        "if",
+        "hasHeader",
+        [
+         "data_records",
+         "recs"
+        ],
+        [
+         "list"
+        ]
+       ]
+      },
+      {
+       "let": "v",
+       "expr": [
+        "validate_snapshot",
+        "data"
+       ]
+      },
+      {
+       "let": "accepted",
+       "expr": [
+        "and",
+        "hasHeader",
+        "v.accepted"
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "outcome",
+      [
+       "if",
+       [
+        "not",
+        "hasHeader"
+       ],
+       [
+        "lit",
+        "BadHeader"
+       ],
+       [
+        "if",
+        "accepted",
+        [
+         "lit",
+         "Accepted"
+        ],
+        [
+         "lit",
+         "Rejected"
+        ]
+       ]
+      ],
+      "problems",
+      "v.problems",
+      "duplicates",
+      "v.duplicates",
+      "records",
+      [
+       "if",
+       "accepted",
+       [
+        "normalize_snapshot",
+        "data"
+       ],
+       [
+        "list"
+       ]
+      ],
+      "count",
+      [
+       "len",
+       "data"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nB,b,2,2\nA,a,1,1\n"
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "Accepted"
+         ]
+        ],
+        [
+         "==",
+         "out.records",
+         [
+          "list",
+          [
+           "rec",
+           "sku",
+           [
+            "lit",
+            "A"
+           ],
+           "name",
+           [
+            "lit",
+            "a"
+           ],
+           "price",
+           1,
+           "qty",
+           1
+          ],
+          [
+           "rec",
+           "sku",
+           [
+            "lit",
+            "B"
+           ],
+           "name",
+           [
+            "lit",
+            "b"
+           ],
+           "price",
+           2,
+           "qty",
+           2
+          ]
+         ]
+        ],
+        [
+         "==",
+         "out.count",
+         2
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,1,1\nA,b,1,1\n"
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "Rejected"
+         ]
+        ],
+        [
+         "==",
+         "out.duplicates",
+         [
+          "list",
+          1,
+          2
+         ]
+        ],
+        [
+         "==",
+         "out.records",
+         [
+          "list"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\n"
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "Rejected"
+         ]
+        ],
+        [
+         "==",
+         "out.count",
+         0
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": "sku,name\nA,a,1,1\n"
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "BadHeader"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": ""
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "BadHeader"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,\"unclosed,1,1\n"
+       },
+       "refuse": "BrokenQuote"
+      }
+     ],
+     "line": 59
+    },
+    "run": {
+     "says": "the batch entry point: transform, show the report on the panel, and export the snapshot only when accepted",
+     "in": [
+      "text"
+     ],
+     "fx": [
+      "Export",
+      "Panel"
+     ],
+     "raises": [
+      "BrokenQuote"
+     ],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out.outcome",
+       [
+        "list",
+        [
+         "lit",
+         "BrokenQuote"
+        ],
+        [
+         "lit",
+         "BadHeader"
+        ],
+        [
+         "lit",
+         "Rejected"
+        ],
+        [
+         "lit",
+         "Accepted"
+        ]
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [
+      {
+       "let": "r",
+       "expr": [
+        "transform",
+        "text"
+       ]
+      },
+      {
+       "let": "shown",
+       "expr": [
+        "panel.show",
+        [
+         "list",
+         [
+          "rec",
+          "k",
+          [
+           "lit",
+           "section"
+          ],
+          "text",
+          [
+           "cat",
+           [
+            "lit",
+            "Result: "
+           ],
+           "r.outcome"
+          ]
+         ],
+         [
+          "rec",
+          "k",
+          [
+           "lit",
+           "text"
+          ],
+          "text",
+          [
+           "cat",
+           [
+            "str",
+            [
+             "len",
+             "r.problems"
+            ]
+           ],
+           [
+            "lit",
+            " field problems"
+           ]
+          ]
+         ],
+         [
+          "rec",
+          "k",
+          [
+           "lit",
+           "text"
+          ],
+          "text",
+          [
+           "cat",
+           [
+            "str",
+            [
+             "len",
+             "r.duplicates"
+            ]
+           ],
+           [
+            "lit",
+            " records in duplicate SKUs"
+           ]
+          ]
+         ],
+         [
+          "rec",
+          "k",
+          [
+           "lit",
+           "text"
+          ],
+          "text",
+          [
+           "cat",
+           [
+            "str",
+            [
+             "len",
+             "r.records"
+            ]
+           ],
+           [
+            "lit",
+            " records normalised"
+           ]
+          ]
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "exported",
+       "expr": [
+        "if",
+        [
+         "==",
+         "r.outcome",
+         [
+          "lit",
+          "Accepted"
+         ]
+        ],
+        [
+         "file.export",
+         [
+          "lit",
+          "snapshot.normalized.json"
+         ],
+         [
+          "str",
+          [
+           "len",
+           "r.records"
+          ]
+         ]
+        ],
+        true
+       ]
+      }
+     ],
+     "out": "r",
+     "ex": [
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,a,1,1\n"
+       },
+       "check": [
+        [
+         "==",
+         "out.outcome",
+         [
+          "lit",
+          "Accepted"
+         ]
+        ]
+       ]
+      },
+      {
+       "args": {
+        "text": "SKU,NAME,PRICE_VND,QTY_ON_HAND\nA,\"x,1,1\n"
+       },
+       "refuse": "BrokenQuote"
+      }
+     ],
+     "line": 78
+    }
+   }
+  },
+  "lib_bounded": {
+   "name": "lib_bounded",
+   "uses": [],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {},
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "clamp_to": {
+     "says": "x held between lo and hi inclusive; never use it to hide an unavailable quantity",
+     "in": [
+      "x",
+      "lo",
+      "hi"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "<=",
+        "lo",
+        "hi"
+       ],
+       "err": "InvalidBounds"
+      }
+     ],
+     "post": [
+      [
+       ">=",
+       "out",
+       "lo"
+      ],
+      [
+       "<=",
+       "out",
+       "hi"
+      ],
+      [
+       "or",
+       [
+        "==",
+        "out",
+        "x"
+       ],
+       [
+        "==",
+        "out",
+        "lo"
+       ],
+       [
+        "==",
+        "out",
+        "hi"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "InvalidBounds"
+     ],
+     "body": [],
+     "out": [
+      "min",
+      "hi",
+      [
+       "max",
+       "lo",
+       "x"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "x": 5,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": 3
+      },
+      {
+       "args": {
+        "x": -1,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "x": 2,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": 2
+      },
+      {
+       "args": {
+        "x": 2,
+        "lo": 2,
+        "hi": 2
+       },
+       "out": 2
+      },
+      {
+       "args": {
+        "x": 2,
+        "lo": 3,
+        "hi": 1
+       },
+       "refuse": "InvalidBounds"
+      }
+     ],
+     "line": 5
+    },
+    "within": {
+     "says": "true when lo ≤ x ≤ hi",
+     "in": [
+      "x",
+      "lo",
+      "hi"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "<=",
+        "lo",
+        "hi"
+       ],
+       "err": "InvalidBounds"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out",
+       [
+        "and",
+        [
+         ">=",
+         "x",
+         "lo"
+        ],
+        [
+         "<=",
+         "x",
+         "hi"
+        ]
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "InvalidBounds"
+     ],
+     "body": [],
+     "out": [
+      "and",
+      [
+       ">=",
+       "x",
+       "lo"
+      ],
+      [
+       "<=",
+       "x",
+       "hi"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "x": 2,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "x": 3,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "x": 4,
+        "lo": 0,
+        "hi": 3
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "x": 2,
+        "lo": 3,
+        "hi": 1
+       },
+       "refuse": "InvalidBounds"
+      }
+     ],
+     "line": 19
+    }
+   }
+  },
+  "lib_sequence": {
+   "name": "lib_sequence",
+   "uses": [],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {},
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "same_text": {
+     "says": "1 when the two texts in a pair are the same scalar sequence, else 0",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "==",
+       [
+        "text_cmp",
+        "p.a",
+        "p.b"
+       ],
+       0
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": "A",
+         "b": "A"
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "p": {
+         "a": "A",
+         "b": "a"
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 6
+    },
+    "unique_text": {
+     "says": "true when no two texts in the list are the same scalar sequence; the empty list is unique",
+     "in": [
+      "xs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      [
+       "sum",
+       [
+        "map",
+        [
+         "lit",
+         "same_text"
+        ],
+        [
+         "pairs",
+         "xs",
+         "xs"
+        ]
+       ]
+      ],
+      [
+       "len",
+       "xs"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "xs": [
+         "A",
+         "B"
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "xs": [
+         "A",
+         "A"
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "xs": [
+         "a",
+         "A"
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "xs": []
+       },
+       "out": true
+      }
+     ],
+     "line": 14
+    },
+    "is_sorted_pair": {
+     "says": "1 when the text in a is not after the text in b",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "<=",
+       [
+        "text_cmp",
+        "p.a",
+        "p.b"
+       ],
+       0
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": "A",
+         "b": "B"
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "p": {
+         "a": "B",
+         "b": "A"
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 26
+    },
+    "min_text": {
+     "says": "the smallest text in a non-empty list by scalar sequence",
+     "in": [
+      "xs"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">",
+        [
+         "len",
+         "xs"
+        ],
+        0
+       ],
+       "err": "Empty"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out",
+       "xs"
+      ],
+      [
+       "==",
+       [
+        "sum",
+        [
+         "map",
+         [
+          "lit",
+          "is_sorted_pair"
+         ],
+         [
+          "pairs",
+          [
+           "list",
+           "out"
+          ],
+          "xs"
+         ]
+        ]
+       ],
+       [
+        "len",
+        "xs"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "Empty"
+     ],
+     "body": [
+      {
+       "let": "firsts",
+       "expr": [
+        "filter",
+        [
+         "lit",
+         "is_min_of"
+        ],
+        [
+         "pairs",
+         "xs",
+         [
+          "list",
+          "xs"
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "hit",
+       "expr": [
+        "at",
+        "firsts",
+        0
+       ]
+      }
+     ],
+     "out": "hit.a",
+     "ex": [
+      {
+       "args": {
+        "xs": [
+         "B",
+         "A",
+         "C"
+        ]
+       },
+       "out": "A"
+      },
+      {
+       "args": {
+        "xs": [
+         "A"
+        ]
+       },
+       "out": "A"
+      },
+      {
+       "args": {
+        "xs": []
+       },
+       "refuse": "Empty"
+      }
+     ],
+     "line": 34
+    },
+    "is_min_of": {
+     "says": "true when the text in a is not after any text in the list in b",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      [
+       "sum",
+       [
+        "map",
+        [
+         "lit",
+         "is_sorted_pair"
+        ],
+        [
+         "pairs",
+         [
+          "list",
+          "p.a"
+         ],
+         "p.b"
+        ]
+       ]
+      ],
+      [
+       "len",
+       "p.b"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": "A",
+         "b": [
+          "B",
+          "A"
+         ]
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "a": "B",
+         "b": [
+          "B",
+          "A"
+         ]
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 47
+    }
+   }
+  },
+  "lib_test": {
+   "name": "lib_test",
+   "uses": [
+    "lib_bounded",
+    "lib_text",
+    "lib_sequence",
+    "supplier_snapshot"
+   ],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {},
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {}
+  },
+  "lib_text": {
+   "name": "lib_text",
+   "uses": [],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {
+    "MAX_DIGITS": 16
+   },
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "digits_fit": {
+     "says": "true when a digit string, without its leading zeros, denotes a number no larger than the exact maximum; decided by length and then by text comparison, never by converting",
+     "in": [
+      "s"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "is_digits",
+        "s"
+       ],
+       "err": "NotDigits"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "NotDigits"
+     ],
+     "body": [
+      {
+       "let": "d",
+       "expr": [
+        "strip_zeros",
+        "s"
+       ]
+      },
+      {
+       "let": "n",
+       "expr": [
+        "scalars",
+        "d"
+       ]
+      }
+     ],
+     "out": [
+      "or",
+      [
+       "<",
+       "n",
+       "MAX_DIGITS"
+      ],
+      [
+       "and",
+       [
+        "==",
+        "n",
+        "MAX_DIGITS"
+       ],
+       [
+        "<=",
+        [
+         "text_cmp",
+         "d",
+         [
+          "lit",
+          "9007199254740991"
+         ]
+        ],
+        0
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "s": "0"
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "s": "12"
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "s": "0009007199254740991"
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "s": "9007199254740991"
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "s": "9007199254740992"
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "s": "10000000000000000"
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "s": "99999999999999999999"
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "s": "12a"
+       },
+       "refuse": "NotDigits"
+      },
+      {
+       "args": {
+        "s": ""
+       },
+       "refuse": "NotDigits"
+      }
+     ],
+     "line": 7
+    },
+    "parse_decimal_nat": {
+     "says": "the value of a string of ASCII digits; refuses anything else and refuses a value that would leave the exact range, before converting",
+     "in": [
+      "s"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "is_digits",
+        "s"
+       ],
+       "err": "InvalidInteger"
+      },
+      {
+       "expr": [
+        "digits_fit",
+        "s"
+       ],
+       "err": "OutOfRange"
+      }
+     ],
+     "post": [
+      [
+       ">=",
+       "out",
+       0
+      ],
+      [
+       "==",
+       [
+        "str",
+        "out"
+       ],
+       [
+        "strip_zeros",
+        "s"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "InvalidInteger",
+      "OutOfRange"
+     ],
+     "body": [],
+     "out": [
+      "to_int",
+      [
+       "strip_zeros",
+       "s"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "s": "12"
+       },
+       "out": 12
+      },
+      {
+       "args": {
+        "s": "0012"
+       },
+       "out": 12
+      },
+      {
+       "args": {
+        "s": "0"
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "s": "9007199254740991"
+       },
+       "out": 9007199254740991
+      },
+      {
+       "args": {
+        "s": "9007199254740992"
+       },
+       "refuse": "OutOfRange"
+      },
+      {
+       "args": {
+        "s": " 12"
+       },
+       "refuse": "InvalidInteger"
+      },
+      {
+       "args": {
+        "s": "-1"
+       },
+       "refuse": "InvalidInteger"
+      },
+      {
+       "args": {
+        "s": "1.0"
+       },
+       "refuse": "InvalidInteger"
+      },
+      {
+       "args": {
+        "s": ""
+       },
+       "refuse": "InvalidInteger"
+      }
+     ],
+     "line": 25
+    }
+   }
+  },
+  "supplier_snapshot": {
+   "name": "supplier_snapshot",
+   "uses": [
+    "lib_text",
+    "lib_sequence"
+   ],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {
+    "NAME_MAX": 120,
+    "FIELDS": 4,
+    "F_SKU": 0,
+    "F_NAME": 1,
+    "F_PRICE": 2,
+    "F_QTY": 3
+   },
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "header_ok": {
+     "says": "true when the header is exactly SKU,NAME,PRICE_VND,QTY_ON_HAND",
+     "in": [
+      "fields"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      "fields",
+      [
+       "list",
+       [
+        "lit",
+        "SKU"
+       ],
+       [
+        "lit",
+        "NAME"
+       ],
+       [
+        "lit",
+        "PRICE_VND"
+       ],
+       [
+        "lit",
+        "QTY_ON_HAND"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "fields": [
+         "SKU",
+         "NAME",
+         "PRICE_VND",
+         "QTY_ON_HAND"
+        ]
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "fields": [
+         "sku",
+         "name",
+         "price",
+         "qty"
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "fields": [
+         "SKU",
+         "NAME",
+         "PRICE_VND"
+        ]
+       },
+       "out": false
+      }
+     ],
+     "line": 17
+    },
+    "field_problem": {
+     "says": "the first problem with a raw record, as a located diagnostic {index field problem}, or none",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "r.index",
+        1
+       ],
+       "err": "BadIndex"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out.problem",
+       [
+        "list",
+        [
+         "lit",
+         "none"
+        ],
+        [
+         "lit",
+         "FieldCount"
+        ],
+        [
+         "lit",
+         "BadSku"
+        ],
+        [
+         "lit",
+         "EmptyName"
+        ],
+        [
+         "lit",
+         "NameTooLong"
+        ],
+        [
+         "lit",
+         "BadPrice"
+        ],
+        [
+         "lit",
+         "PriceOutOfRange"
+        ],
+        [
+         "lit",
+         "ZeroPrice"
+        ],
+        [
+         "lit",
+         "BadQty"
+        ],
+        [
+         "lit",
+         "QtyOutOfRange"
+        ]
+       ]
+      ],
+      [
+       "==",
+       "out.index",
+       "r.index"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadIndex"
+     ],
+     "body": [
+      {
+       "let": "n",
+       "expr": [
+        "len",
+        "r.fields"
+       ]
+      },
+      {
+       "let": "four",
+       "expr": [
+        "==",
+        "n",
+        "FIELDS"
+       ]
+      },
+      {
+       "let": "f",
+       "expr": [
+        "if",
+        "four",
+        "r.fields",
+        [
+         "list",
+         [
+          "lit",
+          ""
+         ],
+         [
+          "lit",
+          ""
+         ],
+         [
+          "lit",
+          ""
+         ],
+         [
+          "lit",
+          ""
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "sku",
+       "expr": [
+        "at",
+        "f",
+        "F_SKU"
+       ]
+      },
+      {
+       "let": "name",
+       "expr": [
+        "at",
+        "f",
+        "F_NAME"
+       ]
+      },
+      {
+       "let": "price",
+       "expr": [
+        "at",
+        "f",
+        "F_PRICE"
+       ]
+      },
+      {
+       "let": "qty",
+       "expr": [
+        "at",
+        "f",
+        "F_QTY"
+       ]
+      },
+      {
+       "let": "p",
+       "expr": [
+        "if",
+        [
+         "not",
+         "four"
+        ],
+        [
+         "lit",
+         "FieldCount"
+        ],
+        [
+         "if",
+         [
+          "not",
+          [
+           "is_sku_text",
+           "sku"
+          ]
+         ],
+         [
+          "lit",
+          "BadSku"
+         ],
+         [
+          "if",
+          [
+           "==",
+           [
+            "scalars",
+            "name"
+           ],
+           0
+          ],
+          [
+           "lit",
+           "EmptyName"
+          ],
+          [
+           "if",
+           [
+            ">",
+            [
+             "scalars",
+             "name"
+            ],
+            "NAME_MAX"
+           ],
+           [
+            "lit",
+            "NameTooLong"
+           ],
+           [
+            "if",
+            [
+             "not",
+             [
+              "is_digits",
+              "price"
+             ]
+            ],
+            [
+             "lit",
+             "BadPrice"
+            ],
+            [
+             "if",
+             [
+              "not",
+              [
+               "digits_fit",
+               "price"
+              ]
+             ],
+             [
+              "lit",
+              "PriceOutOfRange"
+             ],
+             [
+              "if",
+              [
+               "==",
+               [
+                "strip_zeros",
+                "price"
+               ],
+               [
+                "lit",
+                "0"
+               ]
+              ],
+              [
+               "lit",
+               "ZeroPrice"
+              ],
+              [
+               "if",
+               [
+                "not",
+                [
+                 "is_digits",
+                 "qty"
+                ]
+               ],
+               [
+                "lit",
+                "BadQty"
+               ],
+               [
+                "if",
+                [
+                 "not",
+                 [
+                  "digits_fit",
+                  "qty"
+                 ]
+                ],
+                [
+                 "lit",
+                 "QtyOutOfRange"
+                ],
+                [
+                 "lit",
+                 "none"
+                ]
+               ]
+              ]
+             ]
+            ]
+           ]
+          ]
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "fld",
+       "expr": [
+        "if",
+        [
+         "==",
+         "p",
+         [
+          "lit",
+          "FieldCount"
+         ]
+        ],
+        [
+         "lit",
+         "record"
+        ],
+        [
+         "if",
+         [
+          "==",
+          "p",
+          [
+           "lit",
+           "BadSku"
+          ]
+         ],
+         [
+          "lit",
+          "SKU"
+         ],
+         [
+          "if",
+          [
+           "in",
+           "p",
+           [
+            "list",
+            [
+             "lit",
+             "EmptyName"
+            ],
+            [
+             "lit",
+             "NameTooLong"
+            ]
+           ]
+          ],
+          [
+           "lit",
+           "NAME"
+          ],
+          [
+           "if",
+           [
+            "in",
+            "p",
+            [
+             "list",
+             [
+              "lit",
+              "BadPrice"
+             ],
+             [
+              "lit",
+              "PriceOutOfRange"
+             ],
+             [
+              "lit",
+              "ZeroPrice"
+             ]
+            ]
+           ],
+           [
+            "lit",
+            "PRICE_VND"
+           ],
+           [
+            "if",
+            [
+             "==",
+             "p",
+             [
+              "lit",
+              "none"
+             ]
+            ],
+            [
+             "lit",
+             ""
+            ],
+            [
+             "lit",
+             "QTY_ON_HAND"
+            ]
+           ]
+          ]
+         ]
+        ]
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "index",
+      "r.index",
+      "field",
+      "fld",
+      "problem",
+      "p"
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "index": 1,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 1,
+        "field": "",
+        "problem": "none"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 2,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000"
+         ]
+        }
+       },
+       "out": {
+        "index": 2,
+        "field": "record",
+        "problem": "FieldCount"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 3,
+         "fields": [
+          "nb-01",
+          "Notebook",
+          "45000",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 3,
+        "field": "SKU",
+        "problem": "BadSku"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 4,
+         "fields": [
+          "NB-01",
+          "",
+          "45000",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 4,
+        "field": "NAME",
+        "problem": "EmptyName"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 5,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45,000",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 5,
+        "field": "PRICE_VND",
+        "problem": "BadPrice"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 6,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "9007199254740992",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 6,
+        "field": "PRICE_VND",
+        "problem": "PriceOutOfRange"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 7,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "000",
+          "12"
+         ]
+        }
+       },
+       "out": {
+        "index": 7,
+        "field": "PRICE_VND",
+        "problem": "ZeroPrice"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 8,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000",
+          " 12"
+         ]
+        }
+       },
+       "out": {
+        "index": 8,
+        "field": "QTY_ON_HAND",
+        "problem": "BadQty"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 9,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000",
+          "99999999999999999"
+         ]
+        }
+       },
+       "out": {
+        "index": 9,
+        "field": "QTY_ON_HAND",
+        "problem": "QtyOutOfRange"
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 0,
+         "fields": []
+        }
+       },
+       "refuse": "BadIndex"
+      }
+     ],
+     "line": 26
+    },
+    "problem_count": {
+     "says": "1 when a diagnostic names a problem, else 0",
+     "in": [
+      "d"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "==",
+       "d.problem",
+       [
+        "lit",
+        "none"
+       ]
+      ],
+      0,
+      1
+     ],
+     "ex": [
+      {
+       "args": {
+        "d": {
+         "index": 1,
+         "field": "",
+         "problem": "none"
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "d": {
+         "index": 1,
+         "field": "SKU",
+         "problem": "BadSku"
+        }
+       },
+       "out": 1
+      }
+     ],
+     "line": 53
+    },
+    "has_problem": {
+     "says": "true when a diagnostic names a problem",
+     "in": [
+      "d"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "!=",
+      "d.problem",
+      [
+       "lit",
+       "none"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "d": {
+         "index": 1,
+         "field": "",
+         "problem": "none"
+        }
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "d": {
+         "index": 1,
+         "field": "SKU",
+         "problem": "BadSku"
+        }
+       },
+       "out": true
+      }
+     ],
+     "line": 61
+    },
+    "normalize_record": {
+     "says": "a validated raw record as a product: SKU kept, NAME preserved, PRICE_VND and QTY_ON_HAND as exact numbers; the validation guarantees the conversions cannot refuse",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "r.index",
+        1
+       ],
+       "err": "BadIndex"
+      },
+      {
+       "expr": [
+        "not",
+        [
+         "has_problem",
+         [
+          "field_problem",
+          "r"
+         ]
+        ]
+       ],
+       "err": "InvalidRecord"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.sku",
+       [
+        "at",
+        "r.fields",
+        "F_SKU"
+       ]
+      ],
+      [
+       "==",
+       "out.name",
+       [
+        "at",
+        "r.fields",
+        "F_NAME"
+       ]
+      ],
+      [
+       ">",
+       "out.price",
+       0
+      ],
+      [
+       ">=",
+       "out.qty",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadIndex",
+      "InvalidRecord"
+     ],
+     "body": [
+      {
+       "let": "f",
+       "expr": "r.fields"
+      }
+     ],
+     "out": [
+      "rec",
+      "sku",
+      [
+       "at",
+       "f",
+       "F_SKU"
+      ],
+      "name",
+      [
+       "at",
+       "f",
+       "F_NAME"
+      ],
+      "price",
+      [
+       "parse_decimal_nat",
+       [
+        "at",
+        "f",
+        "F_PRICE"
+       ]
+      ],
+      "qty",
+      [
+       "parse_decimal_nat",
+       [
+        "at",
+        "f",
+        "F_QTY"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "index": 1,
+         "fields": [
+          "NB-01",
+          "Notebook, blue",
+          "045000",
+          "0012"
+         ]
+        }
+       },
+       "out": {
+        "sku": "NB-01",
+        "name": "Notebook, blue",
+        "price": 45000,
+        "qty": 12
+       }
+      },
+      {
+       "args": {
+        "r": {
+         "index": 2,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000"
+         ]
+        }
+       },
+       "refuse": "InvalidRecord"
+      },
+      {
+       "args": {
+        "r": {
+         "index": 0,
+         "fields": [
+          "NB-01",
+          "Notebook",
+          "45000",
+          "1"
+         ]
+        }
+       },
+       "refuse": "BadIndex"
+      }
+     ],
+     "line": 69
+    },
+    "sku_of": {
+     "says": "the SKU of a product",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "p.sku"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "p.sku",
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "sku": "A",
+         "name": "a",
+         "price": 1,
+         "qty": 0
+        }
+       },
+       "out": "A"
+      }
+     ],
+     "line": 84
+    },
+    "index_of": {
+     "says": "the data-record index of a raw record",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "r.index"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "r.index",
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "index": 3,
+         "fields": []
+        }
+       },
+       "out": 3
+      }
+     ],
+     "line": 91
+    },
+    "sku_dup": {
+     "says": "1 when the two raw records in a pair carry the same SKU text and are different records, else 0",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [
+      {
+       "let": "same",
+       "expr": [
+        "and",
+        [
+         "==",
+         [
+          "len",
+          "p.a.fields"
+         ],
+         "FIELDS"
+        ],
+        [
+         "==",
+         [
+          "len",
+          "p.b.fields"
+         ],
+         "FIELDS"
+        ]
+       ]
+      },
+      {
+       "let": "a",
+       "expr": [
+        "if",
+        "same",
+        [
+         "at",
+         "p.a.fields",
+         "F_SKU"
+        ],
+        [
+         "lit",
+         ""
+        ]
+       ]
+      },
+      {
+       "let": "b",
+       "expr": [
+        "if",
+        "same",
+        [
+         "at",
+         "p.b.fields",
+         "F_SKU"
+        ],
+        [
+         "lit",
+         ""
+        ]
+       ]
+      }
+     ],
+     "out": [
+      "if",
+      [
+       "and",
+       "same",
+       [
+        "!=",
+        "p.a.index",
+        "p.b.index"
+       ],
+       [
+        "==",
+        [
+         "text_cmp",
+         "a",
+         "b"
+        ],
+        0
+       ]
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         "b": {
+          "index": 2,
+          "fields": [
+           "A",
+           "y",
+           "1",
+           "1"
+          ]
+         }
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         "b": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         }
+        }
+       },
+       "out": 0
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         "b": {
+          "index": 2,
+          "fields": [
+           "B",
+           "y",
+           "1",
+           "1"
+          ]
+         }
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 98
+    },
+    "involved_in_dup": {
+     "says": "true when the raw record in a shares its SKU with another record in the list in b",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      ">",
+      [
+       "sum",
+       [
+        "map",
+        [
+         "lit",
+         "sku_dup"
+        ],
+        [
+         "pairs",
+         [
+          "list",
+          "p.a"
+         ],
+         "p.b"
+        ]
+       ]
+      ],
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         "b": [
+          {
+           "index": 1,
+           "fields": [
+            "A",
+            "x",
+            "1",
+            "1"
+           ]
+          },
+          {
+           "index": 2,
+           "fields": [
+            "A",
+            "y",
+            "1",
+            "1"
+           ]
+          }
+         ]
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         "b": [
+          {
+           "index": 1,
+           "fields": [
+            "A",
+            "x",
+            "1",
+            "1"
+           ]
+          }
+         ]
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 110
+    },
+    "raw_of": {
+     "says": "the raw record of a pair",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "p.a"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "p.a",
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "index": 1,
+          "fields": []
+         },
+         "b": []
+        }
+       },
+       "out": {
+        "index": 1,
+        "fields": []
+       }
+      }
+     ],
+     "line": 118
+    },
+    "duplicate_indices": {
+     "says": "the data-record indices of every record whose SKU appears more than once, in file order",
+     "in": [
+      "records"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "<=",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "records"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "index_of"
+      ],
+      [
+       "map",
+       [
+        "lit",
+        "raw_of"
+       ],
+       [
+        "filter",
+        [
+         "lit",
+         "involved_in_dup"
+        ],
+        [
+         "pairs",
+         "records",
+         [
+          "list",
+          "records"
+         ]
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         },
+         {
+          "index": 2,
+          "fields": [
+           "B",
+           "y",
+           "1",
+           "1"
+          ]
+         },
+         {
+          "index": 3,
+          "fields": [
+           "A",
+           "z",
+           "1",
+           "1"
+          ]
+         }
+        ]
+       },
+       "out": [
+        1,
+        3
+       ]
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "A",
+           "x",
+           "1",
+           "1"
+          ]
+         }
+        ]
+       },
+       "out": []
+      },
+      {
+       "args": {
+        "records": []
+       },
+       "out": []
+      }
+     ],
+     "line": 125
+    },
+    "validate_snapshot": {
+     "says": "every located field diagnostic, the duplicate-SKU indices, and whether the snapshot is accepted: accepted only when there are records, no field problems and no duplicates",
+     "in": [
+      "records"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        [
+         "sum",
+         [
+          "map",
+          [
+           "lit",
+           "index_ok"
+          ],
+          "records"
+         ]
+        ],
+        [
+         "len",
+         "records"
+        ]
+       ],
+       "err": "BadIndex"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out.accepted",
+       [
+        "list",
+        true,
+        false
+       ]
+      ],
+      [
+       "==",
+       "out.accepted",
+       [
+        "and",
+        [
+         ">",
+         [
+          "len",
+          "records"
+         ],
+         0
+        ],
+        [
+         "==",
+         [
+          "len",
+          "out.problems"
+         ],
+         0
+        ],
+        [
+         "==",
+         [
+          "len",
+          "out.duplicates"
+         ],
+         0
+        ]
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadIndex"
+     ],
+     "body": [
+      {
+       "let": "diags",
+       "expr": [
+        "map",
+        [
+         "lit",
+         "field_problem"
+        ],
+        "records"
+       ]
+      },
+      {
+       "let": "problems",
+       "expr": [
+        "filter",
+        [
+         "lit",
+         "has_problem"
+        ],
+        "diags"
+       ]
+      },
+      {
+       "let": "dups",
+       "expr": [
+        "duplicate_indices",
+        "records"
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "problems",
+      "problems",
+      "duplicates",
+      "dups",
+      "accepted",
+      [
+       "and",
+       [
+        ">",
+        [
+         "len",
+         "records"
+        ],
+        0
+       ],
+       [
+        "==",
+        [
+         "len",
+         "problems"
+        ],
+        0
+       ],
+       [
+        "==",
+        [
+         "len",
+         "dups"
+        ],
+        0
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "NB-01",
+           "Notebook",
+           "45000",
+           "12"
+          ]
+         },
+         {
+          "index": 2,
+          "fields": [
+           "PN-02",
+           "Pen",
+           "12000",
+           "30"
+          ]
+         }
+        ]
+       },
+       "check": [
+        [
+         "==",
+         "out.accepted",
+         true
+        ],
+        [
+         "==",
+         [
+          "len",
+          "out.problems"
+         ],
+         0
+        ]
+       ]
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "NB-01",
+           "Notebook",
+           "45000",
+           "12"
+          ]
+         },
+         {
+          "index": 2,
+          "fields": [
+           "NB-01",
+           "Notebook",
+           "45000",
+           "12"
+          ]
+         }
+        ]
+       },
+       "check": [
+        [
+         "==",
+         "out.accepted",
+         false
+        ],
+        [
+         "==",
+         "out.duplicates",
+         [
+          "list",
+          1,
+          2
+         ]
+        ]
+       ]
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "nb-01",
+           "Notebook",
+           "45000",
+           "12"
+          ]
+         }
+        ]
+       },
+       "check": [
+        [
+         "==",
+         "out.accepted",
+         false
+        ],
+        [
+         "==",
+         [
+          "len",
+          "out.problems"
+         ],
+         1
+        ]
+       ]
+      },
+      {
+       "args": {
+        "records": []
+       },
+       "check": [
+        [
+         "==",
+         "out.accepted",
+         false
+        ]
+       ]
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 0,
+          "fields": [
+           "A",
+           "a",
+           "1",
+           "1"
+          ]
+         }
+        ]
+       },
+       "refuse": "BadIndex"
+      }
+     ],
+     "line": 134
+    },
+    "index_ok": {
+     "says": "1 when a raw record's index is at least 1",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       ">=",
+       "r.index",
+       1
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "index": 1,
+         "fields": []
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "r": {
+         "index": 0,
+         "fields": []
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 150
+    },
+    "accepted_of": {
+     "says": "the accepted flag of a validation result",
+     "in": [
+      "v"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out",
+       "v.accepted"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": "v.accepted",
+     "ex": [
+      {
+       "args": {
+        "v": {
+         "problems": [],
+         "duplicates": [],
+         "accepted": true
+        }
+       },
+       "out": true
+      }
+     ],
+     "line": 158
+    },
+    "sku_before": {
+     "says": "true when the product in a sorts strictly before the product in b by SKU",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "<",
+      [
+       "text_cmp",
+       "p.a.sku",
+       "p.b.sku"
+      ],
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 1,
+          "qty": 0
+         },
+         "b": {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "qty": 0
+         }
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "B",
+          "name": "a",
+          "price": 1,
+          "qty": 0
+         },
+         "b": {
+          "sku": "A",
+          "name": "b",
+          "price": 1,
+          "qty": 0
+         }
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 165
+    },
+    "count_before": {
+     "says": "how many products in the list in b sort before the product in a; with unique SKUs this is its position",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       ">=",
+       "out",
+       0
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "len",
+      [
+       "filter",
+       [
+        "lit",
+        "sku_before"
+       ],
+       [
+        "map",
+        [
+         "lit",
+         "swap"
+        ],
+        [
+         "pairs",
+         [
+          "list",
+          "p.a"
+         ],
+         "p.b"
+        ]
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "sku": "B",
+          "name": "b",
+          "price": 1,
+          "qty": 0
+         },
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 1,
+           "qty": 0
+          },
+          {
+           "sku": "B",
+           "name": "b",
+           "price": 1,
+           "qty": 0
+          },
+          {
+           "sku": "C",
+           "name": "c",
+           "price": 1,
+           "qty": 0
+          }
+         ]
+        }
+       },
+       "out": 1
+      }
+     ],
+     "line": 173
+    },
+    "swap": {
+     "says": "the pair with a and b exchanged",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out.a",
+       "p.b"
+      ],
+      [
+       "==",
+       "out.b",
+       "p.a"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "rec",
+      "a",
+      "p.b",
+      "b",
+      "p.a"
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": 1,
+         "b": 2
+        }
+       },
+       "out": {
+        "a": 2,
+        "b": 1
+       }
+      }
+     ],
+     "line": 180
+    },
+    "at_position": {
+     "says": "the product in the list in b whose position by SKU order is the index in a; the SKUs must be unique for positions to be unique",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        ">=",
+        "p.a",
+        0
+       ],
+       "err": "BadPosition"
+      },
+      {
+       "expr": [
+        "<",
+        "p.a",
+        [
+         "len",
+         "p.b"
+        ]
+       ],
+       "err": "BadPosition"
+      },
+      {
+       "expr": [
+        "unique_text",
+        [
+         "map",
+         [
+          "lit",
+          "sku_of"
+         ],
+         "p.b"
+        ]
+       ],
+       "err": "NotUnique"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out",
+       "p.b"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadPosition",
+      "NotUnique"
+     ],
+     "body": [
+      {
+       "let": "hits",
+       "expr": [
+        "filter",
+        [
+         "lit",
+         "position_is"
+        ],
+        [
+         "pairs",
+         "p.b",
+         [
+          "list",
+          [
+           "rec",
+           "list",
+           "p.b",
+           "want",
+           "p.a"
+          ]
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "hit",
+       "expr": [
+        "at",
+        "hits",
+        0
+       ]
+      }
+     ],
+     "out": "hit.a",
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": 0,
+         "b": [
+          {
+           "sku": "B",
+           "name": "b",
+           "price": 1,
+           "qty": 0
+          },
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 1,
+           "qty": 0
+          }
+         ]
+        }
+       },
+       "out": {
+        "sku": "A",
+        "name": "a",
+        "price": 1,
+        "qty": 0
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": 5,
+         "b": []
+        }
+       },
+       "refuse": "BadPosition"
+      },
+      {
+       "args": {
+        "p": {
+         "a": 0,
+         "b": [
+          {
+           "sku": "A",
+           "name": "a",
+           "price": 1,
+           "qty": 0
+          },
+          {
+           "sku": "A",
+           "name": "b",
+           "price": 1,
+           "qty": 0
+          }
+         ]
+        }
+       },
+       "refuse": "NotUnique"
+      }
+     ],
+     "line": 188
+    },
+    "position_is": {
+     "says": "true when the product in a has the wanted position within the list carried in b",
+     "in": [
+      "q"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "==",
+      [
+       "count_before",
+       [
+        "rec",
+        "a",
+        "q.a",
+        "b",
+        "q.b.list"
+       ]
+      ],
+      "q.b.want"
+     ],
+     "ex": [
+      {
+       "args": {
+        "q": {
+         "a": {
+          "sku": "A",
+          "name": "a",
+          "price": 1,
+          "qty": 0
+         },
+         "b": {
+          "list": [
+           {
+            "sku": "B",
+            "name": "b",
+            "price": 1,
+            "qty": 0
+           },
+           {
+            "sku": "A",
+            "name": "a",
+            "price": 1,
+            "qty": 0
+           }
+          ],
+          "want": 0
+         }
+        }
+       },
+       "out": true
+      }
+     ],
+     "line": 202
+    },
+    "normalize_snapshot": {
+     "says": "the accepted snapshot as products sorted by SKU; refuses a snapshot that validate_snapshot does not accept",
+     "in": [
+      "records"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        [
+         "sum",
+         [
+          "map",
+          [
+           "lit",
+           "index_ok"
+          ],
+          "records"
+         ]
+        ],
+        [
+         "len",
+         "records"
+        ]
+       ],
+       "err": "BadIndex"
+      },
+      {
+       "expr": [
+        "accepted_of",
+        [
+         "validate_snapshot",
+         "records"
+        ]
+       ],
+       "err": "NotAccepted"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "records"
+       ]
+      ],
+      [
+       "unique_text",
+       [
+        "map",
+        [
+         "lit",
+         "sku_of"
+        ],
+        "out"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadIndex",
+      "NotAccepted"
+     ],
+     "body": [
+      {
+       "let": "products",
+       "expr": [
+        "map",
+        [
+         "lit",
+         "normalize_record"
+        ],
+        "records"
+       ]
+      }
+     ],
+     "out": [
+      "map",
+      [
+       "lit",
+       "at_position"
+      ],
+      [
+       "pairs",
+       [
+        "range",
+        [
+         "len",
+         "products"
+        ]
+       ],
+       [
+        "list",
+        "products"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "PN-02",
+           "Pen",
+           "12000",
+           "30"
+          ]
+         },
+         {
+          "index": 2,
+          "fields": [
+           "NB-01",
+           "Notebook",
+           "045000",
+           "0012"
+          ]
+         }
+        ]
+       },
+       "out": [
+        {
+         "sku": "NB-01",
+         "name": "Notebook",
+         "price": 45000,
+         "qty": 12
+        },
+        {
+         "sku": "PN-02",
+         "name": "Pen",
+         "price": 12000,
+         "qty": 30
+        }
+       ]
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 1,
+          "fields": [
+           "A",
+           "a",
+           "1",
+           "1"
+          ]
+         },
+         {
+          "index": 2,
+          "fields": [
+           "A",
+           "b",
+           "1",
+           "1"
+          ]
+         }
+        ]
+       },
+       "refuse": "NotAccepted"
+      },
+      {
+       "args": {
+        "records": []
+       },
+       "refuse": "NotAccepted"
+      },
+      {
+       "args": {
+        "records": [
+         {
+          "index": 0,
+          "fields": [
+           "A",
+           "a",
+           "1",
+           "1"
+          ]
+         }
+        ]
+       },
+       "refuse": "BadIndex"
+      }
+     ],
+     "line": 209
+    }
+   }
+  },
+  "bk_physics": {
+   "name": "bk_physics",
+   "uses": [],
+   "numbers": "exact",
+   "effects": {},
+   "consts": {
+    "W": 32000,
+    "H": 48000,
+    "R": 600,
+    "TWO_R": 1200,
+    "PADDLE_W": 6000,
+    "HALF_PW": 3000,
+    "PADDLE_H": 1000,
+    "PADDLE_Y": 44000,
+    "PADDLE_MAX_X": 26000,
+    "PADDLE_SPEED": 600,
+    "ROWS": 5,
+    "COLS": 6,
+    "BRICK_W": 4800,
+    "BRICK_H": 1600,
+    "HALF_BW": 2400,
+    "HALF_BH": 800,
+    "GAP": 400,
+    "WALL_LEFT": 600,
+    "WALL_TOP": 6000,
+    "BRICK_PITCH_X": 5200,
+    "BRICK_PITCH_Y": 2000,
+    "MAXV": 700,
+    "MAXVX": 500,
+    "MINVY": 250,
+    "SPEEDUP": 10,
+    "SERVE_VY": 450,
+    "SERVE_VX_STEP": 100,
+    "SERVE_ANGLES": 5,
+    "HALF_ANGLES": 2,
+    "W_MINUS_R": 31400,
+    "BRICKS": 30
+   },
+   "inv": {},
+   "keys": {},
+   "options": {},
+   "nodes": {
+    "paddle_ok": {
+     "says": "true when the paddle is inside the field",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "and",
+      [
+       ">=",
+       "p.x",
+       0
+      ],
+      [
+       "<=",
+       "p.x",
+       "PADDLE_MAX_X"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "x": 0
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "x": 26000
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "p": {
+         "x": 26001
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 48
+    },
+    "ball_ok": {
+     "says": "true when the ball is between the side walls, below the ceiling, and within the speed ceiling",
+     "in": [
+      "b"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "and",
+      [
+       ">=",
+       "b.x",
+       "R"
+      ],
+      [
+       "<=",
+       "b.x",
+       "W_MINUS_R"
+      ],
+      [
+       ">=",
+       "b.y",
+       "R"
+      ],
+      [
+       "<=",
+       [
+        "abs",
+        "b.vx"
+       ],
+       "MAXV"
+      ],
+      [
+       "<=",
+       [
+        "abs",
+        "b.vy"
+       ],
+       "MAXV"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 20000,
+         "vx": 100,
+         "vy": -450
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "b": {
+         "x": 100,
+         "y": 20000,
+         "vx": 100,
+         "vy": -450
+        }
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 20000,
+         "vx": 800,
+         "vy": -450
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 57
+    },
+    "move_paddle": {
+     "says": "the paddle after one tick: by its intent, or toward its target when one is given, at PADDLE_SPEED, stopping at the edges and at the target",
+     "in": [
+      "p",
+      "move",
+      "target"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "paddle_ok",
+        "p"
+       ],
+       "err": "BadPaddle"
+      },
+      {
+       "expr": [
+        "in",
+        "move",
+        [
+         "list",
+         -1,
+         0,
+         1
+        ]
+       ],
+       "err": "BadIntent"
+      }
+     ],
+     "post": [
+      [
+       "paddle_ok",
+       "out"
+      ],
+      [
+       "<=",
+       [
+        "abs",
+        [
+         "-",
+         "out.x",
+         "p.x"
+        ]
+       ],
+       "PADDLE_SPEED"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadPaddle",
+      "BadIntent"
+     ],
+     "body": [
+      {
+       "let": "want",
+       "expr": [
+        "if",
+        [
+         ">=",
+         "target",
+         0
+        ],
+        [
+         "-",
+         [
+          "clamp",
+          "target",
+          "HALF_PW",
+          [
+           "-",
+           "W",
+           "HALF_PW"
+          ]
+         ],
+         "HALF_PW"
+        ],
+        [
+         "+",
+         "p.x",
+         [
+          "*",
+          "move",
+          "PADDLE_SPEED"
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "d",
+       "expr": [
+        "clamp",
+        [
+         "-",
+         "want",
+         "p.x"
+        ],
+        [
+         "neg",
+         "PADDLE_SPEED"
+        ],
+        "PADDLE_SPEED"
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "x",
+      [
+       "clamp",
+       [
+        "+",
+        "p.x",
+        "d"
+       ],
+       0,
+       "PADDLE_MAX_X"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "x": 13000
+        },
+        "move": 1,
+        "target": -1
+       },
+       "out": {
+        "x": 13600
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "x": 13000
+        },
+        "move": -1,
+        "target": -1
+       },
+       "out": {
+        "x": 12400
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "x": 25800
+        },
+        "move": 1,
+        "target": -1
+       },
+       "out": {
+        "x": 26000
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "x": 13000
+        },
+        "move": 0,
+        "target": 16300
+       },
+       "out": {
+        "x": 13300
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "x": 13000
+        },
+        "move": 0,
+        "target": 3000
+       },
+       "out": {
+        "x": 12400
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "x": 13000
+        },
+        "move": 0,
+        "target": 40000
+       },
+       "out": {
+        "x": 13600
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "x": 13000
+        },
+        "move": 2,
+        "target": -1
+       },
+       "refuse": "BadIntent"
+      },
+      {
+       "args": {
+        "p": {
+         "x": 30000
+        },
+        "move": 0,
+        "target": -1
+       },
+       "refuse": "BadPaddle"
+      }
+     ],
+     "line": 66
+    },
+    "move_ball": {
+     "says": "the ball one tick on, reflected in place by the side walls and the ceiling; the floor is open",
+     "in": [
+      "b"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "ball_ok",
+        "b"
+       ],
+       "err": "BadBall"
+      }
+     ],
+     "post": [
+      [
+       "and",
+       [
+        ">=",
+        "out.x",
+        "R"
+       ],
+       [
+        "<=",
+        "out.x",
+        "W_MINUS_R"
+       ],
+       [
+        ">=",
+        "out.y",
+        "R"
+       ]
+      ],
+      [
+       "and",
+       [
+        "<=",
+        [
+         "abs",
+         "out.vx"
+        ],
+        "MAXV"
+       ],
+       [
+        "<=",
+        [
+         "abs",
+         "out.vy"
+        ],
+        "MAXV"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadBall"
+     ],
+     "body": [
+      {
+       "let": "nx",
+       "expr": [
+        "+",
+        "b.x",
+        "b.vx"
+       ]
+      },
+      {
+       "let": "ny",
+       "expr": [
+        "+",
+        "b.y",
+        "b.vy"
+       ]
+      },
+      {
+       "let": "left",
+       "expr": [
+        "<",
+        "nx",
+        "R"
+       ]
+      },
+      {
+       "let": "right",
+       "expr": [
+        ">",
+        "nx",
+        "W_MINUS_R"
+       ]
+      },
+      {
+       "let": "top",
+       "expr": [
+        "<",
+        "ny",
+        "R"
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "x",
+      [
+       "clamp",
+       "nx",
+       "R",
+       "W_MINUS_R"
+      ],
+      "y",
+      [
+       "if",
+       "top",
+       "R",
+       "ny"
+      ],
+      "vx",
+      [
+       "if",
+       "left",
+       [
+        "abs",
+        "b.vx"
+       ],
+       [
+        "if",
+        "right",
+        [
+         "neg",
+         [
+          "abs",
+          "b.vx"
+         ]
+        ],
+        "b.vx"
+       ]
+      ],
+      "vy",
+      [
+       "if",
+       "top",
+       [
+        "abs",
+        "b.vy"
+       ],
+       "b.vy"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 20000,
+         "vx": 100,
+         "vy": -450
+        }
+       },
+       "out": {
+        "x": 16100,
+        "y": 19550,
+        "vx": 100,
+        "vy": -450
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 700,
+         "y": 20000,
+         "vx": -300,
+         "vy": 10
+        }
+       },
+       "out": {
+        "x": 600,
+        "y": 20010,
+        "vx": 300,
+        "vy": 10
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 31300,
+         "y": 20000,
+         "vx": 300,
+         "vy": 10
+        }
+       },
+       "out": {
+        "x": 31400,
+        "y": 20010,
+        "vx": -300,
+        "vy": 10
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 800,
+         "vx": 0,
+         "vy": -450
+        }
+       },
+       "out": {
+        "x": 16000,
+        "y": 600,
+        "vx": 0,
+        "vy": 450
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 47800,
+         "vx": 0,
+         "vy": 450
+        }
+       },
+       "out": {
+        "x": 16000,
+        "y": 48250,
+        "vx": 0,
+        "vy": 450
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 20000,
+         "vx": 900,
+         "vy": 0
+        }
+       },
+       "refuse": "BadBall"
+      }
+     ],
+     "line": 85
+    },
+    "paddle_hit": {
+     "says": "the ball after the paddle check: a ball moving down whose box overlaps the paddle box sits on the paddle top, faster upward, with sideways speed from where it struck; hit says whether that happened",
+     "in": [
+      "b",
+      "p"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "ball_ok",
+        "b"
+       ],
+       "err": "BadBall"
+      },
+      {
+       "expr": [
+        "paddle_ok",
+        "p"
+       ],
+       "err": "BadPaddle"
+      }
+     ],
+     "post": [
+      [
+       "and",
+       [
+        "<=",
+        [
+         "abs",
+         "out.vx"
+        ],
+        "MAXV"
+       ],
+       [
+        "<=",
+        [
+         "abs",
+         "out.vy"
+        ],
+        "MAXV"
+       ]
+      ],
+      [
+       "==",
+       "out.hit",
+       [
+        "!=",
+        "out.vy",
+        "b.vy"
+       ]
+      ],
+      [
+       "or",
+       [
+        "not",
+        "out.hit"
+       ],
+       [
+        "<",
+        "out.vy",
+        0
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadBall",
+      "BadPaddle"
+     ],
+     "body": [
+      {
+       "let": "pcx",
+       "expr": [
+        "+",
+        "p.x",
+        "HALF_PW"
+       ]
+      },
+      {
+       "let": "touching",
+       "expr": [
+        "and",
+        [
+         ">",
+         "b.vy",
+         0
+        ],
+        [
+         "<=",
+         [
+          "abs",
+          [
+           "-",
+           "b.x",
+           "pcx"
+          ]
+         ],
+         [
+          "+",
+          "HALF_PW",
+          "R"
+         ]
+        ],
+        [
+         ">=",
+         [
+          "+",
+          "b.y",
+          "R"
+         ],
+         "PADDLE_Y"
+        ],
+        [
+         "<=",
+         [
+          "-",
+          "b.y",
+          "R"
+         ],
+         [
+          "+",
+          "PADDLE_Y",
+          "PADDLE_H"
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "speed",
+       "expr": [
+        "max",
+        "MINVY",
+        [
+         "min",
+         "MAXV",
+         [
+          "+",
+          [
+           "abs",
+           "b.vy"
+          ],
+          "SPEEDUP"
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "spin",
+       "expr": [
+        "clamp",
+        [
+         "div",
+         [
+          "*",
+          [
+           "-",
+           "b.x",
+           "pcx"
+          ],
+          "MAXVX"
+         ],
+         "HALF_PW"
+        ],
+        [
+         "neg",
+         "MAXVX"
+        ],
+        "MAXVX"
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "x",
+      "b.x",
+      "y",
+      [
+       "if",
+       "touching",
+       [
+        "-",
+        "PADDLE_Y",
+        "R"
+       ],
+       "b.y"
+      ],
+      "vx",
+      [
+       "if",
+       "touching",
+       "spin",
+       "b.vx"
+      ],
+      "vy",
+      [
+       "if",
+       "touching",
+       [
+        "neg",
+        "speed"
+       ],
+       "b.vy"
+      ],
+      "hit",
+      "touching"
+     ],
+     "ex": [
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 43500,
+         "vx": 100,
+         "vy": 450
+        },
+        "p": {
+         "x": 13000
+        }
+       },
+       "out": {
+        "x": 16000,
+        "y": 43400,
+        "vx": 0,
+        "vy": -460,
+        "hit": true
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 18000,
+         "y": 43500,
+         "vx": 100,
+         "vy": 450
+        },
+        "p": {
+         "x": 13000
+        }
+       },
+       "out": {
+        "x": 18000,
+        "y": 43400,
+        "vx": 333,
+        "vy": -460,
+        "hit": true
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 12500,
+         "y": 43500,
+         "vx": 100,
+         "vy": 450
+        },
+        "p": {
+         "x": 13000
+        }
+       },
+       "out": {
+        "x": 12500,
+        "y": 43400,
+        "vx": -500,
+        "vy": -460,
+        "hit": true
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 43500,
+         "vx": 100,
+         "vy": 700
+        },
+        "p": {
+         "x": 13000
+        }
+       },
+       "out": {
+        "x": 16000,
+        "y": 43400,
+        "vx": 0,
+        "vy": -700,
+        "hit": true
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 43500,
+         "vx": 100,
+         "vy": -450
+        },
+        "p": {
+         "x": 13000
+        }
+       },
+       "out": {
+        "x": 16000,
+        "y": 43500,
+        "vx": 100,
+        "vy": -450,
+        "hit": false
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 25000,
+         "y": 43500,
+         "vx": 100,
+         "vy": 450
+        },
+        "p": {
+         "x": 13000
+        }
+       },
+       "out": {
+        "x": 25000,
+        "y": 43500,
+        "vx": 100,
+        "vy": 450,
+        "hit": false
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 20000,
+         "vx": 100,
+         "vy": 450
+        },
+        "p": {
+         "x": 13000
+        }
+       },
+       "out": {
+        "x": 16000,
+        "y": 20000,
+        "vx": 100,
+        "vy": 450,
+        "hit": false
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 43500,
+         "vx": 900,
+         "vy": 450
+        },
+        "p": {
+         "x": 13000
+        }
+       },
+       "refuse": "BadBall"
+      },
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 43500,
+         "vx": 100,
+         "vy": 450
+        },
+        "p": {
+         "x": 30000
+        }
+       },
+       "refuse": "BadPaddle"
+      }
+     ],
+     "line": 104
+    },
+    "cell_ok": {
+     "says": "1 when a brick's row and column are inside the wall",
+     "in": [
+      "c"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "and",
+       [
+        ">=",
+        "c.a",
+        0
+       ],
+       [
+        "<",
+        "c.a",
+        "ROWS"
+       ],
+       [
+        ">=",
+        "c.b",
+        0
+       ],
+       [
+        "<",
+        "c.b",
+        "COLS"
+       ]
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "c": {
+         "a": 0,
+         "b": 0,
+         "alive": true
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "c": {
+         "a": 4,
+         "b": 5,
+         "alive": false
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "c": {
+         "a": 5,
+         "b": 0,
+         "alive": true
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 127
+    },
+    "brick_cx": {
+     "says": "the x of a brick's centre",
+     "in": [
+      "c"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        [
+         "cell_ok",
+         "c"
+        ],
+        1
+       ],
+       "err": "BadCell"
+      }
+     ],
+     "post": [
+      [
+       ">=",
+       "out",
+       "HALF_BW"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadCell"
+     ],
+     "body": [],
+     "out": [
+      "+",
+      [
+       "+",
+       "WALL_LEFT",
+       [
+        "*",
+        "c.b",
+        "BRICK_PITCH_X"
+       ]
+      ],
+      "HALF_BW"
+     ],
+     "ex": [
+      {
+       "args": {
+        "c": {
+         "a": 0,
+         "b": 0,
+         "alive": true
+        }
+       },
+       "out": 3000
+      },
+      {
+       "args": {
+        "c": {
+         "a": 0,
+         "b": 5,
+         "alive": true
+        }
+       },
+       "out": 29000
+      },
+      {
+       "args": {
+        "c": {
+         "a": 0,
+         "b": 6,
+         "alive": true
+        }
+       },
+       "refuse": "BadCell"
+      }
+     ],
+     "line": 136
+    },
+    "brick_cy": {
+     "says": "the y of a brick's centre",
+     "in": [
+      "c"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        [
+         "cell_ok",
+         "c"
+        ],
+        1
+       ],
+       "err": "BadCell"
+      }
+     ],
+     "post": [
+      [
+       ">=",
+       "out",
+       "HALF_BH"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadCell"
+     ],
+     "body": [],
+     "out": [
+      "+",
+      [
+       "+",
+       "WALL_TOP",
+       [
+        "*",
+        "c.a",
+        "BRICK_PITCH_Y"
+       ]
+      ],
+      "HALF_BH"
+     ],
+     "ex": [
+      {
+       "args": {
+        "c": {
+         "a": 0,
+         "b": 0,
+         "alive": true
+        }
+       },
+       "out": 6800
+      },
+      {
+       "args": {
+        "c": {
+         "a": 4,
+         "b": 0,
+         "alive": true
+        }
+       },
+       "out": 14800
+      },
+      {
+       "args": {
+        "c": {
+         "a": 5,
+         "b": 0,
+         "alive": true
+        }
+       },
+       "refuse": "BadCell"
+      }
+     ],
+     "line": 146
+    },
+    "brick_visit": {
+     "says": "one brick after the ball's visit: a is the ball, b the brick; an intact overlapped brick is removed and the hit axis recorded as the axis of least penetration, y when tied",
+     "in": [
+      "p"
+     ],
+     "fx": [],
+     "raises": [
+      "BadCell"
+     ],
+     "pre": [
+      {
+       "expr": [
+        "ball_ok",
+        "p.a"
+       ],
+       "err": "BadBall"
+      }
+     ],
+     "post": [
+      [
+       "in",
+       "out.axis",
+       [
+        "list",
+        [
+         "lit",
+         "none"
+        ],
+        [
+         "lit",
+         "x"
+        ],
+        [
+         "lit",
+         "y"
+        ]
+       ]
+      ],
+      [
+       "==",
+       [
+        "!=",
+        "out.axis",
+        [
+         "lit",
+         "none"
+        ]
+       ],
+       [
+        "and",
+        "p.b.alive",
+        [
+         "not",
+         "out.alive"
+        ]
+       ]
+      ],
+      [
+       "==",
+       "out.a",
+       "p.b.a"
+      ],
+      [
+       "==",
+       "out.b",
+       "p.b.b"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadBall"
+     ],
+     "body": [
+      {
+       "let": "dx",
+       "expr": [
+        "abs",
+        [
+         "-",
+         "p.a.x",
+         [
+          "brick_cx",
+          "p.b"
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "dy",
+       "expr": [
+        "abs",
+        [
+         "-",
+         "p.a.y",
+         [
+          "brick_cy",
+          "p.b"
+         ]
+        ]
+       ]
+      },
+      {
+       "let": "px",
+       "expr": [
+        "-",
+        [
+         "+",
+         "HALF_BW",
+         "R"
+        ],
+        "dx"
+       ]
+      },
+      {
+       "let": "py",
+       "expr": [
+        "-",
+        [
+         "+",
+         "HALF_BH",
+         "R"
+        ],
+        "dy"
+       ]
+      },
+      {
+       "let": "overlap",
+       "expr": [
+        "and",
+        [
+         ">=",
+         "px",
+         0
+        ],
+        [
+         ">=",
+         "py",
+         0
+        ]
+       ]
+      },
+      {
+       "let": "hit",
+       "expr": [
+        "and",
+        "p.b.alive",
+        "overlap"
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "a",
+      "p.b.a",
+      "b",
+      "p.b.b",
+      "alive",
+      [
+       "and",
+       "p.b.alive",
+       [
+        "not",
+        "hit"
+       ]
+      ],
+      "axis",
+      [
+       "if",
+       "hit",
+       [
+        "if",
+        [
+         "<",
+         "px",
+         "py"
+        ],
+        [
+         "lit",
+         "x"
+        ],
+        [
+         "lit",
+         "y"
+        ]
+       ],
+       [
+        "lit",
+        "none"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "a": {
+          "x": 3000,
+          "y": 7900,
+          "vx": 0,
+          "vy": -450
+         },
+         "b": {
+          "a": 0,
+          "b": 0,
+          "alive": true
+         }
+        }
+       },
+       "out": {
+        "a": 0,
+        "b": 0,
+        "alive": false,
+        "axis": "y"
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "x": 5900,
+          "y": 6800,
+          "vx": -300,
+          "vy": 10
+         },
+         "b": {
+          "a": 0,
+          "b": 0,
+          "alive": true
+         }
+        }
+       },
+       "out": {
+        "a": 0,
+        "b": 0,
+        "alive": false,
+        "axis": "x"
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "x": 3000,
+          "y": 7900,
+          "vx": 0,
+          "vy": -450
+         },
+         "b": {
+          "a": 0,
+          "b": 0,
+          "alive": false
+         }
+        }
+       },
+       "out": {
+        "a": 0,
+        "b": 0,
+        "alive": false,
+        "axis": "none"
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "x": 16000,
+          "y": 30000,
+          "vx": 0,
+          "vy": -450
+         },
+         "b": {
+          "a": 0,
+          "b": 0,
+          "alive": true
+         }
+        }
+       },
+       "out": {
+        "a": 0,
+        "b": 0,
+        "alive": true,
+        "axis": "none"
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "x": 3000,
+          "y": 7900,
+          "vx": 0,
+          "vy": -450
+         },
+         "b": {
+          "a": 9,
+          "b": 0,
+          "alive": true
+         }
+        }
+       },
+       "refuse": "BadCell"
+      },
+      {
+       "args": {
+        "p": {
+         "a": {
+          "x": 3000,
+          "y": 7900,
+          "vx": 900,
+          "vy": -450
+         },
+         "b": {
+          "a": 0,
+          "b": 0,
+          "alive": true
+         }
+        }
+       },
+       "refuse": "BadBall"
+      }
+     ],
+     "line": 156
+    },
+    "brick_of": {
+     "says": "the brick part of a visit result",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       "out.a",
+       "r.a"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "rec",
+      "a",
+      "r.a",
+      "b",
+      "r.b",
+      "alive",
+      "r.alive"
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "a": 1,
+         "b": 2,
+         "alive": true,
+         "axis": "none"
+        }
+       },
+       "out": {
+        "a": 1,
+        "b": 2,
+        "alive": true
+       }
+      }
+     ],
+     "line": 179
+    },
+    "hit_x": {
+     "says": "1 when a visit hit on the x axis",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "==",
+       "r.axis",
+       [
+        "lit",
+        "x"
+       ]
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "a": 1,
+         "b": 2,
+         "alive": false,
+         "axis": "x"
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "r": {
+         "a": 1,
+         "b": 2,
+         "alive": false,
+         "axis": "y"
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 186
+    },
+    "hit_y": {
+     "says": "1 when a visit hit on the y axis",
+     "in": [
+      "r"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      [
+       "==",
+       "r.axis",
+       [
+        "lit",
+        "y"
+       ]
+      ],
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "r": {
+         "a": 1,
+         "b": 2,
+         "alive": false,
+         "axis": "y"
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "r": {
+         "a": 1,
+         "b": 2,
+         "alive": true,
+         "axis": "none"
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 194
+    },
+    "alive_flag": {
+     "says": "1 when a brick is intact",
+     "in": [
+      "c"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        0,
+        1
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "if",
+      "c.alive",
+      1,
+      0
+     ],
+     "ex": [
+      {
+       "args": {
+        "c": {
+         "a": 0,
+         "b": 0,
+         "alive": true
+        }
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "c": {
+         "a": 0,
+         "b": 0,
+         "alive": false
+        }
+       },
+       "out": 0
+      }
+     ],
+     "line": 202
+    },
+    "intact": {
+     "says": "how many bricks are intact",
+     "in": [
+      "bricks"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       ">=",
+       "out",
+       0
+      ],
+      [
+       "<=",
+       "out",
+       [
+        "len",
+        "bricks"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "sum",
+      [
+       "map",
+       [
+        "lit",
+        "alive_flag"
+       ],
+       "bricks"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "bricks": [
+         {
+          "a": 0,
+          "b": 0,
+          "alive": true
+         },
+         {
+          "a": 0,
+          "b": 1,
+          "alive": false
+         }
+        ]
+       },
+       "out": 1
+      },
+      {
+       "args": {
+        "bricks": []
+       },
+       "out": 0
+      }
+     ],
+     "line": 210
+    },
+    "new_brick": {
+     "says": "an intact brick at a cell",
+     "in": [
+      "c"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "==",
+        [
+         "cell_ok",
+         "c"
+        ],
+        1
+       ],
+       "err": "BadCell"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.alive",
+       true
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadCell"
+     ],
+     "body": [],
+     "out": [
+      "rec",
+      "a",
+      "c.a",
+      "b",
+      "c.b",
+      "alive",
+      true
+     ],
+     "ex": [
+      {
+       "args": {
+        "c": {
+         "a": 2,
+         "b": 3
+        }
+       },
+       "out": {
+        "a": 2,
+        "b": 3,
+        "alive": true
+       }
+      },
+      {
+       "args": {
+        "c": {
+         "a": 2,
+         "b": 30
+        }
+       },
+       "refuse": "BadCell"
+      }
+     ],
+     "line": 219
+    },
+    "wall": {
+     "says": "a fresh wall: 5 rows of 6 intact bricks, in row-major order",
+     "in": [],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       [
+        "len",
+        "out"
+       ],
+       "BRICKS"
+      ],
+      [
+       "==",
+       [
+        "intact",
+        "out"
+       ],
+       "BRICKS"
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "new_brick"
+      ],
+      [
+       "pairs",
+       [
+        "range",
+        "ROWS"
+       ],
+       [
+        "range",
+        "COLS"
+       ]
+      ]
+     ],
+     "ex": [
+      {
+       "args": {},
+       "check": [
+        [
+         "==",
+         [
+          "len",
+          "out"
+         ],
+         30
+        ],
+        [
+         "==",
+         [
+          "at",
+          "out",
+          7
+         ],
+         [
+          "rec",
+          "a",
+          1,
+          "b",
+          1,
+          "alive",
+          true
+         ]
+        ]
+       ]
+      }
+     ],
+     "line": 228
+    },
+    "wall_ok": {
+     "says": "true when the wall has exactly 30 bricks on valid cells",
+     "in": [
+      "bricks"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "and",
+      [
+       "==",
+       [
+        "len",
+        "bricks"
+       ],
+       "BRICKS"
+      ],
+      [
+       "==",
+       [
+        "sum",
+        [
+         "map",
+         [
+          "lit",
+          "cell_ok"
+         ],
+         "bricks"
+        ]
+       ],
+       "BRICKS"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "bricks": [
+         {
+          "a": 0,
+          "b": 0,
+          "alive": true
+         }
+        ]
+       },
+       "out": false
+      },
+      {
+       "args": {
+        "bricks": []
+       },
+       "out": false
+      }
+     ],
+     "line": 236
+    },
+    "bricks_visit": {
+     "says": "every brick after the ball's visit, in the same order",
+     "in": [
+      "b",
+      "bricks"
+     ],
+     "fx": [],
+     "raises": [
+      "BadCell",
+      "BadBall"
+     ],
+     "pre": [],
+     "post": [
+      [
+       "==",
+       [
+        "len",
+        "out"
+       ],
+       [
+        "len",
+        "bricks"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      "map",
+      [
+       "lit",
+       "brick_visit"
+      ],
+      [
+       "pairs",
+       [
+        "list",
+        "b"
+       ],
+       "bricks"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "b": {
+         "x": 3000,
+         "y": 7900,
+         "vx": 0,
+         "vy": -450
+        },
+        "bricks": [
+         {
+          "a": 0,
+          "b": 0,
+          "alive": true
+         },
+         {
+          "a": 0,
+          "b": 1,
+          "alive": true
+         }
+        ]
+       },
+       "out": [
+        {
+         "a": 0,
+         "b": 0,
+         "alive": false,
+         "axis": "y"
+        },
+        {
+         "a": 0,
+         "b": 1,
+         "alive": true,
+         "axis": "none"
+        }
+       ]
+      },
+      {
+       "args": {
+        "b": {
+         "x": 3000,
+         "y": 7900,
+         "vx": 0,
+         "vy": -450
+        },
+        "bricks": [
+         {
+          "a": 9,
+          "b": 0,
+          "alive": true
+         }
+        ]
+       },
+       "refuse": "BadCell"
+      },
+      {
+       "args": {
+        "b": {
+         "x": 3000,
+         "y": 7900,
+         "vx": 900,
+         "vy": -450
+        },
+        "bricks": [
+         {
+          "a": 0,
+          "b": 0,
+          "alive": true
+         }
+        ]
+       },
+       "refuse": "BadBall"
+      }
+     ],
+     "line": 244
+    },
+    "bounce_off_bricks": {
+     "says": "the ball with vy reversed once when any visit hit on y, and vx reversed once when any hit on x",
+     "in": [
+      "b",
+      "visits"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "ball_ok",
+        "b"
+       ],
+       "err": "BadBall"
+      }
+     ],
+     "post": [
+      [
+       "and",
+       [
+        "<=",
+        [
+         "abs",
+         "out.vx"
+        ],
+        "MAXV"
+       ],
+       [
+        "<=",
+        [
+         "abs",
+         "out.vy"
+        ],
+        "MAXV"
+       ]
+      ],
+      [
+       "==",
+       [
+        "abs",
+        "out.vy"
+       ],
+       [
+        "abs",
+        "b.vy"
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadBall"
+     ],
+     "body": [
+      {
+       "let": "xs",
+       "expr": [
+        "sum",
+        [
+         "map",
+         [
+          "lit",
+          "hit_x"
+         ],
+         "visits"
+        ]
+       ]
+      },
+      {
+       "let": "ys",
+       "expr": [
+        "sum",
+        [
+         "map",
+         [
+          "lit",
+          "hit_y"
+         ],
+         "visits"
+        ]
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "x",
+      "b.x",
+      "y",
+      "b.y",
+      "vx",
+      [
+       "if",
+       [
+        ">",
+        "xs",
+        0
+       ],
+       [
+        "neg",
+        "b.vx"
+       ],
+       "b.vx"
+      ],
+      "vy",
+      [
+       "if",
+       [
+        ">",
+        "ys",
+        0
+       ],
+       [
+        "neg",
+        "b.vy"
+       ],
+       "b.vy"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "b": {
+         "x": 3000,
+         "y": 7900,
+         "vx": 100,
+         "vy": -450
+        },
+        "visits": [
+         {
+          "a": 0,
+          "b": 0,
+          "alive": false,
+          "axis": "y"
+         },
+         {
+          "a": 0,
+          "b": 1,
+          "alive": true,
+          "axis": "none"
+         }
+        ]
+       },
+       "out": {
+        "x": 3000,
+        "y": 7900,
+        "vx": 100,
+        "vy": 450
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 3000,
+         "y": 7900,
+         "vx": 100,
+         "vy": -450
+        },
+        "visits": [
+         {
+          "a": 0,
+          "b": 0,
+          "alive": false,
+          "axis": "x"
+         },
+         {
+          "a": 0,
+          "b": 1,
+          "alive": false,
+          "axis": "x"
+         }
+        ]
+       },
+       "out": {
+        "x": 3000,
+        "y": 7900,
+        "vx": -100,
+        "vy": -450
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 3000,
+         "y": 7900,
+         "vx": 100,
+         "vy": -450
+        },
+        "visits": []
+       },
+       "out": {
+        "x": 3000,
+        "y": 7900,
+        "vx": 100,
+        "vy": -450
+       }
+      },
+      {
+       "args": {
+        "b": {
+         "x": 3000,
+         "y": 7900,
+         "vx": 900,
+         "vy": -450
+        },
+        "visits": []
+       },
+       "refuse": "BadBall"
+      }
+     ],
+     "line": 254
+    },
+    "lost": {
+     "says": "true once the ball's top edge has passed the floor",
+     "in": [
+      "b"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [],
+     "post": [
+      [
+       "in",
+       "out",
+       [
+        "list",
+        true,
+        false
+       ]
+      ]
+     ],
+     "inv": [],
+     "err": [],
+     "body": [],
+     "out": [
+      ">",
+      [
+       "-",
+       "b.y",
+       "R"
+      ],
+      "H"
+     ],
+     "ex": [
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 48700,
+         "vx": 0,
+         "vy": 450
+        }
+       },
+       "out": true
+      },
+      {
+       "args": {
+        "b": {
+         "x": 16000,
+         "y": 48600,
+         "vx": 0,
+         "vy": 450
+        }
+       },
+       "out": false
+      }
+     ],
+     "line": 268
+    },
+    "on_paddle": {
+     "says": "the ball resting on the paddle, ready to launch; the serve angle comes from the launch count, so play is deterministic",
+     "in": [
+      "p",
+      "launches"
+     ],
+     "fx": [],
+     "raises": [],
+     "pre": [
+      {
+       "expr": [
+        "paddle_ok",
+        "p"
+       ],
+       "err": "BadPaddle"
+      },
+      {
+       "expr": [
+        ">=",
+        "launches",
+        0
+       ],
+       "err": "BadCount"
+      }
+     ],
+     "post": [
+      [
+       "==",
+       "out.y",
+       [
+        "-",
+        "PADDLE_Y",
+        "R"
+       ]
+      ],
+      [
+       "==",
+       "out.vy",
+       [
+        "neg",
+        "SERVE_VY"
+       ]
+      ],
+      [
+       "<=",
+       [
+        "abs",
+        "out.vx"
+       ],
+       "MAXVX"
+      ]
+     ],
+     "inv": [],
+     "err": [
+      "BadPaddle",
+      "BadCount"
+     ],
+     "body": [
+      {
+       "let": "k",
+       "expr": [
+        "-",
+        [
+         "mod",
+         "launches",
+         "SERVE_ANGLES"
+        ],
+        "HALF_ANGLES"
+       ]
+      }
+     ],
+     "out": [
+      "rec",
+      "x",
+      [
+       "+",
+       "p.x",
+       "HALF_PW"
+      ],
+      "y",
+      [
+       "-",
+       "PADDLE_Y",
+       "R"
+      ],
+      "vx",
+      [
+       "*",
+       "k",
+       "SERVE_VX_STEP"
+      ],
+      "vy",
+      [
+       "neg",
+       "SERVE_VY"
+      ]
+     ],
+     "ex": [
+      {
+       "args": {
+        "p": {
+         "x": 13000
+        },
+        "launches": 0
+       },
+       "out": {
+        "x": 16000,
+        "y": 43400,
+        "vx": -200,
+        "vy": -450
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "x": 13000
+        },
+        "launches": 2
+       },
+       "out": {
+        "x": 16000,
+        "y": 43400,
+        "vx": 0,
+        "vy": -450
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "x": 0
+        },
+        "launches": 4
+       },
+       "out": {
+        "x": 3000,
+        "y": 43400,
+        "vx": 200,
+        "vy": -450
+       }
+      },
+      {
+       "args": {
+        "p": {
+         "x": 30000
+        },
+        "launches": 0
+       },
+       "refuse": "BadPaddle"
+      },
+      {
+       "args": {
+        "p": {
+         "x": 13000
+        },
+        "launches": -1
+       },
+       "refuse": "BadCount"
+      }
+     ],
+     "line": 276
+    }
+   }
+  }
+ }
+}

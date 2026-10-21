@@ -1,0 +1,291 @@
+; bk_physics — BP-GAME Breakout: the playfield, the paddle, the ball, the bricks, and the declared collision policy.
+; Units: the field is 320 × 480 logical pixels held as whole numbers of 1/100 px (W 32000, H 48000). Velocities are units per tick.
+; Tick: fixed, supplied by the host (60 per second); nothing here reads a clock.
+; Collision policy (declared before evaluation, tested by traces):
+;   1. the paddle moves by its intent, or toward its target, at PADDLE_SPEED, and stops at the field edge;
+;   2. the ball moves once by (vx, vy); then the side walls and the ceiling reflect it in place (position clamped);
+;   3. a ball moving down whose box overlaps the paddle box is put on the paddle's top edge, vy becomes −(|vy| + SPEEDUP) capped at MAXV
+;      and never below MINVY, vx becomes the strike offset scaled to ±MAXVX;
+;   4. every intact brick whose box overlaps the ball box is removed in the same tick; each such hit has an axis: the axis of
+;      least penetration, y when tied; if any hit is on y the ball's vy reverses once, if any hit is on x its vx reverses once.
+;      The gap between bricks (1300) is wider than the ball (2R 1200), so the ball box overlaps at most one brick per tick;
+;   5. the ball is lost when its top edge passes the floor;
+;   6. tunneling cannot happen because |vx| and |vy| never exceed MAXV (700), which is below the thickness of every target
+;      (brick 1600, paddle 1000 plus the ball's 2R 1200): a crossing always overlaps at some tick.
+root bk_physics
+numbers exact
+const W 32000
+const H 48000
+const R 600
+const TWO_R 1200
+const PADDLE_W 6000
+const HALF_PW 3000
+const PADDLE_H 1000
+const PADDLE_Y 44000
+const PADDLE_MAX_X 26000
+const PADDLE_SPEED 600
+const ROWS 5
+const COLS 6
+const BRICK_W 4200
+const BRICK_H 1600
+const HALF_BW 2100
+const HALF_BH 800
+const GAP 1300
+const WALL_LEFT 150
+const WALL_TOP 6000
+const BRICK_PITCH_X 5500
+const BRICK_PITCH_Y 2900
+const MAXV 700
+const MAXVX 500
+const MINVY 250
+const SPEEDUP 10
+const SERVE_VY 450
+const SERVE_VX_STEP 100
+const SERVE_ANGLES 5
+const HALF_ANGLES 2
+const W_MINUS_R 31400
+const BRICKS 30
+
+node paddle_ok (p)
+  says "true when the paddle is inside the field"
+  fx none
+  post (in out [true false])
+  out (and (>= p.x 0) (<= p.x PADDLE_MAX_X))
+  ex {p {x 0}} -> true
+  ex {p {x 26000}} -> true
+  ex {p {x 26001}} -> false
+
+node ball_ok (b)
+  says "true when the ball is between the side walls, below the ceiling, and within the speed ceiling"
+  fx none
+  post (in out [true false])
+  out (and (>= b.x R) (<= b.x W_MINUS_R) (>= b.y R) (<= (abs b.vx) MAXV) (<= (abs b.vy) MAXV))
+  ex {b {x 16000 y 20000 vx 100 vy -450}} -> true
+  ex {b {x 100 y 20000 vx 100 vy -450}} -> false
+  ex {b {x 16000 y 20000 vx 800 vy -450}} -> false
+
+node move_paddle (p move target)
+  says "the paddle after one tick: by its intent, or toward its target when one is given, at PADDLE_SPEED, stopping at the edges and at the target"
+  fx none
+  pre (paddle_ok p) BadPaddle
+  pre (in move [-1 0 1]) BadIntent
+  post (paddle_ok out)
+  post (<= (abs (- out.x p.x)) PADDLE_SPEED)
+  let want (if (>= target 0) (- (clamp target HALF_PW (- W HALF_PW)) HALF_PW) (+ p.x (* move PADDLE_SPEED)))
+  let d (clamp (- want p.x) (neg PADDLE_SPEED) PADDLE_SPEED)
+  out {x (clamp (+ p.x d) 0 PADDLE_MAX_X)}
+  ex {p {x 13000} move 1 target -1} -> {x 13600}
+  ex {p {x 13000} move -1 target -1} -> {x 12400}
+  ex {p {x 25800} move 1 target -1} -> {x 26000}
+  ex {p {x 13000} move 0 target 16300} -> {x 13300}
+  ex {p {x 13000} move 0 target 3000} -> {x 12400}
+  ex {p {x 13000} move 0 target 40000} -> {x 13600}
+  ex {p {x 13000} move 2 target -1} refuse BadIntent
+  ex {p {x 30000} move 0 target -1} refuse BadPaddle
+
+node move_ball (b)
+  says "the ball one tick on, reflected in place by the side walls and the ceiling; the floor is open"
+  fx none
+  pre (ball_ok b) BadBall
+  post (and (>= out.x R) (<= out.x W_MINUS_R) (>= out.y R))
+  post (and (<= (abs out.vx) MAXV) (<= (abs out.vy) MAXV))
+  let nx (+ b.x b.vx)
+  let ny (+ b.y b.vy)
+  let left (< nx R)
+  let right (> nx W_MINUS_R)
+  let top (< ny R)
+  out {x (clamp nx R W_MINUS_R) y (if top R ny) vx (if left (abs b.vx) (if right (neg (abs b.vx)) b.vx)) vy (if top (abs b.vy) b.vy)}
+  ex {b {x 16000 y 20000 vx 100 vy -450}} -> {x 16100 y 19550 vx 100 vy -450}
+  ex {b {x 700 y 20000 vx -300 vy 10}} -> {x 600 y 20010 vx 300 vy 10}
+  ex {b {x 31300 y 20000 vx 300 vy 10}} -> {x 31400 y 20010 vx -300 vy 10}
+  ex {b {x 16000 y 800 vx 0 vy -450}} -> {x 16000 y 600 vx 0 vy 450}
+  ex {b {x 16000 y 47800 vx 0 vy 450}} -> {x 16000 y 48250 vx 0 vy 450}
+  ex {b {x 16000 y 20000 vx 900 vy 0}} refuse BadBall
+
+node paddle_hit (b p)
+  says "the ball after the paddle check: a ball moving down whose box overlaps the paddle box sits on the paddle top, faster upward, with sideways speed from where it struck; hit says whether that happened"
+  fx none
+  pre (ball_ok b) BadBall
+  pre (paddle_ok p) BadPaddle
+  post (and (<= (abs out.vx) MAXV) (<= (abs out.vy) MAXV))
+  post (== out.hit (!= out.vy b.vy))
+  post (or (not out.hit) (< out.vy 0))
+  let pcx (+ p.x HALF_PW)
+  let touching (and (> b.vy 0) (<= (abs (- b.x pcx)) (+ HALF_PW R)) (>= (+ b.y R) PADDLE_Y) (<= (- b.y R) (+ PADDLE_Y PADDLE_H)))
+  let speed (max MINVY (min MAXV (+ (abs b.vy) SPEEDUP)))
+  let spin (clamp (div (* (- b.x pcx) MAXVX) HALF_PW) (neg MAXVX) MAXVX)
+  out {x b.x y (if touching (- PADDLE_Y R) b.y) vx (if touching spin b.vx) vy (if touching (neg speed) b.vy) hit touching}
+  ex {b {x 16000 y 43500 vx 100 vy 450} p {x 13000}} -> {x 16000 y 43400 vx 0 vy -460 hit true}
+  ex {b {x 18000 y 43500 vx 100 vy 450} p {x 13000}} -> {x 18000 y 43400 vx 333 vy -460 hit true}
+  ex {b {x 12500 y 43500 vx 100 vy 450} p {x 13000}} -> {x 12500 y 43400 vx -500 vy -460 hit true}
+  ex {b {x 16000 y 43500 vx 100 vy 700} p {x 13000}} -> {x 16000 y 43400 vx 0 vy -700 hit true}
+  ex {b {x 16000 y 43500 vx 100 vy -450} p {x 13000}} -> {x 16000 y 43500 vx 100 vy -450 hit false}
+  ex {b {x 25000 y 43500 vx 100 vy 450} p {x 13000}} -> {x 25000 y 43500 vx 100 vy 450 hit false}
+  ex {b {x 16000 y 20000 vx 100 vy 450} p {x 13000}} -> {x 16000 y 20000 vx 100 vy 450 hit false}
+  ex {b {x 16000 y 43500 vx 900 vy 450} p {x 13000}} refuse BadBall
+  ex {b {x 16000 y 43500 vx 100 vy 450} p {x 30000}} refuse BadPaddle
+
+node cell_ok (c)
+  says "1 when a brick's row and column are inside the wall"
+  fx none
+  post (in out [0 1])
+  out (if (and (>= c.a 0) (< c.a ROWS) (>= c.b 0) (< c.b COLS)) 1 0)
+  ex {c {a 0 b 0 alive true}} -> 1
+  ex {c {a 4 b 5 alive false}} -> 1
+  ex {c {a 5 b 0 alive true}} -> 0
+
+node brick_cx (c)
+  says "the x of a brick's centre"
+  fx none
+  pre (== (cell_ok c) 1) BadCell
+  post (>= out HALF_BW)
+  out (+ (+ WALL_LEFT (* c.b BRICK_PITCH_X)) HALF_BW)
+  ex {c {a 0 b 0 alive true}} -> 2250
+  ex {c {a 0 b 5 alive true}} -> 29750
+  ex {c {a 0 b 6 alive true}} refuse BadCell
+
+node brick_cy (c)
+  says "the y of a brick's centre"
+  fx none
+  pre (== (cell_ok c) 1) BadCell
+  post (>= out HALF_BH)
+  out (+ (+ WALL_TOP (* c.a BRICK_PITCH_Y)) HALF_BH)
+  ex {c {a 0 b 0 alive true}} -> 6800
+  ex {c {a 4 b 0 alive true}} -> 18400
+  ex {c {a 5 b 0 alive true}} refuse BadCell
+
+node brick_visit (p)
+  says "one brick after the ball's visit: a is the ball, b the brick; an intact overlapped brick is removed and the hit axis recorded as the axis of least penetration, y when tied"
+  fx none
+  raises BadCell
+  pre (ball_ok p.a) BadBall
+  post (in out.axis ["none" "x" "y"])
+  post (== (!= out.axis "none") (and p.b.alive (not out.alive)))
+  post (== out.a p.b.a)
+  post (== out.b p.b.b)
+  let dx (abs (- p.a.x (brick_cx p.b)))
+  let dy (abs (- p.a.y (brick_cy p.b)))
+  let px (- (+ HALF_BW R) dx)
+  let py (- (+ HALF_BH R) dy)
+  let overlap (and (>= px 0) (>= py 0))
+  let hit (and p.b.alive overlap)
+  out {a p.b.a b p.b.b alive (and p.b.alive (not hit)) axis (if hit (if (< px py) "x" "y") "none")}
+  ex {p {a {x 3000 y 7900 vx 0 vy -450} b {a 0 b 0 alive true}}} -> {a 0 b 0 alive false axis "y"}
+  ex {p {a {x 4900 y 6800 vx -300 vy 10} b {a 0 b 0 alive true}}} -> {a 0 b 0 alive false axis "x"}
+  ex {p {a {x 3000 y 7900 vx 0 vy -450} b {a 0 b 0 alive false}}} -> {a 0 b 0 alive false axis "none"}
+  ex {p {a {x 16000 y 30000 vx 0 vy -450} b {a 0 b 0 alive true}}} -> {a 0 b 0 alive true axis "none"}
+  ex {p {a {x 3000 y 7900 vx 0 vy -450} b {a 9 b 0 alive true}}} refuse BadCell
+  ex {p {a {x 3000 y 7900 vx 900 vy -450} b {a 0 b 0 alive true}}} refuse BadBall
+
+node brick_of (r)
+  says "the brick part of a visit result"
+  fx none
+  post (== out.a r.a)
+  out {a r.a b r.b alive r.alive}
+  ex {r {a 1 b 2 alive true axis "none"}} -> {a 1 b 2 alive true}
+
+node hit_x (r)
+  says "1 when a visit hit on the x axis"
+  fx none
+  post (in out [0 1])
+  out (if (== r.axis "x") 1 0)
+  ex {r {a 1 b 2 alive false axis "x"}} -> 1
+  ex {r {a 1 b 2 alive false axis "y"}} -> 0
+
+node hit_y (r)
+  says "1 when a visit hit on the y axis"
+  fx none
+  post (in out [0 1])
+  out (if (== r.axis "y") 1 0)
+  ex {r {a 1 b 2 alive false axis "y"}} -> 1
+  ex {r {a 1 b 2 alive true axis "none"}} -> 0
+
+node alive_flag (c)
+  says "1 when a brick is intact"
+  fx none
+  post (in out [0 1])
+  out (if c.alive 1 0)
+  ex {c {a 0 b 0 alive true}} -> 1
+  ex {c {a 0 b 0 alive false}} -> 0
+
+node intact (bricks)
+  says "how many bricks are intact"
+  fx none
+  post (>= out 0)
+  post (<= out (len bricks))
+  out (sum (map "alive_flag" bricks))
+  ex {bricks [{a 0 b 0 alive true} {a 0 b 1 alive false}]} -> 1
+  ex {bricks []} -> 0
+
+node new_brick (c)
+  says "an intact brick at a cell"
+  fx none
+  pre (== (cell_ok c) 1) BadCell
+  post (== out.alive true)
+  out {a c.a b c.b alive true}
+  ex {c {a 2 b 3}} -> {a 2 b 3 alive true}
+  ex {c {a 2 b 30}} refuse BadCell
+
+node wall ()
+  says "a fresh wall: 5 rows of 6 intact bricks, in row-major order"
+  fx none
+  post (== (len out) BRICKS)
+  post (== (intact out) BRICKS)
+  out (map "new_brick" (pairs (range ROWS) (range COLS)))
+  ex {} check (== (len out) 30) (== (at out 7) {a 1 b 1 alive true})
+
+node wall_ok (bricks)
+  says "true when the wall has exactly 30 bricks on valid cells"
+  fx none
+  post (in out [true false])
+  out (and (== (len bricks) BRICKS) (== (sum (map "cell_ok" bricks)) BRICKS))
+  ex {bricks [{a 0 b 0 alive true}]} -> false
+  ex {bricks []} -> false
+
+node bricks_visit (b bricks)
+  says "every brick after the ball's visit, in the same order"
+  fx none
+  raises BadCell BadBall
+  post (== (len out) (len bricks))
+  out (map "brick_visit" (pairs [b] bricks))
+  ex {b {x 3000 y 7900 vx 0 vy -450} bricks [{a 0 b 0 alive true} {a 0 b 1 alive true}]} -> [{a 0 b 0 alive false axis "y"} {a 0 b 1 alive true axis "none"}]
+  ex {b {x 3000 y 7900 vx 0 vy -450} bricks [{a 9 b 0 alive true}]} refuse BadCell
+  ex {b {x 3000 y 7900 vx 900 vy -450} bricks [{a 0 b 0 alive true}]} refuse BadBall
+
+node bounce_off_bricks (b visits)
+  says "the ball with vy reversed once when any visit hit on y, and vx reversed once when any hit on x"
+  fx none
+  pre (ball_ok b) BadBall
+  post (and (<= (abs out.vx) MAXV) (<= (abs out.vy) MAXV))
+  post (== (abs out.vy) (abs b.vy))
+  let xs (sum (map "hit_x" visits))
+  let ys (sum (map "hit_y" visits))
+  out {x b.x y b.y vx (if (> xs 0) (neg b.vx) b.vx) vy (if (> ys 0) (neg b.vy) b.vy)}
+  ex {b {x 3000 y 7900 vx 100 vy -450} visits [{a 0 b 0 alive false axis "y"} {a 0 b 1 alive true axis "none"}]} -> {x 3000 y 7900 vx 100 vy 450}
+  ex {b {x 3000 y 7900 vx 100 vy -450} visits [{a 0 b 0 alive false axis "x"} {a 0 b 1 alive false axis "x"}]} -> {x 3000 y 7900 vx -100 vy -450}
+  ex {b {x 3000 y 7900 vx 100 vy -450} visits []} -> {x 3000 y 7900 vx 100 vy -450}
+  ex {b {x 3000 y 7900 vx 900 vy -450} visits []} refuse BadBall
+
+node lost (b)
+  says "true once the ball's top edge has passed the floor"
+  fx none
+  post (in out [true false])
+  out (> (- b.y R) H)
+  ex {b {x 16000 y 48700 vx 0 vy 450}} -> true
+  ex {b {x 16000 y 48600 vx 0 vy 450}} -> false
+
+node on_paddle (p launches)
+  says "the ball resting on the paddle, ready to launch; the serve angle comes from the launch count, so play is deterministic"
+  fx none
+  pre (paddle_ok p) BadPaddle
+  pre (>= launches 0) BadCount
+  post (== out.y (- PADDLE_Y R))
+  post (== out.vy (neg SERVE_VY))
+  post (<= (abs out.vx) MAXVX)
+  let k (- (mod launches SERVE_ANGLES) HALF_ANGLES)
+  out {x (+ p.x HALF_PW) y (- PADDLE_Y R) vx (* k SERVE_VX_STEP) vy (neg SERVE_VY)}
+  ex {p {x 13000} launches 0} -> {x 16000 y 43400 vx -200 vy -450}
+  ex {p {x 13000} launches 2} -> {x 16000 y 43400 vx 0 vy -450}
+  ex {p {x 0} launches 4} -> {x 3000 y 43400 vx 200 vy -450}
+  ex {p {x 30000} launches 0} refuse BadPaddle
+  ex {p {x 13000} launches -1} refuse BadCount

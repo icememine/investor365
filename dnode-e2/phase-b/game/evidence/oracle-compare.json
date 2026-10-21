@@ -1,0 +1,842 @@
+{
+ "identities": {
+  "kitZipNote": "see PHASE_B identities",
+  "runtimeIdentity": "fd854bcb708f3031824b14819fe126b0be96b241ced19416035b6f49d4d7c55e",
+  "preludeRoot": "8e199f2776bb9c4ec44b3a435b4c70744748c42b784c646f77d2847c41e99dde",
+  "preludeFile": "bf2a6cec6fb9d5ac3fca94ae35685e2d57e729d9bc95da607ea6db2c4c7eeb97",
+  "browserProfile": "cda00518bb6155832ad8bbd82392f0230ca8b0c3f957ba8409cfcecd5dfd17f7",
+  "trustFingerprint": "4c7716c7b528dfcdba2190c27516a09e057334309f1fb0b9a8785991cfca0244",
+  "appRoots": {
+   "breakout.geometry.node": "e31ed731a3a6c9acdea4e3039c3aad3883702389635d745d9b75487d5c2ac78f",
+   "breakout.physics.node": "ec0d8a7ddf930b6950bb9de19b76579de138e5cf592f864ed4a21605d0628edd",
+   "breakout.control.node": "400ecd7f480b88358799345671a48b179c476e00a60c45eeb5f7f57762df673a",
+   "breakout.game.node": "fd4de8d5493330d212e739c28196db363a93fcf665c0ed659bc6898c52a34ae7"
+  },
+  "app": "0cc1b3efe7dc4aee1ff9bde14d7f4320742e424afb999b12e6ed0edd32bf5029"
+ },
+ "cases": 102,
+ "caseAgree": 102,
+ "caseDisagree": 0,
+ "tickAgree": 38024,
+ "tickDisagree": 0,
+ "wallMs": 44598,
+ "perCase": [
+  {
+   "name": "GT3a_joint_25_26",
+   "category": "G-T3",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "joint of bricks 25/26: only 25 removed, vertical"
+  },
+  {
+   "name": "GT3b_diag_corner_29",
+   "category": "G-T3",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "diagonal corner of 29: vertical response"
+  },
+  {
+   "name": "GT3c_touch_bottom_25_nohit",
+   "category": "G-T3",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "ball top ends exactly at y1=2160: no hit"
+  },
+  {
+   "name": "GT3c_touch_bottom_25_then_hit",
+   "category": "G-T3",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "next microstep overlaps and hits"
+  },
+  {
+   "name": "GT3c_touch_side_0_nohit",
+   "category": "G-T3",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "ball right edge ends exactly at x0=200: no hit"
+  },
+  {
+   "name": "GT3c_touch_side_0_then_hit",
+   "category": "G-T3",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "then horizontal hit on brick 0"
+  },
+  {
+   "name": "GT3c_touch_bottom_19_nohit",
+   "category": "G-T3",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "25 removed; ball top ends at y1=1880 of 19: no hit"
+  },
+  {
+   "name": "GT3c_touch_bottom_19_then_hit",
+   "category": "G-T3",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "then vertical hit on 19"
+  },
+  {
+   "name": "GT3c_touch_top_1_nohit",
+   "category": "G-T3",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "ball bottom ends exactly at y0=800: no hit"
+  },
+  {
+   "name": "GT3c_touch_top_1_then_hit",
+   "category": "G-T3",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "then vertical hit on brick 1 from above"
+  },
+  {
+   "name": "GT3c_touch_right_5_nohit",
+   "category": "G-T3",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "ball left edge ends exactly at x1=4600: no hit"
+  },
+  {
+   "name": "GT3c_touch_right_5_then_hit",
+   "category": "G-T3",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "then horizontal hit on brick 5"
+  },
+  {
+   "name": "GT3d_lowest_id_18_24",
+   "category": "G-T3",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "left faces of 18/24 at joint: 18 removed, horizontal"
+  },
+  {
+   "name": "GT3_pocket_three",
+   "category": "G-T3",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "joint 19/20 then 25/26 region"
+  },
+  {
+   "name": "zone_d-560_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-560"
+  },
+  {
+   "name": "zone_d-560_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-560"
+  },
+  {
+   "name": "zone_d-559_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-559"
+  },
+  {
+   "name": "zone_d-559_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-559"
+  },
+  {
+   "name": "zone_d-301_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-301"
+  },
+  {
+   "name": "zone_d-301_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-301"
+  },
+  {
+   "name": "zone_d-300_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-300"
+  },
+  {
+   "name": "zone_d-300_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-300"
+  },
+  {
+   "name": "zone_d-101_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-101"
+  },
+  {
+   "name": "zone_d-101_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-101"
+  },
+  {
+   "name": "zone_d-100_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-100"
+  },
+  {
+   "name": "zone_d-100_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=-100"
+  },
+  {
+   "name": "zone_d+0_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=0"
+  },
+  {
+   "name": "zone_d+0_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=0"
+  },
+  {
+   "name": "zone_d+100_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=100"
+  },
+  {
+   "name": "zone_d+100_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=100"
+  },
+  {
+   "name": "zone_d+101_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=101"
+  },
+  {
+   "name": "zone_d+101_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=101"
+  },
+  {
+   "name": "zone_d+300_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=300"
+  },
+  {
+   "name": "zone_d+300_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=300"
+  },
+  {
+   "name": "zone_d+301_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=301"
+  },
+  {
+   "name": "zone_d+301_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=301"
+  },
+  {
+   "name": "zone_d+559_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=559"
+  },
+  {
+   "name": "zone_d+559_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=559"
+  },
+  {
+   "name": "zone_d+560_vx+16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=560"
+  },
+  {
+   "name": "zone_d+560_vx-16",
+   "category": "zone",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "crossing microstep has nx-pc=560"
+  },
+  {
+   "name": "zone_equal_line_no_cross",
+   "category": "zone",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "ny+60 == 5700 is not a crossing; next ms is"
+  },
+  {
+   "name": "paddle_upward_no_catch",
+   "category": "zone",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "vy<0 never caught"
+  },
+  {
+   "name": "paddle_below_line_no_catch",
+   "category": "zone",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "ball already below top line falls"
+  },
+  {
+   "name": "paddle_side_pass",
+   "category": "zone",
+   "ticks": 8,
+   "agree": 8,
+   "result": "AGREE",
+   "note": "no side faces: passes the paddle side"
+  },
+  {
+   "name": "zone_edge_pc500",
+   "category": "zone",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "paddle at left clamp edge, d=546"
+  },
+  {
+   "name": "zone_edge_pc4300",
+   "category": "zone",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "paddle at right clamp edge, d=-546"
+  },
+  {
+   "name": "maxspeed_brick_from_below",
+   "category": "maxspeed",
+   "ticks": 12,
+   "agree": 12,
+   "result": "AGREE",
+   "note": "(32,-36) to brick row 4"
+  },
+  {
+   "name": "maxspeed_corner_top_right",
+   "category": "maxspeed",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "right+top wall in one microstep"
+  },
+  {
+   "name": "maxspeed_corner_top_left",
+   "category": "maxspeed",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "left+top wall in one microstep"
+  },
+  {
+   "name": "maxspeed_left_wall_exact",
+   "category": "maxspeed",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "nx-60 == 0 touches, then wall"
+  },
+  {
+   "name": "maxspeed_right_wall_exact",
+   "category": "maxspeed",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "nx+60 == 4800 touch"
+  },
+  {
+   "name": "maxspeed_paddle_vy36",
+   "category": "maxspeed",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "vy=36 into paddle"
+  },
+  {
+   "name": "maxspeed_top_channel",
+   "category": "maxspeed",
+   "ticks": 60,
+   "agree": 60,
+   "result": "AGREE",
+   "note": "above the bricks at speed"
+  },
+  {
+   "name": "maxspeed_side_channel_up",
+   "category": "maxspeed",
+   "ticks": 120,
+   "agree": 120,
+   "result": "AGREE",
+   "note": "right channel climb"
+  },
+  {
+   "name": "exit_exact_6400",
+   "category": "exit",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "ny-60 == 6400 at ms4: exit"
+  },
+  {
+   "name": "exit_6399_then_exit",
+   "category": "exit",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "6399 not an exit; next tick exits"
+  },
+  {
+   "name": "exit_last_life_lost",
+   "category": "exit",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "lives 1 -> lost; restart -> initial"
+  },
+  {
+   "name": "exit_then_relaunch_requires_action",
+   "category": "exit",
+   "ticks": 5,
+   "agree": 5,
+   "result": "AGREE",
+   "note": "serve waits for explicit action"
+  },
+  {
+   "name": "last_brick_win",
+   "category": "win",
+   "ticks": 5,
+   "agree": 5,
+   "result": "AGREE",
+   "note": "29 removed -> won; paused ignored; action restarts"
+  },
+  {
+   "name": "last_brick_win_restart_key",
+   "category": "win",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "restart in won -> initial"
+  },
+  {
+   "name": "launch_from_initial",
+   "category": "serve",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "pc=2400 -> (-24,-32), moves next tick"
+  },
+  {
+   "name": "launch_pc_2399",
+   "category": "serve",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "pc<2400 -> (+24,-32)"
+  },
+  {
+   "name": "serve_ball_follows_paddle",
+   "category": "serve",
+   "ticks": 8,
+   "agree": 8,
+   "result": "AGREE",
+   "note": "ball attached"
+  },
+  {
+   "name": "action_in_play_ignored",
+   "category": "serve",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "no relaunch in play"
+  },
+  {
+   "name": "restart_in_play_ignored",
+   "category": "serve",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "C5"
+  },
+  {
+   "name": "restart_in_serve_ignored",
+   "category": "serve",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "C5"
+  },
+  {
+   "name": "kbd_full_left",
+   "category": "control",
+   "ticks": 30,
+   "agree": 30,
+   "result": "AGREE",
+   "note": "reaches 500 and stays"
+  },
+  {
+   "name": "kbd_full_right",
+   "category": "control",
+   "ticks": 30,
+   "agree": 30,
+   "result": "AGREE",
+   "note": "reaches 4300"
+  },
+  {
+   "name": "kbd_full_traverse",
+   "category": "control",
+   "ticks": 75,
+   "agree": 75,
+   "result": "AGREE",
+   "note": "500 -> 4300"
+  },
+  {
+   "name": "kbd_both_held",
+   "category": "control",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "no move"
+  },
+  {
+   "name": "kbd_over_pointer",
+   "category": "control",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "keyboard wins"
+  },
+  {
+   "name": "mouse_far_target",
+   "category": "control",
+   "ticks": 15,
+   "agree": 15,
+   "result": "AGREE",
+   "note": "160/tick then clamp"
+  },
+  {
+   "name": "mouse_near_target",
+   "category": "control",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "exact when within 160"
+  },
+  {
+   "name": "mouse_left_offfield",
+   "category": "control",
+   "ticks": 15,
+   "agree": 15,
+   "result": "AGREE",
+   "note": "clamp 500"
+  },
+  {
+   "name": "mouse_inactive",
+   "category": "control",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "no move"
+  },
+  {
+   "name": "touch_anchor_no_jump",
+   "category": "touch",
+   "ticks": 4,
+   "agree": 4,
+   "result": "AGREE",
+   "note": "touchdown does not move paddle; gain 1.5"
+  },
+  {
+   "name": "touch_negative_floor",
+   "category": "touch",
+   "ticks": 4,
+   "agree": 4,
+   "result": "AGREE",
+   "note": "floor(3*(-1)/2) = -2"
+  },
+  {
+   "name": "touch_clamp_rebase_right",
+   "category": "touch",
+   "ticks": 5,
+   "agree": 5,
+   "result": "AGREE",
+   "note": "rebase at 4300, immediate return"
+  },
+  {
+   "name": "touch_clamp_rebase_left",
+   "category": "touch",
+   "ticks": 4,
+   "agree": 4,
+   "result": "AGREE",
+   "note": "rebase at 500"
+  },
+  {
+   "name": "touch_full_range",
+   "category": "touch",
+   "ticks": 89,
+   "agree": 89,
+   "result": "AGREE",
+   "note": "drag covers 500..4300"
+  },
+  {
+   "name": "touch_lift_reanchor",
+   "category": "touch",
+   "ticks": 5,
+   "agree": 5,
+   "result": "AGREE",
+   "note": "new touch re-anchors"
+  },
+  {
+   "name": "touch_pause_reanchor",
+   "category": "touch",
+   "ticks": 8,
+   "agree": 8,
+   "result": "AGREE",
+   "note": "pause cancels drag; finger moved while paused; re-anchor after resume, no jump"
+  },
+  {
+   "name": "touch_keyboard_precedence",
+   "category": "touch",
+   "ticks": 5,
+   "agree": 5,
+   "result": "AGREE",
+   "note": "C1: keyboard tick clears was_down; re-anchor"
+  },
+  {
+   "name": "touch_over_mouse",
+   "category": "touch",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "C2: touch takes precedence"
+  },
+  {
+   "name": "touch_in_won_lost_moves_paddle",
+   "category": "touch",
+   "ticks": 3,
+   "agree": 3,
+   "result": "AGREE",
+   "note": "C13: paddle responds in lost"
+  },
+  {
+   "name": "pause_1800_ticks",
+   "category": "pause",
+   "ticks": 1804,
+   "agree": 1804,
+   "result": "AGREE",
+   "note": "Gp constant for 1800 paused ticks; resume tick only changes phase; then one normal tick"
+  },
+  {
+   "name": "pause_ignores_inputs",
+   "category": "pause",
+   "ticks": 304,
+   "agree": 304,
+   "result": "AGREE",
+   "note": "levels and action ignored while paused; force while paused is a no-op"
+  },
+  {
+   "name": "pause_from_serve",
+   "category": "pause",
+   "ticks": 4,
+   "agree": 4,
+   "result": "AGREE",
+   "note": "resume returns to serve"
+  },
+  {
+   "name": "restart_from_paused",
+   "category": "pause",
+   "ticks": 4,
+   "agree": 4,
+   "result": "AGREE",
+   "note": "restart -> exact initial"
+  },
+  {
+   "name": "restart_and_pause_same_tick",
+   "category": "pause",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "restart first"
+  },
+  {
+   "name": "pause_and_action_same_tick",
+   "category": "pause",
+   "ticks": 2,
+   "agree": 2,
+   "result": "AGREE",
+   "note": "pause tick does nothing else"
+  },
+  {
+   "name": "malformed_pause_value",
+   "category": "malformed",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "C12 InputShape"
+  },
+  {
+   "name": "malformed_text_velocity",
+   "category": "malformed",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "C12 InputShape"
+  },
+  {
+   "name": "invalid_29_bricks",
+   "category": "malformed",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "C10 InvalidGameState"
+  },
+  {
+   "name": "invalid_pc_out_of_range",
+   "category": "malformed",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "C10 InvalidGameState"
+  },
+  {
+   "name": "invalid_velocity_20",
+   "category": "malformed",
+   "ticks": 1,
+   "agree": 1,
+   "result": "AGREE",
+   "note": "C10 InvalidGameState"
+  },
+  {
+   "name": "auto_mouse_s1",
+   "category": "autopilot",
+   "ticks": 9391,
+   "agree": 9391,
+   "result": "AGREE",
+   "note": "mouse autopilot seed 1; ended phase won after 9391 ticks"
+  },
+  {
+   "name": "auto_mouse_s7",
+   "category": "autopilot",
+   "ticks": 4704,
+   "agree": 4704,
+   "result": "AGREE",
+   "note": "mouse autopilot seed 7; ended phase won after 4704 ticks"
+  },
+  {
+   "name": "auto_keys_s3",
+   "category": "autopilot",
+   "ticks": 6194,
+   "agree": 6194,
+   "result": "AGREE",
+   "note": "keys autopilot seed 3; ended phase won after 6194 ticks"
+  },
+  {
+   "name": "auto_touch_s5",
+   "category": "autopilot",
+   "ticks": 6248,
+   "agree": 6248,
+   "result": "AGREE",
+   "note": "touch autopilot seed 5; ended phase won after 6248 ticks"
+  },
+  {
+   "name": "auto_mouse_pauses_s11",
+   "category": "autopilot",
+   "ticks": 7898,
+   "agree": 7898,
+   "result": "AGREE",
+   "note": "mouse autopilot seed 11; ended phase won after 7898 ticks"
+  },
+  {
+   "name": "auto_lose_three_lives",
+   "category": "autopilot",
+   "ticks": 833,
+   "agree": 833,
+   "result": "AGREE",
+   "note": "mouse autopilot seed 2; ended phase lost after 833 ticks"
+  }
+ ],
+ "disagreements": []
+}

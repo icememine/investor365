@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Breakout</title>
+<link rel="stylesheet" href="host/style.css">
+</head>
+<body>
+<div id="boot" role="status">Verifying the DNode kit before running anything…</div>
+<main id="app" hidden>
+  <header id="hud">
+    <div id="score" aria-live="polite">Bricks 0/30</div>
+    <div id="lives" aria-label="Lives 3"><span class="dots"></span><span class="num">3</span></div>
+    <button id="mute" class="icon" aria-label="Sound on" title="Sound on/off">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="wave" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path class="cross" d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button id="pause" class="icon" aria-label="Pause" title="Pause (P or Esc)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect class="bar" x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect class="bar" x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/><path class="play" d="M8 5l11 7-11 7z" fill="currentColor"/></svg>
+    </button>
+  </header>
+  <div id="surface">
+    <div id="fieldwrap">
+      <canvas id="field" aria-label="Breakout playfield"></canvas>
+      <div id="overlay" aria-live="polite"></div>
+    </div>
+    <div id="strip" aria-hidden="true">
+      <div id="track"><div id="marker"></div></div>
+      <div id="striphint">Drag anywhere to move · Tap to launch</div>
+    </div>
+  </div>
+  <div id="notice" role="status"></div>
+</main>
+<aside id="desk" hidden></aside>
+<script type="module" src="host/main.js"></script>
+</body>
+</html>

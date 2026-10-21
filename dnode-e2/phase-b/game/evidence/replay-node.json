@@ -1,0 +1,41 @@
+[
+ {
+  "trace": "desktop-playthrough.json",
+  "ticks": 6320,
+  "identitiesMatch": true,
+  "initialOk": true,
+  "checkpointsOk": 105,
+  "checkpointsBad": 0,
+  "finalOk": true,
+  "result": "IDENTICAL",
+  "finalPhase": "won",
+  "score": 30,
+  "lives": 3
+ },
+ {
+  "trace": "desktop-session-with-faults.json",
+  "ticks": 9266,
+  "identitiesMatch": true,
+  "initialOk": true,
+  "checkpointsOk": 154,
+  "checkpointsBad": 0,
+  "finalOk": true,
+  "result": "IDENTICAL",
+  "finalPhase": "serve",
+  "score": 1,
+  "lives": 2
+ },
+ {
+  "trace": "phone-touch-playthrough.json",
+  "ticks": 6230,
+  "identitiesMatch": true,
+  "initialOk": true,
+  "checkpointsOk": 103,
+  "checkpointsBad": 0,
+  "finalOk": true,
+  "result": "IDENTICAL",
+  "finalPhase": "won",
+  "score": 30,
+  "lives": 3
+ }
+]

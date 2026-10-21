@@ -1,0 +1,6 @@
+root gapa
+node a.one (x)
+ in {"x":"Int"}
+ returns "Int"
+ out (+ x 1)
+ ex {"args":[1],"out":999}

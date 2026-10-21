@@ -1,0 +1,90 @@
+root breakout.game
+numbers exact
+use prelude
+use breakout.geometry
+use breakout.physics
+use breakout.control
+; D-G4.4 phase machine and per-tick input semantics (Phase A r1; C1..C13 in oracle/SPEC_CLARIFICATIONS.md).
+; Tick order: restart/action-in-won-lost -> pause -> paused no-op -> paddle -> serve/launch -> 4 microsteps.
+const ALL_INTACT [true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true]
+
+node game.initial ()
+ returns "State"
+ says "Exact initial state; restart returns exactly this."
+ out {phase "serve" resume "serve" pc PC_START bx PC_START by SERVE_Y vx 0 vy 0 bricks ALL_INTACT score 0 lives 3 ctl {was_down false af 0 ap PC_START} events []}
+ ex {"args":[],"out":{"phase":"serve","resume":"serve","pc":2400,"bx":2400,"by":5640,"vx":0,"vy":0,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"score":0,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":[]}}
+
+node game.is_removed (b)
+ in {"b":"Bool"}
+ returns "Bool"
+ out (not b)
+
+node game.removed_count (bricks)
+ in {"bricks":"Bricks"}
+ returns "Int"
+ says "Number of false entries. Uses the pinned encode native: a non-empty Bool list encodes as JSON with true=4 chars, false=5 chars and n-1 commas, so len = 1 + 5n + removed. Equivalent to (len (filter game.is_removed bricks)) without 30 node calls (performance, see PHASE_B tick timing)."
+ out (if (== (len bricks) 0) 0 (- (- (len (encode bricks)) 1) (* 5 (len bricks))))
+ ex {"args":[[]],"out":0}
+ ex {"args":[[true]],"out":0}
+ ex {"args":[[false]],"out":1}
+ ex {"args":[[true,false,false,true,false]],"out":3}
+
+node game.moving_ok (s)
+ in {"s":"State"}
+ returns "Bool"
+ out (and (and (contains (abs s.vx) [16 24 32]) (contains (abs s.vy) [24 32 36])) (and (bounded.within s.bx 60 4740) (bounded.within s.by 60 6459)))
+
+node game.valid (s)
+ in {"s":"State"}
+ returns "Bool"
+ says "C10 state-domain predicate: used as the InvalidGameState precondition and as the tick invariant."
+ let moving (or (== s.phase "play") (and (== s.phase "paused") (== s.resume "play")))
+ let attached (or (== s.phase "serve") (and (== s.phase "paused") (== s.resume "serve")))
+ let c1 (and (== (len s.bricks) BRICK_COUNT) (== s.score (game.removed_count s.bricks)))
+ let c2 (and (and (>= s.lives 0) (<= s.lives 3)) (bounded.within s.pc PC_MIN PC_MAX))
+ let c3 (and (contains s.resume ["serve" "play"]) (== (== s.phase "won") (== s.score BRICK_COUNT)))
+ let c4 (== (== s.phase "lost") (== s.lives 0))
+ let c5 (if moving (game.moving_ok s) (and (== s.vx 0) (== s.vy 0)))
+ let c6 (if attached (and (== s.bx s.pc) (== s.by SERVE_Y)) true)
+ out (and (and (and c1 c2) (and c3 c4)) (and c5 c6))
+
+node game.pause (s)
+ in {"s":"State"}
+ returns "State"
+ out (with s phase "paused" resume s.phase ctl (with s.ctl was_down false))
+
+node game.serve (s action)
+ in {"s":"State","action":"Bool"}
+ returns "State"
+ says "Ball attached at (pc,5640); an action edge launches toward the more open side (C8)."
+ let s1 (with s bx s.pc by SERVE_Y)
+ out (if action (with s1 phase "play" vx (if (< s.pc PC_START) 24 -24) vy -32) s1)
+
+node game.advance (s i)
+ in {"s":"State","i":"Input"}
+ returns "State"
+ let s1 (ctl.paddle s i)
+ out (if (== s1.phase "serve") (game.serve s1 i.action) (if (== s1.phase "play") (fold "phys.microstep" (range 4) s1) s1))
+
+node game.step (s i)
+ in {"s":"State","i":"Input"}
+ returns "State"
+ let pausing (and (contains s.phase ["serve" "play"]) (contains i.pause ["toggle" "force"]))
+ let resuming (and (== s.phase "paused") (== i.pause "toggle"))
+ out (if pausing (game.pause s) (if resuming (with s phase s.resume) (if (== s.phase "paused") s (game.advance s i))))
+
+node game.tick (s i)
+ in {"s":"State","i":"Input"}
+ returns "State"
+ says "One fixed simulation tick. Pure; the host replaces its state only with this return value."
+ pre (game.valid s) InvalidGameState
+ let s0 (with s events [])
+ let restart (or (and i.restart (contains s.phase ["paused" "won" "lost"])) (and i.action (contains s.phase ["won" "lost"])))
+ out (if restart (game.initial) (game.step s0 i))
+ inv (game.valid out)
+ ex {"args":[{"phase":"serve","resume":"serve","pc":2400,"bx":2400,"by":5640,"vx":0,"vy":0,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"score":0,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":[]},{"left":false,"right":false,"action":true,"pause":"none","restart":false,"pointer":{"active":false,"x":0},"touch":{"down":false,"x":0}}],"out":{"phase":"play","resume":"serve","pc":2400,"bx":2400,"by":5640,"vx":-24,"vy":-32,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"score":0,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":[]}}
+ ex {"args":[{"phase":"play","resume":"serve","pc":2400,"bx":1660,"by":2224,"vx":16,"vy":-36,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"score":0,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":[]},{"left":false,"right":false,"action":false,"pause":"none","restart":false,"pointer":{"active":false,"x":0},"touch":{"down":false,"x":0}}],"out":{"phase":"play","resume":"serve","pc":2400,"bx":1676,"by":2247,"vx":16,"vy":36,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true],"score":1,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":["brick:25"]}}
+ ex {"args":[{"phase":"play","resume":"serve","pc":2400,"bx":4662,"by":2222,"vx":-32,"vy":-24,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"score":0,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":[]},{"left":false,"right":false,"action":false,"pause":"none","restart":false,"pointer":{"active":false,"x":0},"touch":{"down":false,"x":0}}],"out":{"phase":"play","resume":"serve","pc":2400,"bx":4630,"by":2238,"vx":-32,"vy":24,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false],"score":1,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":["brick:29"]}}
+ ex {"args":[{"phase":"play","resume":"serve","pc":2400,"bx":2000,"by":3000,"vx":24,"vy":-32,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"score":0,"lives":3,"ctl":{"was_down":true,"af":10,"ap":2400},"events":[]},{"left":true,"right":false,"action":true,"pause":"toggle","restart":false,"pointer":{"active":false,"x":0},"touch":{"down":false,"x":0}}],"out":{"phase":"paused","resume":"play","pc":2400,"bx":2000,"by":3000,"vx":24,"vy":-32,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"score":0,"lives":3,"ctl":{"was_down":false,"af":10,"ap":2400},"events":[]}}
+ ex {"args":[{"phase":"serve","resume":"serve","pc":4400,"bx":4400,"by":5640,"vx":0,"vy":0,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"score":0,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":[]},{"left":false,"right":false,"action":false,"pause":"none","restart":false,"pointer":{"active":false,"x":0},"touch":{"down":false,"x":0}}],"refuse":"InvalidGameState"}
+ ex {"args":[{"phase":"serve","resume":"serve","pc":2400,"bx":2400,"by":5640,"vx":0,"vy":0,"bricks":[],"score":0,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":[]},{"left":false,"right":false,"action":false,"pause":"pause","restart":false,"pointer":{"active":false,"x":0},"touch":{"down":false,"x":0}}],"fault":"InputShape"}

@@ -1,0 +1,41 @@
+{
+ "app": "BP-GAME Breakout (DNode E2.1 Phase B)",
+ "roots": {
+  "breakout.geometry.node": "e31ed731a3a6c9acdea4e3039c3aad3883702389635d745d9b75487d5c2ac78f",
+  "breakout.physics.node": "ec0d8a7ddf930b6950bb9de19b76579de138e5cf592f864ed4a21605d0628edd",
+  "breakout.control.node": "400ecd7f480b88358799345671a48b179c476e00a60c45eeb5f7f57762df673a",
+  "breakout.game.node": "fd4de8d5493330d212e739c28196db363a93fcf665c0ed659bc6898c52a34ae7"
+ },
+ "appIdentity": "0cc1b3efe7dc4aee1ff9bde14d7f4320742e424afb999b12e6ed0edd32bf5029",
+ "runtimeIdentity": "fd854bcb708f3031824b14819fe126b0be96b241ced19416035b6f49d4d7c55e",
+ "preludeRoot": "8e199f2776bb9c4ec44b3a435b4c70744748c42b784c646f77d2847c41e99dde",
+ "browserProfileFile": "cda00518bb6155832ad8bbd82392f0230ca8b0c3f957ba8409cfcecd5dfd17f7",
+ "trustFingerprint": "4c7716c7b528dfcdba2190c27516a09e057334309f1fb0b9a8785991cfca0244",
+ "files": {
+  "index.html": "a83a156447bdf9dcfc9961fdf74909d6e37dd0089f72ff0246da8ebc1ea9e86e",
+  "serve.mjs": "bffcfd6b87d07d975d4f307240dff491b7bd03c462f2217cad1916d1b8686814",
+  "host/audio.js": "381e9a647d704877a4f8d141b6587064a45953b30f75c7b98a09d3fab886a47c",
+  "host/desk.js": "945f24d030f435ef9e0be0245b607be40e44244c5e674c80dd4e479b15fddc6a",
+  "host/input.js": "d862fa23830e33e2ed34c150a3b6e66ae1979ce84a9973376d64dda898466388",
+  "host/kit.js": "5c797dbd0b7e898a0383adb09f7e729a149aebda98d53e2ea7acad2400bf6a04",
+  "host/main.js": "33b40b8598948d00221cbce21ff6fa4061298984c8503548bc4b55bb47aa8127",
+  "host/render.js": "a659d4b0020c483f60bad322f333e29c9e1a67c64ff3717770d781058ecf5cf7",
+  "host/scheduler.js": "1b61c8d7d5198b11530a3e8bf148e4cf721de30a774f3ec378e15568e2a4476e",
+  "host/style.css": "0c8801172e3e83631cbc2cbf5b382b121f72bd14cb301f6315e1db41d562fef7",
+  "host/trace.js": "0dac1c18015f29dfe069d74314e2b2cf926208a82ea5e173ea9e8d77f1e3c8f7",
+  "tools/check.mjs": "3d23961f86f30c4df9905f6cb918001cd810738b5d3d72dbad04b1b02aba7dfa",
+  "tools/compare.mjs": "a136fb638ca7fd4bf09e1cef16ae2826c58b03670451333e443286fb2d2657de",
+  "tools/lib.mjs": "a204522d29040a71ffee6436a879730303a5407adaceded41b54016015439bf5",
+  "tools/manifest.mjs": "af801c0ad2625fac1b687816d5581a8f74e1fcdbe9549e38ec48615f50aa7a1b",
+  "tools/replay-node.mjs": "c09eb14259cc282de602cfbe435de997bbc4ea24dc5069498838cbdedc55ff88",
+  "tools/timing.mjs": "74d01665e70dd63be7ab6feef161c5567f6b2c6b4b9f6c84a62952345bbbb31a",
+  "tools/trace2cases.mjs": "e12453c212e7568e1421ac4d30d11e73feeb2d7670b182a80bd53df6cb606d5a",
+  "oracle/make_cases.py": "00a83dbfe2f0a86e5606da366e7925342b2c0f55d85a0a28a7eb201de35ba02a",
+  "oracle/policy.py": "852b9bbbc79f8e608435c886ced721299ae821d3b58003edf9c0e8750565abe8",
+  "oracle/run_cases.py": "ac91db35808ee0b91fa4826c4ef3c56637109b8d3a46366ec4b025f461379044",
+  "tests/mutants.mjs": "749ead92c2e44aca46e97a9dd2d29680546fa5949b4f3bde8576675176f5ad5d",
+  "tests/scheduler.test.mjs": "8f421db4e3a59da95fe8549928430d683f914e0d898095279eb0ec62f29fc66e",
+  "drives/drive.cjs": "043cd29fe0a2da1b3622eed426e8b87b8ca4345628e436e548e4e16fc12a4858"
+ },
+ "note": "Integrity inventory generated beside the code; not a signature or certificate."
+}

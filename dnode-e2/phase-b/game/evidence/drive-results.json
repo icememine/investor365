@@ -1,0 +1,461 @@
+{
+ "when": "2026-10-21T10:35:27.209Z",
+ "chromium": "141.0.7390.37",
+ "base": "http://127.0.0.1:8102/",
+ "wallSeconds": 276,
+ "summary": {
+  "pass": 20,
+  "fail": 0,
+  "notExercised": 1
+ },
+ "results": [
+  {
+   "id": "A-kit-tampered",
+   "obligation": "R0.2",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "ready": false,
+    "admission": "failed",
+    "error": "AdmissionDenied: changed runtime/engine.js",
+    "boot": "Refusing to run: the DNode kit or app roots failed admission. AdmissionDenied: changed runtime/engine.js",
+    "appHidden": true
+   },
+   "note": ""
+  },
+  {
+   "id": "A-app-root-tampered",
+   "obligation": "R0.2",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "ready": false,
+    "admission": "failed",
+    "error": "AdmissionDenied: app root breakout.physics.node is 1c220f21a0c9f65da9f7b2bbefc7d02be49b0ea879398ad91f897e84bc9ae8a9, manifest pins ec0d8a7ddf930b6950bb9de19b76579de138e5cf592f864ed4a21605d0628edd",
+    "boot": "Refusing to run: the DNode kit or app roots failed admission. AdmissionDenied: app root breakout.physics.node is 1c220f21a0c9f65da9f7b2bbefc7d02be49b0ea879398ad91f897e84bc9ae8a9, manifest pins ec0d8a7ddf930b6950bb9de19b76579de138e5cf592f864ed4a21605d0628edd",
+    "appHidden": true
+   },
+   "note": ""
+  },
+  {
+   "id": "A-trust-key-swapped",
+   "obligation": "R0.2",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "ready": false,
+    "admission": "failed",
+    "error": "AdmissionDenied: trust key fingerprint b41df343d6de0d6d54c1ad8c0b6cd820f290da93c6f585a3230b39dca6eb5a6d",
+    "boot": "Refusing to run: the DNode kit or app roots failed admission. AdmissionDenied: trust key fingerprint b41df343d6de0d6d54c1ad8c0b6cd820f290da93c6f585a3230b39dca6eb5a6d",
+    "appHidden": true
+   },
+   "note": ""
+  },
+  {
+   "id": "D-G04-hidden-tab-force-pause",
+   "obligation": "G04",
+   "viewport": "1280x800",
+   "result": "NOT-EXERCISED",
+   "observed": {
+    "visibilityWhileOtherTabFront": "visible",
+    "phaseAfterReturn": "play"
+   },
+   "note": "Headless Chromium keeps visibilityState visible; the visibilitychange force-pause path needs a real-device check."
+  },
+  {
+   "id": "P-G01-observable",
+   "obligation": "G01",
+   "viewport": "390x844 touch",
+   "result": "PASS",
+   "observed": {
+    "coarse": true,
+    "overlay": "BREAKOUT\n\nClear all 30 bricks. You have 3 lives.\n\nDrag anywhere to move · Tap to launch\n\nP or Esc pauses",
+    "strip": "Drag anywhere to move · Tap to launch",
+    "stripHeight": 311,
+    "pause": [
+     48,
+     48
+    ],
+    "field": [
+     358,
+     477
+    ],
+    "fieldInView": true
+   },
+   "note": "Visible controls only; comprehension without coaching is a human check (pending)."
+  },
+  {
+   "id": "P-G02-touch-drag-full-range",
+   "obligation": "G02",
+   "viewport": "390x844 touch",
+   "result": "PASS",
+   "observed": {
+    "pcBefore": 2400,
+    "pcAfterTouchdown": 2400,
+    "pcMin": 500,
+    "pcMax": 4300,
+    "pcAfterTurningBack10px": 4099,
+    "phaseAfterDragLift": "serve",
+    "scroll": {
+     "scrollX": 0,
+     "scrollY": 0,
+     "docH": 844,
+     "docW": 390,
+     "innerH": 844,
+     "innerW": 390,
+     "vvScale": 1
+    },
+    "thumbTravelCssPxForFullRange": 189
+   },
+   "note": ""
+  },
+  {
+   "id": "P-G02-drag-on-field-and-tap-launch",
+   "obligation": "G02",
+   "viewport": "390x844 touch",
+   "result": "PASS",
+   "observed": {
+    "pcBeforeFieldDrag": 4099,
+    "pcAfterFieldDrag": 4300,
+    "phaseAfterDrag": "serve",
+    "phaseAfterTap": "play",
+    "scroll": {
+     "scrollX": 0,
+     "scrollY": 0,
+     "docH": 844,
+     "docW": 390,
+     "innerH": 844,
+     "innerW": 390,
+     "vvScale": 1
+    }
+   },
+   "note": ""
+  },
+  {
+   "id": "P-G02-pause-reanchor",
+   "obligation": "G02",
+   "viewport": "390x844 touch",
+   "result": "PASS",
+   "observed": {
+    "pcPaused": 2489,
+    "pcWhilePausedAfterFingerMoved": 2489,
+    "pcRightAfterResume": 2489,
+    "pcAfter20pxMove": 2087,
+    "observedDelta": -402,
+    "expectedDeltaApprox": -402
+   },
+   "note": "Finger moved 80 CSS px while paused: no paddle jump on resume (re-anchor), then relative 1.5x gain."
+  },
+  {
+   "id": "P-G03-touch-playthrough",
+   "obligation": "G03",
+   "viewport": "390x844 touch",
+   "result": "PASS",
+   "observed": {
+    "endPhase": "won",
+    "score": 30,
+    "lives": 3,
+    "traceTicks": 6230,
+    "wallSeconds": 92,
+    "scroll": {
+     "scrollX": 0,
+     "scrollY": 0,
+     "docH": 844,
+     "docW": 390,
+     "innerH": 844,
+     "innerW": 390,
+     "vvScale": 1
+    }
+   },
+   "note": "Time-boxed; every recorded tick is re-checked against the oracle offline."
+  },
+  {
+   "id": "P-G05-replay",
+   "obligation": "G05",
+   "viewport": "390x844 touch",
+   "result": "PASS",
+   "observed": {
+    "result": "IDENTICAL",
+    "reason": "",
+    "ticks": 6247,
+    "checkpoints": 104,
+    "finalHash": "8421e94ee39e2e035865f6926a78472cf16632931f2f8c37ccbd7c7189795db3",
+    "expectedFinalHash": "8421e94ee39e2e035865f6926a78472cf16632931f2f8c37ccbd7c7189795db3",
+    "ms": 5560,
+    "liveStateMatchesReplay": true
+   },
+   "note": ""
+  },
+  {
+   "id": "P-pageerrors",
+   "obligation": "G05",
+   "viewport": "390x844 touch",
+   "result": "PASS",
+   "observed": {
+    "pageErrors": []
+   },
+   "note": ""
+  },
+  {
+   "id": "D-G01-observable",
+   "obligation": "G01",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "overlay": "BREAKOUT\n\nClear all 30 bricks. You have 3 lives.\n\n← → or mouse to move · Space or click to launch\n\nP or Esc pauses",
+    "pause": [
+     48,
+     48
+    ],
+    "fieldInView": true,
+    "field": [
+     549,
+     732
+    ],
+    "hud": "Bricks 0/30 / lives 3",
+    "phase": "serve"
+   },
+   "note": "Visible controls/instructions only. First-time-player comprehension is a human check (pending)."
+  },
+  {
+   "id": "D-G02-keyboard-full-range",
+   "obligation": "G02",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "pcAfterHoldLeft": 500,
+    "pcAfterHoldRight": 4300,
+    "phaseAfterSpace": "play",
+    "scroll": [
+     {
+      "scrollX": 0,
+      "scrollY": 0,
+      "docH": 800,
+      "docW": 1280,
+      "innerH": 800,
+      "innerW": 1280,
+      "vvScale": 1
+     },
+     {
+      "scrollX": 0,
+      "scrollY": 0,
+      "docH": 800,
+      "docW": 1280,
+      "innerH": 800,
+      "innerW": 1280,
+      "vvScale": 1
+     },
+     {
+      "scrollX": 0,
+      "scrollY": 0,
+      "docH": 800,
+      "docW": 1280,
+      "innerH": 800,
+      "innerW": 1280,
+      "vvScale": 1
+     }
+    ]
+   },
+   "note": ""
+  },
+  {
+   "id": "D-G02-mouse-full-range",
+   "obligation": "G02",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "pcAtLeftEdge": 500,
+    "pcAtRightEdge": 4300,
+    "scrollAfterWheel": {
+     "scrollX": 0,
+     "scrollY": 0,
+     "docH": 800,
+     "docW": 1280,
+     "innerH": 800,
+     "innerW": 1280,
+     "vvScale": 1
+    }
+   },
+   "note": ""
+  },
+  {
+   "id": "D-G03-playthrough",
+   "obligation": "G03",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "endPhase": "won",
+    "score": 30,
+    "lives": 3,
+    "phasesSeen": [
+     "serve",
+     "play",
+     "won"
+    ],
+    "launches": 1,
+    "scoreSteps": 29,
+    "traceTicks": 6320,
+    "wallSeconds": 101
+   },
+   "note": "End state must satisfy the declared transitions; every tick is re-checked against the oracle offline (oracle-compare-browser.json)."
+  },
+  {
+   "id": "D-G03-lose-three-lives",
+   "obligation": "G03",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "livesSequence": [
+     3,
+     2,
+     1,
+     0
+    ],
+    "endPhase": "lost",
+    "overlay": "Out of lives\n\nBricks cleared: 4/30\n\nPlay again"
+   },
+   "note": ""
+  },
+  {
+   "id": "D-G04-restart-exact-initial-and-input-cleared",
+   "obligation": "G04",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "restartExactInitial": true,
+    "pcWhileKeyStillHeld": 2400,
+    "pcAfterRepress": 3840
+   },
+   "note": ""
+  },
+  {
+   "id": "D-G04-pause-30s-injected-and-real",
+   "obligation": "G04",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "gameplayUnchangedAcrossPause": true,
+    "pausedTicksRun": 1828,
+    "injectedJumpFrame": {
+     "t": 150245,
+     "ticks": 5,
+     "discarded": 1796,
+     "simMs": 2.8
+    },
+    "resumePhase": "play",
+    "ballMovedAfterResume": 840,
+    "ticksSinceResume": 16,
+    "ticksPerFrameAfterResume": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "note": ""
+  },
+  {
+   "id": "D-G04-long-frame-delay",
+   "obligation": "G04",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "frameAfterDelay": {
+     "t": 181627,
+     "ticks": 5,
+     "discarded": 32,
+     "simMs": 3.6
+    },
+    "maxTicksInAnyFrame": 5,
+    "ticksRunOver1500msWindow": 21,
+    "wallClockTicksWouldBe": 90
+   },
+   "note": ""
+  },
+  {
+   "id": "D-G05-render-audio-fault-and-replay",
+   "obligation": "G05",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "renderFaultProbe": {
+     "before": "d67fc4debbe5efb37ada10a0d05a560267a69f61b6f3a9575b3f45427a06e647",
+     "after": "d67fc4debbe5efb37ada10a0d05a560267a69f61b6f3a9575b3f45427a06e647",
+     "unchanged": true,
+     "rendererThrew": "Cannot assign to read only property 'bx' of object '#<Object>'"
+    },
+    "ticksDuringFaults": 95,
+    "renderFaults": 95,
+    "audioFaults": 95,
+    "replay": {
+     "result": "IDENTICAL",
+     "reason": "",
+     "ticks": 9186,
+     "checkpoints": 153,
+     "finalHash": "a90f120a8edd9cce5882e26829ffea833be8cd1ee4e421888c06f08c9f5fc335",
+     "expectedFinalHash": "a90f120a8edd9cce5882e26829ffea833be8cd1ee4e421888c06f08c9f5fc335",
+     "ms": 7205,
+     "liveStateMatchesReplay": true
+    },
+    "traceTicks": 9266
+   },
+   "note": ""
+  },
+  {
+   "id": "D-pageerrors",
+   "obligation": "G05",
+   "viewport": "1280x800",
+   "result": "PASS",
+   "observed": {
+    "pageErrors": []
+   },
+   "note": ""
+  }
+ ],
+ "browserTickTiming": {
+  "phone390": {
+   "n": 1200,
+   "mean": 1.399,
+   "p50": 1.2999999998137355,
+   "p95": 2.3999999994412065,
+   "max": 15.299999999813735
+  },
+  "desktop1280": {
+   "n": 1200,
+   "mean": 0.612,
+   "p50": 0.5,
+   "p95": 1.2000000001862645,
+   "max": 4.2999999998137355,
+   "maxFrameSimMs": 6.6,
+   "framesWith5Ticks": [
+    3.6,
+    3.9,
+    5.8,
+    3.8,
+    6.6,
+    3.5,
+    3.4,
+    3.7,
+    6.3,
+    1.7,
+    1.4,
+    1.5,
+    1.4,
+    1.4,
+    1.8,
+    3.3,
+    1.5,
+    1.7
+   ]
+  }
+ },
+ "note": "Machine checks of observable facts only. Human acceptance (G01, G06, human part of G02) is pending."
+}

@@ -1,0 +1,68 @@
+root breakout.geometry
+numbers exact
+; D-G4.1 geometry (Phase A r1, settled by R-G1). Logical frame: x right, y down, integer units.
+; Strict AABB overlap: touching edges never collide.
+type Phase {"enum":["serve","play","paused","won","lost"]}
+type PauseEdge {"enum":["none","toggle","force"]}
+type Ctl {"fields":{"was_down":"Bool","af":"Int","ap":"Int"}}
+type Bricks {"list":"Bool"}
+type Events {"list":"Text"}
+type State {"fields":{"phase":"Phase","resume":"Phase","pc":"Int","bx":"Int","by":"Int","vx":"Int","vy":"Int","bricks":"Bricks","score":"Int","lives":"Int","ctl":"Ctl","events":"Events"}}
+type Pointer {"fields":{"active":"Bool","x":"Int"}}
+type Touch {"fields":{"down":"Bool","x":"Int"}}
+type Input {"fields":{"left":"Bool","right":"Bool","action":"Bool","pause":"PauseEdge","restart":"Bool","pointer":"Pointer","touch":"Touch"}}
+type Rect {"fields":{"x0":"Int","x1":"Int","y0":"Int","y1":"Int"}}
+type Layout {"fields":{"field_w":"Int","field_h":"Int","ball_r":"Int","pad_half":"Int","pad_top":"Int","pad_h":"Int","pc_min":"Int","pc_max":"Int","bricks":{"list":"Rect"}}}
+const FIELD_W 4800
+const FIELD_H 6400
+const BALL_R 60
+const PAD_HALF 500
+const PAD_TOP 5700
+const PAD_H 140
+const PC_MIN 500
+const PC_MAX 4300
+const PC_START 2400
+const SERVE_Y 5640
+const BRICK_COUNT 30
+const BRICK_COLS 6
+const BRICK_X0 200
+const BRICK_Y0 800
+const BRICK_PITCH_X 740
+const BRICK_PITCH_Y 280
+const BRICK_W 700
+const BRICK_H 240
+const BRICK_ZONE_BOTTOM 2160
+
+node geo.brick_rect (id)
+ in {"id":"Int"}
+ returns "Rect"
+ says "Rectangle of brick id = 6r+c: x0=200+740c, x1=x0+700, y0=800+280r, y1=y0+240."
+ pre (and (>= id 0) (< id BRICK_COUNT)) BadBrickId
+ let x0 (+ BRICK_X0 (* BRICK_PITCH_X (mod id BRICK_COLS)))
+ let y0 (+ BRICK_Y0 (* BRICK_PITCH_Y (div id BRICK_COLS)))
+ out {x0 x0 x1 (+ x0 BRICK_W) y0 y0 y1 (+ y0 BRICK_H)}
+ post (and (== (- out.x1 out.x0) BRICK_W) (== (- out.y1 out.y0) BRICK_H))
+ ex {"args":[0],"out":{"x0":200,"x1":900,"y0":800,"y1":1040}}
+ ex {"args":[25],"out":{"x0":940,"x1":1640,"y0":1920,"y1":2160}}
+ ex {"args":[29],"out":{"x0":3900,"x1":4600,"y0":1920,"y1":2160}}
+ ex {"args":[30],"refuse":"BadBrickId"}
+
+node geo.ball_overlaps_brick (nx ny id)
+ in {"nx":"Int","ny":"Int","id":"Int"}
+ returns "Bool"
+ says "Strict overlap of the ball box [nx-60,nx+60]x[ny-60,ny+60] with brick id (rect inlined for speed)."
+ pre (and (>= id 0) (< id BRICK_COUNT)) BadBrickId
+ let x0 (+ BRICK_X0 (* BRICK_PITCH_X (mod id BRICK_COLS)))
+ let y0 (+ BRICK_Y0 (* BRICK_PITCH_Y (div id BRICK_COLS)))
+ out (and (and (> (+ nx BALL_R) x0) (< (- nx BALL_R) (+ x0 BRICK_W))) (and (> (+ ny BALL_R) y0) (< (- ny BALL_R) (+ y0 BRICK_H))))
+ ex {"args":[1664,2215,25],"out":true}
+ ex {"args":[1664,2215,26],"out":true}
+ ex {"args":[1306,2220,25],"out":false}
+ ex {"args":[140,976,0],"out":false}
+ ex {"args":[144,970,0],"out":true}
+
+node geo.layout ()
+ returns "Layout"
+ says "Static geometry for the host renderer, so the host never re-declares game dimensions."
+ out {field_w FIELD_W field_h FIELD_H ball_r BALL_R pad_half PAD_HALF pad_top PAD_TOP pad_h PAD_H pc_min PC_MIN pc_max PC_MAX bricks (map "geo.brick_rect" (range BRICK_COUNT))}
+ post (== (len out.bricks) BRICK_COUNT)

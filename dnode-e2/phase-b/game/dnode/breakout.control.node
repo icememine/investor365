@@ -1,0 +1,39 @@
+root breakout.control
+numbers exact
+use prelude
+use breakout.geometry
+; Paddle control. Keyboard and mouse: D-G5.1 r1. Touch: D-G5.1 r2 (relative drag, R0.3).
+; Precedence keyboard > touch > mouse (C1, C2). Paddle bounds use the shared prelude bounded.clamp.
+const KEY_STEP 80
+const MOUSE_STEP 160
+
+node ctl.paddle (s i)
+ in {"s":"State","i":"Input"}
+ returns "State"
+ out (if (or i.left i.right) (ctl.keyboard s i) (if i.touch.down (ctl.touch s i.touch) (ctl.mouse (with s ctl (with s.ctl was_down false)) i.pointer)))
+ post (bounded.within out.pc PC_MIN PC_MAX)
+
+node ctl.keyboard (s i)
+ in {"s":"State","i":"Input"}
+ returns "State"
+ says "80 units per tick; both keys cancel; a keyboard tick ends any touch anchor (C1)."
+ let d (- (if i.right KEY_STEP 0) (if i.left KEY_STEP 0))
+ out (with s pc (bounded.clamp (+ s.pc d) PC_MIN PC_MAX) ctl (with s.ctl was_down false))
+
+node ctl.touch (s t)
+ in {"s":"State","t":"Touch"}
+ returns "State"
+ says "r2: anchor on touchdown (no move); pc = clamp(ap + floor(3(x-af)/2)); rebase anchor when clamped."
+ let fresh (not s.ctl.was_down)
+ let af (if fresh t.x s.ctl.af)
+ let ap (if fresh s.pc s.ctl.ap)
+ let raw (+ ap (div (* 3 (- t.x af)) 2))
+ let tgt (bounded.clamp raw PC_MIN PC_MAX)
+ let rebase (!= raw tgt)
+ out (with s pc tgt ctl {was_down true af (if rebase t.x af) ap (if rebase tgt ap)})
+
+node ctl.mouse (s p)
+ in {"s":"State","p":"Pointer"}
+ returns "State"
+ says "r1 absolute pointer: move toward x by at most 160 per tick, then clamp."
+ out (if p.active (with s pc (bounded.clamp (+ s.pc (bounded.clamp (- p.x s.pc) (neg MOUSE_STEP) MOUSE_STEP)) PC_MIN PC_MAX)) s)

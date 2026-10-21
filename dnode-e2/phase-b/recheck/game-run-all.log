@@ -1,0 +1,195 @@
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game/../kit/dnode-e1-kit' && node --version
+v22.22.0
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game/../kit/dnode-e1-kit' && node tools/run.mjs verify
+VERIFIED DNode-E1-author-kit trust fingerprint 4c7716c7b528dfcdba2190c27516a09e057334309f1fb0b9a8785991cfca0244
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game/../kit/dnode-e1-kit' && npm test --silent
+Verified pinned package and 1280 independently expected public generated cases. This does not certify your application.
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game/../kit/dnode-e1-kit' && node tools/run.mjs call bounded.clamp '[5200,500,4300]'
+{"effects":[],"out":4300}
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game/../kit/dnode-e1-kit' && node tools/run.mjs check ../../game/dnode/breakout.geometry.node
+STRUCTURAL PASS. Not a certificate; provide examples and independent evidence.
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game/../kit/dnode-e1-kit' && node tools/run.mjs check ../../game/dnode/breakout.physics.node
+MissingRoot MissingRoot: breakout.geometry
+[exit 1]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game/../kit/dnode-e1-kit' && node tools/run.mjs check ../../game/dnode/breakout.control.node
+MissingRoot MissingRoot: breakout.geometry
+[exit 1]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game/../kit/dnode-e1-kit' && node tools/run.mjs check ../../game/dnode/breakout.game.node
+MissingRoot MissingRoot: breakout.geometry
+[exit 1]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game' && node tools/check.mjs
+STRUCTURAL: compiled 45 nodes (kit + app) with browser-e1 profile
+{
+ "exPassed": 43,
+ "exFailed": 0,
+ "removedCountProperty": {
+  "checked": 10191,
+  "failed": 0
+ },
+ "identities": {
+  "kitZipNote": "see PHASE_B identities",
+  "runtimeIdentity": "fd854bcb708f3031824b14819fe126b0be96b241ced19416035b6f49d4d7c55e",
+  "preludeRoot": "8e199f2776bb9c4ec44b3a435b4c70744748c42b784c646f77d2847c41e99dde",
+  "preludeFile": "bf2a6cec6fb9d5ac3fca94ae35685e2d57e729d9bc95da607ea6db2c4c7eeb97",
+  "browserProfile": "cda00518bb6155832ad8bbd82392f0230ca8b0c3f957ba8409cfcecd5dfd17f7",
+  "trustFingerprint": "4c7716c7b528dfcdba2190c27516a09e057334309f1fb0b9a8785991cfca0244",
+  "appRoots": {
+   "breakout.geometry.node": "e31ed731a3a6c9acdea4e3039c3aad3883702389635d745d9b75487d5c2ac78f",
+   "breakout.physics.node": "ec0d8a7ddf930b6950bb9de19b76579de138e5cf592f864ed4a21605d0628edd",
+   "breakout.control.node": "400ecd7f480b88358799345671a48b179c476e00a60c45eeb5f7f57762df673a",
+   "breakout.game.node": "fd4de8d5493330d212e739c28196db363a93fcf665c0ed659bc6898c52a34ae7"
+  },
+  "app": "0cc1b3efe7dc4aee1ff9bde14d7f4320742e424afb999b12e6ed0edd32bf5029"
+ }
+}
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game' && node tests/scheduler.test.mjs
+PASS steady 60 Hz [[1,0],[1,0],[1,0],[1,0]]
+PASS 120 Hz display alternates 0/1 [[0,0],[1,0],[0,0],[1,0]]
+PASS 30 Hz display runs 2 per frame [[2,0],[2,0],[2,0]]
+PASS exactly 5 due runs 5, no discard [[5,0],[1,0]]
+PASS 100 ms stall: 6 due -> 5 run, 1 discarded, re-epoch [[5,1],[1,0]]
+PASS 250 ms stall: 15 due -> 5 run, 10 discarded [[5,10],[1,0]]
+PASS 30 s gap: 1800 due -> 5 run, 1795 discarded [[5,1795],[1,0]]
+PASS phase A deltas 16.7, 100, 250, 30000 [[1,0],[5,1],[5,10],[5,1795]]
+PASS clock going backwards runs nothing [[0,0],[1,0]]
+PASS non-zero epoch [[3,0]]
+PASS reset(now) on visibility return {"ticks":1,"discarded":0}
+scheduler fixtures: 11 passed, 0 failed
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game' && python3 -I oracle/make_cases.py oracle | tail -3
+auto_mouse_pauses_s11                    ticks=7898   end=won      score=30 lives=3
+auto_lose_three_lives                    ticks=833    end=lost     score=7 lives=0
+cases 102 ticks 38024 oracle stats {'multi_overlap': 8}
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game' && node tools/compare.mjs
+cases 102: agree 102, disagree 0; ticks agree 38024, disagree 0; 46077 ms
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game' && node tests/mutants.mjs
+tie_highest_id                   detected by 6 cases GT3a_joint_25_26@0 GT3d_lowest_id_18_24@0 GT3_pocket_three@0
+corner_horizontal_priority       detected by 4 cases GT3b_diag_corner_29@0 last_brick_win@0 last_brick_win_restart_key@0
+overlap_non_strict_y0            detected by 7 cases GT3c_touch_top_1_nohit@0 GT3c_touch_top_1_then_hit@0 auto_mouse_s1@5212
+overlap_non_strict_x0            detected by 6 cases GT3c_touch_side_0_nohit@0 GT3c_touch_side_0_then_hit@0 auto_mouse_s7@1116
+overlap_non_strict_x1            detected by 8 cases GT3c_touch_right_5_nohit@0 GT3c_touch_right_5_then_hit@0 maxspeed_top_channel@56
+overlap_non_strict_y1            detected by 5 cases GT3c_touch_bottom_19_nohit@0 GT3c_touch_bottom_19_then_hit@0 auto_mouse_s1@4221
+zone_centre_off_by_one           detected by 2 cases zone_d+100_vx+16@0 zone_d+100_vx-16@0
+exit_strict                      detected by 4 cases exit_exact_6400@0 exit_last_life_lost@0 exit_then_relaunch_requires_action@0
+touch_gain_round_toward_zero     detected by 2 cases touch_negative_floor@1 auto_touch_s5@216
+pause_keeps_touch_anchor         detected by 1 cases touch_pause_reanchor@2
+launch_boundary                  detected by 3 cases launch_from_initial@0 auto_keys_s3@4 auto_touch_s5@0
+restart_in_play                  detected by 1 cases restart_in_play_ignored@0
+paddle_line_non_strict           detected by 6 cases zone_equal_line_no_cross@0 auto_mouse_s1@414 auto_mouse_s7@416
+mouse_step_200                   detected by 6 cases mouse_far_target@0 mouse_left_offfield@0 auto_mouse_s1@0
+keyboard_ignores_touch_anchor    detected by 1 cases touch_keyboard_precedence@2
+no_wall_event                    detected by 8 cases maxspeed_corner_top_left@0 maxspeed_left_wall_exact@0 auto_mouse_s1@349
+remove_all_overlaps_score2       detected by 6 cases GT3a_joint_25_26@0 GT3d_lowest_id_18_24@0 GT3_pocket_three@0
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game' && node tools/timing.mjs evidence/tick-timing-node.json
+{
+ "env": {
+  "node": "v22.22.0",
+  "platform": "linux",
+  "arch": "x64"
+ },
+ "msPerTick": {
+  "serve_idle": {
+   "n": 1000,
+   "mean": 0.489,
+   "p50": 0.398,
+   "p95": 0.859,
+   "max": 2.921
+  },
+  "play_open_field": {
+   "n": 1000,
+   "mean": 1.167,
+   "p50": 0.935,
+   "p95": 1.819,
+   "max": 4.548
+  },
+  "play_brick_zone": {
+   "n": 1000,
+   "mean": 1.665,
+   "p50": 1.464,
+   "p95": 2.747,
+   "max": 10.212
+  },
+  "paused": {
+   "n": 1000,
+   "mean": 0.473,
+   "p50": 0.377,
+   "p95": 0.873,
+   "max": 3.552
+  }
+ },
+ "nodeCallsPerTick": {
+  "serve_idle": 13,
+  "play_open_field": 34,
+  "play_brick_zone": 56,
+  "paused": 14
+ },
+ "fiveTickBatchMs_worst_p95": 13.735
+}
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game' && rm -f evidence/traces/*.json && node drives/drive.cjs
+PASS A-kit-tampered {"ready":false,"admission":"failed","error":"AdmissionDenied: changed runtime/engine.js","boot":"Refusing to run: the DNode kit or app roots failed admission. AdmissionDenied: changed runtime/engine.js","appHidden":true}
+PASS A-app-root-tampered {"ready":false,"admission":"failed","error":"AdmissionDenied: app root breakout.physics.node is 1c220f21a0c9f65da9f7b2bbefc7d02be49b0ea879398ad91f897e84bc9ae8a9, manifest pins ec0d8a7ddf930b6950bb9de19b76579de138e5cf592f864ed4a21605d0628edd","boot":"Refusing to run: the DNode kit or app roots failed
+PASS A-trust-key-swapped {"ready":false,"admission":"failed","error":"AdmissionDenied: trust key fingerprint b41df343d6de0d6d54c1ad8c0b6cd820f290da93c6f585a3230b39dca6eb5a6d","boot":"Refusing to run: the DNode kit or app roots failed admission. AdmissionDenied: trust key fingerprint b41df343d6de0d6d54c1ad8c0b6cd820f290da93c
+NOT-EXERCISED D-G04-hidden-tab-force-pause
+PASS P-G01-observable {"coarse":true,"overlay":"BREAKOUT\n\nClear all 30 bricks. You have 3 lives.\n\nDrag anywhere to move · Tap to launch\n\nP or Esc pauses","strip":"Drag anywhere to move · Tap to launch","stripHeight":311,"pause":[48,48],"field":[358,477],"fieldInView":true}
+PASS P-G02-touch-drag-full-range {"pcBefore":2400,"pcAfterTouchdown":2400,"pcMin":500,"pcMax":4300,"pcAfterTurningBack10px":4099,"phaseAfterDragLift":"serve","scroll":{"scrollX":0,"scrollY":0,"docH":844,"docW":390,"innerH":844,"innerW":390,"vvScale":1},"thumbTravelCssPxForFullRange":189}
+PASS P-G02-drag-on-field-and-tap-launch {"pcBeforeFieldDrag":4099,"pcAfterFieldDrag":4300,"phaseAfterDrag":"serve","phaseAfterTap":"play","scroll":{"scrollX":0,"scrollY":0,"docH":844,"docW":390,"innerH":844,"innerW":390,"vvScale":1}}
+PASS P-G02-pause-reanchor {"pcPaused":2489,"pcWhilePausedAfterFingerMoved":2489,"pcRightAfterResume":2489,"pcAfter20pxMove":2087,"observedDelta":-402,"expectedDeltaApprox":-402}
+PASS P-G03-touch-playthrough {"endPhase":"won","score":30,"lives":3,"traceTicks":6737,"wallSeconds":103,"scroll":{"scrollX":0,"scrollY":0,"docH":844,"docW":390,"innerH":844,"innerW":390,"vvScale":1}}
+PASS P-G05-replay {"result":"IDENTICAL","reason":"","ticks":6752,"checkpoints":112,"finalHash":"1a035bfd092dff722e64012c76859fc3599f5fd84e4bd807760b91d3875206df","expectedFinalHash":"1a035bfd092dff722e64012c76859fc3599f5fd84e4bd807760b91d3875206df","ms":6000,"liveStateMatchesReplay":true}
+PASS P-pageerrors {"pageErrors":[]}
+PASS D-G01-observable {"overlay":"BREAKOUT\n\nClear all 30 bricks. You have 3 lives.\n\n← → or mouse to move · Space or click to launch\n\nP or Esc pauses","pause":[48,48],"fieldInView":true,"field":[549,732],"hud":"Bricks 0/30 / lives 3","phase":"serve"}
+PASS D-G02-keyboard-full-range {"pcAfterHoldLeft":500,"pcAfterHoldRight":4300,"phaseAfterSpace":"play","scroll":[{"scrollX":0,"scrollY":0,"docH":800,"docW":1280,"innerH":800,"innerW":1280,"vvScale":1},{"scrollX":0,"scrollY":0,"docH":800,"docW":1280,"innerH":800,"innerW":1280,"vvScale":1},{"scrollX":0,"scrollY":0,"docH":800,"docW"
+PASS D-G02-mouse-full-range {"pcAtLeftEdge":500,"pcAtRightEdge":4300,"scrollAfterWheel":{"scrollX":0,"scrollY":0,"docH":800,"docW":1280,"innerH":800,"innerW":1280,"vvScale":1}}
+PASS D-G03-playthrough {"endPhase":"won","score":30,"lives":3,"phasesSeen":["serve","play","won"],"launches":1,"scoreSteps":29,"traceTicks":6322,"wallSeconds":101}
+PASS D-G03-lose-three-lives {"livesSequence":[3,2,1,0],"endPhase":"lost","overlay":"Out of lives\n\nBricks cleared: 4/30\n\nPlay again"}
+PASS D-G04-restart-exact-initial-and-input-cleared {"restartExactInitial":true,"pcWhileKeyStillHeld":2400,"pcAfterRepress":3840}
+PASS D-G04-pause-30s-injected-and-real {"gameplayUnchangedAcrossPause":true,"pausedTicksRun":1828,"injectedJumpFrame":{"t":150154,"ticks":5,"discarded":1796,"simMs":1.6},"resumePhase":"play","ballMovedAfterResume":840,"ticksSinceResume":16,"ticksPerFrameAfterResume":[1,1,1,1,1,1,1,1,1,1,1,1]}
+PASS D-G04-long-frame-delay {"frameAfterDelay":{"t":181536,"ticks":5,"discarded":32,"simMs":3.7},"maxTicksInAnyFrame":5,"ticksRunOver1500msWindow":23,"wallClockTicksWouldBe":90}
+PASS D-G05-render-audio-fault-and-replay {"renderFaultProbe":{"before":"7276bf1996adef56cd53986ba20182de60e41d87fe8cff707c9e42d8e7fe7379","after":"7276bf1996adef56cd53986ba20182de60e41d87fe8cff707c9e42d8e7fe7379","unchanged":true,"rendererThrew":"Cannot assign to read only property 'bx' of object '#<Object>'"},"ticksDuringFaults":95,"rende
+PASS D-pageerrors {"pageErrors":[]}
+{"pass":20,"fail":0,"notExercised":1} timing {"phone390":{"n":1200,"mean":1.351,"p50":1.2999999998137355,"p95":2.3999999994412065,"max":4.5},"desktop1280":{"n":1200,"mean":0.69,"p50":0.599999999627471,"p95":1.5,"max":4.1000000005587935,"maxFrameSimMs":9.1,"framesWith5Ticks":[3.7,3.9,4.1,3.7,5.1,3.5,5.6,3.4,9.1,6.5,3.4,4.5,3.6,3.4,3.5,3.7,6.6,3.9]}}
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game' && node tools/replay-node.mjs evidence/traces/*.json
+{"trace":"desktop-playthrough.json","ticks":6322,"identitiesMatch":true,"initialOk":true,"checkpointsOk":105,"checkpointsBad":0,"finalOk":true,"result":"IDENTICAL","finalPhase":"won","score":30,"lives":3}
+{"trace":"desktop-session-with-faults.json","ticks":9264,"identitiesMatch":true,"initialOk":true,"checkpointsOk":154,"checkpointsBad":0,"finalOk":true,"result":"IDENTICAL","finalPhase":"play","score":1,"lives":3}
+{"trace":"phone-touch-playthrough.json","ticks":6737,"identitiesMatch":true,"initialOk":true,"checkpointsOk":112,"checkpointsBad":0,"finalOk":true,"result":"IDENTICAL","finalPhase":"won","score":30,"lives":3}
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game' && node tools/trace2cases.mjs oracle/browser-cases.json evidence/traces/*.json && python3 -I oracle/run_cases.py oracle/browser-cases.json oracle/browser-expected.json && node tools/compare.mjs oracle/browser-cases.json oracle/browser-expected.json evidence/oracle-compare-browser.json
+wrote 3 cases desktop-playthrough:6322 desktop-session-with-faults:9264 phone-touch-playthrough:6737
+desktop-playthrough                  ticks=6322   end=won     score=30  lives=3 bricks_ev=30 paddle_ev=22 life_ev=0
+desktop-session-with-faults          ticks=9264   end=play    score=1   lives=3 bricks_ev=35 paddle_ev=23 life_ev=3
+phone-touch-playthrough              ticks=6737   end=won     score=30  lives=3 bricks_ev=30 paddle_ev=25 life_ev=0
+cases 3: agree 3, disagree 0; ticks agree 22323, disagree 0; 26550 ms
+[exit 0]
+
+$ cd '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/game' && node tools/manifest.mjs
+app-manifest.json written; appIdentity 0cc1b3efe7dc4aee1ff9bde14d7f4320742e424afb999b12e6ed0edd32bf5029
+[exit 0]
+
+done

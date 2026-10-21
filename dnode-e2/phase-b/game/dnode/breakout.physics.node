@@ -1,0 +1,132 @@
+root breakout.physics
+numbers exact
+use breakout.geometry
+; D-G4.2 velocities/zones and D-G4.3 collision order, tie rule and tunneling policy (Phase A r1).
+; One microstep: move v/4; walls (left, right, top); paddle top-line crossing; lowest-id overlapped
+; intact brick only; win check; exit check. Events per C4.
+type Move {"fields":{"px":"Int","py":"Int","nx":"Int","ny":"Int","vx":"Int","vy":"Int","events":"Events"}}
+type Vel {"fields":{"vx":"Int","vy":"Int"}}
+type Probe {"fields":{"nx":"Int","ny":"Int","bricks":"Bricks"}}
+
+node phys.zone (d vx)
+ in {"d":"Int","vx":"Int"}
+ returns "Vel"
+ says "Paddle zone vector for offset d = nx - pc; centre zone keeps the sign of incoming vx (C11)."
+ pre (and (>= d -559) (<= d 559)) BadPaddleOffset
+ pre (!= vx 0) BadPaddleOffset
+ out (if (<= d -301) {vx -32 vy -24} (if (<= d -101) {vx -24 vy -32} (if (<= d 100) {vx (if (> vx 0) 16 -16) vy -36} (if (<= d 300) {vx 24 vy -32} {vx 32 vy -24}))))
+ ex {"args":[-301,16],"out":{"vx":-32,"vy":-24}}
+ ex {"args":[-300,16],"out":{"vx":-24,"vy":-32}}
+ ex {"args":[-101,16],"out":{"vx":-24,"vy":-32}}
+ ex {"args":[-100,-16],"out":{"vx":-16,"vy":-36}}
+ ex {"args":[100,16],"out":{"vx":16,"vy":-36}}
+ ex {"args":[101,-16],"out":{"vx":24,"vy":-32}}
+ ex {"args":[301,16],"out":{"vx":32,"vy":-24}}
+ ex {"args":[560,16],"refuse":"BadPaddleOffset"}
+
+node phys.walls (m)
+ in {"m":"Move"}
+ returns "Move"
+ says "Left, right, top walls in that order; each reflecting wall snaps and appends one wall event."
+ let l (< (- m.nx BALL_R) 0)
+ let nx1 (if l BALL_R m.nx)
+ let vx1 (if l (abs m.vx) m.vx)
+ let ev1 (if l (concat m.events ["wall"]) m.events)
+ let r (> (+ nx1 BALL_R) FIELD_W)
+ let nx2 (if r (- FIELD_W BALL_R) nx1)
+ let vx2 (if r (neg (abs vx1)) vx1)
+ let ev2 (if r (concat ev1 ["wall"]) ev1)
+ let t (< (- m.ny BALL_R) 0)
+ out (with m nx nx2 vx vx2 ny (if t BALL_R m.ny) vy (if t (abs m.vy) m.vy) events (if t (concat ev2 ["wall"]) ev2))
+ post (and (>= out.nx BALL_R) (<= out.nx (- FIELD_W BALL_R)))
+ ex {"args":[{"px":4736,"py":66,"nx":4744,"ny":57,"vx":32,"vy":-36,"events":[]}],"out":{"px":4736,"py":66,"nx":4740,"ny":60,"vx":-32,"vy":36,"events":["wall","wall"]}}
+ ex {"args":[{"px":68,"py":3000,"nx":60,"ny":3006,"vx":-32,"vy":24,"events":[]}],"out":{"px":68,"py":3000,"nx":60,"ny":3006,"vx":-32,"vy":24,"events":[]}}
+
+node phys.paddle (m pc)
+ in {"m":"Move","pc":"Int"}
+ returns "Move"
+ says "Top-line crossing only: vy>0, py+60<=5700<ny+60 and strict horizontal overlap. No side faces."
+ let hit (and (and (> m.vy 0) (<= (+ m.py BALL_R) PAD_TOP)) (and (< PAD_TOP (+ m.ny BALL_R)) (and (> (+ m.nx BALL_R) (- pc PAD_HALF)) (< (- m.nx BALL_R) (+ pc PAD_HALF)))))
+ out (if hit (phys.bounce m pc) m)
+ ex {"args":[{"px":2400,"py":5631,"nx":2404,"ny":5640,"vx":16,"vy":36,"events":[]},2400],"out":{"px":2400,"py":5631,"nx":2404,"ny":5640,"vx":16,"vy":36,"events":[]}}
+ ex {"args":[{"px":2400,"py":5640,"nx":2404,"ny":5649,"vx":16,"vy":36,"events":[]},2400],"out":{"px":2400,"py":5640,"nx":2404,"ny":5640,"vx":16,"vy":-36,"events":["paddle"]}}
+ ex {"args":[{"px":1836,"py":5640,"nx":1840,"ny":5649,"vx":16,"vy":36,"events":[]},2400],"out":{"px":1836,"py":5640,"nx":1840,"ny":5649,"vx":16,"vy":36,"events":[]}}
+
+node phys.bounce (m pc)
+ in {"m":"Move","pc":"Int"}
+ returns "Move"
+ let v (phys.zone (- m.nx pc) m.vx)
+ out (with m ny (- PAD_TOP BALL_R) vx v.vx vy v.vy events (concat m.events ["paddle"]))
+
+node phys.brick_candidate (id p)
+ in {"id":"Int","p":"Probe"}
+ returns "Bool"
+ out (and (at p.bricks id) (geo.ball_overlaps_brick p.nx p.ny id))
+
+node phys.candidates (nx ny)
+ in {"nx":"Int","ny":"Int"}
+ returns {"list":"Int"}
+ says "Ascending ids of the at most 4 bricks whose pitch cell meets the ball box. A superset of the overlapped bricks because the ball box (120) is smaller than both pitches (740, 280); the exact strict-overlap test and lowest-id rule are applied afterwards, so the result equals a scan of all 30."
+ let ca (max 0 (min 5 (div (- (- nx BALL_R) BRICK_X0) BRICK_PITCH_X)))
+ let cb (max 0 (min 5 (div (- (+ nx BALL_R) BRICK_X0) BRICK_PITCH_X)))
+ let ra (max 0 (min 4 (div (- (- ny BALL_R) BRICK_Y0) BRICK_PITCH_Y)))
+ let rb (max 0 (min 4 (div (- (+ ny BALL_R) BRICK_Y0) BRICK_PITCH_Y)))
+ out (unique [(+ (* BRICK_COLS ra) ca) (+ (* BRICK_COLS ra) cb) (+ (* BRICK_COLS rb) ca) (+ (* BRICK_COLS rb) cb)])
+ ex {"args":[1664,2215],"out":[25,26]}
+ ex {"args":[4654,2216],"out":[29]}
+ ex {"args":[146,1888],"out":[18,24]}
+ ex {"args":[2400,100],"out":[2,3]}
+ ex {"args":[2570,100],"out":[3]}
+
+node phys.brick_response (m b)
+ in {"m":"Move","b":"Int"}
+ returns "Move"
+ says "Vertical response iff the previous centre was outside b's expanded vertical interval; else horizontal."
+ let r (geo.brick_rect b)
+ let vert (or (<= m.py (- r.y0 BALL_R)) (>= m.py (+ r.y1 BALL_R)))
+ out (if vert (with m ny (if (< m.vy 0) (+ r.y1 BALL_R) (- r.y0 BALL_R)) vy (neg m.vy)) (with m nx (if (> m.vx 0) (- r.x0 BALL_R) (+ r.x1 BALL_R)) vx (neg m.vx)))
+ ex {"args":[{"px":1660,"py":2224,"nx":1664,"ny":2215,"vx":16,"vy":-36,"events":[]},25],"out":{"px":1660,"py":2224,"nx":1664,"ny":2220,"vx":16,"vy":36,"events":[]}}
+ ex {"args":[{"px":138,"py":1894,"nx":146,"ny":1888,"vx":32,"vy":-24,"events":[]},18],"out":{"px":138,"py":1894,"nx":140,"ny":1888,"vx":-32,"vy":-24,"events":[]}}
+
+node phys.remove (bricks b)
+ in {"bricks":"Bricks","b":"Int"}
+ returns "Bricks"
+ pre (at bricks b) BrickNotIntact
+ out (concat (slice bricks 0 b) (concat [false] (slice bricks (+ b 1) (len bricks))))
+ post (== (len out) (len bricks))
+ ex {"args":[[true,true,true],1],"out":[true,false,true]}
+ ex {"args":[[true,false,true],1],"refuse":"BrickNotIntact"}
+
+node phys.win (s)
+ in {"s":"State"}
+ returns "State"
+ out (with s phase "won" vx 0 vy 0 events (concat s.events ["won"]))
+
+node phys.exit (s)
+ in {"s":"State"}
+ returns "State"
+ says "One life per exit; re-attach the ball at (pc,5640) with v=(0,0); lost at 0 lives."
+ let lives (- s.lives 1)
+ out (with s lives lives phase (if (== lives 0) "lost" "serve") bx s.pc by SERVE_Y vx 0 vy 0 events (concat s.events (if (== lives 0) ["life" "lost"] ["life"])))
+
+node phys.advance (s)
+ in {"s":"State"}
+ returns "State"
+ let m0 {px s.bx py s.by nx (+ s.bx (div s.vx 4)) ny (+ s.by (div s.vy 4)) vx s.vx vy s.vy events s.events}
+ let m1 (phys.walls m0)
+ let m2 (phys.paddle m1 s.pc)
+ let ids (if (< (- m2.ny BALL_R) BRICK_ZONE_BOTTOM) (filter "phys.brick_candidate" (phys.candidates m2.nx m2.ny) {nx m2.nx ny m2.ny bricks s.bricks}) [])
+ let hit (> (len ids) 0)
+ let b (if hit (at ids 0) -1)
+ let m3 (if hit (phys.brick_response m2 b) m2)
+ let score (if hit (+ s.score 1) s.score)
+ let s1 (with s bx m3.nx by m3.ny vx m3.vx vy m3.vy bricks (if hit (phys.remove s.bricks b) s.bricks) score score events (if hit (concat m3.events [(cat "brick:" (str b))]) m3.events))
+ out (if (== score BRICK_COUNT) (phys.win s1) (if (>= (- m3.ny BALL_R) FIELD_H) (phys.exit s1) s1))
+
+node phys.microstep (s k)
+ in {"s":"State","k":"Int"}
+ returns "State"
+ says "One of four microsteps of a play tick; a no-op once the phase is no longer play."
+ pre (and (>= k 0) (< k 4)) BadMicrostep
+ out (if (== s.phase "play") (phys.advance s) s)
+ ex {"args":[{"phase":"play","resume":"serve","pc":2400,"bx":1660,"by":2224,"vx":16,"vy":-36,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"score":0,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":[]},0],"out":{"phase":"play","resume":"serve","pc":2400,"bx":1664,"by":2220,"vx":16,"vy":36,"bricks":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true],"score":1,"lives":3,"ctl":{"was_down":false,"af":0,"ap":2400},"events":["brick:25"]}}

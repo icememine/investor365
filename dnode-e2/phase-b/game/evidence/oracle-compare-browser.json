@@ -1,0 +1,50 @@
+{
+ "identities": {
+  "kitZipNote": "see PHASE_B identities",
+  "runtimeIdentity": "fd854bcb708f3031824b14819fe126b0be96b241ced19416035b6f49d4d7c55e",
+  "preludeRoot": "8e199f2776bb9c4ec44b3a435b4c70744748c42b784c646f77d2847c41e99dde",
+  "preludeFile": "bf2a6cec6fb9d5ac3fca94ae35685e2d57e729d9bc95da607ea6db2c4c7eeb97",
+  "browserProfile": "cda00518bb6155832ad8bbd82392f0230ca8b0c3f957ba8409cfcecd5dfd17f7",
+  "trustFingerprint": "4c7716c7b528dfcdba2190c27516a09e057334309f1fb0b9a8785991cfca0244",
+  "appRoots": {
+   "breakout.geometry.node": "e31ed731a3a6c9acdea4e3039c3aad3883702389635d745d9b75487d5c2ac78f",
+   "breakout.physics.node": "ec0d8a7ddf930b6950bb9de19b76579de138e5cf592f864ed4a21605d0628edd",
+   "breakout.control.node": "400ecd7f480b88358799345671a48b179c476e00a60c45eeb5f7f57762df673a",
+   "breakout.game.node": "fd4de8d5493330d212e739c28196db363a93fcf665c0ed659bc6898c52a34ae7"
+  },
+  "app": "0cc1b3efe7dc4aee1ff9bde14d7f4320742e424afb999b12e6ed0edd32bf5029"
+ },
+ "cases": 3,
+ "caseAgree": 3,
+ "caseDisagree": 0,
+ "tickAgree": 21816,
+ "tickDisagree": 0,
+ "wallMs": 24482,
+ "perCase": [
+  {
+   "name": "desktop-playthrough",
+   "category": "browser-trace",
+   "ticks": 6320,
+   "agree": 6320,
+   "result": "AGREE",
+   "note": "recorded in browser, 6320 ticks"
+  },
+  {
+   "name": "desktop-session-with-faults",
+   "category": "browser-trace",
+   "ticks": 9266,
+   "agree": 9266,
+   "result": "AGREE",
+   "note": "recorded in browser, 9266 ticks"
+  },
+  {
+   "name": "phone-touch-playthrough",
+   "category": "browser-trace",
+   "ticks": 6230,
+   "agree": 6230,
+   "result": "AGREE",
+   "note": "recorded in browser, 6230 ticks"
+  }
+ ],
+ "disagreements": []
+}

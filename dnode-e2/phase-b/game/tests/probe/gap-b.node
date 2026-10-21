@@ -1,0 +1,6 @@
+root gapb
+use gapa
+node b.two (x)
+ in {"x":"Int"}
+ returns "Int"
+ out (a.one x)

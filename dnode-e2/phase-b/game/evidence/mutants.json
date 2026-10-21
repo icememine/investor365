@@ -1,0 +1,195 @@
+{
+ "cases": 102,
+ "results": [
+  {
+   "mutant": "tie_highest_id",
+   "compileError": null,
+   "detectedByCases": 6,
+   "examples": [
+    "GT3a_joint_25_26@0",
+    "GT3d_lowest_id_18_24@0",
+    "GT3_pocket_three@0",
+    "auto_mouse_s1@2647",
+    "auto_mouse_s7@1137",
+    "auto_mouse_pauses_s11@604"
+   ]
+  },
+  {
+   "mutant": "corner_horizontal_priority",
+   "compileError": null,
+   "detectedByCases": 4,
+   "examples": [
+    "GT3b_diag_corner_29@0",
+    "last_brick_win@0",
+    "last_brick_win_restart_key@0",
+    "auto_mouse_s7@1528"
+   ]
+  },
+  {
+   "mutant": "overlap_non_strict_y0",
+   "compileError": null,
+   "detectedByCases": 7,
+   "examples": [
+    "GT3c_touch_top_1_nohit@0",
+    "GT3c_touch_top_1_then_hit@0",
+    "auto_mouse_s1@5212",
+    "auto_mouse_s7@1887",
+    "auto_keys_s3@4764",
+    "auto_touch_s5@1762"
+   ]
+  },
+  {
+   "mutant": "overlap_non_strict_x0",
+   "compileError": null,
+   "detectedByCases": 6,
+   "examples": [
+    "GT3c_touch_side_0_nohit@0",
+    "GT3c_touch_side_0_then_hit@0",
+    "auto_mouse_s7@1116",
+    "auto_keys_s3@846",
+    "auto_touch_s5@1756",
+    "auto_mouse_pauses_s11@6757"
+   ]
+  },
+  {
+   "mutant": "overlap_non_strict_x1",
+   "compileError": null,
+   "detectedByCases": 8,
+   "examples": [
+    "GT3c_touch_right_5_nohit@0",
+    "GT3c_touch_right_5_then_hit@0",
+    "maxspeed_top_channel@56",
+    "auto_mouse_s1@2146",
+    "auto_mouse_s7@865",
+    "auto_keys_s3@2481"
+   ]
+  },
+  {
+   "mutant": "overlap_non_strict_y1",
+   "compileError": null,
+   "detectedByCases": 5,
+   "examples": [
+    "GT3c_touch_bottom_19_nohit@0",
+    "GT3c_touch_bottom_19_then_hit@0",
+    "auto_mouse_s1@4221",
+    "auto_mouse_s7@4702",
+    "auto_keys_s3@4390"
+   ]
+  },
+  {
+   "mutant": "zone_centre_off_by_one",
+   "compileError": null,
+   "detectedByCases": 2,
+   "examples": [
+    "zone_d+100_vx+16@0",
+    "zone_d+100_vx-16@0"
+   ]
+  },
+  {
+   "mutant": "exit_strict",
+   "compileError": null,
+   "detectedByCases": 4,
+   "examples": [
+    "exit_exact_6400@0",
+    "exit_last_life_lost@0",
+    "exit_then_relaunch_requires_action@0",
+    "touch_in_won_lost_moves_paddle@0"
+   ]
+  },
+  {
+   "mutant": "touch_gain_round_toward_zero",
+   "compileError": null,
+   "detectedByCases": 2,
+   "examples": [
+    "touch_negative_floor@1",
+    "auto_touch_s5@216"
+   ]
+  },
+  {
+   "mutant": "pause_keeps_touch_anchor",
+   "compileError": null,
+   "detectedByCases": 1,
+   "examples": [
+    "touch_pause_reanchor@2"
+   ]
+  },
+  {
+   "mutant": "launch_boundary",
+   "compileError": null,
+   "detectedByCases": 3,
+   "examples": [
+    "launch_from_initial@0",
+    "auto_keys_s3@4",
+    "auto_touch_s5@0"
+   ]
+  },
+  {
+   "mutant": "restart_in_play",
+   "compileError": null,
+   "detectedByCases": 1,
+   "examples": [
+    "restart_in_play_ignored@0"
+   ]
+  },
+  {
+   "mutant": "paddle_line_non_strict",
+   "compileError": null,
+   "detectedByCases": 6,
+   "examples": [
+    "zone_equal_line_no_cross@0",
+    "auto_mouse_s1@414",
+    "auto_mouse_s7@416",
+    "auto_keys_s3@409",
+    "auto_touch_s5@405",
+    "auto_mouse_pauses_s11@501"
+   ]
+  },
+  {
+   "mutant": "mouse_step_200",
+   "compileError": null,
+   "detectedByCases": 6,
+   "examples": [
+    "mouse_far_target@0",
+    "mouse_left_offfield@0",
+    "auto_mouse_s1@0",
+    "auto_mouse_s7@0",
+    "auto_mouse_pauses_s11@0",
+    "auto_lose_three_lives@0"
+   ]
+  },
+  {
+   "mutant": "keyboard_ignores_touch_anchor",
+   "compileError": null,
+   "detectedByCases": 1,
+   "examples": [
+    "touch_keyboard_precedence@2"
+   ]
+  },
+  {
+   "mutant": "no_wall_event",
+   "compileError": null,
+   "detectedByCases": 8,
+   "examples": [
+    "maxspeed_corner_top_left@0",
+    "maxspeed_left_wall_exact@0",
+    "auto_mouse_s1@349",
+    "auto_mouse_s7@367",
+    "auto_keys_s3@102",
+    "auto_touch_s5@98"
+   ]
+  },
+  {
+   "mutant": "remove_all_overlaps_score2",
+   "compileError": null,
+   "detectedByCases": 6,
+   "examples": [
+    "GT3a_joint_25_26@0",
+    "GT3d_lowest_id_18_24@0",
+    "GT3_pocket_three@0",
+    "auto_mouse_s1@2647",
+    "auto_mouse_s7@1137",
+    "auto_mouse_pauses_s11@604"
+   ]
+  }
+ ]
+}

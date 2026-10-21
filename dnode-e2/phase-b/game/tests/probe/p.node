@@ -1,0 +1,15 @@
+root probe
+use prelude
+const K 7
+type V {"fields":{"vx":"Int","vy":"Int"}}
+node p.zero ()
+ returns "Int"
+ out K
+node p.rec (d vx)
+ in {"d":"Int","vx":"Int"}
+ returns "V"
+ out (if (<= d -301) {vx -32 vy -24} {vx (if (> vx 0) 16 -16) vy (p.zero)})
+node p.lst (n)
+ in {"n":"Int"}
+ returns {"list":"Text"}
+ out (if (> n 0) (concat ["a"] [(cat "brick:" (str n))]) [])

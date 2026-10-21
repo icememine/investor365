@@ -1,0 +1,49 @@
+{
+ "section": "admission",
+ "browser": "Chromium 141.0.7390.37 headless (Playwright)",
+ "started": "2026-10-21T10:10:25.065Z",
+ "finished": "2026-10-21T10:10:26.238Z",
+ "base": "http://127.0.0.1:8101/",
+ "passed": 5,
+ "failed": 0,
+ "error": null,
+ "checks": [
+  {
+   "id": "refuse on kit root changed",
+   "obligation": "R0.2",
+   "pass": true,
+   "ready": "refused: AdmissionDenied: changed roots/supplier.node",
+   "shown": true,
+   "storedState": false
+  },
+  {
+   "id": "refuse on kit runtime file changed",
+   "obligation": "R0.2",
+   "pass": true,
+   "ready": "refused: AdmissionDenied: changed runtime/host.js",
+   "shown": true,
+   "storedState": false
+  },
+  {
+   "id": "refuse on trust key replaced",
+   "obligation": "R0.2",
+   "pass": true,
+   "ready": "refused: AdmissionDenied: trust key fingerprint 7597cabac30dc172ac886b7abb51f3f276c07689eb2f79d681665ba9b9cd1e03",
+   "shown": true,
+   "storedState": false
+  },
+  {
+   "id": "refuse on app root changed (lock mismatch)",
+   "obligation": "R0.2",
+   "pass": true,
+   "ready": "refused: AdmissionDenied: shop.core.node does not match app-lock.json",
+   "shown": true,
+   "storedState": false
+  },
+  {
+   "id": "untampered kit admitted",
+   "obligation": "R0.2",
+   "pass": true
+  }
+ ]
+}

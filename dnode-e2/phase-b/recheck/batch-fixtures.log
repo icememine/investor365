@@ -1,0 +1,108 @@
+agree    bt1-lf accepted 4ms
+agree    bt1-crlf accepted 1ms
+agree    bt2-space rejected 2ms
+agree    bt2-range rejected 1ms
+agree    bt2-max-ok accepted 1ms
+agree    bt3-identical rejected 2ms
+agree    bt4-quoted-newline-dupes rejected 1ms
+agree    bt4-valid-multiline accepted 1ms
+agree    bt5-previous-valid accepted 1ms
+agree    bt5-new-invalid rejected 1ms
+agree    bom-single accepted 1ms
+agree    bom-double rejected 1ms
+agree    bom-only rejected 1ms
+agree    crlf-all accepted 1ms
+agree    mixed-endings accepted 8ms
+agree    no-final-newline accepted 1ms
+agree    doubled-quotes accepted 1ms
+agree    quoted-all-fields accepted 1ms
+agree    quoted-cr-inside accepted 1ms
+agree    malformed-unclosed rejected MalformedCSV 1ms
+agree    malformed-quote-inside rejected MalformedCSV 1ms
+agree    malformed-after-close rejected MalformedCSV 1ms
+agree    malformed-bare-cr rejected MalformedCSV 0ms
+agree    malformed-late rejected MalformedCSV 1ms
+agree    utf8-invalid-ff rejected InvalidUTF8 0ms
+agree    utf8-truncated rejected InvalidUTF8 0ms
+agree    utf8-surrogate rejected InvalidUTF8 0ms
+agree    utf8-overlong rejected InvalidUTF8 0ms
+agree    empty-file rejected 1ms
+agree    header-only rejected 1ms
+agree    header-only-no-newline rejected 2ms
+agree    header-then-blank rejected 1ms
+agree    blank-line-only rejected 1ms
+agree    header-lowercase rejected 1ms
+agree    header-space rejected 1ms
+agree    header-extra-column rejected 1ms
+agree    header-missing rejected 1ms
+agree    sku-lowercase rejected 1ms
+agree    sku-33 rejected 1ms
+agree    sku-32-ok accepted 1ms
+agree    sku-empty rejected 1ms
+agree    sku-inner-space rejected 1ms
+agree    sku-non-ascii rejected 1ms
+agree    name-empty rejected 1ms
+agree    name-quoted-empty rejected 1ms
+agree    name-121 rejected 1ms
+agree    name-120-astral accepted 1ms
+agree    name-121-astral rejected 1ms
+agree    name-preserved accepted 1ms
+agree    name-encoding accepted 3ms
+agree    price-zero rejected 1ms
+agree    price-zeros rejected 1ms
+agree    price-negative rejected 1ms
+agree    price-plus rejected 1ms
+agree    price-fraction rejected 1ms
+agree    price-exponent rejected 1ms
+agree    price-separator rejected 1ms
+agree    price-trailing-space rejected 1ms
+agree    price-fullwidth rejected 1ms
+agree    price-empty rejected 1ms
+agree    price-huge rejected 1ms
+agree    price-long-leading-zeros accepted 1ms
+agree    qty-zero-ok accepted 1ms
+agree    qty-negative rejected 1ms
+agree    qty-fraction rejected 1ms
+agree    qty-empty rejected 1ms
+agree    qty-range rejected 1ms
+agree    all-fields-bad-dup rejected 2ms
+agree    row-three-fields rejected 1ms
+agree    row-five-fields rejected 1ms
+agree    row-trailing-comma rejected 1ms
+agree    row-blank-middle rejected 1ms
+agree    row-name-unquoted-comma rejected 1ms
+agree    row-only-commas rejected 1ms
+agree    dup-triple rejected 1ms
+agree    dup-two-groups rejected 2ms
+agree    dup-case-differs rejected 1ms
+agree    dup-wrong-shape rejected 1ms
+agree    dup-empty-sku-blank-line rejected 1ms
+agree    sort-order accepted 1ms
+agree    size-1048576 accepted 1098ms
+agree    size-1048577 rejected FileTooLarge 15ms
+agree    rows-10000 accepted 925ms
+agree    rows-10001 rejected TooManyRows 3ms
+agree    rows-10000-plus-blank rejected TooManyRows 8ms
+DISAGREE row-60000-fields fault ResourceLimit 2ms
+    status "fault" | expected "rejected"
+    counts null | expected {"dataRecords":1,"acceptedRecords":0,"recordsWithIssues":1,"issues":1}
+    issues [] | expected [{"record":1,"field":"row","message":"Expected exactly four fields","hint":"This record has 60001 fields; expected 4. Check for an extra comma, or a comma inside NAME without quotes."}]
+    reportSha256 "d1a85dca8f0fd509b0ff36d4f7a23d20437140d3084667cff2b321b4d0504466" | expected "3805b5f456beaf0b67f8b47d68bce2c4d1ea18c93345950b7297938dc9a28563"
+    reportText "{\"fault\":{\"code\":\"ResourceLimit\",\"detail\":\"batch.run: ResourceLimit: list length\"},\"input\":{\"bytes\":60032,\"sha256\":\"d4b0845b68c64d6685b0cfd32f12050988834da85be983c52b164587f4c51b94\"},\"issues\":[],\"runId\":\"aae2af44f3a5ddc62bbfd30e9edc30f34c3cf304781f05ed5b2d9e5dc3adb806\",\"sna | expected "{\"counts\":{\"acceptedRecords\":0,\"dataRecords\":1,\"issues\":1,\"recordsWithIssues\":1},\"input\":{\"bytes\":60032,\"sha256\":\"d4b0845b68c64d6685b0cfd32f12050988834da85be983c52b164587f4c51b94\"},\"issues\":[{\"field\":\"row\",\"hint\":\"This record has 60001 fields; expected 4. Check for an ext
+    fault {"code":"ResourceLimit","detail":"batch.run: ResourceLimit: list length"} | expected undefined
+agree    kit-supplier-valid accepted 1ms
+agree    kit-supplier-invalid rejected 4ms
+node:fs:2437
+    return binding.writeFileUtf8(
+                   ^
+
+Error: ENOENT: no such file or directory, open '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/recheck/fixtures.json'
+    at Object.writeFileSync (node:fs:2437:20)
+    at file:///tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/fixtures/run-fixtures.mjs:65:4 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/phase-b/batch/tmp/claude-0/-home-user-investor365/23084796-adbc-535a-9fe6-163074be539e/scratchpad/recheck/fixtures.json'
+}
+
+Node.js v22.22.0

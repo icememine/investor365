@@ -1,0 +1,67 @@
+{
+ "section": "s06",
+ "browser": "Chromium 141.0.7390.37 headless (Playwright)",
+ "started": "2026-10-21T10:13:05.983Z",
+ "finished": "2026-10-21T10:13:07.238Z",
+ "base": "http://127.0.0.1:8101/",
+ "passed": 3,
+ "failed": 0,
+ "error": null,
+ "checks": [
+  {
+   "id": "reserved 2 TOTE",
+   "obligation": "S06",
+   "pass": true,
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 0,
+     "a": 5
+    },
+    "PEN": {
+     "h": 8,
+     "r": 0,
+     "a": 8
+    },
+    "TOTE": {
+     "h": 2,
+     "r": 2,
+     "a": 0
+    }
+   }
+  },
+  {
+   "id": "definite decline from two concurrent pay presses releases the reservation once",
+   "obligation": "S06",
+   "pass": true,
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 0,
+     "a": 5
+    },
+    "PEN": {
+     "h": 8,
+     "r": 0,
+     "a": 8
+    },
+    "TOTE": {
+     "h": 2,
+     "r": 0,
+     "a": 2
+    }
+   },
+   "bank": {
+    "ORD-0001-P1": {
+     "amount": 240000,
+     "status": "declined"
+    }
+   }
+  },
+  {
+   "id": "repeating check/pay/cancel on a declined order changes nothing (no second release)",
+   "obligation": "S06",
+   "pass": true
+  }
+ ]
+}

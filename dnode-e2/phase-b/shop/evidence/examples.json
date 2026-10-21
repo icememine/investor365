@@ -1,0 +1,242 @@
+{
+ "kind": "inline-ex-cases",
+ "note": "Author-written inline cases; structural + example evidence, not certification.",
+ "nodes": 119,
+ "nodesWithExamples": 9,
+ "cases": 33,
+ "passed": 33,
+ "failed": 0,
+ "results": [
+  {
+   "node": "shop.initial",
+   "root": "shop.core",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.qty_in",
+   "root": "shop.core",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "refuse:InvalidInteger",
+   "got": "refuse:InvalidInteger",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "refuse:InvalidInteger",
+   "got": "refuse:InvalidInteger",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "refuse:InvalidInteger",
+   "got": "refuse:InvalidInteger",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "refuse:InvalidInteger",
+   "got": "refuse:InvalidInteger",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "refuse:InvalidInteger",
+   "got": "refuse:InvalidInteger",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "refuse:QuantityOutOfRange",
+   "got": "refuse:QuantityOutOfRange",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "refuse:QuantityOutOfRange",
+   "got": "refuse:QuantityOutOfRange",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "refuse:QuantityOutOfRange",
+   "got": "refuse:QuantityOutOfRange",
+   "pass": true
+  },
+  {
+   "node": "shop.parse_qty",
+   "root": "shop.core",
+   "expected": "fault:InputShape",
+   "got": "fault:InputShape",
+   "pass": true
+  },
+  {
+   "node": "shop.line_amount",
+   "root": "shop.core",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.intent_of",
+   "root": "shop.core",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.intent_of",
+   "root": "shop.core",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.intent_of",
+   "root": "shop.core",
+   "expected": "refuse:EmptyCart",
+   "got": "refuse:EmptyCart",
+   "pass": true
+  },
+  {
+   "node": "shop.intent_of",
+   "root": "shop.core",
+   "expected": "refuse:InvalidLines",
+   "got": "refuse:InvalidLines",
+   "pass": true
+  },
+  {
+   "node": "shop.intent_of",
+   "root": "shop.core",
+   "expected": "refuse:InvalidLines",
+   "got": "refuse:InvalidLines",
+   "pass": true
+  },
+  {
+   "node": "shop.intent_of",
+   "root": "shop.core",
+   "expected": "refuse:InvalidLines",
+   "got": "refuse:InvalidLines",
+   "pass": true
+  },
+  {
+   "node": "shop.intent_of",
+   "root": "shop.core",
+   "expected": "fault:InputShape",
+   "got": "fault:InputShape",
+   "pass": true
+  },
+  {
+   "node": "shop.pad4",
+   "root": "shop.core",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.pad4",
+   "root": "shop.core",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.mint",
+   "root": "shop.core",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.v.money",
+   "root": "shop.view",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.v.money",
+   "root": "shop.view",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.v.money",
+   "root": "shop.view",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.v.money",
+   "root": "shop.view",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.v.money",
+   "root": "shop.view",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.v.money",
+   "root": "shop.view",
+   "expected": "refuse:NegativeAmount",
+   "got": "refuse:NegativeAmount",
+   "pass": true
+  },
+  {
+   "node": "shop.v.money",
+   "root": "shop.view",
+   "expected": "fault:InputShape",
+   "got": "fault:InputShape",
+   "pass": true
+  },
+  {
+   "node": "shop.v.refusal_text",
+   "root": "shop.view",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  },
+  {
+   "node": "shop.v.refusal_text",
+   "root": "shop.view",
+   "expected": "out",
+   "got": "out",
+   "pass": true
+  }
+ ]
+}

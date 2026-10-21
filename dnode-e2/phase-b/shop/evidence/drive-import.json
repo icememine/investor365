@@ -1,0 +1,163 @@
+{
+ "section": "import",
+ "browser": "Chromium 141.0.7390.37 headless (Playwright)",
+ "started": "2026-10-21T10:13:07.244Z",
+ "finished": "2026-10-21T10:22:13.638Z",
+ "base": "http://127.0.0.1:8101/",
+ "passed": 16,
+ "failed": 0,
+ "error": null,
+ "checks": [
+  {
+   "id": "S-T1 preview: TOTE H 2, R 1, H new 3, A new 2 with meaning sentence (390)",
+   "obligation": "S06",
+   "pass": true,
+   "row": "TOTE\t2\t1\t1\t3\t2\tTote bag\t120000\t",
+   "verdict": "Valid snapshot. Confirming replaces H for all 3 SKUs at once; R and order prices are unchanged."
+  },
+  {
+   "id": "S-T1 confirmed: H=3, R=1, A=2 (390)",
+   "obligation": "S06",
+   "pass": true,
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 0,
+     "a": 5
+    },
+    "PEN": {
+     "h": 8,
+     "r": 0,
+     "a": 8
+    },
+    "TOTE": {
+     "h": 3,
+     "r": 1,
+     "a": 2
+    }
+   }
+  },
+  {
+   "id": "snapshot below reserved rejected, no confirm offered, state byte-identical (390)",
+   "obligation": "S06",
+   "pass": true,
+   "verdict": "Rejected by the shop: nothing will change."
+  },
+  {
+   "id": "rejected: missing SKU (R-S2); state unchanged",
+   "obligation": "S06",
+   "pass": true,
+   "verdict": "Rejected by the shop: nothing will change.",
+   "error": null
+  },
+  {
+   "id": "rejected: extra SKU (R-S2); state unchanged",
+   "obligation": "S06",
+   "pass": true,
+   "verdict": "Rejected by the shop: nothing will change.",
+   "error": null
+  },
+  {
+   "id": "rejected: malformed CSV; state unchanged",
+   "obligation": "S06",
+   "pass": true,
+   "verdict": "Rejected by the shop: nothing will change.",
+   "error": "MalformedCSV: the CSV structure is broken (for example an unclosed quote). The shared supplier root gives no record location for this error. Nothing was changed."
+  },
+  {
+   "id": "rejected: non-UTF-8 bytes; state unchanged",
+   "obligation": "S06",
+   "pass": true,
+   "verdict": null,
+   "error": "The file is not valid UTF-8 (strict decoder). Nothing was changed."
+  },
+  {
+   "id": "rejected: kit invalid fixture: located diagnostics; state unchanged",
+   "obligation": "S06",
+   "pass": true,
+   "verdict": "Rejected by the shared supplier definition: nothing will change.",
+   "error": null
+  },
+  {
+   "id": "rejected: over 1 MiB before decoding; state unchanged",
+   "obligation": "S06",
+   "pass": true,
+   "error": "FileTooLarge: over 1 MiB (checked by the host before decoding). Nothing was changed."
+  },
+  {
+   "id": "kit valid fixture: accepted; supplier name difference shown as not applied",
+   "obligation": "S06",
+   "pass": true,
+   "verdict": "Valid snapshot. Confirming replaces H for all 3 SKUs at once; R and order prices are unchanged."
+  },
+  {
+   "id": "stock changed between preview and confirm: PreviewChanged, state unchanged",
+   "obligation": "S06",
+   "pass": true,
+   "err": "PreviewChanged: stock or the file changed after the preview. Preview again before confirming. Nothing was changed."
+  },
+  {
+   "id": "kit valid fixture confirmed: H replaced, R kept, name and price not applied",
+   "obligation": "S06",
+   "pass": true,
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 0,
+     "a": 5
+    },
+    "PEN": {
+     "h": 8,
+     "r": 1,
+     "a": 7
+    },
+    "TOTE": {
+     "h": 2,
+     "r": 0,
+     "a": 2
+    }
+   }
+  },
+  {
+   "id": "BOM + CRLF + quoted/escaped name + leading zeros accepted by the shared definition",
+   "obligation": "S06",
+   "pass": true,
+   "verdict": "Valid snapshot. Confirming replaces H for all 3 SKUs at once; R and order prices are unchanged."
+  },
+  {
+   "id": "S-T1 preview: TOTE H 2, R 1, H new 3, A new 2 with meaning sentence (1280)",
+   "obligation": "S06",
+   "pass": true,
+   "row": "TOTE\t2\t1\t1\t3\t2\tTote bag\t120000\t",
+   "verdict": "Valid snapshot. Confirming replaces H for all 3 SKUs at once; R and order prices are unchanged."
+  },
+  {
+   "id": "S-T1 confirmed: H=3, R=1, A=2 (1280)",
+   "obligation": "S06",
+   "pass": true,
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 0,
+     "a": 5
+    },
+    "PEN": {
+     "h": 8,
+     "r": 0,
+     "a": 8
+    },
+    "TOTE": {
+     "h": 3,
+     "r": 1,
+     "a": 2
+    }
+   }
+  },
+  {
+   "id": "snapshot below reserved rejected, no confirm offered, state byte-identical (1280)",
+   "obligation": "S06",
+   "pass": true,
+   "verdict": "Rejected by the shop: nothing will change."
+  }
+ ]
+}

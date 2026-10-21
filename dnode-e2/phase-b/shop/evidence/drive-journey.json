@@ -1,0 +1,624 @@
+{
+ "section": "journey",
+ "browser": "Chromium 141.0.7390.37 headless (Playwright)",
+ "started": "2026-10-21T10:10:26.240Z",
+ "finished": "2026-10-21T10:10:31.455Z",
+ "base": "http://127.0.0.1:8101/",
+ "passed": 28,
+ "failed": 0,
+ "error": null,
+ "checks": [
+  {
+   "id": "cart total 240.000 ₫ (390)",
+   "obligation": "S02",
+   "pass": true,
+   "cartTotal": "Tổng cộng\n240.000 ₫"
+  },
+  {
+   "id": "review shows lines and total (390)",
+   "obligation": "S02",
+   "pass": true,
+   "reviewTotal": "Tổng cộng\n240.000 ₫"
+  },
+  {
+   "id": "order placed: ready, reserved (390)",
+   "obligation": "S02",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 225
+    },
+    "total": {
+     "top": 241,
+     "bottom": 275
+    },
+    "primary": {
+     "top": 323,
+     "bottom": 371
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Chưa thanh toán\n\nCác sản phẩm đang được giữ cho đơn này. Bấm nút bên dưới để thanh toán.",
+    "totalText": "Tổng cộng\n240.000 ₫",
+    "primaryText": "Thanh toán 240.000 ₫",
+    "phase": "ready"
+   },
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 2,
+     "a": 3
+    },
+    "PEN": {
+     "h": 8,
+     "r": 1,
+     "a": 7
+    },
+    "TOTE": {
+     "h": 2,
+     "r": 1,
+     "a": 1
+    }
+   }
+  },
+  {
+   "id": "ready: status, total, next action above fold (390)",
+   "obligation": "S08",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 225
+    },
+    "total": {
+     "top": 241,
+     "bottom": 275
+    },
+    "primary": {
+     "top": 323,
+     "bottom": 371
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Chưa thanh toán\n\nCác sản phẩm đang được giữ cho đơn này. Bấm nút bên dưới để thanh toán.",
+    "totalText": "Tổng cộng\n240.000 ₫",
+    "primaryText": "Thanh toán 240.000 ₫",
+    "phase": "ready"
+   }
+  },
+  {
+   "id": "paid: confirmed status, receipt total (390)",
+   "obligation": "S01-observable",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 201
+    },
+    "total": {
+     "top": 217,
+     "bottom": 251
+    },
+    "primary": {
+     "top": 299,
+     "bottom": 347
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Đã thanh toán\n\nCảm ơn bạn! Đơn hàng đã được thanh toán thành công.",
+    "totalText": "Tổng cộng\n240.000 ₫",
+    "primaryText": "Tiếp tục mua sắm",
+    "phase": "confirmed"
+   }
+  },
+  {
+   "id": "paid: one charge 240000, stock consumed once (390)",
+   "obligation": "S02",
+   "pass": true,
+   "ledger": [
+    [
+     "ORD-0001-P1",
+     {
+      "amount": 240000,
+      "status": "confirmed"
+     }
+    ]
+   ],
+   "inv": {
+    "NOTEBOOK": {
+     "h": 3,
+     "r": 0,
+     "a": 3
+    },
+    "PEN": {
+     "h": 7,
+     "r": 0,
+     "a": 7
+    },
+    "TOTE": {
+     "h": 1,
+     "r": 0,
+     "a": 1
+    }
+   }
+  },
+  {
+   "id": "confirmed: status, total, next action above fold (390)",
+   "obligation": "S08",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 201
+    },
+    "total": {
+     "top": 217,
+     "bottom": 251
+    },
+    "primary": {
+     "top": 299,
+     "bottom": 347
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Đã thanh toán\n\nCảm ơn bạn! Đơn hàng đã được thanh toán thành công.",
+    "totalText": "Tổng cộng\n240.000 ₫",
+    "primaryText": "Tiếp tục mua sắm",
+    "phase": "confirmed"
+   }
+  },
+  {
+   "id": "no hashes/instruction ids in customer screen (390)",
+   "obligation": "D-S4",
+   "pass": true
+  },
+  {
+   "id": "declined: status text, reservation released (390)",
+   "obligation": "S06",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 225
+    },
+    "total": {
+     "top": 241,
+     "bottom": 275
+    },
+    "primary": {
+     "top": 323,
+     "bottom": 371
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Thanh toán bị từ chối\n\nBạn không bị trừ tiền cho đơn này. Các sản phẩm không còn được giữ.",
+    "totalText": "Tổng cộng\n20.000 ₫",
+    "primaryText": "Đặt đơn mới với các sản phẩm này",
+    "phase": "declined"
+   },
+   "inv": {
+    "NOTEBOOK": {
+     "h": 3,
+     "r": 0,
+     "a": 3
+    },
+    "PEN": {
+     "h": 7,
+     "r": 0,
+     "a": 7
+    },
+    "TOTE": {
+     "h": 1,
+     "r": 0,
+     "a": 1
+    }
+   }
+  },
+  {
+   "id": "declined: status, total, next action above fold (390)",
+   "obligation": "S08",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 225
+    },
+    "total": {
+     "top": 241,
+     "bottom": 275
+    },
+    "primary": {
+     "top": 323,
+     "bottom": 371
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Thanh toán bị từ chối\n\nBạn không bị trừ tiền cho đơn này. Các sản phẩm không còn được giữ.",
+    "totalText": "Tổng cộng\n20.000 ₫",
+    "primaryText": "Đặt đơn mới với các sản phẩm này",
+    "phase": "declined"
+   }
+  },
+  {
+   "id": "reorder cart (390)",
+   "obligation": "S06",
+   "pass": true,
+   "cart": [
+    {
+     "sku": "PEN",
+     "qty": 1
+    }
+   ]
+  },
+  {
+   "id": "unknown: uncertainty copy and recovery label (390)",
+   "obligation": "S05",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 349
+    },
+    "total": {
+     "top": 365,
+     "bottom": 399
+    },
+    "primary": {
+     "top": 447,
+     "bottom": 495
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Đang xác nhận thanh toán\n\nChúng tôi chưa nhận được kết quả thanh toán cho đơn hàng này. Các sản phẩm trong đơn vẫn đang được giữ cho bạn và chúng tôi sẽ không tạo thêm khoản thanh toán nào. Vui lòng không thanh toán lại cho đơn này trước khi có kết quả.",
+    "totalText": "Tổng cộng\n20.000 ₫",
+    "primaryText": "Kiểm tra lại thanh toán",
+    "phase": "unknown"
+   }
+  },
+  {
+   "id": "unknown: status, total, next action above fold (390)",
+   "obligation": "S08",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 349
+    },
+    "total": {
+     "top": 365,
+     "bottom": 399
+    },
+    "primary": {
+     "top": 447,
+     "bottom": 495
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Đang xác nhận thanh toán\n\nChúng tôi chưa nhận được kết quả thanh toán cho đơn hàng này. Các sản phẩm trong đơn vẫn đang được giữ cho bạn và chúng tôi sẽ không tạo thêm khoản thanh toán nào. Vui lòng không thanh toán lại cho đơn này trước khi có kết quả.",
+    "totalText": "Tổng cộng\n20.000 ₫",
+    "primaryText": "Kiểm tra lại thanh toán",
+    "phase": "unknown"
+   }
+  },
+  {
+   "id": "browse lists orders with status for recovery (390)",
+   "obligation": "S07",
+   "pass": true
+  },
+  {
+   "id": "cart total 240.000 ₫ (1280)",
+   "obligation": "S02",
+   "pass": true,
+   "cartTotal": "Tổng cộng\n240.000 ₫"
+  },
+  {
+   "id": "review shows lines and total (1280)",
+   "obligation": "S02",
+   "pass": true,
+   "reviewTotal": "Tổng cộng\n240.000 ₫"
+  },
+  {
+   "id": "order placed: ready, reserved (1280)",
+   "obligation": "S02",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 201
+    },
+    "total": {
+     "top": 217,
+     "bottom": 251
+    },
+    "primary": {
+     "top": 299,
+     "bottom": 347
+    },
+    "innerHeight": 800,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "statusText": "Chưa thanh toán\n\nCác sản phẩm đang được giữ cho đơn này. Bấm nút bên dưới để thanh toán.",
+    "totalText": "Tổng cộng\n240.000 ₫",
+    "primaryText": "Thanh toán 240.000 ₫",
+    "phase": "ready"
+   },
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 2,
+     "a": 3
+    },
+    "PEN": {
+     "h": 8,
+     "r": 1,
+     "a": 7
+    },
+    "TOTE": {
+     "h": 2,
+     "r": 1,
+     "a": 1
+    }
+   }
+  },
+  {
+   "id": "ready: status, total, next action above fold (1280)",
+   "obligation": "S08",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 201
+    },
+    "total": {
+     "top": 217,
+     "bottom": 251
+    },
+    "primary": {
+     "top": 299,
+     "bottom": 347
+    },
+    "innerHeight": 800,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "statusText": "Chưa thanh toán\n\nCác sản phẩm đang được giữ cho đơn này. Bấm nút bên dưới để thanh toán.",
+    "totalText": "Tổng cộng\n240.000 ₫",
+    "primaryText": "Thanh toán 240.000 ₫",
+    "phase": "ready"
+   }
+  },
+  {
+   "id": "paid: confirmed status, receipt total (1280)",
+   "obligation": "S01-observable",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 177
+    },
+    "total": {
+     "top": 193,
+     "bottom": 227
+    },
+    "primary": {
+     "top": 275,
+     "bottom": 323
+    },
+    "innerHeight": 800,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "statusText": "Đã thanh toán\n\nCảm ơn bạn! Đơn hàng đã được thanh toán thành công.",
+    "totalText": "Tổng cộng\n240.000 ₫",
+    "primaryText": "Tiếp tục mua sắm",
+    "phase": "confirmed"
+   }
+  },
+  {
+   "id": "paid: one charge 240000, stock consumed once (1280)",
+   "obligation": "S02",
+   "pass": true,
+   "ledger": [
+    [
+     "ORD-0001-P1",
+     {
+      "amount": 240000,
+      "status": "confirmed"
+     }
+    ]
+   ],
+   "inv": {
+    "NOTEBOOK": {
+     "h": 3,
+     "r": 0,
+     "a": 3
+    },
+    "PEN": {
+     "h": 7,
+     "r": 0,
+     "a": 7
+    },
+    "TOTE": {
+     "h": 1,
+     "r": 0,
+     "a": 1
+    }
+   }
+  },
+  {
+   "id": "confirmed: status, total, next action above fold (1280)",
+   "obligation": "S08",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 177
+    },
+    "total": {
+     "top": 193,
+     "bottom": 227
+    },
+    "primary": {
+     "top": 275,
+     "bottom": 323
+    },
+    "innerHeight": 800,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "statusText": "Đã thanh toán\n\nCảm ơn bạn! Đơn hàng đã được thanh toán thành công.",
+    "totalText": "Tổng cộng\n240.000 ₫",
+    "primaryText": "Tiếp tục mua sắm",
+    "phase": "confirmed"
+   }
+  },
+  {
+   "id": "no hashes/instruction ids in customer screen (1280)",
+   "obligation": "D-S4",
+   "pass": true
+  },
+  {
+   "id": "declined: status text, reservation released (1280)",
+   "obligation": "S06",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 201
+    },
+    "total": {
+     "top": 217,
+     "bottom": 251
+    },
+    "primary": {
+     "top": 299,
+     "bottom": 347
+    },
+    "innerHeight": 800,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "statusText": "Thanh toán bị từ chối\n\nBạn không bị trừ tiền cho đơn này. Các sản phẩm không còn được giữ.",
+    "totalText": "Tổng cộng\n20.000 ₫",
+    "primaryText": "Đặt đơn mới với các sản phẩm này",
+    "phase": "declined"
+   },
+   "inv": {
+    "NOTEBOOK": {
+     "h": 3,
+     "r": 0,
+     "a": 3
+    },
+    "PEN": {
+     "h": 7,
+     "r": 0,
+     "a": 7
+    },
+    "TOTE": {
+     "h": 1,
+     "r": 0,
+     "a": 1
+    }
+   }
+  },
+  {
+   "id": "declined: status, total, next action above fold (1280)",
+   "obligation": "S08",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 201
+    },
+    "total": {
+     "top": 217,
+     "bottom": 251
+    },
+    "primary": {
+     "top": 299,
+     "bottom": 347
+    },
+    "innerHeight": 800,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "statusText": "Thanh toán bị từ chối\n\nBạn không bị trừ tiền cho đơn này. Các sản phẩm không còn được giữ.",
+    "totalText": "Tổng cộng\n20.000 ₫",
+    "primaryText": "Đặt đơn mới với các sản phẩm này",
+    "phase": "declined"
+   }
+  },
+  {
+   "id": "reorder cart (1280)",
+   "obligation": "S06",
+   "pass": true,
+   "cart": [
+    {
+     "sku": "PEN",
+     "qty": 1
+    }
+   ]
+  },
+  {
+   "id": "unknown: uncertainty copy and recovery label (1280)",
+   "obligation": "S05",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 273
+    },
+    "total": {
+     "top": 289,
+     "bottom": 323
+    },
+    "primary": {
+     "top": 371,
+     "bottom": 419
+    },
+    "innerHeight": 800,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "statusText": "Đang xác nhận thanh toán\n\nChúng tôi chưa nhận được kết quả thanh toán cho đơn hàng này. Các sản phẩm trong đơn vẫn đang được giữ cho bạn và chúng tôi sẽ không tạo thêm khoản thanh toán nào. Vui lòng không thanh toán lại cho đơn này trước khi có kết quả.",
+    "totalText": "Tổng cộng\n20.000 ₫",
+    "primaryText": "Kiểm tra lại thanh toán",
+    "phase": "unknown"
+   }
+  },
+  {
+   "id": "unknown: status, total, next action above fold (1280)",
+   "obligation": "S08",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 273
+    },
+    "total": {
+     "top": 289,
+     "bottom": 323
+    },
+    "primary": {
+     "top": 371,
+     "bottom": 419
+    },
+    "innerHeight": 800,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "statusText": "Đang xác nhận thanh toán\n\nChúng tôi chưa nhận được kết quả thanh toán cho đơn hàng này. Các sản phẩm trong đơn vẫn đang được giữ cho bạn và chúng tôi sẽ không tạo thêm khoản thanh toán nào. Vui lòng không thanh toán lại cho đơn này trước khi có kết quả.",
+    "totalText": "Tổng cộng\n20.000 ₫",
+    "primaryText": "Kiểm tra lại thanh toán",
+    "phase": "unknown"
+   }
+  },
+  {
+   "id": "browse lists orders with status for recovery (1280)",
+   "obligation": "S07",
+   "pass": true
+  }
+ ]
+}

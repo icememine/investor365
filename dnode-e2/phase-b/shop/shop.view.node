@@ -1,0 +1,304 @@
+root shop.view
+use prelude
+use supplier
+use shop.core
+numbers exact
+; BP-SHOP presentation root (C-S2 r2 as amended by R-S5; C-S4: depends on
+; shop.core, never the reverse). Produces generic screen blocks that the host
+; renders without making business decisions. Customer copy is Vietnamese;
+; the test desk is English. No hashes or instruction ids in customer screens.
+
+; A generic block. Fields not used by a kind are "".
+;  kind: title | para | note | product | stepper | line | total | status | ref | button | link | order | heading
+type ShopBlock {"fields":{"kind":"Text","text":"Text","note":"Text","extra":"Text","label":"Text","action":"Text","action2":"Text","arg":"Text","tone":"Text"}}
+type ShopScreen {"fields":{"title":"Text","cart_count":"Int","blocks":{"list":"ShopBlock"}}}
+type ShopTable {"fields":{"title":"Text","head":{"list":"Text"},"rows":{"list":{"list":"Text"}}}}
+type ShopDeskPreview {"fields":{"ok":"Bool","verdict":"Text","meaning":"Text","problems":{"list":"Text"},"table":"ShopTable"}}
+type ShopCopy {"fields":{"code":"Text","text":"Text"}}
+
+const SHOP_V_MEANING "QTY_ON_HAND is the number of physical unsold units, including units reserved for unpaid orders. It replaces on-hand stock H; it is not added to it and it is not the available quantity. Reserved units R stay reserved, so available becomes A = H_new - R. Prices and names in the file are checked but not applied in E1."
+
+; Phase -> short Vietnamese status label (order lists).
+const SHOP_V_PHASE [{code "ready" text "Chưa thanh toán"} {code "pending" text "Đang gửi thanh toán"} {code "unknown" text "Đang xác nhận thanh toán"} {code "confirmed" text "Đã thanh toán"} {code "declined" text "Thanh toán bị từ chối"} {code "cancelled" text "Đã hủy"}]
+
+; Status card headings and bodies (C-S2 r2; unknown body amended by R-S5).
+const SHOP_V_HEAD [{code "ready" text "Chưa thanh toán"} {code "pending" text "Đang gửi thanh toán…"} {code "unknown" text "Đang xác nhận thanh toán"} {code "confirmed" text "Đã thanh toán"} {code "declined" text "Thanh toán bị từ chối"} {code "cancelled" text "Đã hủy đơn"}]
+const SHOP_V_BODY [{code "ready" text "Các sản phẩm đang được giữ cho đơn này. Bấm nút bên dưới để thanh toán."} {code "pending" text "Vui lòng chờ trong giây lát."} {code "unknown" text "Chúng tôi chưa nhận được kết quả thanh toán cho đơn hàng này. Các sản phẩm trong đơn vẫn đang được giữ cho bạn và chúng tôi sẽ không tạo thêm khoản thanh toán nào. Vui lòng không thanh toán lại cho đơn này trước khi có kết quả."} {code "confirmed" text "Cảm ơn bạn! Đơn hàng đã được thanh toán thành công."} {code "declined" text "Bạn không bị trừ tiền cho đơn này. Các sản phẩm không còn được giữ."} {code "cancelled" text "Đơn này đã được hủy. Bạn không bị trừ tiền."}]
+const SHOP_V_STILL "Hệ thống thanh toán chưa phản hồi. Các sản phẩm vẫn đang được giữ cho bạn. Bạn có thể kiểm tra lại sau vài phút."
+
+; Refusal code -> customer message (Vietnamese).
+const SHOP_V_REFUSAL [{code "OutOfStock" text "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng."} {code "EmptyCart" text "Giỏ hàng của bạn đang trống."} {code "QuantityOutOfRange" text "Mỗi sản phẩm được mua từ 1 đến 9 cái."} {code "InvalidLines" text "Giỏ hàng không hợp lệ. Vui lòng sửa giỏ hàng."} {code "InvalidOrder" text "Giỏ hàng không hợp lệ. Vui lòng sửa giỏ hàng."} {code "IntentConflict" text "Mã đơn này đã được dùng cho một đơn khác. Vui lòng xem lại giỏ hàng."} {code "IntentStale" text "Giá hoặc giỏ hàng đã thay đổi. Vui lòng xem lại đơn hàng."} {code "UnknownKey" text "Phiên xem lại đơn đã hết hạn. Vui lòng xem lại đơn hàng."} {code "UnknownDraft" text "Phiên xem lại đơn đã hết hạn. Vui lòng xem lại đơn hàng."} {code "UnknownOrder" text "Không tìm thấy đơn hàng này."} {code "NotCancellable" text "Đơn này không thể hủy nữa."} {code "Cancelled" text "Đơn này đã được hủy."} {code "NotSubmitted" text "Đơn này chưa được thanh toán."} {code "Fault" text "Đã xảy ra lỗi hệ thống. Không có thay đổi nào được lưu."}]
+const SHOP_V_REFUSAL_DEFAULT "Không thể thực hiện thao tác này. Vui lòng thử lại."
+
+; Test desk (English) refusal explanations for the operator import journey.
+const SHOP_V_DESK_REFUSAL [{code "MalformedCSV" text "MalformedCSV: the CSV structure is broken (for example an unclosed quote). The shared supplier root gives no record location for this error. Nothing was changed."} {code "FileTooLarge" text "FileTooLarge: the file is over 1 MiB. Nothing was changed."} {code "TooManyRows" text "TooManyRows: more than 10000 data rows. Nothing was changed."} {code "InvalidSnapshot" text "InvalidSnapshot: the supplier file has invalid records. Nothing was changed."} {code "SkuSetMismatch" text "SkuSetMismatch: the file's SKU set differs from the catalogue. Nothing was changed."} {code "BelowReserved" text "BelowReserved: a new on-hand quantity is below units already reserved. Nothing was changed."} {code "PreviewChanged" text "PreviewChanged: stock or the file changed after the preview. Preview again before confirming. Nothing was changed."}]
+
+; ---------------------------------------------------------------- money
+node shop.v.pad3 (g)
+ in {"g":"Int"}
+ returns "Text"
+ out (cat (if (< g 10) "00" (if (< g 100) "0" "")) (str g))
+
+node shop.v.group (acc p n)
+ in {"acc":"Text","p":"Int","n":"Int"}
+ returns "Text"
+ let g (mod (div n p) 1000)
+ out (if (== acc "") (if (or (> g 0) (== p 1)) (str g) "") (cat acc (cat "." (shop.v.pad3 g))))
+
+node shop.v.money (n)
+ in {"n":"Int"}
+ returns "Text"
+ says "VND amount text: dot thousands grouping, no-break space, dong sign (C-S2 r2). Exact integer; no rounding."
+ pre (>= n 0) NegativeAmount
+ out (cat (fold "shop.v.group" [1000000000000000 1000000000000 1000000000 1000000 1000 1] "" n) " ₫")
+ ex {"args":[20000],"out":"20.000 ₫"}
+ ex {"args":[240000],"out":"240.000 ₫"}
+ ex {"args":[1710000],"out":"1.710.000 ₫"}
+ ex {"args":[0],"out":"0 ₫"}
+ ex {"args":[9007199254740991],"out":"9.007.199.254.740.991 ₫"}
+ ex {"args":[-1],"refuse":"NegativeAmount"}
+ ex {"args":["20000"],"fault":"InputShape"}
+
+; ---------------------------------------------------------------- lookup tables
+node shop.v.copy_is (c code)
+ in {"c":"ShopCopy","code":"Text"}
+ returns "Bool"
+ out (== c.code code)
+
+node shop.v.copy_text (c)
+ in {"c":"ShopCopy"}
+ returns "Text"
+ out c.text
+
+node shop.v.lookup (table code fallback)
+ in {"table":{"list":"ShopCopy"},"code":"Text","fallback":"Text"}
+ returns "Text"
+ let hits (map "shop.v.copy_text" (filter "shop.v.copy_is" table code))
+ out (if (> (len hits) 0) (at hits 0) fallback)
+
+node shop.v.refusal_text (code)
+ in {"code":"Text"}
+ returns "Text"
+ says "Customer message for a refusal or fault code."
+ out (shop.v.lookup SHOP_V_REFUSAL code SHOP_V_REFUSAL_DEFAULT)
+ ex {"args":["OutOfStock"],"out":"Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng."}
+ ex {"args":["Whatever"],"out":"Không thể thực hiện thao tác này. Vui lòng thử lại."}
+
+node shop.v.desk_refusal (code)
+ in {"code":"Text"}
+ returns "Text"
+ out (shop.v.lookup SHOP_V_DESK_REFUSAL code (cat code ": refused. Nothing was changed."))
+
+node shop.v.phase_label (phase)
+ in {"phase":"Text"}
+ returns "Text"
+ out (shop.v.lookup SHOP_V_PHASE phase phase)
+
+; ---------------------------------------------------------------- block constructors
+node shop.v.b (kind text note extra label action action2 arg tone)
+ in {"kind":"Text","text":"Text","note":"Text","extra":"Text","label":"Text","action":"Text","action2":"Text","arg":"Text","tone":"Text"}
+ returns "ShopBlock"
+ out {kind kind text text note note extra extra label label action action action2 action2 arg arg tone tone}
+
+node shop.v.para (kind text)
+ in {"kind":"Text","text":"Text"}
+ returns "ShopBlock"
+ out (shop.v.b kind text "" "" "" "" "" "" "")
+
+; label, busy label, action, argument, tone (primary | secondary)
+node shop.v.button (label busy action arg tone)
+ in {"label":"Text","busy":"Text","action":"Text","arg":"Text","tone":"Text"}
+ returns "ShopBlock"
+ out (shop.v.b "button" label busy "" "" action "" arg tone)
+
+node shop.v.go (label route tone)
+ in {"label":"Text","route":"Text","tone":"Text"}
+ returns "ShopBlock"
+ out (shop.v.b "button" label "" "" "" "go" "" route tone)
+
+node shop.v.cart_count (state)
+ in {"state":"ShopState"}
+ returns "Int"
+ out (sequence.sum_exact (map "shop.cl_qty" state.cart))
+
+node shop.v.screen (state title blocks)
+ in {"state":"ShopState","title":"Text","blocks":{"list":"ShopBlock"}}
+ returns "ShopScreen"
+ out {title title cart_count (shop.v.cart_count state) blocks blocks}
+
+node shop.v.join (acc xs)
+ in {"acc":{"list":"ShopBlock"},"xs":{"list":"ShopBlock"}}
+ returns {"list":"ShopBlock"}
+ out (concat acc xs)
+
+; ---------------------------------------------------------------- browse
+node shop.v.product (item state)
+ in {"item":"ShopItem","state":"ShopState"}
+ returns "ShopBlock"
+ raises UnknownSku IndexOutOfRange
+ let a (shop.available state item.sku)
+ let inCart (shop.cart_qty state item.sku)
+ let stock (if (> a 0) (cat "Còn " (cat (str a) " sản phẩm")) "Hết hàng")
+ let extra (if (> inCart 0) (cat stock (cat " · Trong giỏ: " (str inCart))) stock)
+ let canAdd (and (< inCart (min 9 a)) (> a 0))
+ let label (if canAdd "Thêm vào giỏ" (if (> a 0) "Đã thêm tối đa" "Hết hàng"))
+ out (shop.v.b "product" item.name (shop.v.money item.price) extra label (if canAdd "cart.inc" "") "" item.sku (if (> a 0) "" "soldout"))
+
+node shop.v.order_row (o)
+ in {"o":"ShopOrder"}
+ returns "ShopBlock"
+ out (shop.v.b "order" (cat "Mã đơn " o.key) (shop.v.money o.intent.total) (shop.v.phase_label o.phase) "Xem đơn" "go" "" (cat "#/order/" o.key) o.phase)
+
+node shop.v.nth_back (i orders)
+ in {"i":"Int","orders":{"list":"ShopOrder"}}
+ returns "ShopBlock"
+ raises IndexOutOfRange
+ out (shop.v.order_row (at orders (- (- (len orders) 1) i)))
+
+node shop.v.browse (state)
+ in {"state":"ShopState"}
+ returns "ShopScreen"
+ says "Browse: products with price and availability; cart entry; the customer's orders (newest first) so recovery is always reachable."
+ raises UnknownSku IndexOutOfRange
+ let n (shop.v.cart_count state)
+ let head [(shop.v.para "title" "Văn phòng phẩm") (shop.v.para "note" "Cửa hàng thử nghiệm: thanh toán được mô phỏng, không trừ tiền thật.")]
+ let products (map "shop.v.product" state.catalogue state)
+ let cart (if (> n 0) [(shop.v.go (cat "Xem giỏ hàng (" (cat (str n) ")")) "#/cart" "primary")] [])
+ let orders (if (> (len state.orders) 0) (concat [(shop.v.para "heading" "Đơn hàng của bạn")] (map "shop.v.nth_back" (range (len state.orders)) state.orders)) [])
+ out (shop.v.screen state "Văn phòng phẩm" (concat head (concat products (concat cart orders))))
+
+; ---------------------------------------------------------------- cart
+node shop.v.cart_line (cl state)
+ in {"cl":"ShopCartLine","state":"ShopState"}
+ returns "ShopBlock"
+ raises UnknownSku IndexOutOfRange
+ let it (shop.find_item state cl.sku)
+ let a (shop.available state cl.sku)
+ let unit (cat (str cl.qty) (cat " × " (shop.v.money it.price)))
+ let extra (if (> cl.qty a) (if (> a 0) (cat "Chỉ còn " (cat (str a) " sản phẩm")) "Hết hàng") unit)
+ let canInc (< cl.qty (min 9 a))
+ out (shop.v.b "stepper" it.name (shop.v.money (* it.price cl.qty)) extra (str cl.qty) (if canInc "cart.inc" "") "cart.dec" cl.sku (if (> cl.qty a) "warn" ""))
+
+node shop.v.cart_total (state)
+ in {"state":"ShopState"}
+ returns "Int"
+ raises UnknownSku IndexOutOfRange
+ out (sequence.sum_exact (map "shop.line_amount" (map "shop.line_of" state.cart state)))
+
+node shop.v.cart (state)
+ in {"state":"ShopState"}
+ returns "ShopScreen"
+ raises UnknownSku IndexOutOfRange
+ let empty (== (len state.cart) 0)
+ let head [(shop.v.para "title" "Giỏ hàng")]
+ let body (if empty [(shop.v.para "para" "Giỏ hàng của bạn đang trống.") (shop.v.go "Xem sản phẩm" "#/" "primary")] (concat (map "shop.v.cart_line" state.cart state) [(shop.v.b "total" "Tổng cộng" (shop.v.money (shop.v.cart_total state)) "" "" "" "" "" "") (shop.v.button "Xem lại đơn hàng" "Đang chuẩn bị…" "review" "" "primary") (shop.v.go "Tiếp tục mua sắm" "#/" "secondary")]))
+ out (shop.v.screen state "Giỏ hàng" (concat head body))
+
+; ---------------------------------------------------------------- review
+node shop.v.line (l state)
+ in {"l":"ShopLine","state":"ShopState"}
+ returns "ShopBlock"
+ raises UnknownSku IndexOutOfRange
+ let it (shop.find_item state l.sku)
+ out (shop.v.b "line" it.name (shop.v.money (shop.line_amount l)) (cat (str l.qty) (cat " × " (shop.v.money l.unit_price))) "" "" "" l.sku "")
+
+node shop.v.review (state intent)
+ in {"state":"ShopState","intent":"ShopIntent"}
+ returns "ShopScreen"
+ says "Review the exact intent that will be placed: lines, captured unit prices and total."
+ raises UnknownSku IndexOutOfRange
+ let head [(shop.v.para "title" "Xem lại đơn hàng") (shop.v.para "para" "Kiểm tra sản phẩm và số tiền trước khi đặt hàng.")]
+ let lines (map "shop.v.line" intent.lines state)
+ let tail [(shop.v.b "total" "Tổng cộng" (shop.v.money intent.total) "" "" "" "" "" "") (shop.v.para "note" "Không có thuế, phí giao hàng hay giảm giá.") (shop.v.button "Đặt hàng" "Đang đặt hàng…" "place" "" "primary") (shop.v.go "Sửa giỏ hàng" "#/cart" "secondary")]
+ out (shop.v.screen state "Xem lại đơn hàng" (concat head (concat lines tail)))
+
+; ---------------------------------------------------------------- order / payment status / receipt
+node shop.v.status (o)
+ in {"o":"ShopOrder"}
+ returns "ShopBlock"
+ says "Status card: tone = phase; host maps tone to icon shape and border style (D-S5: shape + text + colour)."
+ let head (shop.v.lookup SHOP_V_HEAD o.phase o.phase)
+ let body (shop.v.lookup SHOP_V_BODY o.phase "")
+ let more (if (and (== o.phase "unknown") (> o.inquiries 0)) SHOP_V_STILL "")
+ out (shop.v.b "status" head body more "" "" "" "" o.phase)
+
+node shop.v.actions (o)
+ in {"o":"ShopOrder"}
+ returns {"list":"ShopBlock"}
+ says "Exactly one primary next action per phase; recovery is inquiry with the same instruction, never 'pay again'."
+ let p o.phase
+ let pay (cat "Thanh toán " (shop.v.money o.intent.total))
+ let more (shop.v.go "Tiếp tục mua sắm" "#/" "secondary")
+ out (if (== p "ready") [(shop.v.button pay "Đang gửi thanh toán…" "pay" o.key "primary") (shop.v.button "Hủy đơn" "Đang hủy…" "cancel" o.key "secondary")] (if (contains p SHOP_INFLIGHT) [(shop.v.button "Kiểm tra lại thanh toán" "Đang kiểm tra…" "check" o.key "primary") more] (if (== p "declined") [(shop.v.button "Đặt đơn mới với các sản phẩm này" "Đang chuẩn bị…" "reorder" o.key "primary") more] [(shop.v.go "Tiếp tục mua sắm" "#/" "primary")])))
+
+node shop.v.order (state key)
+ in {"state":"ShopState","key":"Text"}
+ returns "ShopScreen"
+ says "Order screen: status, total, order reference and the next action first (visible at 390x844), then the captured lines."
+ raises UnknownOrder UnknownSku IndexOutOfRange
+ pre (shop.bound state key) UnknownOrder
+ let o (shop.find_order state key)
+ let top [(shop.v.status o) (shop.v.b "total" "Tổng cộng" (shop.v.money o.intent.total) "" "" "" "" "" o.phase) (shop.v.para "ref" (cat "Mã đơn " o.key))]
+ let lines (map "shop.v.line" o.intent.lines state)
+ let listHead [(shop.v.para "heading" (if (== o.phase "confirmed") "Biên nhận" "Sản phẩm trong đơn"))]
+ out (shop.v.screen state (shop.v.lookup SHOP_V_HEAD o.phase o.phase) (concat top (concat (shop.v.actions o) (concat listHead lines))))
+
+; ---------------------------------------------------------------- test desk (English)
+node shop.v.inv_row (item state)
+ in {"item":"ShopItem","state":"ShopState"}
+ returns {"list":"Text"}
+ out [item.sku item.name (str item.price) (str item.h) (str item.r) (str (- item.h item.r)) (str (shop.reserved_for state item.sku))]
+
+node shop.v.desk_inventory (state)
+ in {"state":"ShopState"}
+ returns "ShopTable"
+ out {title "Inventory (H on hand, R reserved, A = H - R)" head ["SKU" "Name" "Price VND" "H" "R" "A" "R from open orders"] rows (map "shop.v.inv_row" state.catalogue state)}
+
+node shop.v.lines_text (acc l)
+ in {"acc":"Text","l":"ShopLine"}
+ returns "Text"
+ out (cat acc (cat (if (== acc "") "" ", ") (cat l.sku (cat " x" (cat (str l.qty) (cat " @" (str l.unit_price)))))))
+
+node shop.v.ord_row (o)
+ in {"o":"ShopOrder"}
+ returns {"list":"Text"}
+ out [o.key o.instr o.phase (str o.intent.total) (fold "shop.v.lines_text" o.intent.lines "") (str o.inquiries)]
+
+node shop.v.desk_orders (state)
+ in {"state":"ShopState"}
+ returns "ShopTable"
+ out {title "Orders (one payment instruction per order)" head ["Order key" "Instruction" "Phase" "Total VND" "Lines" "Inquiries"] rows (map "shop.v.ord_row" state.orders)}
+
+node shop.v.change_row (c)
+ in {"c":"ShopChange"}
+ returns {"list":"Text"}
+ let note (if (not c.present) "MISSING from file" (if (< c.h_new c.r) "REJECT: H_new < R" (if (or (!= c.snap_price c.price) (!= c.snap_name c.name)) "supplier name/price differ: not applied in E1" "")))
+ out [c.sku (str c.h) (str c.r) (str (- c.h c.r)) (if c.present (str c.h_new) "-") (if c.present (str (- c.h_new c.r)) "-") (if c.present c.snap_name "-") (if c.present (str c.snap_price) "-") note]
+
+node shop.v.issue_text (i)
+ in {"i":"Issue"}
+ returns "Text"
+ out (cat "Record " (cat (str i.record) (cat ", " (cat i.field (cat ": " i.message)))))
+
+node shop.v.missing_text (s)
+ in {"s":"Text"}
+ returns "Text"
+ out (cat "Missing SKU " (cat s ": every catalogue SKU must be in the file (R-S2)."))
+
+node shop.v.extra_text (s)
+ in {"s":"Text"}
+ returns "Text"
+ out (cat "Unknown SKU " (cat s ": not in the catalogue; E1 cannot add products (R-S2)."))
+
+node shop.v.below_text (c)
+ in {"c":"ShopChange"}
+ returns "Text"
+ out (cat c.sku (cat ": new on-hand " (cat (str c.h_new) (cat " is below reserved " (str c.r)))))
+
+node shop.v.desk_preview (state p)
+ in {"state":"ShopState","p":"ShopPreview"}
+ returns "ShopDeskPreview"
+ says "Operator preview: validation result, the meaning sentence and the H/R/A change table, before confirmation."
+ let problems (concat (map "shop.v.issue_text" p.errors) (concat (map "shop.v.missing_text" p.missing) (concat (map "shop.v.extra_text" p.extra) (map "shop.v.below_text" (filter "shop.change_below" p.changes)))))
+ let verdict (if p.ok (cat "Valid snapshot. Confirming replaces H for all " (cat (str (len state.catalogue)) " SKUs at once; R and order prices are unchanged.")) (if p.supplier_ok "Rejected by the shop: nothing will change." "Rejected by the shared supplier definition: nothing will change."))
+ out {ok p.ok verdict verdict meaning SHOP_V_MEANING problems problems table {title "Preview of changes" head ["SKU" "H now" "R" "A now" "H new" "A new" "Supplier name" "Supplier price" "Note"] rows (map "shop.v.change_row" p.changes)}}

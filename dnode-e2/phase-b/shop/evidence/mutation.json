@@ -1,0 +1,59 @@
+{
+ "kind": "mutation-check-of-oracle-comparison",
+ "results": [
+  {
+   "label": "release keeps reservation",
+   "applied": true,
+   "killed": true,
+   "summary": "scenarios 400, steps 4016, step mismatches 992; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches"
+  },
+  {
+   "label": "reserve without stock check",
+   "applied": true,
+   "killed": true,
+   "summary": "scenarios 400, steps 4016, step mismatches 450; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches"
+  },
+  {
+   "label": "unknown reply treated as decline",
+   "applied": true,
+   "killed": true,
+   "summary": "scenarios 400, steps 4016, step mismatches 554; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches"
+  },
+  {
+   "label": "import adds instead of replacing",
+   "applied": true,
+   "killed": true,
+   "summary": "scenarios 400, steps 4016, step mismatches 1100; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches"
+  },
+  {
+   "label": "import ignores below-reserved",
+   "applied": true,
+   "killed": true,
+   "summary": "scenarios 400, steps 4016, step mismatches 42; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches"
+  },
+  {
+   "label": "confirm consumes twice",
+   "applied": true,
+   "killed": true,
+   "summary": "scenarios 400, steps 4016, step mismatches 768; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches"
+  },
+  {
+   "label": "submit charges every time",
+   "applied": true,
+   "killed": true,
+   "summary": "scenarios 400, steps 4016, step mismatches 370; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches"
+  },
+  {
+   "label": "total ignores quantity",
+   "applied": true,
+   "killed": true,
+   "summary": "scenarios 400, steps 4016, step mismatches 1537; money 212 cases, 0 mismatches; totals 300 cases, 141 mismatches"
+  },
+  {
+   "label": "money without grouping dots",
+   "applied": true,
+   "killed": true,
+   "summary": "scenarios 400, steps 4016, step mismatches 0; money 212 cases, 209 mismatches; totals 300 cases, 0 mismatches"
+  }
+ ]
+}

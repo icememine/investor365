@@ -1,0 +1,80 @@
+{
+ "section": "s02",
+ "browser": "Chromium 141.0.7390.37 headless (Playwright)",
+ "started": "2026-10-21T10:10:31.456Z",
+ "finished": "2026-10-21T10:10:32.704Z",
+ "base": "http://127.0.0.1:8101/",
+ "passed": 7,
+ "failed": 0,
+ "error": null,
+ "checks": [
+  {
+   "id": "unknown SKU refused, state unchanged",
+   "obligation": "S02",
+   "pass": true,
+   "r": {
+    "ok": false,
+    "code": "UnknownSku",
+    "kind": "refused",
+    "message": "UnknownSku"
+   }
+  },
+  {
+   "id": "cart cannot exceed availability (TOTE A=2)",
+   "obligation": "S02",
+   "pass": true,
+   "r": {
+    "ok": false,
+    "code": "OutOfStock",
+    "kind": "refused",
+    "message": "OutOfStock"
+   }
+  },
+  {
+   "id": "quantity beyond availability refused (PEN A=8); the 1..9 bound itself is checked at DNode level in tests/s02.mjs",
+   "obligation": "S02",
+   "pass": true,
+   "r": {
+    "ok": false,
+    "code": "OutOfStock",
+    "kind": "refused",
+    "message": "OutOfStock"
+   }
+  },
+  {
+   "id": "malformed stored state (H as text) faults InputShape before business logic; record unchanged",
+   "obligation": "S02",
+   "pass": true,
+   "r": {
+    "ok": false,
+    "code": "InputShape",
+    "kind": "fault",
+    "message": "InputShape: shop.cart_inc"
+   }
+  },
+  {
+   "id": "customer sees system-error message, no business screen",
+   "obligation": "S02",
+   "pass": true,
+   "notice": "Đã xảy ra lỗi hệ thống. Không có thay đổi nào được lưu."
+  },
+  {
+   "id": "test desk still offers reset on corrupt state; reset restores the seed",
+   "obligation": "S02",
+   "pass": true,
+   "deskFault": true
+  },
+  {
+   "id": "order with text total cannot be paid: InputShape fault, no simulator charge",
+   "obligation": "S02",
+   "pass": true,
+   "r": {
+    "ok": false,
+    "code": "InputShape",
+    "kind": "fault",
+    "message": "InputShape: shop.payment_submit"
+   },
+   "bank": {}
+  }
+ ]
+}

@@ -1,0 +1,623 @@
+root shop.core
+use prelude
+use supplier
+numbers exact
+; BP-SHOP E2.1 business root (C-S4: shop.core never depends on shop.view).
+; Owns: cart validation, price calculation, canonical intent, operation keys,
+; reservations, order/payment transitions, supplier import compatibility.
+; State lives in the host SessionStore record; every transition is pure and
+; returns a whole new state, so a refusal or fault leaves the record unwritten.
+
+type ShopItem {"fields":{"sku":"Text","name":"Text","price":"Int","h":"Int","r":"Int"}}
+type ShopCartLine {"fields":{"sku":"Text","qty":"Int"}}
+type ShopLine {"fields":{"sku":"Text","qty":"Int","unit_price":"Int"}}
+type ShopIntent {"fields":{"currency":{"enum":["VND"]},"lines":{"list":"ShopLine"},"total":"Int"}}
+type ShopPhase {"enum":["ready","pending","unknown","confirmed","declined","cancelled"]}
+type ShopOrder {"fields":{"key":"Text","instr":"Text","intent":"ShopIntent","phase":"ShopPhase","inquiries":"Int"}}
+type ShopState {"fields":{"catalogue":{"list":"ShopItem"},"cart":{"list":"ShopCartLine"},"orders":{"list":"ShopOrder"},"drafts":{"list":"Text"},"seq":"Int"}}
+type ShopReply {"enum":["confirmed","declined","unknown"]}
+type ShopPrepared {"fields":{"state":"ShopState","key":"Text","intent":"ShopIntent"}}
+type ShopPlaced {"fields":{"state":"ShopState","order":"ShopOrder","created":"Bool"}}
+type ShopChange {"fields":{"sku":"Text","name":"Text","price":"Int","h":"Int","r":"Int","present":"Bool","h_new":"Int","snap_name":"Text","snap_price":"Int"}}
+type ShopPreview {"fields":{"ok":"Bool","supplier_ok":"Bool","errors":"Issues","missing":{"list":"Text"},"extra":{"list":"Text"},"below":{"list":"Text"},"changes":{"list":"ShopChange"}}}
+
+; Seed catalogue (BP-SHOP domain policy). Names are catalogue data (R-S7).
+const SHOP_SEED [{sku "NOTEBOOK" name "Notebook" price 50000 h 5 r 0} {sku "PEN" name "Pen" price 20000 h 8 r 0} {sku "TOTE" name "Tote bag" price 120000 h 2 r 0}]
+; Phases that hold a reservation (D-S1: pending/unknown keep it).
+const SHOP_OPEN ["ready" "pending" "unknown"]
+; Phases whose payment outcome is not yet definite.
+const SHOP_INFLIGHT ["pending" "unknown"]
+const SHOP_SUBMITTED ["pending" "unknown" "confirmed" "declined"]
+const SHOP_MAX_DRAFTS 20
+
+; ---------------------------------------------------------------- state
+node shop.initial ()
+ in {}
+ returns "ShopState"
+ says "Seed state: BP-SHOP catalogue, empty cart, no orders, first order number 1."
+ out {catalogue SHOP_SEED cart [] orders [] drafts [] seq 1}
+ post (shop.state_ok out)
+ ex {"args":[],"out":{"catalogue":[{"sku":"NOTEBOOK","name":"Notebook","price":50000,"h":5,"r":0},{"sku":"PEN","name":"Pen","price":20000,"h":8,"r":0},{"sku":"TOTE","name":"Tote bag","price":120000,"h":2,"r":0}],"cart":[],"orders":[],"drafts":[],"seq":1}}
+
+node shop.state_mk (catalogue cart orders drafts seq)
+ in {"catalogue":{"list":"ShopItem"},"cart":{"list":"ShopCartLine"},"orders":{"list":"ShopOrder"},"drafts":{"list":"Text"},"seq":"Int"}
+ returns "ShopState"
+ out {catalogue catalogue cart cart orders orders drafts drafts seq seq}
+
+node shop.item_mk (item h r)
+ in {"item":"ShopItem","h":"Int","r":"Int"}
+ returns "ShopItem"
+ out {sku item.sku name item.name price item.price h h r r}
+
+node shop.item_sku (item)
+ in {"item":"ShopItem"}
+ returns "Text"
+ out item.sku
+
+node shop.order_key (o)
+ in {"o":"ShopOrder"}
+ returns "Text"
+ out o.key
+
+; ---------------------------------------------------------------- invariants
+; For every SKU: 0 <= R <= H and R = sum of q over lines of orders that hold a
+; reservation (ready/pending/unknown). SKUs and order keys are unique.
+node shop.line_qty_for (l sku)
+ in {"l":"ShopLine","sku":"Text"}
+ returns "Int"
+ out (if (== l.sku sku) l.qty 0)
+
+node shop.qty_in (lines sku)
+ in {"lines":{"list":"ShopLine"},"sku":"Text"}
+ returns "Int"
+ out (sequence.sum_exact (map "shop.line_qty_for" lines sku))
+ ex {"args":[[{"sku":"PEN","qty":2,"unit_price":20000},{"sku":"TOTE","qty":1,"unit_price":120000}],"PEN"],"out":2}
+
+node shop.open_qty_for (o sku)
+ in {"o":"ShopOrder","sku":"Text"}
+ returns "Int"
+ out (if (contains o.phase SHOP_OPEN) (shop.qty_in o.intent.lines sku) 0)
+
+node shop.reserved_for (state sku)
+ in {"state":"ShopState","sku":"Text"}
+ returns "Int"
+ out (sequence.sum_exact (map "shop.open_qty_for" state.orders sku))
+
+node shop.item_ok (item state)
+ in {"item":"ShopItem","state":"ShopState"}
+ returns "Bool"
+ out (and (and (<= 0 item.r) (<= item.r item.h)) (and (> item.price 0) (== item.r (shop.reserved_for state item.sku))))
+
+node shop.state_ok (state)
+ in {"state":"ShopState"}
+ returns "Bool"
+ says "Whole-state invariant checked after every transition."
+ out (and (all (map "shop.item_ok" state.catalogue state)) (and (sequence.unique_text (map "shop.item_sku" state.catalogue)) (and (sequence.unique_text (map "shop.order_key" state.orders)) (> state.seq 0))))
+
+; ---------------------------------------------------------------- catalogue
+node shop.item_is (item sku)
+ in {"item":"ShopItem","sku":"Text"}
+ returns "Bool"
+ out (== item.sku sku)
+
+node shop.known_sku (state sku)
+ in {"state":"ShopState","sku":"Text"}
+ returns "Bool"
+ out (> (len (filter "shop.item_is" state.catalogue sku)) 0)
+
+node shop.find_item (state sku)
+ in {"state":"ShopState","sku":"Text"}
+ returns "ShopItem"
+ raises IndexOutOfRange
+ pre (shop.known_sku state sku) UnknownSku
+ out (at (filter "shop.item_is" state.catalogue sku) 0)
+
+node shop.available (state sku)
+ in {"state":"ShopState","sku":"Text"}
+ returns "Int"
+ says "A = H - R for one SKU."
+ raises UnknownSku IndexOutOfRange
+ let it (shop.find_item state sku)
+ out (- it.h it.r)
+
+; ---------------------------------------------------------------- cart
+node shop.cl_is (cl sku)
+ in {"cl":"ShopCartLine","sku":"Text"}
+ returns "Bool"
+ out (== cl.sku sku)
+
+node shop.cl_not (cl sku)
+ in {"cl":"ShopCartLine","sku":"Text"}
+ returns "Bool"
+ out (!= cl.sku sku)
+
+node shop.cl_qty (cl)
+ in {"cl":"ShopCartLine"}
+ returns "Int"
+ out cl.qty
+
+node shop.cl_sku (cl)
+ in {"cl":"ShopCartLine"}
+ returns "Text"
+ out cl.sku
+
+node shop.cart_qty (state sku)
+ in {"state":"ShopState","sku":"Text"}
+ returns "Int"
+ out (sequence.sum_exact (map "shop.cl_qty" (filter "shop.cl_is" state.cart sku)))
+
+node shop.cart_set (state sku qty)
+ in {"state":"ShopState","sku":"Text","qty":"Int"}
+ returns "ShopState"
+ says "Set one cart line to qty (0 removes). Increases are limited to 9 and to current availability A; decreases are always allowed."
+ raises IndexOutOfRange UnknownSku
+ pre (shop.known_sku state sku) UnknownSku
+ pre (bounded.within qty 0 9) QuantityOutOfRange
+ pre (or (<= qty (shop.cart_qty state sku)) (<= qty (shop.available state sku))) OutOfStock
+ let others (filter "shop.cl_not" state.cart sku)
+ let cart (if (== qty 0) others (sort_by (concat others [{sku sku qty qty}]) "sku"))
+ out (shop.state_mk state.catalogue cart state.orders state.drafts state.seq)
+ post (shop.state_ok out)
+ post (== (shop.cart_qty out sku) qty)
+
+node shop.cart_inc (state sku)
+ in {"state":"ShopState","sku":"Text"}
+ returns "ShopState"
+ raises UnknownSku QuantityOutOfRange OutOfStock IndexOutOfRange
+ out (shop.cart_set state sku (+ (shop.cart_qty state sku) 1))
+
+node shop.cart_dec (state sku)
+ in {"state":"ShopState","sku":"Text"}
+ returns "ShopState"
+ raises UnknownSku QuantityOutOfRange OutOfStock IndexOutOfRange
+ pre (> (shop.cart_qty state sku) 0) NotInCart
+ out (shop.cart_set state sku (- (shop.cart_qty state sku) 1))
+
+; C-S4 text boundary: the only place where text becomes a quantity.
+node shop.parse_qty (s)
+ in {"s":"Text"}
+ returns "Int"
+ says "Quantity text to Int: ASCII digits only, at most two digits, value 1..9. No trim, sign or coercion."
+ raises InvalidInteger PatternNotAllowed
+ pre (matches s "^[0-9]+$") InvalidInteger
+ pre (<= (len s) 2) QuantityOutOfRange
+ pre (bounded.within (decimal s) 1 9) QuantityOutOfRange
+ out (text.parse_decimal_nat s)
+ post (bounded.within out 1 9)
+ ex {"args":["2"],"out":2}
+ ex {"args":["02"],"out":2}
+ ex {"args":[" 2"],"refuse":"InvalidInteger"}
+ ex {"args":["+2"],"refuse":"InvalidInteger"}
+ ex {"args":["2.0"],"refuse":"InvalidInteger"}
+ ex {"args":["two"],"refuse":"InvalidInteger"}
+ ex {"args":[""],"refuse":"InvalidInteger"}
+ ex {"args":["10"],"refuse":"QuantityOutOfRange"}
+ ex {"args":["0"],"refuse":"QuantityOutOfRange"}
+ ex {"args":["9007199254740992"],"refuse":"QuantityOutOfRange"}
+ ex {"args":[2],"fault":"InputShape"}
+
+node shop.cart_set_text (state sku text)
+ in {"state":"ShopState","sku":"Text","text":"Text"}
+ returns "ShopState"
+ raises InvalidInteger PatternNotAllowed QuantityOutOfRange UnknownSku OutOfStock IndexOutOfRange
+ out (shop.cart_set state sku (shop.parse_qty text))
+
+; ---------------------------------------------------------------- intent and price
+node shop.cl_known (cl state)
+ in {"cl":"ShopCartLine","state":"ShopState"}
+ returns "Bool"
+ out (shop.known_sku state cl.sku)
+
+node shop.cl_qty_ok (cl)
+ in {"cl":"ShopCartLine"}
+ returns "Bool"
+ out (bounded.within cl.qty 1 9)
+
+node shop.lines_valid (state cls)
+ in {"state":"ShopState","cls":{"list":"ShopCartLine"}}
+ returns "Bool"
+ says "1-3 lines, unique SKUs, every SKU known, every quantity 1..9."
+ out (and (bounded.within (len cls) 1 3) (and (sequence.unique_text (map "shop.cl_sku" cls)) (and (all (map "shop.cl_known" cls state)) (all (map "shop.cl_qty_ok" cls)))))
+
+node shop.line_of (cl state)
+ in {"cl":"ShopCartLine","state":"ShopState"}
+ returns "ShopLine"
+ raises UnknownSku IndexOutOfRange
+ let it (shop.find_item state cl.sku)
+ out {sku cl.sku qty cl.qty unit_price it.price}
+
+node shop.line_cl (l)
+ in {"l":"ShopLine"}
+ returns "ShopCartLine"
+ out {sku l.sku qty l.qty}
+
+node shop.line_amount (l)
+ in {"l":"ShopLine"}
+ returns "Int"
+ out (* l.unit_price l.qty)
+ ex {"args":[{"sku":"TOTE","qty":9,"unit_price":120000}],"out":1080000}
+
+node shop.intent_of (state cls)
+ in {"state":"ShopState","cls":{"list":"ShopCartLine"}}
+ returns "ShopIntent"
+ says "Canonical intent: VND, lines sorted by SKU with captured unit prices, total = sum(unit_price x qty) with exact bounded arithmetic."
+ raises UnknownSku IndexOutOfRange
+ pre (> (len cls) 0) EmptyCart
+ pre (shop.lines_valid state cls) InvalidLines
+ let lines (sort_by (map "shop.line_of" cls state) "sku")
+ out {currency "VND" lines lines total (sequence.sum_exact (map "shop.line_amount" lines))}
+ ex {"args":[{"catalogue":[{"sku":"NOTEBOOK","name":"Notebook","price":50000,"h":5,"r":0},{"sku":"PEN","name":"Pen","price":20000,"h":8,"r":0},{"sku":"TOTE","name":"Tote bag","price":120000,"h":2,"r":0}],"cart":[],"orders":[],"drafts":[],"seq":1},[{"sku":"TOTE","qty":1},{"sku":"NOTEBOOK","qty":2},{"sku":"PEN","qty":1}]],"out":{"currency":"VND","lines":[{"sku":"NOTEBOOK","qty":2,"unit_price":50000},{"sku":"PEN","qty":1,"unit_price":20000},{"sku":"TOTE","qty":1,"unit_price":120000}],"total":240000}}
+ ex {"args":[{"catalogue":[{"sku":"NOTEBOOK","name":"Notebook","price":50000,"h":5,"r":0},{"sku":"PEN","name":"Pen","price":20000,"h":8,"r":0},{"sku":"TOTE","name":"Tote bag","price":120000,"h":2,"r":0}],"cart":[],"orders":[],"drafts":[],"seq":1},[{"sku":"NOTEBOOK","qty":9},{"sku":"PEN","qty":9},{"sku":"TOTE","qty":9}]],"out":{"currency":"VND","lines":[{"sku":"NOTEBOOK","qty":9,"unit_price":50000},{"sku":"PEN","qty":9,"unit_price":20000},{"sku":"TOTE","qty":9,"unit_price":120000}],"total":1710000}}
+ ex {"args":[{"catalogue":[{"sku":"NOTEBOOK","name":"Notebook","price":50000,"h":5,"r":0},{"sku":"PEN","name":"Pen","price":20000,"h":8,"r":0},{"sku":"TOTE","name":"Tote bag","price":120000,"h":2,"r":0}],"cart":[],"orders":[],"drafts":[],"seq":1},[]],"refuse":"EmptyCart"}
+ ex {"args":[{"catalogue":[{"sku":"NOTEBOOK","name":"Notebook","price":50000,"h":5,"r":0},{"sku":"PEN","name":"Pen","price":20000,"h":8,"r":0},{"sku":"TOTE","name":"Tote bag","price":120000,"h":2,"r":0}],"cart":[],"orders":[],"drafts":[],"seq":1},[{"sku":"PEN","qty":1},{"sku":"PEN","qty":2}]],"refuse":"InvalidLines"}
+ ex {"args":[{"catalogue":[{"sku":"NOTEBOOK","name":"Notebook","price":50000,"h":5,"r":0},{"sku":"PEN","name":"Pen","price":20000,"h":8,"r":0},{"sku":"TOTE","name":"Tote bag","price":120000,"h":2,"r":0}],"cart":[],"orders":[],"drafts":[],"seq":1},[{"sku":"PEN","qty":10}]],"refuse":"InvalidLines"}
+ ex {"args":[{"catalogue":[{"sku":"NOTEBOOK","name":"Notebook","price":50000,"h":5,"r":0},{"sku":"PEN","name":"Pen","price":20000,"h":8,"r":0},{"sku":"TOTE","name":"Tote bag","price":120000,"h":2,"r":0}],"cart":[],"orders":[],"drafts":[],"seq":1},[{"sku":"ERASER","qty":1}]],"refuse":"InvalidLines"}
+ ex {"args":[{"catalogue":[{"sku":"NOTEBOOK","name":"Notebook","price":50000,"h":5,"r":0},{"sku":"PEN","name":"Pen","price":20000,"h":8,"r":0},{"sku":"TOTE","name":"Tote bag","price":120000,"h":2,"r":0}],"cart":[],"orders":[],"drafts":[],"seq":1},[{"sku":"PEN","qty":"2"}]],"fault":"InputShape"}
+
+; ---------------------------------------------------------------- operation keys (C-S1)
+node shop.pad4 (n)
+ in {"n":"Int"}
+ returns "Text"
+ pre (> n 0) BadSeq
+ out (cat (if (< n 10) "000" (if (< n 100) "00" (if (< n 1000) "0" ""))) (str n))
+ ex {"args":[7],"out":"0007"}
+ ex {"args":[12345],"out":"12345"}
+
+node shop.mint (seq)
+ in {"seq":"Int"}
+ returns "Text"
+ says "Order key ORD-nnnn from the shop's own counter; matches ^[A-Z0-9_-]{1,32}$."
+ raises BadSeq
+ out (cat "ORD-" (shop.pad4 seq))
+ post (matches out "^[A-Z0-9_-]{1,32}$")
+ ex {"args":[1],"out":"ORD-0001"}
+
+node shop.keep_last (xs n)
+ in {"xs":{"list":"Text"},"n":"Int"}
+ returns {"list":"Text"}
+ raises IndexOutOfRange
+ out (if (> (len xs) n) (slice xs (- (len xs) n) (len xs)) xs)
+
+node shop.text_not (x y)
+ in {"x":"Text","y":"Text"}
+ returns "Bool"
+ out (!= x y)
+
+node shop.checkout_prepare (state)
+ in {"state":"ShopState"}
+ returns "ShopPrepared"
+ says "Enter review: mint a fresh unbound key ORD-seq for this cart and compute its intent. The key binds only at order_place."
+ raises EmptyCart InvalidLines UnknownSku IndexOutOfRange BadSeq
+ let intent (shop.intent_of state state.cart)
+ let key (shop.mint state.seq)
+ let drafts (shop.keep_last (concat state.drafts [key]) SHOP_MAX_DRAFTS)
+ out {state (shop.state_mk state.catalogue state.cart state.orders drafts (+ state.seq 1)) key key intent intent}
+ post (shop.state_ok out.state)
+ post (not (shop.bound out.state out.key))
+
+node shop.checkout_review (state key)
+ in {"state":"ShopState","key":"Text"}
+ returns "ShopPrepared"
+ says "Re-enter review with a key minted earlier and not yet bound: same key, intent replaced by the current cart."
+ raises EmptyCart InvalidLines UnknownSku IndexOutOfRange
+ pre (contains key state.drafts) UnknownDraft
+ out {state state key key intent (shop.intent_of state state.cart)}
+
+node shop.checkout_enter (state key)
+ in {"state":"ShopState","key":"Text"}
+ returns "ShopPrepared"
+ says "Review entry used by the host: keep the page's unbound key if it is still a draft, otherwise mint a new one."
+ raises EmptyCart InvalidLines UnknownSku IndexOutOfRange BadSeq UnknownDraft
+ out (if (contains key state.drafts) (shop.checkout_review state key) (shop.checkout_prepare state))
+
+; ---------------------------------------------------------------- orders
+node shop.order_is (o key)
+ in {"o":"ShopOrder","key":"Text"}
+ returns "Bool"
+ out (== o.key key)
+
+node shop.bound (state key)
+ in {"state":"ShopState","key":"Text"}
+ returns "Bool"
+ out (> (len (filter "shop.order_is" state.orders key)) 0)
+
+node shop.find_order (state key)
+ in {"state":"ShopState","key":"Text"}
+ returns "ShopOrder"
+ raises IndexOutOfRange
+ pre (shop.bound state key) UnknownOrder
+ out (at (filter "shop.order_is" state.orders key) 0)
+
+node shop.phase_in (state key phases)
+ in {"state":"ShopState","key":"Text","phases":{"list":"Text"}}
+ returns "Bool"
+ raises UnknownOrder IndexOutOfRange
+ let o (shop.find_order state key)
+ out (contains o.phase phases)
+
+node shop.intent_agrees (state key intent)
+ in {"state":"ShopState","key":"Text","intent":"ShopIntent"}
+ returns "Bool"
+ says "True unless key is bound to a different canonical intent."
+ raises UnknownOrder IndexOutOfRange
+ out (if (shop.bound state key) (shop.same_intent (shop.find_order state key) intent) true)
+
+node shop.same_intent (o intent)
+ in {"o":"ShopOrder","intent":"ShopIntent"}
+ returns "Bool"
+ out (== o.intent intent)
+
+node shop.fresh_lines_ok (state key intent)
+ in {"state":"ShopState","key":"Text","intent":"ShopIntent"}
+ returns "Bool"
+ out (if (shop.bound state key) true (shop.lines_valid state (map "shop.line_cl" intent.lines)))
+
+node shop.fresh_prices_ok (state key intent)
+ in {"state":"ShopState","key":"Text","intent":"ShopIntent"}
+ returns "Bool"
+ raises EmptyCart InvalidLines UnknownSku IndexOutOfRange
+ out (if (shop.bound state key) true (== intent (shop.intent_of state (map "shop.line_cl" intent.lines))))
+
+node shop.line_fits (l state)
+ in {"l":"ShopLine","state":"ShopState"}
+ returns "Bool"
+ raises UnknownSku IndexOutOfRange
+ out (<= l.qty (shop.available state l.sku))
+
+node shop.fresh_stock_ok (state key intent)
+ in {"state":"ShopState","key":"Text","intent":"ShopIntent"}
+ returns "Bool"
+ raises UnknownSku IndexOutOfRange
+ out (if (shop.bound state key) true (all (map "shop.line_fits" intent.lines state)))
+
+node shop.item_reserve (item lines)
+ in {"item":"ShopItem","lines":{"list":"ShopLine"}}
+ returns "ShopItem"
+ out (shop.item_mk item item.h (+ item.r (shop.qty_in lines item.sku)))
+
+node shop.item_commit (item lines)
+ in {"item":"ShopItem","lines":{"list":"ShopLine"}}
+ returns "ShopItem"
+ let q (shop.qty_in lines item.sku)
+ out (shop.item_mk item (- item.h q) (- item.r q))
+
+node shop.item_release (item lines)
+ in {"item":"ShopItem","lines":{"list":"ShopLine"}}
+ returns "ShopItem"
+ out (shop.item_mk item item.h (- item.r (shop.qty_in lines item.sku)))
+
+node shop.placed_existing (state key)
+ in {"state":"ShopState","key":"Text"}
+ returns "ShopPlaced"
+ raises UnknownOrder IndexOutOfRange
+ out {state state order (shop.find_order state key) created false}
+
+node shop.placed_new (state key intent)
+ in {"state":"ShopState","key":"Text","intent":"ShopIntent"}
+ returns "ShopPlaced"
+ let items (map "shop.item_reserve" state.catalogue intent.lines)
+ let o {key key instr (cat key "-P1") intent intent phase "ready" inquiries 0}
+ let orders (concat state.orders [o])
+ let drafts (filter "shop.text_not" state.drafts key)
+ out {state (shop.state_mk items [] orders drafts state.seq) order o created true}
+
+node shop.order_place (state key intent)
+ in {"state":"ShopState","key":"Text","intent":"ShopIntent"}
+ returns "ShopPlaced"
+ says "Bind key to intent and reserve every line atomically, or retrieve the order already bound to the same key and intent."
+ domain "key minted by checkout_prepare (in drafts) or already bound; intent: VND, 1-3 unique known SKUs, qty 1..9, captured unit prices, total."
+ relation "Bind(k)=none: require q<=A for every line, then (H,R)->(H,R+q) for all lines, order phase ready, instruction k-P1, cart emptied. Bind(k)=i: return that order, state unchanged. Bind(k)!=i: refuse."
+ failure "Shape fault before any check; UnknownKey; IntentConflict; InvalidOrder; IntentStale (intent differs from current prices); OutOfStock. Every refusal leaves state unchanged; no partial reservation."
+ execution "Pure. Host runs it inside one SessionStore.transaction (Web Locks + one localStorage record), so read/check/reserve/write is serialized for all pages of this origin."
+ raises IndexOutOfRange UnknownSku UnknownOrder EmptyCart InvalidLines
+ pre (or (shop.bound state key) (contains key state.drafts)) UnknownKey
+ pre (shop.intent_agrees state key intent) IntentConflict
+ pre (shop.fresh_lines_ok state key intent) InvalidOrder
+ pre (shop.fresh_prices_ok state key intent) IntentStale
+ pre (shop.fresh_stock_ok state key intent) OutOfStock
+ out (if (shop.bound state key) (shop.placed_existing state key) (shop.placed_new state key intent))
+ post (shop.state_ok out.state)
+ post (and (== out.order.key key) (== out.order.intent intent))
+ post (if out.created (== (len out.state.orders) (+ (len state.orders) 1)) (== out.state state))
+
+; ---------------------------------------------------------------- payment (C-S1, R-S4)
+node shop.order_mk (o phase inquiries)
+ in {"o":"ShopOrder","phase":"ShopPhase","inquiries":"Int"}
+ returns "ShopOrder"
+ out {key o.key instr o.instr intent o.intent phase phase inquiries inquiries}
+
+node shop.order_pick (x o)
+ in {"x":"ShopOrder","o":"ShopOrder"}
+ returns "ShopOrder"
+ out (if (== x.key o.key) o x)
+
+node shop.order_set (state o)
+ in {"state":"ShopState","o":"ShopOrder"}
+ returns "ShopState"
+ out (shop.state_mk state.catalogue state.cart (map "shop.order_pick" state.orders o) state.drafts state.seq)
+
+node shop.payment_submit (state key)
+ in {"state":"ShopState","key":"Text"}
+ returns "ShopState"
+ says "Submit the order's single payment instruction once: ready -> pending and emit payment.charge{id:key-P1, amount:total}. Any later call is a no-op without effects."
+ fx payment.charge
+ raises UnknownOrder IndexOutOfRange
+ pre (shop.bound state key) UnknownOrder
+ pre (not (shop.phase_in state key ["cancelled"])) Cancelled
+ let o (shop.find_order state key)
+ let fresh (== o.phase "ready")
+ let sent (if fresh (emit "payment.charge" {id o.instr amount o.intent.total}) false)
+ out (if fresh (shop.order_set state (shop.order_mk o "pending" o.inquiries)) state)
+ post (shop.state_ok out)
+
+node shop.payment_reconcile (state key)
+ in {"state":"ShopState","key":"Text"}
+ returns "ShopState"
+ says "Recovery: for a pending/unknown order emit payment.inquire with the SAME instruction id; never a new charge. Definite outcomes emit nothing."
+ fx payment.inquire
+ raises UnknownOrder IndexOutOfRange
+ pre (shop.bound state key) UnknownOrder
+ pre (shop.phase_in state key SHOP_SUBMITTED) NotSubmitted
+ let o (shop.find_order state key)
+ let open (contains o.phase SHOP_INFLIGHT)
+ let asked (if open (emit "payment.inquire" {id o.instr}) false)
+ out (if open (shop.order_set state (shop.order_mk o o.phase (+ o.inquiries 1))) state)
+ post (shop.state_ok out)
+
+node shop.consistent_outcome (state key reply)
+ in {"state":"ShopState","key":"Text","reply":"ShopReply"}
+ returns "Bool"
+ raises UnknownOrder IndexOutOfRange
+ let o (shop.find_order state key)
+ out (not (or (and (== o.phase "confirmed") (== reply "declined")) (and (== o.phase "declined") (== reply "confirmed"))))
+
+node shop.settle_confirm (state o)
+ in {"state":"ShopState","o":"ShopOrder"}
+ returns "ShopState"
+ let s (shop.order_set state (shop.order_mk o "confirmed" o.inquiries))
+ out (shop.state_mk (map "shop.item_commit" s.catalogue o.intent.lines) s.cart s.orders s.drafts s.seq)
+
+node shop.settle_decline (state o)
+ in {"state":"ShopState","o":"ShopOrder"}
+ returns "ShopState"
+ let s (shop.order_set state (shop.order_mk o "declined" o.inquiries))
+ out (shop.state_mk (map "shop.item_release" s.catalogue o.intent.lines) s.cart s.orders s.drafts s.seq)
+
+node shop.settle (state o reply)
+ in {"state":"ShopState","o":"ShopOrder","reply":"ShopReply"}
+ returns "ShopState"
+ out (if (== reply "confirmed") (shop.settle_confirm state o) (if (== reply "declined") (shop.settle_decline state o) (shop.order_set state (shop.order_mk o "unknown" o.inquiries))))
+
+node shop.payment_apply (state key reply)
+ in {"state":"ShopState","key":"Text","reply":"ShopReply"}
+ returns "ShopState"
+ says "Apply a simulator reply to the order's single instruction."
+ domain "order bound to key and already submitted; reply in {confirmed, declined, unknown} exactly as returned by the host simulator."
+ relation "pending/unknown + confirmed: (H,R)->(H-q,R-q), phase confirmed. pending/unknown + declined: (H,R)->(H,R-q), phase declined. pending/unknown + unknown: phase unknown, reservation kept. confirmed+confirmed, declined+declined, terminal+unknown: state unchanged (never a second consumption or release)."
+ failure "Shape fault; UnknownOrder; NotSubmitted (ready/cancelled); OutcomeContradiction (definite outcome opposite to the recorded one). State unchanged on every failure."
+ execution "Pure. Host calls it inside the same SessionStore.transaction as submit/reconcile and the simulator dispatch (R-S4: E1 simulator scope only)."
+ raises UnknownOrder IndexOutOfRange
+ pre (shop.bound state key) UnknownOrder
+ pre (shop.phase_in state key SHOP_SUBMITTED) NotSubmitted
+ pre (shop.consistent_outcome state key reply) OutcomeContradiction
+ let o (shop.find_order state key)
+ out (if (contains o.phase SHOP_INFLIGHT) (shop.settle state o reply) state)
+ post (shop.state_ok out)
+
+node shop.order_cancel (state key)
+ in {"state":"ShopState","key":"Text"}
+ returns "ShopState"
+ says "Pre-payment cancellation: ready -> cancelled, (H,R)->(H,R-q)."
+ raises UnknownOrder IndexOutOfRange
+ pre (shop.bound state key) UnknownOrder
+ pre (shop.phase_in state key ["ready"]) NotCancellable
+ let o (shop.find_order state key)
+ let s (shop.order_set state (shop.order_mk o "cancelled" o.inquiries))
+ out (shop.state_mk (map "shop.item_release" s.catalogue o.intent.lines) s.cart s.orders s.drafts s.seq)
+ post (shop.state_ok out)
+
+node shop.cart_from_order (state key)
+ in {"state":"ShopState","key":"Text"}
+ returns "ShopState"
+ says "Put an earlier order's lines back in the cart (a new order needs a new key, reservation and instruction)."
+ raises UnknownOrder IndexOutOfRange
+ pre (shop.bound state key) UnknownOrder
+ let o (shop.find_order state key)
+ out (shop.state_mk state.catalogue (sort_by (map "shop.line_cl" o.intent.lines) "sku") state.orders state.drafts state.seq)
+ post (shop.state_ok out)
+
+; ---------------------------------------------------------------- supplier import (R-S1..R-S3, D-S2)
+node shop.text_absent (x ys)
+ in {"x":"Text","ys":{"list":"Text"}}
+ returns "Bool"
+ out (not (contains x ys))
+
+node shop.row_is (p sku)
+ in {"p":"Product","sku":"Text"}
+ returns "Bool"
+ out (== p.sku sku)
+
+node shop.change_mk (item present p)
+ in {"item":"ShopItem","present":"Bool","p":"Product"}
+ returns "ShopChange"
+ out {sku item.sku name item.name price item.price h item.h r item.r present present h_new p.stock snap_name p.name snap_price p.price}
+
+node shop.change_for (item rows)
+ in {"item":"ShopItem","rows":"Products"}
+ returns "ShopChange"
+ raises IndexOutOfRange
+ let m (filter "shop.row_is" rows item.sku)
+ out (if (> (len m) 0) (shop.change_mk item true (at m 0)) (shop.change_mk item false {sku item.sku name item.name price item.price stock item.h}))
+
+node shop.change_below (c)
+ in {"c":"ShopChange"}
+ returns "Bool"
+ out (and c.present (< c.h_new c.r))
+
+node shop.change_sku (c)
+ in {"c":"ShopChange"}
+ returns "Text"
+ out c.sku
+
+node shop.change_is (c sku)
+ in {"c":"ShopChange","sku":"Text"}
+ returns "Bool"
+ out (== c.sku sku)
+
+node shop.preview_of (state snap)
+ in {"state":"ShopState","snap":"Snapshot"}
+ returns "ShopPreview"
+ says "Shop compatibility of a validated supplier snapshot: SKU set must equal the catalogue (R-S2) and every H_new >= R (D-S2)."
+ raises IndexOutOfRange
+ let skus (map "supplier.product_key" snap.rows)
+ let cskus (map "shop.item_sku" state.catalogue)
+ let changes (if snap.ok (map "shop.change_for" state.catalogue snap.rows) [])
+ let missing (if snap.ok (filter "shop.text_absent" cskus skus) [])
+ let extra (if snap.ok (filter "shop.text_absent" skus cskus) [])
+ let below (map "shop.change_sku" (filter "shop.change_below" changes))
+ out {ok (and snap.ok (and (== (len missing) 0) (and (== (len extra) 0) (== (len below) 0)))) supplier_ok snap.ok errors snap.errors missing missing extra extra below below changes changes}
+
+node shop.stock_preview (state text)
+ in {"state":"ShopState","text":"Text"}
+ returns "ShopPreview"
+ says "Interpret supplier CSV text through the pinned shared entry supplier.from_csv, then apply shop compatibility checks. No state change."
+ raises MalformedCSV FileTooLarge TooManyRows IndexOutOfRange PatternNotAllowed RowShape NumericRange InvalidInteger BadRange
+ let snap (supplier.from_csv text)
+ out (shop.preview_of state snap)
+
+node shop.item_restock (item changes)
+ in {"item":"ShopItem","changes":{"list":"ShopChange"}}
+ returns "ShopItem"
+ raises IndexOutOfRange
+ let c (at (filter "shop.change_is" changes item.sku) 0)
+ out (shop.item_mk item c.h_new item.r)
+
+node shop.stock_apply (state p expected)
+ in {"state":"ShopState","p":"ShopPreview","expected":"ShopPreview"}
+ returns "ShopState"
+ raises IndexOutOfRange
+ pre p.supplier_ok InvalidSnapshot
+ pre (and (== (len p.missing) 0) (== (len p.extra) 0)) SkuSetMismatch
+ pre (== (len p.below) 0) BelowReserved
+ pre (== p expected) PreviewChanged
+ out (shop.state_mk (map "shop.item_restock" state.catalogue p.changes) state.cart state.orders state.drafts state.seq)
+ post (shop.state_ok out)
+
+node shop.stock_import (state text expected)
+ in {"state":"ShopState","text":"Text","expected":"ShopPreview"}
+ returns "ShopState"
+ says "Confirm the whole snapshot the operator previewed: H := QTY_ON_HAND for every SKU at once; R, prices, names and orders unchanged."
+ domain "text: the same decoded CSV text that produced expected; expected: the preview shown to the operator."
+ relation "For every SKU s: H'_s = snapshot stock_s, R'_s = R_s, A'_s = H'_s - R_s. Physical unsold units including reserved, not a delta, not net available."
+ failure "CSV/supplier refusals propagate; InvalidSnapshot, SkuSetMismatch, BelowReserved (H_new < R), PreviewChanged (state or file differs from what was previewed). State unchanged on every refusal."
+ execution "Pure; host runs it inside one SessionStore.transaction, so the whole file applies or nothing does."
+ raises MalformedCSV FileTooLarge TooManyRows IndexOutOfRange PatternNotAllowed RowShape NumericRange InvalidInteger BadRange InvalidSnapshot SkuSetMismatch BelowReserved PreviewChanged
+ let p (shop.stock_preview state text)
+ out (shop.stock_apply state p expected)
+ post (== (map "shop.item_r" out.catalogue) (map "shop.item_r" state.catalogue))
+ post (== out.orders state.orders)
+
+node shop.item_r (item)
+ in {"item":"ShopItem"}
+ returns "Int"
+ out item.r

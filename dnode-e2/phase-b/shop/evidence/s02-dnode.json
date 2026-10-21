@@ -1,0 +1,240 @@
+{
+ "kind": "dnode-boundary-cases",
+ "note": "Refusals and faults expose no effects (runtime discards the queue); the host writes nothing on throw.",
+ "cases": 29,
+ "failed": 0,
+ "results": [
+  {
+   "label": "cart qty 10",
+   "node": "shop.cart_set",
+   "expected": "refuse QuantityOutOfRange",
+   "got": "refuse QuantityOutOfRange",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "cart qty -1",
+   "node": "shop.cart_set",
+   "expected": "refuse QuantityOutOfRange",
+   "got": "refuse QuantityOutOfRange",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "cart qty as text \"2\"",
+   "node": "shop.cart_set",
+   "expected": "fault InputShape",
+   "got": "fault InputShape",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "cart unknown SKU",
+   "node": "shop.cart_set",
+   "expected": "refuse UnknownSku",
+   "got": "refuse UnknownSku",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "quantity text \"2\" via boundary",
+   "node": "shop.cart_set_text",
+   "expected": "return",
+   "got": "return",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "quantity text \" 2\"",
+   "node": "shop.cart_set_text",
+   "expected": "refuse InvalidInteger",
+   "got": "refuse InvalidInteger",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "quantity text \"10\"",
+   "node": "shop.cart_set_text",
+   "expected": "refuse QuantityOutOfRange",
+   "got": "refuse QuantityOutOfRange",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "intent line qty as text",
+   "node": "shop.intent_of",
+   "expected": "fault InputShape",
+   "got": "fault InputShape",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "intent 4 lines",
+   "node": "shop.intent_of",
+   "expected": "refuse InvalidLines",
+   "got": "refuse InvalidLines",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "overflowing total faults (price MAX x2)",
+   "node": "shop.intent_of",
+   "expected": "fault ArithmeticOverflow",
+   "got": "fault ArithmeticOverflow",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "place: intent total as text",
+   "node": "shop.order_place",
+   "expected": "fault InputShape",
+   "got": "fault InputShape",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "place: intent extra field",
+   "node": "shop.order_place",
+   "expected": "fault InputShape",
+   "got": "fault InputShape",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "place: currency USD",
+   "node": "shop.order_place",
+   "expected": "fault InputShape",
+   "got": "fault InputShape",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "place: forged unit price on fresh key",
+   "node": "shop.order_place",
+   "expected": "refuse IntentStale",
+   "got": "refuse IntentStale",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "place: unminted key",
+   "node": "shop.order_place",
+   "expected": "refuse UnknownKey",
+   "got": "refuse UnknownKey",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "place: same key, changed intent after binding",
+   "node": "shop.order_place",
+   "expected": "refuse IntentConflict",
+   "got": "refuse IntentConflict",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "place: same key, same intent after binding (retrieve)",
+   "node": "shop.order_place",
+   "expected": "return",
+   "got": "return",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "place: not enough stock",
+   "node": "shop.order_place",
+   "expected": "refuse OutOfStock",
+   "got": "refuse OutOfStock",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "submit: key as Int (no effect emitted)",
+   "node": "shop.payment_submit",
+   "expected": "fault InputShape",
+   "got": "fault InputShape",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "submit: cancelled order (no effect emitted)",
+   "node": "shop.payment_submit",
+   "expected": "refuse Cancelled",
+   "got": "refuse Cancelled",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "submit: ready order emits exactly one charge",
+   "node": "shop.payment_submit",
+   "expected": "return",
+   "got": "return",
+   "effects": 1,
+   "pass": true
+  },
+  {
+   "label": "apply: reply not in enum",
+   "node": "shop.payment_apply",
+   "expected": "fault InputShape",
+   "got": "fault InputShape",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "apply: before submit",
+   "node": "shop.payment_apply",
+   "expected": "refuse NotSubmitted",
+   "got": "refuse NotSubmitted",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "reconcile: before submit (no inquiry)",
+   "node": "shop.payment_reconcile",
+   "expected": "refuse NotSubmitted",
+   "got": "refuse NotSubmitted",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "state with R > H faults by invariant",
+   "node": "shop.cart_set",
+   "expected": "fault ContractViolation",
+   "got": "fault ContractViolation",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "import: preview mismatch",
+   "node": "shop.stock_import",
+   "expected": "refuse PreviewChanged",
+   "got": "refuse PreviewChanged",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "import: TOTE 4 accepted, R kept",
+   "node": "shop.stock_import",
+   "expected": "return",
+   "got": "return",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "apply: declined after confirmed",
+   "node": "shop.payment_apply",
+   "expected": "refuse OutcomeContradiction",
+   "got": "refuse OutcomeContradiction",
+   "effects": 0,
+   "pass": true
+  },
+  {
+   "label": "apply: confirmed twice consumes once",
+   "node": "shop.payment_apply",
+   "expected": "return",
+   "got": "return",
+   "effects": 0,
+   "pass": true
+  }
+ ]
+}

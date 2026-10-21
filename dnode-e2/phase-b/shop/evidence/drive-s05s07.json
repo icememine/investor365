@@ -1,0 +1,182 @@
+{
+ "section": "s05s07",
+ "browser": "Chromium 141.0.7390.37 headless (Playwright)",
+ "started": "2026-10-21T10:13:03.436Z",
+ "finished": "2026-10-21T10:13:05.982Z",
+ "base": "http://127.0.0.1:8101/",
+ "passed": 7,
+ "failed": 0,
+ "error": null,
+ "checks": [
+  {
+   "id": "lost reply: customer sees uncertainty, order and reservation preserved",
+   "obligation": "S05",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 349
+    },
+    "total": {
+     "top": 365,
+     "bottom": 399
+    },
+    "primary": {
+     "top": 447,
+     "bottom": 495
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Đang xác nhận thanh toán\n\nChúng tôi chưa nhận được kết quả thanh toán cho đơn hàng này. Các sản phẩm trong đơn vẫn đang được giữ cho bạn và chúng tôi sẽ không tạo thêm khoản thanh toán nào. Vui lòng không thanh toán lại cho đơn này trước khi có kết quả.",
+    "totalText": "Tổng cộng\n50.000 ₫",
+    "primaryText": "Kiểm tra lại thanh toán",
+    "phase": "unknown"
+   },
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 1,
+     "a": 4
+    },
+    "PEN": {
+     "h": 8,
+     "r": 0,
+     "a": 8
+    },
+    "TOTE": {
+     "h": 2,
+     "r": 0,
+     "a": 2
+    }
+   }
+  },
+  {
+   "id": "lost reply: simulator recorded exactly one charge (confirmed) for the single instruction",
+   "obligation": "S05",
+   "pass": true,
+   "bank": {
+    "ORD-0001-P1": {
+     "amount": 50000,
+     "status": "confirmed"
+    }
+   }
+  },
+  {
+   "id": "reload restores the same order and offers recovery",
+   "obligation": "S07",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 349
+    },
+    "total": {
+     "top": 365,
+     "bottom": 399
+    },
+    "primary": {
+     "top": 447,
+     "bottom": 495
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Đang xác nhận thanh toán\n\nChúng tôi chưa nhận được kết quả thanh toán cho đơn hàng này. Các sản phẩm trong đơn vẫn đang được giữ cho bạn và chúng tôi sẽ không tạo thêm khoản thanh toán nào. Vui lòng không thanh toán lại cho đơn này trước khi có kết quả.",
+    "totalText": "Tổng cộng\n50.000 ₫",
+    "primaryText": "Kiểm tra lại thanh toán",
+    "phase": "unknown"
+   },
+   "ref": "Mã đơn ORD-0001"
+  },
+  {
+   "id": "after reload on browse, the unknown order is listed with a link to recovery",
+   "obligation": "S07",
+   "pass": true,
+   "orderLink": "#/order/ORD-0001"
+  },
+  {
+   "id": "inquiry unavailable: still unknown, follow-up copy, reservation held, no new charge",
+   "obligation": "S05",
+   "pass": true,
+   "g": {
+    "status": {
+     "top": 81,
+     "bottom": 449
+    },
+    "total": {
+     "top": 465,
+     "bottom": 499
+    },
+    "primary": {
+     "top": 547,
+     "bottom": 595
+    },
+    "innerHeight": 844,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "statusText": "Đang xác nhận thanh toán\n\nChúng tôi chưa nhận được kết quả thanh toán cho đơn hàng này. Các sản phẩm trong đơn vẫn đang được giữ cho bạn và chúng tôi sẽ không tạo thêm khoản thanh toán nào. Vui lòng không thanh toán lại cho đơn này trước khi có kết quả.\n\nHệ thống thanh toán chưa phản hồi. Các sản phẩm vẫn đang được giữ cho bạn. Bạn có thể kiểm tra lại sau vài phút.",
+    "totalText": "Tổng cộng\n50.000 ₫",
+    "primaryText": "Kiểm tra lại thanh toán",
+    "phase": "unknown"
+   },
+   "bank": {
+    "ORD-0001-P1": {
+     "amount": 50000,
+     "status": "confirmed"
+    }
+   }
+  },
+  {
+   "id": "recovery reconciles to confirmed with the same instruction; no fresh charge; stock consumed once",
+   "obligation": "S05",
+   "pass": true,
+   "r1": {
+    "t": "2026-10-21T10:13:05.894Z",
+    "page": "udpp5c",
+    "action": "check",
+    "arg": "ORD-0001",
+    "ok": true
+   },
+   "r2": {
+    "t": "2026-10-21T10:13:05.896Z",
+    "page": "ovh236",
+    "action": "check",
+    "arg": "ORD-0001",
+    "ok": true
+   },
+   "bank": {
+    "ORD-0001-P1": {
+     "amount": 50000,
+     "status": "confirmed"
+    }
+   },
+   "inv": {
+    "NOTEBOOK": {
+     "h": 4,
+     "r": 0,
+     "a": 4
+    },
+    "PEN": {
+     "h": 8,
+     "r": 0,
+     "a": 8
+    },
+    "TOTE": {
+     "h": 2,
+     "r": 0,
+     "a": 2
+    }
+   },
+   "inquiries": 2
+  },
+  {
+   "id": "recovery pressed again after confirmation: no effect, state byte-identical",
+   "obligation": "S05",
+   "pass": true,
+   "again": {
+    "ok": true
+   }
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+{
+ "kind": "independent-oracle-comparison",
+ "oracle": "tests/oracle.py (python3 -I)",
+ "scenarios": 400,
+ "steps": 4016,
+ "mismatches": 0,
+ "money": {
+  "cases": 212,
+  "mismatches": 0
+ },
+ "totals": {
+  "cases": 300,
+  "mismatches": 0
+ },
+ "firstMismatches": [],
+ "moneyBad": [],
+ "totalBad": []
+}

@@ -1,0 +1,3816 @@
+{
+ "section": "s04",
+ "browser": "Chromium 141.0.7390.37 headless (Playwright)",
+ "started": "2026-10-21T10:10:34.956Z",
+ "finished": "2026-10-21T10:13:03.434Z",
+ "base": "http://127.0.0.1:8101/",
+ "passed": 4,
+ "failed": 0,
+ "error": null,
+ "checks": [
+  {
+   "id": "last unit never reserved twice with the kit lock: lock-natural",
+   "obligation": "S04",
+   "pass": true,
+   "iterations": 30,
+   "exactlyOne": 30,
+   "maxClickSkewMs": 2,
+   "overlapping": 0
+  },
+  {
+   "id": "last unit never reserved twice with the kit lock: lock-widened",
+   "obligation": "S04",
+   "pass": true,
+   "iterations": 30,
+   "exactlyOne": 30,
+   "maxClickSkewMs": 1,
+   "overlapping": 0
+  },
+  {
+   "id": "negative control detects lost/duplicate reservation without the lock: nolock-widened (negative control)",
+   "obligation": "S04",
+   "pass": true,
+   "iterations": 30,
+   "detected": 30,
+   "overlapping": 29
+  },
+  {
+   "id": "negative control detects lost/duplicate reservation without the lock: nolock-natural (negative control)",
+   "obligation": "S04",
+   "pass": true,
+   "iterations": 30,
+   "detected": 30,
+   "overlapping": 29
+  }
+ ],
+ "arms": [
+  {
+   "arm": "lock-natural",
+   "lock": true,
+   "widenMs": 0,
+   "iterations": 30,
+   "exactlyOneWinner": 30,
+   "raceDetected": 0,
+   "maxClickSkewMs": 2,
+   "overlappingTransactions": 0,
+   "results": [
+    {
+     "i": 0,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577436190,
+      1792577436192
+     ],
+     "txB": [
+      1792577436193,
+      1792577436195
+     ],
+     "txOverlapMs": 0,
+     "raceDetected": false
+    },
+    {
+     "i": 1,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577437404,
+      1792577437405
+     ],
+     "txB": [
+      1792577437397,
+      1792577437402
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 2,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577438508,
+      1792577438509
+     ],
+     "txB": [
+      1792577438509,
+      1792577438510
+     ],
+     "txOverlapMs": 0,
+     "raceDetected": false
+    },
+    {
+     "i": 3,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577439628,
+      1792577439630
+     ],
+     "txB": [
+      1792577439631,
+      1792577439632
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 4,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 2,
+     "txA": [
+      1792577440729,
+      1792577440732
+     ],
+     "txB": [
+      1792577440734,
+      1792577440736
+     ],
+     "txOverlapMs": -3,
+     "raceDetected": false
+    },
+    {
+     "i": 5,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577441839,
+      1792577441840
+     ],
+     "txB": [
+      1792577441836,
+      1792577441839
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 6,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577442911,
+      1792577442913
+     ],
+     "txB": [
+      1792577442913,
+      1792577442915
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 7,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577444043,
+      1792577444044
+     ],
+     "txB": [
+      1792577444038,
+      1792577444041
+     ],
+     "txOverlapMs": -2,
+     "raceDetected": false
+    },
+    {
+     "i": 8,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577445116,
+      1792577445119
+     ],
+     "txB": [
+      1792577445119,
+      1792577445121
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 9,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577446256,
+      1792577446258
+     ],
+     "txB": [
+      1792577446259,
+      1792577446260
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 10,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577447388,
+      1792577447389
+     ],
+     "txB": [
+      1792577447383,
+      1792577447387
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 11,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577448490,
+      1792577448493
+     ],
+     "txB": [
+      1792577448494,
+      1792577448496
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 12,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577449592,
+      1792577449594
+     ],
+     "txB": [
+      1792577449595,
+      1792577449596
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 13,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577450705,
+      1792577450706
+     ],
+     "txB": [
+      1792577450708,
+      1792577450709
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 14,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577451858,
+      1792577451860
+     ],
+     "txB": [
+      1792577451863,
+      1792577451864
+     ],
+     "txOverlapMs": -3,
+     "raceDetected": false
+    },
+    {
+     "i": 15,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577453002,
+      1792577453003
+     ],
+     "txB": [
+      1792577452998,
+      1792577453001
+     ],
+     "txOverlapMs": 0,
+     "raceDetected": false
+    },
+    {
+     "i": 16,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577454092,
+      1792577454094
+     ],
+     "txB": [
+      1792577454095,
+      1792577454096
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 17,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577455190,
+      1792577455192
+     ],
+     "txB": [
+      1792577455192,
+      1792577455193
+     ],
+     "txOverlapMs": 0,
+     "raceDetected": false
+    },
+    {
+     "i": 18,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577456292,
+      1792577456293
+     ],
+     "txB": [
+      1792577456293,
+      1792577456294
+     ],
+     "txOverlapMs": 0,
+     "raceDetected": false
+    },
+    {
+     "i": 19,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577457408,
+      1792577457409
+     ],
+     "txB": [
+      1792577457405,
+      1792577457407
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 20,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577458535,
+      1792577458537
+     ],
+     "txB": [
+      1792577458533,
+      1792577458535
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 21,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577459722,
+      1792577459725
+     ],
+     "txB": [
+      1792577459719,
+      1792577459721
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 22,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577460838,
+      1792577460839
+     ],
+     "txB": [
+      1792577460835,
+      1792577460837
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 23,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577461913,
+      1792577461915
+     ],
+     "txB": [
+      1792577461909,
+      1792577461912
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 24,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577463022,
+      1792577463023
+     ],
+     "txB": [
+      1792577463017,
+      1792577463021
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 25,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577464131,
+      1792577464133
+     ],
+     "txB": [
+      1792577464134,
+      1792577464136
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 26,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577465288,
+      1792577465291
+     ],
+     "txB": [
+      1792577465291,
+      1792577465293
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 27,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577466445,
+      1792577466447
+     ],
+     "txB": [
+      1792577466449,
+      1792577466450
+     ],
+     "txOverlapMs": -3,
+     "raceDetected": false
+    },
+    {
+     "i": 28,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577467598,
+      1792577467600
+     ],
+     "txB": [
+      1792577467601,
+      1792577467602
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    },
+    {
+     "i": 29,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577468706,
+      1792577468707
+     ],
+     "txB": [
+      1792577468704,
+      1792577468705
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": false
+    }
+   ]
+  },
+  {
+   "arm": "lock-widened",
+   "lock": true,
+   "widenMs": 40,
+   "iterations": 30,
+   "exactlyOneWinner": 30,
+   "raceDetected": 0,
+   "maxClickSkewMs": 1,
+   "overlappingTransactions": 0,
+   "results": [
+    {
+     "i": 0,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577470273,
+      1792577470275
+     ],
+     "txB": [
+      1792577470319,
+      1792577470321
+     ],
+     "txOverlapMs": -44,
+     "raceDetected": false
+    },
+    {
+     "i": 1,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577471576,
+      1792577471579
+     ],
+     "txB": [
+      1792577471620,
+      1792577471621
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 2,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577472832,
+      1792577472834
+     ],
+     "txB": [
+      1792577472879,
+      1792577472881
+     ],
+     "txOverlapMs": -45,
+     "raceDetected": false
+    },
+    {
+     "i": 3,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577474175,
+      1792577474177
+     ],
+     "txB": [
+      1792577474218,
+      1792577474219
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 4,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577475488,
+      1792577475490
+     ],
+     "txB": [
+      1792577475531,
+      1792577475532
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 5,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577476786,
+      1792577476789
+     ],
+     "txB": [
+      1792577476829,
+      1792577476836
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 6,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577478272,
+      1792577478274
+     ],
+     "txB": [
+      1792577478230,
+      1792577478232
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 7,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577479549,
+      1792577479550
+     ],
+     "txB": [
+      1792577479593,
+      1792577479595
+     ],
+     "txOverlapMs": -43,
+     "raceDetected": false
+    },
+    {
+     "i": 8,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577480875,
+      1792577480876
+     ],
+     "txB": [
+      1792577480917,
+      1792577480919
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 9,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577482227,
+      1792577482228
+     ],
+     "txB": [
+      1792577482184,
+      1792577482186
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 10,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577483499,
+      1792577483501
+     ],
+     "txB": [
+      1792577483455,
+      1792577483458
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 11,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577484715,
+      1792577484717
+     ],
+     "txB": [
+      1792577484758,
+      1792577484759
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 12,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577486001,
+      1792577486003
+     ],
+     "txB": [
+      1792577485959,
+      1792577485961
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 13,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577487268,
+      1792577487269
+     ],
+     "txB": [
+      1792577487310,
+      1792577487311
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 14,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577488582,
+      1792577488584
+     ],
+     "txB": [
+      1792577488627,
+      1792577488628
+     ],
+     "txOverlapMs": -43,
+     "raceDetected": false
+    },
+    {
+     "i": 15,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577489897,
+      1792577489899
+     ],
+     "txB": [
+      1792577489940,
+      1792577489941
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 16,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577491287,
+      1792577491288
+     ],
+     "txB": [
+      1792577491244,
+      1792577491246
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 17,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577492519,
+      1792577492521
+     ],
+     "txB": [
+      1792577492562,
+      1792577492564
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 18,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577493794,
+      1792577493797
+     ],
+     "txB": [
+      1792577493837,
+      1792577493839
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 19,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577495153,
+      1792577495156
+     ],
+     "txB": [
+      1792577495197,
+      1792577495199
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 20,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577496447,
+      1792577496448
+     ],
+     "txB": [
+      1792577496490,
+      1792577496492
+     ],
+     "txOverlapMs": -42,
+     "raceDetected": false
+    },
+    {
+     "i": 21,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577497821,
+      1792577497823
+     ],
+     "txB": [
+      1792577497778,
+      1792577497780
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 22,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577499237,
+      1792577499239
+     ],
+     "txB": [
+      1792577499194,
+      1792577499196
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 23,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577500468,
+      1792577500470
+     ],
+     "txB": [
+      1792577500511,
+      1792577500513
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 24,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577501826,
+      1792577501827
+     ],
+     "txB": [
+      1792577501783,
+      1792577501784
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 25,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "OutOfStock",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577503159,
+      1792577503160
+     ],
+     "txB": [
+      1792577503116,
+      1792577503118
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 26,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577504388,
+      1792577504391
+     ],
+     "txB": [
+      1792577504432,
+      1792577504433
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 27,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577505678,
+      1792577505680
+     ],
+     "txB": [
+      1792577505721,
+      1792577505723
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 28,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577507003,
+      1792577507005
+     ],
+     "txB": [
+      1792577507046,
+      1792577507048
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    },
+    {
+     "i": 29,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 1,
+     "loserInformed": true,
+     "loserNotice": "Rất tiếc, không còn đủ hàng cho một số sản phẩm. Vui lòng sửa giỏ hàng.",
+     "codes": [
+      "ok",
+      "OutOfStock"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577508224,
+      1792577508226
+     ],
+     "txB": [
+      1792577508267,
+      1792577508268
+     ],
+     "txOverlapMs": -41,
+     "raceDetected": false
+    }
+   ]
+  },
+  {
+   "arm": "nolock-widened (negative control)",
+   "lock": false,
+   "widenMs": 40,
+   "iterations": 30,
+   "exactlyOneWinner": 0,
+   "raceDetected": 30,
+   "maxClickSkewMs": 3,
+   "overlappingTransactions": 29,
+   "results": [
+    {
+     "i": 0,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577510056,
+      1792577510058
+     ],
+     "txB": [
+      1792577510056,
+      1792577510060
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 1,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577511399,
+      1792577511403
+     ],
+     "txB": [
+      1792577511400,
+      1792577511402
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 2,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577512699,
+      1792577512701
+     ],
+     "txB": [
+      1792577512699,
+      1792577512706
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 3,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577513984,
+      1792577513987
+     ],
+     "txB": [
+      1792577513985,
+      1792577513987
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 4,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577515274,
+      1792577515277
+     ],
+     "txB": [
+      1792577515274,
+      1792577515277
+     ],
+     "txOverlapMs": 3,
+     "raceDetected": true
+    },
+    {
+     "i": 5,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577516533,
+      1792577516536
+     ],
+     "txB": [
+      1792577516533,
+      1792577516535
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 6,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577517846,
+      1792577517848
+     ],
+     "txB": [
+      1792577517846,
+      1792577517848
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 7,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577519171,
+      1792577519173
+     ],
+     "txB": [
+      1792577519171,
+      1792577519174
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 8,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577520503,
+      1792577520506
+     ],
+     "txB": [
+      1792577520503,
+      1792577520505
+     ],
+     "txOverlapMs": 3,
+     "raceDetected": true
+    },
+    {
+     "i": 9,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577521813,
+      1792577521816
+     ],
+     "txB": [
+      1792577521813,
+      1792577521816
+     ],
+     "txOverlapMs": 3,
+     "raceDetected": true
+    },
+    {
+     "i": 10,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577523113,
+      1792577523115
+     ],
+     "txB": [
+      1792577523112,
+      1792577523114
+     ],
+     "txOverlapMs": 1,
+     "raceDetected": true
+    },
+    {
+     "i": 11,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577524419,
+      1792577524421
+     ],
+     "txB": [
+      1792577524419,
+      1792577524421
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 12,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577525684,
+      1792577525687
+     ],
+     "txB": [
+      1792577525684,
+      1792577525687
+     ],
+     "txOverlapMs": 3,
+     "raceDetected": true
+    },
+    {
+     "i": 13,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577527028,
+      1792577527030
+     ],
+     "txB": [
+      1792577527028,
+      1792577527032
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 14,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577528334,
+      1792577528336
+     ],
+     "txB": [
+      1792577528333,
+      1792577528335
+     ],
+     "txOverlapMs": 1,
+     "raceDetected": true
+    },
+    {
+     "i": 15,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577529643,
+      1792577529644
+     ],
+     "txB": [
+      1792577529642,
+      1792577529645
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 16,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577531013,
+      1792577531015
+     ],
+     "txB": [
+      1792577531013,
+      1792577531016
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 17,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577532333,
+      1792577532334
+     ],
+     "txB": [
+      1792577532332,
+      1792577532336
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 18,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577533627,
+      1792577533630
+     ],
+     "txB": [
+      1792577533627,
+      1792577533629
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 19,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577534941,
+      1792577534944
+     ],
+     "txB": [
+      1792577534941,
+      1792577534943
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 20,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577536221,
+      1792577536222
+     ],
+     "txB": [
+      1792577536221,
+      1792577536223
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 21,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577537510,
+      1792577537513
+     ],
+     "txB": [
+      1792577537510,
+      1792577537512
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 22,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577538938,
+      1792577538940
+     ],
+     "txB": [
+      1792577538938,
+      1792577538941
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 23,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577540185,
+      1792577540188
+     ],
+     "txB": [
+      1792577540184,
+      1792577540187
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 24,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577541508,
+      1792577541510
+     ],
+     "txB": [
+      1792577541508,
+      1792577541510
+     ],
+     "txOverlapMs": 3,
+     "raceDetected": true
+    },
+    {
+     "i": 25,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577542863,
+      1792577542865
+     ],
+     "txB": [
+      1792577542862,
+      1792577542864
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 26,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577544170,
+      1792577544173
+     ],
+     "txB": [
+      1792577544170,
+      1792577544173
+     ],
+     "txOverlapMs": 3,
+     "raceDetected": true
+    },
+    {
+     "i": 27,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577545499,
+      1792577545502
+     ],
+     "txB": [
+      1792577545499,
+      1792577545501
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 28,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 3,
+     "txA": [
+      1792577546828,
+      1792577546830
+     ],
+     "txB": [
+      1792577546831,
+      1792577546833
+     ],
+     "txOverlapMs": -1,
+     "raceDetected": true
+    },
+    {
+     "i": 29,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577548141,
+      1792577548144
+     ],
+     "txB": [
+      1792577548142,
+      1792577548143
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    }
+   ]
+  },
+  {
+   "arm": "nolock-natural (negative control)",
+   "lock": false,
+   "widenMs": 0,
+   "iterations": 30,
+   "exactlyOneWinner": 0,
+   "raceDetected": 30,
+   "maxClickSkewMs": 3,
+   "overlappingTransactions": 29,
+   "results": [
+    {
+     "i": 0,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577549974,
+      1792577549976
+     ],
+     "txB": [
+      1792577549977,
+      1792577549980
+     ],
+     "txOverlapMs": 0,
+     "raceDetected": true
+    },
+    {
+     "i": 1,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577551197,
+      1792577551198
+     ],
+     "txB": [
+      1792577551197,
+      1792577551200
+     ],
+     "txOverlapMs": 1,
+     "raceDetected": true
+    },
+    {
+     "i": 2,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577552371,
+      1792577552372
+     ],
+     "txB": [
+      1792577552371,
+      1792577552373
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 3,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577553460,
+      1792577553462
+     ],
+     "txB": [
+      1792577553460,
+      1792577553463
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 4,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577554671,
+      1792577554673
+     ],
+     "txB": [
+      1792577554671,
+      1792577554673
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 5,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577555861,
+      1792577555863
+     ],
+     "txB": [
+      1792577555862,
+      1792577555865
+     ],
+     "txOverlapMs": 1,
+     "raceDetected": true
+    },
+    {
+     "i": 6,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 3,
+     "txA": [
+      1792577557087,
+      1792577557088
+     ],
+     "txB": [
+      1792577557084,
+      1792577557088
+     ],
+     "txOverlapMs": 1,
+     "raceDetected": true
+    },
+    {
+     "i": 7,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577558267,
+      1792577558270
+     ],
+     "txB": [
+      1792577558268,
+      1792577558270
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 8,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577559421,
+      1792577559423
+     ],
+     "txB": [
+      1792577559421,
+      1792577559423
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 9,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577560566,
+      1792577560568
+     ],
+     "txB": [
+      1792577560567,
+      1792577560569
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 10,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 2,
+     "txA": [
+      1792577561789,
+      1792577561793
+     ],
+     "txB": [
+      1792577561791,
+      1792577561794
+     ],
+     "txOverlapMs": 1,
+     "raceDetected": true
+    },
+    {
+     "i": 11,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577562950,
+      1792577562952
+     ],
+     "txB": [
+      1792577562950,
+      1792577562952
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 12,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577564061,
+      1792577564063
+     ],
+     "txB": [
+      1792577564061,
+      1792577564064
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 13,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577565207,
+      1792577565210
+     ],
+     "txB": [
+      1792577565207,
+      1792577565209
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 14,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577566305,
+      1792577566308
+     ],
+     "txB": [
+      1792577566306,
+      1792577566308
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 15,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577567466,
+      1792577567468
+     ],
+     "txB": [
+      1792577567466,
+      1792577567468
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 16,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577568533,
+      1792577568535
+     ],
+     "txB": [
+      1792577568533,
+      1792577568536
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 17,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577569666,
+      1792577569668
+     ],
+     "txB": [
+      1792577569666,
+      1792577569667
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 18,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577570795,
+      1792577570796
+     ],
+     "txB": [
+      1792577570795,
+      1792577570797
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 19,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577571943,
+      1792577571945
+     ],
+     "txB": [
+      1792577571944,
+      1792577571947
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 20,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577573074,
+      1792577573076
+     ],
+     "txB": [
+      1792577573074,
+      1792577573076
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 21,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577574148,
+      1792577574150
+     ],
+     "txB": [
+      1792577574149,
+      1792577574151
+     ],
+     "txOverlapMs": 1,
+     "raceDetected": true
+    },
+    {
+     "i": 22,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577575229,
+      1792577575232
+     ],
+     "txB": [
+      1792577575229,
+      1792577575231
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 23,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577576368,
+      1792577576370
+     ],
+     "txB": [
+      1792577576369,
+      1792577576370
+     ],
+     "txOverlapMs": 1,
+     "raceDetected": true
+    },
+    {
+     "i": 24,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577577460,
+      1792577577463
+     ],
+     "txB": [
+      1792577577460,
+      1792577577462
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 25,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577578587,
+      1792577578590
+     ],
+     "txB": [
+      1792577578586,
+      1792577578589
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 26,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577579724,
+      1792577579726
+     ],
+     "txB": [
+      1792577579724,
+      1792577579726
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 27,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577580854,
+      1792577580857
+     ],
+     "txB": [
+      1792577580855,
+      1792577580858
+     ],
+     "txOverlapMs": 3,
+     "raceDetected": true
+    },
+    {
+     "i": 28,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 1,
+     "txA": [
+      1792577581962,
+      1792577581966
+     ],
+     "txB": [
+      1792577581963,
+      1792577581964
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    },
+    {
+     "i": 29,
+     "keys": [
+      "ORD-0002",
+      "ORD-0003"
+     ],
+     "okCount": 2,
+     "loserInformed": false,
+     "loserNotice": "",
+     "codes": [
+      "ok",
+      "ok"
+     ],
+     "tote": {
+      "h": 2,
+      "r": 2,
+      "a": 0
+     },
+     "orders": 2,
+     "clickSkewMs": 0,
+     "txA": [
+      1792577583109,
+      1792577583111
+     ],
+     "txB": [
+      1792577583110,
+      1792577583111
+     ],
+     "txOverlapMs": 2,
+     "raceDetected": true
+    }
+   ]
+  }
+ ]
+}

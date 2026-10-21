@@ -1,0 +1,127 @@
+{
+ "section": "s03",
+ "browser": "Chromium 141.0.7390.37 headless (Playwright)",
+ "started": "2026-10-21T10:10:32.705Z",
+ "finished": "2026-10-21T10:10:34.956Z",
+ "base": "http://127.0.0.1:8101/",
+ "passed": 5,
+ "failed": 0,
+ "error": null,
+ "checks": [
+  {
+   "id": "same key + same intent from two pages: one order, one reservation",
+   "obligation": "S03",
+   "pass": true,
+   "ra": {
+    "ok": true
+   },
+   "rb": {
+    "ok": true
+   },
+   "orders": [
+    "ORD-0001"
+   ],
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 0,
+     "a": 5
+    },
+    "PEN": {
+     "h": 8,
+     "r": 0,
+     "a": 8
+    },
+    "TOTE": {
+     "h": 2,
+     "r": 1,
+     "a": 1
+    }
+   }
+  },
+  {
+   "id": "two concurrent pay presses: one simulator charge, one stock consumption",
+   "obligation": "S03",
+   "pass": true,
+   "bank": {
+    "ORD-0001-P1": {
+     "amount": 120000,
+     "status": "confirmed"
+    }
+   },
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 0,
+     "a": 5
+    },
+    "PEN": {
+     "h": 8,
+     "r": 0,
+     "a": 8
+    },
+    "TOTE": {
+     "h": 1,
+     "r": 0,
+     "a": 1
+    }
+   }
+  },
+  {
+   "id": "replayed place after payment retrieves the paid order; state byte-identical",
+   "obligation": "S03",
+   "pass": true,
+   "replay": {
+    "ok": true
+   }
+  },
+  {
+   "id": "same key, different amount: IntentConflict, state byte-identical",
+   "obligation": "S03",
+   "pass": true,
+   "r1": {
+    "ok": false,
+    "code": "IntentConflict",
+    "kind": "refused",
+    "message": "IntentConflict"
+   },
+   "notice": "Mã đơn này đã được dùng cho một đơn khác. Vui lòng xem lại giỏ hàng."
+  },
+  {
+   "id": "deliberate identical second purchase gets a new identity and its own charge",
+   "obligation": "S03",
+   "pass": true,
+   "keys": [
+    "ORD-0001",
+    "ORD-0002"
+   ],
+   "bank": {
+    "ORD-0001-P1": {
+     "amount": 120000,
+     "status": "confirmed"
+    },
+    "ORD-0002-P1": {
+     "amount": 120000,
+     "status": "confirmed"
+    }
+   },
+   "inv": {
+    "NOTEBOOK": {
+     "h": 5,
+     "r": 0,
+     "a": 5
+    },
+    "PEN": {
+     "h": 8,
+     "r": 0,
+     "a": 8
+    },
+    "TOTE": {
+     "h": 0,
+     "r": 0,
+     "a": 0
+    }
+   }
+  }
+ ]
+}

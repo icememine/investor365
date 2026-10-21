@@ -1,0 +1,10 @@
+root repro
+node repro.one ()
+ in {}
+ returns "Int"
+ out 1
+ ex {"args":[],"out":2}
+node repro.with (r)
+ in {"r":{"fields":{"a":"Int","b":"Int"}}}
+ returns {"fields":{"a":"Int","b":"Int"}}
+ out (with r a 5)

@@ -1,0 +1,160 @@
+$ cd ../kit/dnode-e1-kit && node tools/run.mjs verify; echo exit=$?
+VERIFIED DNode-E1-author-kit trust fingerprint 4c7716c7b528dfcdba2190c27516a09e057334309f1fb0b9a8785991cfca0244
+exit=0
+$ cd ../kit/dnode-e1-kit && npm test --silent; echo exit=$?
+Verified pinned package and 1280 independently expected public generated cases. This does not certify your application.
+exit=0
+$ cd ../kit/dnode-e1-kit && node tools/run.mjs check ../../shop/shop.core.node; echo exit=$?
+STRUCTURAL PASS. Not a certificate; provide examples and independent evidence.
+exit=0
+$ cd ../kit/dnode-e1-kit && node tools/run.mjs check ../../shop/shop.view.node; echo exit=$?
+MissingRoot MissingRoot: shop.core
+exit=1
+$ node tests/lock.mjs; echo exit=$?
+{
+  'shop.core.node': '8c43a3a314b08101393b59ffe5542a08a04f879f34f22d3014a63036012b0caa',
+  'shop.view.node': '8e112669a0f15bfbe02849531e40c3a6eebbb2c37d6089abc6f4816ed03c4823'
+}
+exit=0
+$ node tests/examples.mjs; echo exit=$?
+shop roots: 119 nodes; 33 inline cases; 33 passed; 0 failed
+exit=0
+$ python3 -I tests/oracle.py > evidence/oracle-cases.json; echo exit=$?; sha256sum evidence/oracle-cases.json
+exit=0
+8b77ac256f383e39299ace1e0c5b9f1f341f2f96099ad346f91d967a91bc7137  evidence/oracle-cases.json
+$ node tests/compare.mjs; echo exit=$?
+scenarios 400, steps 4016, step mismatches 0; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches
+exit=0
+$ node tests/s02.mjs; echo exit=$?
+29 DNode boundary cases, 0 failed
+exit=0
+$ node tests/mutate.mjs; echo exit=$?
+KILLED   release keeps reservation | scenarios 400, steps 4016, step mismatches 992; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches
+KILLED   reserve without stock check | scenarios 400, steps 4016, step mismatches 450; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches
+KILLED   unknown reply treated as decline | scenarios 400, steps 4016, step mismatches 554; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches
+KILLED   import adds instead of replacing | scenarios 400, steps 4016, step mismatches 1100; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches
+KILLED   import ignores below-reserved | scenarios 400, steps 4016, step mismatches 42; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches
+KILLED   confirm consumes twice | scenarios 400, steps 4016, step mismatches 768; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches
+KILLED   submit charges every time | scenarios 400, steps 4016, step mismatches 370; money 212 cases, 0 mismatches; totals 300 cases, 0 mismatches
+KILLED   total ignores quantity | scenarios 400, steps 4016, step mismatches 1537; money 212 cases, 0 mismatches; totals 300 cases, 141 mismatches
+KILLED   money without grouping dots | scenarios 400, steps 4016, step mismatches 0; money 212 cases, 209 mismatches; totals 300 cases, 0 mismatches
+exit=0
+$ node tests/contrast.mjs; echo exit=$?
+ 16.22 ok  body text #1C1B1A on #FAF8F5
+ 17.20 ok  card text #1C1B1A on #FFFFFF
+  7.33 ok  notes on page #55524E on #FAF8F5
+  7.77 ok  notes in cards #55524E on #FFFFFF
+  8.66 ok  primary button #FFFFFF on #1F4E79
+  8.66 ok  secondary button / ready heading #1F4E79 on #FFFFFF
+  8.17 ok  secondary button on page #1F4E79 on #FAF8F5
+  5.80 ok  paid heading #1E6B3A on #EAF4EE
+ 15.29 ok  paid body #1C1B1A on #EAF4EE
+  6.44 ok  declined heading #A1281E on #FBECEA
+ 14.98 ok  declined body / notice #1C1B1A on #FBECEA
+  6.99 ok  unknown heading #33547A on #EEF3F8
+ 15.41 ok  unknown body #1C1B1A on #EEF3F8
+  5.92 ok  cancelled heading #5B5B5B on #F1EFEC
+  7.20 ok  availability warning #7A4E00 on #FFFFFF
+exit=0
+$ BASE=http://127.0.0.1:8131/ RACE_N=10 node tests/drive.cjs admission journey s02 s03 s04 s05s07 s06 import timing; echo exit=$?
+PASS R0.2 refuse on kit root changed
+PASS R0.2 refuse on kit runtime file changed
+PASS R0.2 refuse on trust key replaced
+PASS R0.2 refuse on app root changed (lock mismatch)
+PASS R0.2 untampered kit admitted
+== admission: 5 passed, 0 failed
+PASS S02 cart total 240.000 ₫ (390)
+PASS S02 review shows lines and total (390)
+PASS S02 order placed: ready, reserved (390)
+PASS S08 ready: status, total, next action above fold (390)
+PASS S01-observable paid: confirmed status, receipt total (390)
+PASS S02 paid: one charge 240000, stock consumed once (390)
+PASS S08 confirmed: status, total, next action above fold (390)
+PASS D-S4 no hashes/instruction ids in customer screen (390)
+PASS S06 declined: status text, reservation released (390)
+PASS S08 declined: status, total, next action above fold (390)
+PASS S06 reorder cart (390)
+PASS S05 unknown: uncertainty copy and recovery label (390)
+PASS S08 unknown: status, total, next action above fold (390)
+PASS S07 browse lists orders with status for recovery (390)
+PASS S02 cart total 240.000 ₫ (1280)
+PASS S02 review shows lines and total (1280)
+PASS S02 order placed: ready, reserved (1280)
+PASS S08 ready: status, total, next action above fold (1280)
+PASS S01-observable paid: confirmed status, receipt total (1280)
+PASS S02 paid: one charge 240000, stock consumed once (1280)
+PASS S08 confirmed: status, total, next action above fold (1280)
+PASS D-S4 no hashes/instruction ids in customer screen (1280)
+PASS S06 declined: status text, reservation released (1280)
+PASS S08 declined: status, total, next action above fold (1280)
+PASS S06 reorder cart (1280)
+PASS S05 unknown: uncertainty copy and recovery label (1280)
+PASS S08 unknown: status, total, next action above fold (1280)
+PASS S07 browse lists orders with status for recovery (1280)
+== journey: 28 passed, 0 failed
+PASS S02 unknown SKU refused, state unchanged
+PASS S02 cart cannot exceed availability (TOTE A=2)
+PASS S02 quantity beyond availability refused (PEN A=8); the 1..9 bound itself is checked at DNode level in tests/s02.mjs
+PASS S02 malformed stored state (H as text) faults InputShape before business logic; record unchanged
+PASS S02 customer sees system-error message, no business screen
+PASS S02 test desk still offers reset on corrupt state; reset restores the seed
+PASS S02 order with text total cannot be paid: InputShape fault, no simulator charge
+== s02: 7 passed, 0 failed
+PASS S03 same key + same intent from two pages: one order, one reservation
+PASS S03 two concurrent pay presses: one simulator charge, one stock consumption
+PASS S03 replayed place after payment retrieves the paid order; state byte-identical
+PASS S03 same key, different amount: IntentConflict, state byte-identical
+PASS S03 deliberate identical second purchase gets a new identity and its own charge
+== s03: 5 passed, 0 failed
+PASS S04 last unit never reserved twice with the kit lock: lock-natural
+PASS S04 last unit never reserved twice with the kit lock: lock-widened
+PASS S04 negative control detects lost/duplicate reservation without the lock: nolock-widened (negative control)
+PASS S04 negative control detects lost/duplicate reservation without the lock: nolock-natural (negative control)
+== s04: 4 passed, 0 failed
+PASS S05 lost reply: customer sees uncertainty, order and reservation preserved
+PASS S05 lost reply: simulator recorded exactly one charge (confirmed) for the single instruction
+PASS S07 reload restores the same order and offers recovery
+PASS S07 after reload on browse, the unknown order is listed with a link to recovery
+PASS S05 inquiry unavailable: still unknown, follow-up copy, reservation held, no new charge
+PASS S05 recovery reconciles to confirmed with the same instruction; no fresh charge; stock consumed once
+PASS S05 recovery pressed again after confirmation: no effect, state byte-identical
+== s05s07: 7 passed, 0 failed
+PASS S06 reserved 2 TOTE
+PASS S06 definite decline from two concurrent pay presses releases the reservation once
+PASS S06 repeating check/pay/cancel on a declined order changes nothing (no second release)
+== s06: 3 passed, 0 failed
+PASS S06 S-T1 preview: TOTE H 2, R 1, H new 3, A new 2 with meaning sentence (390)
+PASS S06 S-T1 confirmed: H=3, R=1, A=2 (390)
+PASS S06 snapshot below reserved rejected, no confirm offered, state byte-identical (390)
+PASS S06 rejected: missing SKU (R-S2); state unchanged
+PASS S06 rejected: extra SKU (R-S2); state unchanged
+PASS S06 rejected: malformed CSV; state unchanged
+PASS S06 rejected: non-UTF-8 bytes; state unchanged
+PASS S06 rejected: kit invalid fixture: located diagnostics; state unchanged
+PASS S06 rejected: over 1 MiB before decoding; state unchanged
+PASS S06 kit valid fixture: accepted; supplier name difference shown as not applied
+PASS S06 stock changed between preview and confirm: PreviewChanged, state unchanged
+PASS S06 kit valid fixture confirmed: H replaced, R kept, name and price not applied
+PASS S06 BOM + CRLF + quoted/escaped name + leading zeros accepted by the shared definition
+PASS S06 S-T1 preview: TOTE H 2, R 1, H new 3, A new 2 with meaning sentence (1280)
+PASS S06 S-T1 confirmed: H=3, R=1, A=2 (1280)
+PASS S06 snapshot below reserved rejected, no confirm offered, state byte-identical (1280)
+== import: 16 passed, 0 failed
+PASS R0.5 timings recorded (measure only, no threshold)
+== timing: 1 passed, 0 failed
+exit=0
+$ node tests/identities.mjs; echo exit=$?
+{
+ "runtimeIdentity": "fd854bcb708f3031824b14819fe126b0be96b241ced19416035b6f49d4d7c55e",
+ "rootHashes": {
+  "prelude": "8e199f2776bb9c4ec44b3a435b4c70744748c42b784c646f77d2847c41e99dde",
+  "supplier": "0c35544ed5e56d00479656114dd226712a416054bf23b4140c30466d27011bff"
+ },
+ "kitZip": "141331a5c76807da3b99ffb19cb1507d3a9acad6b00d4f8cee13b91a199a5633",
+ "shop.core.node": "8c43a3a314b08101393b59ffe5542a08a04f879f34f22d3014a63036012b0caa",
+ "shop.view.node": "8e112669a0f15bfbe02849531e40c3a6eebbb2c37d6089abc6f4816ed03c4823",
+ "app.js": "10cea3a64f434bc5e568d693af65c7bfedb993c52f682b3930f95ac47054a0ad",
+ "index.html": "8ba2238b3754a4f45b282441908d0e5ea46feb9db15cc9cc29889882777a4536",
+ "serve.mjs": "af7bc7ca70085a2d21a90fa2a76432b3e0a9bcda0753ebc75f7af98eb2e5855d"
+}
+exit=0

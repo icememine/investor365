@@ -1,0 +1,110 @@
+{
+ "kind": "measured contrast of declared tokens (not a human accessibility review)",
+ "rows": [
+  {
+   "use": "body text",
+   "fg": "#1C1B1A",
+   "bg": "#FAF8F5",
+   "ratio": 16.22,
+   "meets_4_5": true
+  },
+  {
+   "use": "card text",
+   "fg": "#1C1B1A",
+   "bg": "#FFFFFF",
+   "ratio": 17.2,
+   "meets_4_5": true
+  },
+  {
+   "use": "notes on page",
+   "fg": "#55524E",
+   "bg": "#FAF8F5",
+   "ratio": 7.33,
+   "meets_4_5": true
+  },
+  {
+   "use": "notes in cards",
+   "fg": "#55524E",
+   "bg": "#FFFFFF",
+   "ratio": 7.77,
+   "meets_4_5": true
+  },
+  {
+   "use": "primary button",
+   "fg": "#FFFFFF",
+   "bg": "#1F4E79",
+   "ratio": 8.66,
+   "meets_4_5": true
+  },
+  {
+   "use": "secondary button / ready heading",
+   "fg": "#1F4E79",
+   "bg": "#FFFFFF",
+   "ratio": 8.66,
+   "meets_4_5": true
+  },
+  {
+   "use": "secondary button on page",
+   "fg": "#1F4E79",
+   "bg": "#FAF8F5",
+   "ratio": 8.17,
+   "meets_4_5": true
+  },
+  {
+   "use": "paid heading",
+   "fg": "#1E6B3A",
+   "bg": "#EAF4EE",
+   "ratio": 5.8,
+   "meets_4_5": true
+  },
+  {
+   "use": "paid body",
+   "fg": "#1C1B1A",
+   "bg": "#EAF4EE",
+   "ratio": 15.29,
+   "meets_4_5": true
+  },
+  {
+   "use": "declined heading",
+   "fg": "#A1281E",
+   "bg": "#FBECEA",
+   "ratio": 6.44,
+   "meets_4_5": true
+  },
+  {
+   "use": "declined body / notice",
+   "fg": "#1C1B1A",
+   "bg": "#FBECEA",
+   "ratio": 14.98,
+   "meets_4_5": true
+  },
+  {
+   "use": "unknown heading",
+   "fg": "#33547A",
+   "bg": "#EEF3F8",
+   "ratio": 6.99,
+   "meets_4_5": true
+  },
+  {
+   "use": "unknown body",
+   "fg": "#1C1B1A",
+   "bg": "#EEF3F8",
+   "ratio": 15.41,
+   "meets_4_5": true
+  },
+  {
+   "use": "cancelled heading",
+   "fg": "#5B5B5B",
+   "bg": "#F1EFEC",
+   "ratio": 5.92,
+   "meets_4_5": true
+  },
+  {
+   "use": "availability warning",
+   "fg": "#7A4E00",
+   "bg": "#FFFFFF",
+   "ratio": 7.2,
+   "meets_4_5": true
+  }
+ ]
+}

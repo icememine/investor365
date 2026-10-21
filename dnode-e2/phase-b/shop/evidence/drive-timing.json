@@ -1,0 +1,136 @@
+{
+ "section": "timing",
+ "browser": "Chromium 141.0.7390.37 headless (Playwright)",
+ "started": "2026-10-21T10:22:13.639Z",
+ "finished": "2026-10-21T10:22:20.252Z",
+ "base": "http://127.0.0.1:8101/",
+ "passed": 1,
+ "failed": 0,
+ "error": null,
+ "checks": [
+  {
+   "390": {
+    "admitAndFirstRenderMs": 160,
+    "cartIncMs": [
+     99,
+     81,
+     76,
+     77,
+     73
+    ],
+    "placeMs": [
+     65,
+     67,
+     67,
+     64,
+     66
+    ],
+    "payMs": [
+     66,
+     68,
+     67,
+     67,
+     66
+    ],
+    "median": {
+     "cartIncMs": 77,
+     "placeMs": 66,
+     "payMs": 67
+    }
+   },
+   "1280": {
+    "admitAndFirstRenderMs": 200,
+    "cartIncMs": [
+     90,
+     74,
+     78,
+     68,
+     76
+    ],
+    "placeMs": [
+     66,
+     67,
+     66,
+     66,
+     67
+    ],
+    "payMs": [
+     66,
+     67,
+     67,
+     67,
+     67
+    ],
+    "median": {
+     "cartIncMs": 76,
+     "placeMs": 66,
+     "payMs": 67
+    }
+   },
+   "id": "timings recorded (measure only, no threshold)",
+   "obligation": "R0.5",
+   "pass": true
+  }
+ ],
+ "timing": {
+  "390": {
+   "admitAndFirstRenderMs": 160,
+   "cartIncMs": [
+    99,
+    81,
+    76,
+    77,
+    73
+   ],
+   "placeMs": [
+    65,
+    67,
+    67,
+    64,
+    66
+   ],
+   "payMs": [
+    66,
+    68,
+    67,
+    67,
+    66
+   ],
+   "median": {
+    "cartIncMs": 77,
+    "placeMs": 66,
+    "payMs": 67
+   }
+  },
+  "1280": {
+   "admitAndFirstRenderMs": 200,
+   "cartIncMs": [
+    90,
+    74,
+    78,
+    68,
+    76
+   ],
+   "placeMs": [
+    66,
+    67,
+    66,
+    66,
+    67
+   ],
+   "payMs": [
+    66,
+    67,
+    67,
+    67,
+    67
+   ],
+   "median": {
+    "cartIncMs": 76,
+    "placeMs": 66,
+    "payMs": 67
+   }
+  }
+ },
+ "device": "linux Intel(R) Xeon(R) Processor @ 2.80GHz x4"
+}
